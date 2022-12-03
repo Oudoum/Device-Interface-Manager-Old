@@ -1,0 +1,190 @@
+﻿<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:Device_Interface_Manager.MVVM.View"
+    xmlns:viewModel="clr-namespace:Device_Interface_Manager.MVVM.ViewModel"
+    d:DataContext="{d:DesignInstance Type=viewModel:HomeENETViewModel, IsDesignTimeCreatable=True}"
+    x:Class="Device_Interface_Manager.MVVM.View.HomeENETView"
+    mc:Ignorable="d"
+    d:DesignWidth="1040"
+    d:DesignHeight="560"
+    d:Visibility="Visible"
+    Visibility="Visible">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
+
+    <Grid>
+        <Button Command="{Binding StartENET}"
+                Margin="0,25,0,0"
+                VerticalAlignment="Top"
+                Height="30"
+                Width="150"
+                Background="DarkGray"
+                BorderThickness="0"
+                FontSize="20">
+                START
+        </Button>
+        <DockPanel LastChildFill="False"
+                   HorizontalAlignment="Center">
+            <DataGrid
+                DockPanel.Dock="Top"
+                CanUserDeleteRows="False"
+                CanUserAddRows="False"
+                CanUserReorderColumns="False"
+                CanUserResizeColumns="False"
+                CanUserResizeRows="False"
+                CanUserSortColumns="False"
+                IsEnabled="{Binding IsENETEnabled}"
+                ItemsSource="{Binding Connections}"
+                Margin="0,80,0,80"
+                Background="Transparent"
+                BorderThickness="5"
+                BorderBrush="#FF152A7F" 
+                VerticalAlignment="Top" 
+                HorizontalAlignment="Center"
+                HorizontalScrollBarVisibility="Disabled" 
+                GridLinesVisibility="All"
+                FontSize="18"
+                Foreground="White"
+                VerticalGridLinesBrush="#FF152A7F" 
+                HorizontalGridLinesBrush="#FF152A7F"
+                HeadersVisibility="Column"
+                AutoGenerateColumns="False">
+                <DataGrid.Resources>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderBrush" Value="#FF152A7F"/>
+                        <Setter Property="BorderThickness" Value="0,0,3,3"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    </Style>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="3,3,0,0"/>
+                    </Style>
+                    <Style TargetType="DataGridRow">
+                        <Setter Property="Background" Value="Transparent"/>
+                    </Style>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="False">
+                                <Setter Property="Background" Value="Transparent"/>
+                            </Trigger>
+                            <Trigger Property="IsEditing" Value="True">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="DataGridCell">
+                                            <TextBox
+                                                Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content.Text, Mode=TwoWay, UpdateSourceTrigger=Default}"/>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="300">
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="IP-Address" Binding="{Binding IPAddress}" Width="150"/>
+                    <DataGridTemplateColumn Header="Status" Width="80" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Ellipse d:Fill="Red" Height="25" Width="25" StrokeThickness="2" Stroke="White" >
+                                    <Ellipse.Resources>
+                                        <Style TargetType="Ellipse">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Status}" Value="0">
+                                                    <Setter Property="Fill" Value="Red"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="1">
+                                                    <Setter Property="Fill" Value="Yellow"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="2">
+                                                    <Setter Property="Fill" Value="Green"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Resources>
+                                </Ellipse>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Select Profile" Width="300">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ComboBox
+                                    ItemsSource="{Binding DataContext.Profiles, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:HomeENETView}}}"
+                                    SelectedValuePath="Id"
+                                    SelectedValue="{Binding Profile.Id}"
+                                    SelectedItem="{Binding Profile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Name}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Delete" Width="80" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="X" 
+                                        Background="Transparent" 
+                                        Foreground="White" BorderThickness="0" 
+                                        Command="{Binding DataContext.DeleteRow, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:HomeENETView}}}" 
+                                        CommandParameter="{Binding}">
+                                    <Button.Resources>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Background" Value="Transparent" />
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Grid Background="Transparent" HorizontalAlignment="Center">
+                                                            <ContentPresenter />
+                                                        </Grid>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+            <Button Command="{Binding AddRow}"
+                    Visibility="{Binding IsENETEnabled,Converter={StaticResource BooleanToVisibilityConverter}}"
+                    BorderThickness="5,0,5,0"
+                    Foreground="White"
+                    BorderBrush="#FF152A7F"
+                    Background="#FF152A7F"
+                    Margin="0,-80,0,55"
+                    DockPanel.Dock="Top" 
+                    FontSize="16"
+                    Height="25"
+                    FontFamily="Arial Black">
+                Add
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="0,0,3,3"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+        </DockPanel>
+    </Grid>
+</UserControl>

@@ -1,0 +1,181 @@
+﻿<UserControl x:Class="Device_Interface_Manager.MVVM.View.SwitchTestView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             d:DataContext="{d:DesignInstance Type=viewModel:SwitchTestViewModel, IsDesignTimeCreatable=True}"
+             xmlns:viewModel="clr-namespace:Device_Interface_Manager.MVVM.ViewModel"
+             mc:Ignorable="d"
+             d:DesignWidth="1040"
+             d:DesignHeight="560" >
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="450"/>
+            <ColumnDefinition Width="450"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.Resources>
+            <Style TargetType="Button">
+                <Setter Property="Height" Value="Auto"/>
+                <Setter Property="Width" Value="250"/>
+                <Setter Property="VerticalAlignment" Value="Top"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Foreground" Value="Black"/>
+                <Setter Property="Background" Value="DimGray"/>
+
+                <Setter Property="FontSize" Value="23"/>
+                <Style.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </Style.Resources>
+            </Style>
+        </Grid.Resources>
+
+        <StackPanel
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top">
+
+            <Button
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Margin="0,150,0,0"
+                Command="{Binding CallbackmodeEnableCommand}"
+                Content="Callbackmode"
+                ToolTip="Every time a switch is pressed you will be notified (list on the right) with the switch number and the direction.">
+                <Button.Resources>
+                    <Style TargetType="Button">
+                        <Style.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="10"/>
+                            </Style>
+                        </Style.Resources>
+                        <Setter Property="Height" Value="40"/>
+                        <Setter Property="Width" Value="250"/>
+                        <Setter Property="FontSize" Value="22"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Foreground" Value="Black"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CallbackmodeEnabled}" Value="True">
+                                <Setter Property="Background" Value="Green"/>
+                                <Setter Property="Content" Value="Enabled"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding CallbackmodeEnabled}" Value="False">
+                                <Setter Property="Background" Value="DimGray"/>
+                                <Setter Property="Content" Value="Disabled"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding PollmodeEnabled}" Value="True">
+                                <Setter Property="Visibility" Value="Hidden"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Resources>
+            </Button>
+            <StackPanel>
+                <Button 
+                Margin="0,100,0,0"
+                Command="{Binding PollmodeEnableCommand}"
+                Content="Pollmode"
+                ToolTip="Every time a switch is pressed it is added to the receive queue until you click the Get Switch button which removes it from the queue.">
+                    <Button.Resources>
+                        <Style TargetType="Button">
+                            <Style.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="10"/>
+                                </Style>
+                            </Style.Resources>
+                            <Setter Property="Height" Value="40"/>
+                            <Setter Property="Width" Value="250"/>
+                            <Setter Property="FontSize" Value="22"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Foreground" Value="Black"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding PollmodeEnabled}" Value="True">
+                                    <Setter Property="Background" Value="Green"/>
+                                    <Setter Property="Content" Value="Enabled"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding PollmodeEnabled}" Value="False">
+                                    <Setter Property="Background" Value="DimGray"/>
+                                    <Setter Property="Content" Value="Disabled"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding CallbackmodeEnabled}" Value="True">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+
+                <Button
+                Margin="0,20,0,0"
+                Height="40"
+                Command="{Binding GetSwitchCommand}"
+                ToolTip="As switch notification are received they are added to the queue until this button is pressed to retrieve the oldes item (list on the right) and then remove it.">
+                    <Button.Resources>
+                        <Style TargetType="Button">
+                            <Setter Property="Content" Value="Get Switch"/>
+                            <Setter Property="Height" Value="Auto"/>
+                            <Setter Property="Width" Value="250"/>
+                            <Setter Property="VerticalAlignment" Value="Top"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Foreground" Value="Black"/>
+                            <Setter Property="Background" Value="DimGray"/>
+                            <Setter Property="FontSize" Value="23"/>
+                            <Style.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="10"/>
+                                </Style>
+                            </Style.Resources>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CallbackmodeEnabled}" Value="True">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+
+        <Button 
+            Margin="100,20,100,0"
+            Command="{Binding ClearSwitchListCommand}"
+            Height="40"
+            Content="Clear"
+            ToolTip="Clear the switch list" Grid.Column="1"/>
+
+        <ListView 
+            x:Name="SwitchLog"
+            Grid.Column="1"
+            Margin="0,80,0,10"
+            MinHeight="450"
+            Width="400"
+            HorizontalAlignment="Center"
+            Foreground="LightGray"
+            Background="Transparent"
+            ItemsSource="{Binding SwitchLog}"
+            
+            FontSize="22">
+            <ListView.Template>
+                <ControlTemplate>
+                    <Border 
+                                CornerRadius="10"
+                                BorderThickness="5"
+                                BorderBrush="LightGray">
+                        <ScrollViewer
+                                    HorizontalScrollBarVisibility="Hidden"
+                                    VerticalScrollBarVisibility="Hidden">
+                            <ItemsPresenter/>
+                        </ScrollViewer>
+                    </Border>
+                </ControlTemplate>
+            </ListView.Template>
+        </ListView>
+
+    </Grid>
+</UserControl>

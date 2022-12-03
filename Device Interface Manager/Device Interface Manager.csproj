@@ -1,0 +1,194 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <RootNamespace>Device_Interface_Manager</RootNamespace>
+    <Nullable>disable</Nullable>
+    <UseWPF>true</UseWPF>
+    <Platforms>AnyCPU;x64</Platforms>
+    <UseWindowsForms>True</UseWindowsForms>
+    <FileVersion>0.0.9.0</FileVersion>
+    <AssemblyVersion>0.0.9.0</AssemblyVersion>
+    <ApplicationIcon>DIM.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <DebugType>full</DebugType>
+	<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <DebugType>full</DebugType>
+	<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>none</DebugType>
+	<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>none</DebugType>
+	<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="DIM.ico" />
+    <None Remove="Fonts\PMDG_NG3_DU_A.ttf" />
+    <None Remove="Fonts\PMDG_NG3_DU_B.ttf" />
+    <None Remove="Fonts\PMDG_NG3_DU_C.ttf" />
+    <None Remove="Images\small_logo_white_RGB_Discord.png" />
+    <None Remove="interfaceITAPI x64.dll" />
+    <None Remove="Microsoft.FlightSimulator.SimConnect.dll" />
+    <None Remove="MSFS2020-module\install-mobiflight-event-module.cmd" />
+    <None Remove="MSFS2020-module\mobiflight-event-module\ContentInfo\mobiflight-event-module\Thumbnail.jpg" />
+    <None Remove="MSFS2020-module\mobiflight-event-module\layout.json" />
+    <None Remove="MSFS2020-module\mobiflight-event-module\manifest.json" />
+    <None Remove="MSFS2020-module\mobiflight-event-module\modules\events.txt" />
+    <None Remove="MSFS2020-module\mobiflight-event-module\modules\events.user.txt.inactive" />
+    <None Remove="MSFS2020-module\mobiflight-event-module\modules\MobiFlightWasmModule.wasm" />
+    <None Remove="MSFS2020-module\README.txt" />
+    <None Remove="Presets\msfs2020_eventids.cip" />
+    <None Remove="Presets\msfs2020_eventids_user.cip.inactive" />
+    <None Remove="Presets\msfs2020_hubhop_presets.json" />
+    <None Remove="Presets\msfs2020_simvars.cip" />
+    <None Remove="Presets\presets.aip" />
+    <None Remove="Presets\presets_eventids.cip" />
+    <None Remove="Presets\presets_eventids_pmdg_737.cip" />
+    <None Remove="Presets\presets_eventids_pmdg_747.cip" />
+    <None Remove="Presets\presets_eventids_pmdg_777.cip" />
+    <None Remove="Presets\presets_inputs.aip" />
+    <None Remove="Presets\presets_jeehell.cip" />
+    <None Remove="SimConnect.cfg" />
+    <None Remove="SimConnect.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="DIM.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Images\small_logo_white_RGB_Discord.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="interfaceITAPI x64.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Microsoft.FlightSimulator.SimConnect.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MSFS2020-module\install-mobiflight-event-module.cmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MSFS2020-module\mobiflight-event-module\ContentInfo\mobiflight-event-module\Thumbnail.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MSFS2020-module\mobiflight-event-module\layout.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MSFS2020-module\mobiflight-event-module\manifest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MSFS2020-module\mobiflight-event-module\modules\events.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MSFS2020-module\mobiflight-event-module\modules\events.user.txt.inactive">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MSFS2020-module\mobiflight-event-module\modules\MobiFlightWasmModule.wasm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MSFS2020-module\README.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Presets\msfs2020_eventids.cip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Presets\msfs2020_eventids_user.cip.inactive">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Presets\msfs2020_hubhop_presets.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Presets\msfs2020_simvars.cip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Presets\presets.aip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Presets\presets_eventids.cip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Presets\presets_eventids_pmdg_737.cip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Presets\presets_eventids_pmdg_747.cip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Presets\presets_eventids_pmdg_777.cip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Presets\presets_inputs.aip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Presets\presets_jeehell.cip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SimConnect.cfg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SimConnect.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.7.6" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1418.22" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.FlightSimulator.SimConnect">
+      <HintPath>Microsoft.FlightSimulator.SimConnect.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Fonts\PMDG_NG3_DU_A.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Fonts\PMDG_NG3_DU_B.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Fonts\PMDG_NG3_DU_C.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="DIM.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+</Project>
