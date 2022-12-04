@@ -6,32 +6,23 @@
     <RootNamespace>Device_Interface_Manager</RootNamespace>
     <Nullable>disable</Nullable>
     <UseWPF>true</UseWPF>
-    <Platforms>AnyCPU;x64</Platforms>
+    <Platforms>x64</Platforms>
     <UseWindowsForms>True</UseWindowsForms>
     <FileVersion></FileVersion>
     <AssemblyVersion></AssemblyVersion>
     <ApplicationIcon>DIM.ico</ApplicationIcon>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <DebugType>full</DebugType>
-	<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <DebugType>full</DebugType>
-	<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>none</DebugType>
-	<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DebugType>none</DebugType>
-	<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+		<DebugType>full</DebugType>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+	</PropertyGroup>
+	
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+		<DebugSymbols>False</DebugSymbols>
+		<DebugType>None</DebugType>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+	</PropertyGroup>
 
   <ItemGroup>
     <None Remove="DIM.ico" />
