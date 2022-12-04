@@ -1,6 +1,8 @@
 ﻿using Device_Interface_Manager.interfaceIT.ENET;
 using Device_Interface_Manager.MVVM.Model;
 using Device_Interface_Manager.MVVM.View;
+using Newtonsoft.Json.Linq;
+using System.Threading;
 
 namespace Device_Interface_Manager.Profiles.FENIX.A320
 {
@@ -8,9 +10,9 @@ namespace Device_Interface_Manager.Profiles.FENIX.A320
     {
         public static class MSFS_FENIX_A320_Captain_MCDU_Data
         {
-            public static System.Threading.Thread ReceivedDataThread { get; set; }
+            public static Thread ReceivedDataThread { get; set; }
 
-            public static void ReceiveDataThread()
+            public static void ReceiveDataThread(CancellationToken token)
             {
                 I_CDU1_FAIL = 9999;
                 I_CDU1_MCDU_MENU = 9999;
@@ -24,9 +26,25 @@ namespace Device_Interface_Manager.Profiles.FENIX.A320
                 while (true)
                 {
                     HomeModel.simConnectCache.ReceiveSimConnectMessage();
-                    System.Threading.Thread.Sleep(10);
+                    if (token.IsCancellationRequested)
+                    {
+                        break;
+                    }
+                    Thread.Sleep(10);
+                    if (token.IsCancellationRequested)
+                    {
+                        break;
+                    }
                     GetSimVar();
-                    System.Threading.Thread.Sleep(10);
+                    if (token.IsCancellationRequested)
+                    {
+                        break;
+                    }
+                    Thread.Sleep(10);
+                    if (token.IsCancellationRequested)
+                    {
+                        break;
+                    }
                 }
             }
 

@@ -1,16 +1,14 @@
-﻿using Device_Interface_Manager.Core;
-using Device_Interface_Manager.Profiles.PMDG.B737;
+﻿using Device_Interface_Manager.Profiles.PMDG.B737;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.IO;
-using static Device_Interface_Manager.MVVM.Model.HomeENETModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Device_Interface_Manager.interfaceIT.ENET;
-using MobiFlight.SimConnectMSFS;
+using static Device_Interface_Manager.MVVM.Model.HomeENETModel;
 using static Device_Interface_Manager.MVVM.Model.HomeModel;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
@@ -60,16 +58,15 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                         await Task.Run(() => StartiterfaceITEthernetConnection(index, interfaceITEthernet));
                         if (this.Connections[index].Status == 2)
                         {
-                            SimConnectStart();
-                            // Cancel the threads???
+                            await Task.Run(() => SimConnectStart());
                             MainViewModel.HomeVM.MobiFlightWASMProfilesEnabled.Add(true);
                             await Task.Run(() => simConnectCache.IsSimConnectConnected() == true);
-                            Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data.ReceivedDataThread = new Thread(() => Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data.ReceiveDataThread())
+                            this.EthernetCancellationTokenSource = new();
+                            Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data.ReceivedDataThread = new Thread(() => Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data.ReceiveDataThread(this.EthernetCancellationTokenSource.Token))
                             {
                                 Name = "MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data"
                             };
                             Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data.ReceivedDataThread.Start();
-                            this.EthernetCancellationTokenSource = new();
                             Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_Events.ReceivedDataThread = new Thread(() => interfaceITEthernet.GetinterfaceITEthernetData(Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_Events.EthernetKeyNotifyCallback, this.EthernetCancellationTokenSource.Token))
                             {
                                 Name = "MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Events"
@@ -120,6 +117,8 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                     MainViewModel.BoardinfoENETVM.InterfaceITEthernetInfoIPCollection.Clear();
                     MainViewModel.BoardinfoENETVM.InterfaceITEthernetInfoText.Clear();
                     this.EthernetCancellationTokenSource?.Cancel();
+                    SimConnectStop();
+                    simConnectCache = null;
                     MainViewModel.HomeVM.StopSimConnect();
                     foreach (var status in this.Connections)
                     {
