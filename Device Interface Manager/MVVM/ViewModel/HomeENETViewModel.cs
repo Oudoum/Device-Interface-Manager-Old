@@ -1,5 +1,4 @@
 ﻿using Device_Interface_Manager.Core;
-using Device_Interface_Manager.MVVM.Model;
 using Device_Interface_Manager.Profiles.PMDG.B737;
 using System.Collections.ObjectModel;
 using System.Threading;
@@ -10,6 +9,7 @@ using static Device_Interface_Manager.MVVM.Model.HomeENETModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Device_Interface_Manager.interfaceIT.ENET;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {

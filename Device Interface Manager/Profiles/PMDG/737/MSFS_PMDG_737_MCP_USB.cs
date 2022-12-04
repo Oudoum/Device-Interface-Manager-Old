@@ -1,10 +1,11 @@
 ﻿using Device_Interface_Manager.MVVM.ViewModel;
+using Device_Interface_Manager.Profiles;
 using Microsoft.FlightSimulator.SimConnect;
 using System;
 using System.Linq;
 using System.Threading;
-using static Device_Interface_Manager.InterfaceITAPI_Data;
-using static PMDG_SDK.PMDG_NG3_SDK;
+using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
+using static Device_Interface_Manager.Profiles.PMDG.PMDG_NG3_SDK;
 
 namespace Device_Interface_Manager.MVVM.Model
 {
@@ -53,9 +54,9 @@ namespace Device_Interface_Manager.MVVM.Model
         //Method for MCP Lights
         private static Thread pmdg737MCPLight;
         static bool pmdg737NotPowered;
-        static private void PMDG737MCPLight(int pmdg737MCPLightValue , CancellationToken token)
+        static private void PMDG737MCPLight(bool pmdg737MCPLightValue , CancellationToken token)
         {
-            if (pmdg737MCPLightValue == 1 && pmdg737NotPowered == false)
+            if (pmdg737MCPLightValue && !pmdg737NotPowered)
             {
                 Thread.Sleep(1500);
             }
@@ -257,66 +258,66 @@ namespace Device_Interface_Manager.MVVM.Model
 
 
             // LED
-            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 225, Convert.ToInt32(HomeViewModel.SimConnectClient.PMDGData.MCP_annunFD[0]));
+            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 225, HomeViewModel.SimConnectClient.PMDGData.MCP_annunFD[0]);
 
-            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 226, Convert.ToInt32(HomeViewModel.SimConnectClient.PMDGData.MCP_annunFD[1]));
+            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 226, HomeViewModel.SimConnectClient.PMDGData.MCP_annunFD[1]);
 
-            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 227, Convert.ToInt32(HomeViewModel.SimConnectClient.PMDGData.MCP_annunATArm));
+            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 227, HomeViewModel.SimConnectClient.PMDGData.MCP_annunATArm);
 
-            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 193, Convert.ToInt32(HomeViewModel.SimConnectClient.PMDGData.MCP_annunN1));
+            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 193, HomeViewModel.SimConnectClient.PMDGData.MCP_annunN1);
 
-            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 194, Convert.ToInt32(HomeViewModel.SimConnectClient.PMDGData.MCP_annunSPEED));
+            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 194, HomeViewModel.SimConnectClient.PMDGData.MCP_annunSPEED);
 
-            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 195, Convert.ToInt32(HomeViewModel.SimConnectClient.PMDGData.MCP_annunVNAV));
+            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 195, HomeViewModel.SimConnectClient.PMDGData.MCP_annunVNAV);
 
-            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 196, Convert.ToInt32(HomeViewModel.SimConnectClient.PMDGData.MCP_annunLVL_CHG));
+            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 196, HomeViewModel.SimConnectClient.PMDGData.MCP_annunLVL_CHG);
 
-            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 197, Convert.ToInt32(HomeViewModel.SimConnectClient.PMDGData.MCP_annunHDG_SEL));
+            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 197, HomeViewModel.SimConnectClient.PMDGData.MCP_annunHDG_SEL);
 
-            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 198, Convert.ToInt32(HomeViewModel.SimConnectClient.PMDGData.MCP_annunLNAV));
+            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 198, HomeViewModel.SimConnectClient.PMDGData.MCP_annunLNAV);
 
-            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 199, Convert.ToInt32(HomeViewModel.SimConnectClient.PMDGData.MCP_annunVOR_LOC));
+            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 199, HomeViewModel.SimConnectClient.PMDGData.MCP_annunVOR_LOC);
 
-            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 201, Convert.ToInt32(HomeViewModel.SimConnectClient.PMDGData.MCP_annunAPP));
+            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 201, HomeViewModel.SimConnectClient.PMDGData.MCP_annunAPP);
 
-            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 202, Convert.ToInt32(HomeViewModel.SimConnectClient.PMDGData.MCP_annunALT_HOLD));
+            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 202, HomeViewModel.SimConnectClient.PMDGData.MCP_annunALT_HOLD);
 
-            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 203, Convert.ToInt32(HomeViewModel.SimConnectClient.PMDGData.MCP_annunVS));
+            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 203, HomeViewModel.SimConnectClient.PMDGData.MCP_annunVS);
 
-            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 204, Convert.ToInt32(HomeViewModel.SimConnectClient.PMDGData.MCP_annunCMD_A));
+            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 204, HomeViewModel.SimConnectClient.PMDGData.MCP_annunCMD_A);
 
-            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 205, Convert.ToInt32(HomeViewModel.SimConnectClient.PMDGData.MCP_annunCWS_A));
+            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 205, HomeViewModel.SimConnectClient.PMDGData.MCP_annunCWS_A);
 
-            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 206, Convert.ToInt32(HomeViewModel.SimConnectClient.PMDGData.MCP_annunCMD_B));
+            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 206, HomeViewModel.SimConnectClient.PMDGData.MCP_annunCMD_B);
 
-            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 207, Convert.ToInt32(HomeViewModel.SimConnectClient.PMDGData.MCP_annunCWS_B));
+            interfaceIT_LED_Set(MSFSPMDG737MCPSession, 207, HomeViewModel.SimConnectClient.PMDGData.MCP_annunCWS_B);
 
 
             // Background LED
             if (HomeViewModel.SimConnectClient.PMDGData.ELEC_BusPowered[15] && HomeViewModel.SimConnectClient.PMDGData.LTS_MainPanelKnob[0] > 0)
             {
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 209, 1);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 210, 1);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 211, 1);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 212, 1);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 213, 1);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 214, 1);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 215, 1);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 217, 1);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 218, 1);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 219, 1);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 220, 1);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 221, 1);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 222, 1);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 223, 1);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 233, 1);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 234, 1);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 235, 1);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 236, 1);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 237, 1);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 238, 1);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 239, 1);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 240, 1);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 209, true);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 210, true);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 211, true);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 212, true);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 213, true);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 214, true);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 215, true);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 217, true);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 218, true);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 219, true);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 220, true);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 221, true);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 222, true);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 223, true);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 233, true);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 234, true);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 235, true);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 236, true);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 237, true);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 238, true);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 239, true);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 240, true);
             }
             if (!HomeViewModel.SimConnectClient.PMDGData.ELEC_BusPowered[2])
             {
@@ -328,7 +329,7 @@ namespace Device_Interface_Manager.MVVM.Model
                 {
                     MCPLightOn = true;
                     pmdg737MCPLightCancellationTokenSource = new();
-                    pmdg737MCPLight = new Thread(() => PMDG737MCPLight(1, pmdg737MCPLightCancellationTokenSource.Token));
+                    pmdg737MCPLight = new Thread(() => PMDG737MCPLight(true, pmdg737MCPLightCancellationTokenSource.Token));
                     pmdg737MCPLight.Start();
                 }
             }
@@ -336,28 +337,28 @@ namespace Device_Interface_Manager.MVVM.Model
             {
                 MCPLightOn = false;
                 pmdg737MCPLightCancellationTokenSource?.Cancel();
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 209, 0);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 210, 0);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 211, 0);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 212, 0);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 213, 0);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 214, 0);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 215, 0);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 217, 0);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 218, 0);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 219, 0);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 220, 0);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 221, 0);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 222, 0);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 223, 0);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 233, 0);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 234, 0);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 235, 0);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 236, 0);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 237, 0);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 238, 0);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 239, 0);
-                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 240, 0);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 209, false);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 210, false);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 211, false);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 212, false);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 213, false);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 214, false);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 215, false);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 217, false);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 218, false);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 219, false);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 220, false);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 221, false);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 222, false);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 223, false);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 233, false);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 234, false);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 235, false);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 236, false);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 237, false);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 238, false);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 239, false);
+                interfaceIT_LED_Set(MSFSPMDG737MCPSession, 240, false);
             }
         }
 

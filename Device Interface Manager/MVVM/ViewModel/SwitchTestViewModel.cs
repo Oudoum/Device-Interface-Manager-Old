@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Device_Interface_Manager.interfaceIT.USB;
 using System.Collections.ObjectModel;
 using static Device_Interface_Manager.MVVM.ViewModel.MainViewModel;
 

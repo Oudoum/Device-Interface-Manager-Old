@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using static PMDG_SDK.PMDG_NG3_SDK;
+using static Device_Interface_Manager.Profiles.PMDG.PMDG_NG3_SDK;
 
 namespace Device_Interface_Manager.MVVM.View
 {

@@ -1,6 +1,6 @@
 ﻿using Device_Interface_Manager.MVVM.Model;
 
-namespace Device_Interface_Manager
+namespace Device_Interface_Manager.interfaceIT.USB
 {
     internal class InterfaceIT_BoardIDs
     {

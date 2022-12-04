@@ -1,8 +1,9 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using System.Text;
-using static Device_Interface_Manager.InterfaceIT_BoardInfo.BoardInformationStructure;
+using static Device_Interface_Manager.interfaceIT.USB.InterfaceIT_BoardInfo.BoardInformationStructure;
 
-namespace Device_Interface_Manager
+namespace Device_Interface_Manager.interfaceIT.USB
 {
     public class InterfaceITAPI_Data
     {
@@ -77,90 +78,90 @@ namespace Device_Interface_Manager
 
         //Main Functions
         [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_OpenControllers();  //OK
+        public static extern int interfaceIT_OpenControllers();
+
+        [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.Unicode)]
+        public static extern int interfaceIT_GetDeviceList([Out] byte[] pBuffer, ref int dwSize, string pBoardType);
 
         [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_GetDeviceList([Out] byte[] pBuffer, ref int dwSize, string pBoardType);  //OK
-
-        [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_CloseControllers();  //OK
+        public static extern int interfaceIT_CloseControllers();
 
 
         //Controller Functions
-        [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_Bind(string pController, ref int phSession); //OK
+        [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.Unicode)]
+        public static extern int interfaceIT_Bind(string pController, ref int phSession);
 
         [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_UnBind(int hSession);  //OK
+        public static extern int interfaceIT_UnBind(int hSession);
 
         [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_GetBoardInfo(int hSession, ref BOARDCAPS pbc);  //OK
+        public static extern int interfaceIT_GetBoardInfo(int hSession, ref BOARDCAPS pbc);
 
         [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_SetBoardOptions(int hSession, int dwOptions);
+        public static extern int interfaceIT_SetBoardOptions(int hSession, int dwOptions);  //Not tested
 
         [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_GetTotalControllers(ref int pnControllerCount);  //OK
+        public static extern int interfaceIT_GetTotalControllers(ref int pnControllerCount);
 
 
         //LED Functions
         [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_LED_Enable(int hSession, bool bEnable);  //OK
+        public static extern int interfaceIT_LED_Enable(int hSession, bool bEnable);
 
         [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_LED_Set(int hSession, int nLED, int bOn);  //OK
+        public static extern int interfaceIT_LED_Set(int hSession, int nLED, bool bOn);
 
         [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_LED_Test(int hSession, bool bEnable);  //OK
+        public static extern int interfaceIT_LED_Test(int hSession, bool bEnable);
 
 
         //Switch Functions
         [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_Switch_Enable_Callback(int hSession, bool bEnable, INTERFACEIT_KEY_NOTIFY_PROC pProc);  //OK
+        public static extern int interfaceIT_Switch_Enable_Callback(int hSession, bool bEnable, INTERFACEIT_KEY_NOTIFY_PROC pProc);
 
         [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_Switch_Enable_Poll(int hSession, bool bEnable); //OK
+        public static extern int interfaceIT_Switch_Enable_Poll(int hSession, bool bEnable);
 
         [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_Switch_Get_Item(int hSession, out int pnSwitch, out int pnDirection); //OK
+        public static extern int interfaceIT_Switch_Get_Item(int hSession, out int pnSwitch, out int pnDirection);
 
         [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_Switch_Get_State(int hSession, int nSwitch, int pnState);
+        public static extern int interfaceIT_Switch_Get_State(int hSession, int nSwitch, int pnState);  //Not tested
 
 
         //7 Segment Functions
-        [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_7Segment_Display(int hSession, string pszData, int nStart); //OK
+        [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.Unicode)]
+        public static extern int interfaceIT_7Segment_Display(int hSession, string pszData, int nStart);
 
         [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_7Segment_Enable(int hSession, bool bEnable);  //OK
+        public static extern int interfaceIT_7Segment_Enable(int hSession, bool bEnable);
 
 
         //Dataline Functions
         [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_Dataline_Enable(int hSession, bool bEnable);   //OK
+        public static extern int interfaceIT_Dataline_Enable(int hSession, bool bEnable);
 
         [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_Dataline_Set(int hSession, int nDataline, bool bOn);   //OK
+        public static extern int interfaceIT_Dataline_Set(int hSession, int nDataline, bool bOn);
 
 
         //Brightness Functions
         [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_Brightness_Enable(int hSession, bool bEnable);  //OK
+        public static extern int interfaceIT_Brightness_Enable(int hSession, bool bEnable);
 
         [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_Brightness_Set(int hSession, int nBrightness);  //OK
+        public static extern int interfaceIT_Brightness_Set(int hSession, int nBrightness);
 
 
         //Analog Input Functions
         [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_Analog_Enable(int hSession, bool bEnable);  //OK
+        public static extern int interfaceIT_Analog_Enable(int hSession, bool bEnable);
 
         [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_Analog_GetValue(int hSession, int nReserved, out int pnPos);  //OK
+        public static extern int interfaceIT_Analog_GetValue(int hSession, int nReserved, out int pnPos);
 
         [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.Unicode)]
-        public static extern int interfaceIT_Analog_GetValues(int hSession, StringBuilder pbValues, ref int nValuesSize);
+        public static extern int interfaceIT_Analog_GetValues(int hSession, StringBuilder pbValues, ref int nValuesSize);  //Not tested
 
 
         //Device Change Notification
@@ -169,10 +170,10 @@ namespace Device_Interface_Manager
 
 
         //Misc Functions
-        [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_GetAPIVersion(StringBuilder pBuffer, ref int dwSize);  //OK
+        [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.Unicode)]
+        public static extern int interfaceIT_GetAPIVersion(StringBuilder pBuffer, ref int dwSize);
 
         [DllImport("interfaceITAPI x64.dll")]
-        public static extern int interfaceIT_EnableLogging(bool bEnable);  //OK
+        public static extern int interfaceIT_EnableLogging(bool bEnable);
     }
 }

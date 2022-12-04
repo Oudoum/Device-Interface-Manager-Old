@@ -1,5 +1,6 @@
-﻿using System.Threading;
-using static Device_Interface_Manager.InterfaceITAPI_Data;
+﻿using System;
+using System.Threading;
+using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
 
 namespace Device_Interface_Manager.MVVM.Model
 {
@@ -34,33 +35,33 @@ namespace Device_Interface_Manager.MVVM.Model
                 if (HomeModel.simConnectCache.GetSimVar("(L:A32NX_OVHD_INTLT_ANN)") == 0 &&
                     HomeModel.simConnectCache.GetSimVar("(L:A32NX_ELEC_AC_ESS_SHED_BUS_IS_POWERED)") == 1)
                 {
-                    interfaceIT_LED_Set(Session, 2, 1);
-                    interfaceIT_LED_Set(Session, 3, 1);
-                    interfaceIT_LED_Set(Session, 4, 1);
-                    interfaceIT_LED_Set(Session, 5, 1);
-                    interfaceIT_LED_Set(Session, 9, 1);
-                    interfaceIT_LED_Set(Session, 10, 1);
-                    interfaceIT_LED_Set(Session, 11, 1);
-                    interfaceIT_LED_Set(Session, 13, 1);
+                    interfaceIT_LED_Set(Session, 2, true);
+                    interfaceIT_LED_Set(Session, 3, true);
+                    interfaceIT_LED_Set(Session, 4, true);
+                    interfaceIT_LED_Set(Session, 5, true);
+                    interfaceIT_LED_Set(Session, 9, true);
+                    interfaceIT_LED_Set(Session, 10, true);
+                    interfaceIT_LED_Set(Session, 11, true);
+                    interfaceIT_LED_Set(Session, 13, true);
                     return;
                 }
 
                 // Output LEDs
-                interfaceIT_LED_Set(Session, 2, (int)HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_L_ANNUNC_FAIL)"));
+                interfaceIT_LED_Set(Session, 2, Convert.ToBoolean(HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_L_ANNUNC_FAIL)")));
 
-                interfaceIT_LED_Set(Session, 3, (int)HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_L_ANNUNC_FMGC)"));
+                interfaceIT_LED_Set(Session, 3, Convert.ToBoolean(HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_L_ANNUNC_FMGC)")));
 
-                interfaceIT_LED_Set(Session, 4, (int)HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_L_ANNUNC_FM)"));
+                interfaceIT_LED_Set(Session, 4, Convert.ToBoolean(HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_L_ANNUNC_FM)")));
 
-                interfaceIT_LED_Set(Session, 5, (int)HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_L_ANNUNC_MCDU_MENU)"));
+                interfaceIT_LED_Set(Session, 5, Convert.ToBoolean(HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_L_ANNUNC_MCDU_MENU)")));
 
-                interfaceIT_LED_Set(Session, 9, (int)HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_L_ANNUNC_FM1)"));
+                interfaceIT_LED_Set(Session, 9, Convert.ToBoolean(HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_L_ANNUNC_FM1)")));
 
-                interfaceIT_LED_Set(Session, 10, (int)HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_L_ANNUNC_IND)"));
+                interfaceIT_LED_Set(Session, 10, Convert.ToBoolean(HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_L_ANNUNC_IND)")));
 
-                interfaceIT_LED_Set(Session, 11, (int)HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_L_ANNUNC_RDY)"));
+                interfaceIT_LED_Set(Session, 11, Convert.ToBoolean(HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_L_ANNUNC_RDY)")));
 
-                interfaceIT_LED_Set(Session, 13, (int)HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_L_ANNUNC_FM2)"));
+                interfaceIT_LED_Set(Session, 13, Convert.ToBoolean(HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_L_ANNUNC_FM2)")));
             }
         }
 
@@ -407,33 +408,33 @@ namespace Device_Interface_Manager.MVVM.Model
                 if (HomeModel.simConnectCache.GetSimVar("(L:A32NX_OVHD_INTLT_ANN)") == 0 &&
                     HomeModel.simConnectCache.GetSimVar("(L:A32NX_ELEC_AC_ESS_SHED_BUS_IS_POWERED)") == 1)
                 {
-                    interfaceIT_LED_Set(Session, 2, 1);
-                    interfaceIT_LED_Set(Session, 3, 1);
-                    interfaceIT_LED_Set(Session, 4, 1);
-                    interfaceIT_LED_Set(Session, 5, 1);
-                    interfaceIT_LED_Set(Session, 9, 1);
-                    interfaceIT_LED_Set(Session, 10, 1);
-                    interfaceIT_LED_Set(Session, 11, 1);
-                    interfaceIT_LED_Set(Session, 13, 1);
+                    interfaceIT_LED_Set(Session, 2, true);
+                    interfaceIT_LED_Set(Session, 3, true);
+                    interfaceIT_LED_Set(Session, 4, true);
+                    interfaceIT_LED_Set(Session, 5, true);
+                    interfaceIT_LED_Set(Session, 9, true);
+                    interfaceIT_LED_Set(Session, 10, true);
+                    interfaceIT_LED_Set(Session, 11, true);
+                    interfaceIT_LED_Set(Session, 13, true);
                     return;
                 }
 
                 // Output LEDs
-                interfaceIT_LED_Set(Session, 2, (int)HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_R_ANNUNC_FAIL)"));
+                interfaceIT_LED_Set(Session, 2, Convert.ToBoolean(HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_R_ANNUNC_FAIL)")));
 
-                interfaceIT_LED_Set(Session, 3, (int)HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_R_ANNUNC_FMGC)"));
+                interfaceIT_LED_Set(Session, 3, Convert.ToBoolean(HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_R_ANNUNC_FMGC)")));
 
-                interfaceIT_LED_Set(Session, 4, (int)HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_R_ANNUNC_FM)"));
+                interfaceIT_LED_Set(Session, 4, Convert.ToBoolean(HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_R_ANNUNC_FM)")));
 
-                interfaceIT_LED_Set(Session, 5, (int)HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_R_ANNUNC_MCDU_MENU)"));
+                interfaceIT_LED_Set(Session, 5, Convert.ToBoolean(HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_R_ANNUNC_MCDU_MENU)")));
 
-                interfaceIT_LED_Set(Session, 9, (int)HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_R_ANNUNC_FM1)"));
+                interfaceIT_LED_Set(Session, 9, Convert.ToBoolean(HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_R_ANNUNC_FM1)")));
 
-                interfaceIT_LED_Set(Session, 10, (int)HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_R_ANNUNC_IND)"));
+                interfaceIT_LED_Set(Session, 10, Convert.ToBoolean(HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_R_ANNUNC_IND)")));
 
-                interfaceIT_LED_Set(Session, 11, (int)HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_R_ANNUNC_RDY)"));
+                interfaceIT_LED_Set(Session, 11, Convert.ToBoolean(HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_R_ANNUNC_RDY)")));
 
-                interfaceIT_LED_Set(Session, 13, (int)HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_R_ANNUNC_FM2)"));
+                interfaceIT_LED_Set(Session, 13, Convert.ToBoolean(HomeModel.simConnectCache.GetSimVar("(L:A32NX_MCDU_R_ANNUNC_FM2)")));
             }
         }
 

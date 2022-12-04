@@ -1,16 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Sockets;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
-using Device_Interface_Manager.MVVM.Model;
-using Device_Interface_Manager.MVVM.ViewModel;
-using Device_Interface_Manager.Profiles.FENIX.A320;
-using Device_Interface_Manager.Profiles.PMDG.B737;
+using Device_Interface_Manager.interfaceIT.ENET;
 using MobiFlight.HubHop;
 
 namespace Device_Interface_Manager.MVVM.View
@@ -66,10 +59,6 @@ namespace Device_Interface_Manager.MVVM.View
 
             SimVarNameTextBox.TextChanged += SimVarNameTextBox_TextChanged;
             FilterTextBox.TextChanged += FilterTextBox_TextChanged;
-
-
-            IP.Text = Test.Hostname;
-
         }
 
         private void InitializeComboBoxesWithPreset(Msfs2020HubhopPreset preset)
@@ -313,14 +302,6 @@ namespace Device_Interface_Manager.MVVM.View
         {
         }
 
-        //Update Hubhop
-        private void UpdateHubhop_Click(object sender, RoutedEventArgs e)
-        {
-            MobiFlight.SimConnectMSFS.WasmModuleUpdater wasmModuleUpdater = new();
-            wasmModuleUpdater.AutoDetectCommunityFolder();
-            wasmModuleUpdater.InstallWasmModule();
-        }
-
         //Move Window
         private void Border_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -334,104 +315,6 @@ namespace Device_Interface_Manager.MVVM.View
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
             Close();
-        }
-
-
-
-
-
-
-        bool connected = false;
-        bool flag = false;
-        private async void Connect_Click(object sender, RoutedEventArgs e)
-        {
-
-            Test.Hostname = IP.Text;
-
-            System.Net.NetworkInformation.Ping ping = new();
-            try
-            {
-                ping.Send(Test.Hostname);
-                LabelConnection.Content = null;
-                connected = true;
-            }
-            catch (Exception ex)
-            {
-                connected = false;
-                LabelConnection.Content = ex.Message;
-            }
-            finally
-            {
-                ping?.Dispose();
-            }
-
-            HomeModel.SimConnectStart();
-            if (connected && !flag && HomeModel.simConnectCache.IsSimConnectConnected())
-            {
-                Test.InterfaceITEthernetConnection();
-                if (Test.canread)
-                {
-                    Connect.Background = new SolidColorBrush(Color.FromRgb(0, 200, 0));
-                    Test.GetinterfaceITEthernetDataStart();
-
-
-                    //HomeViewModel.SimConnectClient = new SimConnectClient();
-                    //await Task.Run(() => HomeViewModel.SimConnectClient.SimConnect_Open());
-                    //MainViewModel.HomeVM.SimConnectMessageThread = new Thread(() => SimConnectClient.ReceiveSimConnectMessage(MainViewModel.HomeVM.SimConnectMessageCancellationTokenSource.Token));
-                    //MainViewModel.HomeVM.SimConnectMessageThread.Start();
-
-
-                    //MSFS_PMDG_737_CDU_E.MSFS_PMDG_737_Captain_Events.ReceivedDataThread = new Thread(() => Test.GetinterfaceITEthernetData(MSFS_PMDG_737_CDU_E.MSFS_PMDG_737_Captain_Events.EthernetKeyNotifyCallback));
-                    //MSFS_PMDG_737_CDU_E.MSFS_PMDG_737_Captain_Events.ReceivedDataThread.Start();
-
-
-                    //MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data.ReceivedDataThread = new Thread(MSFS_PMDG_737_CDU_E.MSFS_FENIX_A320_Captain_MCDU_Data.ReceiveDataThread);
-                    //MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data.ReceivedDataThread.Start();
-                    //MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_Events.ReceivedDataThread = new Thread((o) => test.GetinterfaceITEthernetData(MSFS_PMDG_737_CDU_E.MSFS_FENIX_A320_Captain_Events.EthernetKeyNotifyCallback));
-                    //MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_Events.ReceivedDataThread.Start();
-                }
-                flag = true;
-            }
-            else if (flag)
-            {
-                //MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data.ReceivedDataThread?.Abort();
-                //MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_Events.ReceivedDataThread?.Abort();
-
-
-                //MSFS_PMDG_737_CDU_E.MSFS_PMDG_737_Captain_Events.ReceivedDataThread?.Abort();
-                MainViewModel.HomeVM.SimConnectMessageCancellationTokenSource?.Cancel();
-                HomeViewModel.SimConnectClient?.SimConnect_Close();
-                HomeViewModel.SimConnectClient = null;
-
-
-                Test.CloseStream();
-                HomeModel.SimConnectStop();
-                Connect.Background = new SolidColorBrush(Color.FromRgb(255, 255, 255));
-                connected = false;
-                flag = false;
-                HomeModel.simConnectCache = null;
-            }
-            else
-            {
-                HomeModel.simConnectCache = null;
-            }
-        }
-
-        bool flagg = false;
-        private void LED_Click(object sender, RoutedEventArgs e)
-        {
-            if (!flagg && connected)
-            {
-                Test.LEDon();
-                LED.Background = new SolidColorBrush(Color.FromRgb(0, 200, 0));
-                flagg = true;
-            }
-            else if (flagg && connected)
-            {
-                Test.LEDoff();
-                LED.Background = new SolidColorBrush(Color.FromRgb( 255, 255, 255));
-                flagg = false;
-            }
         }
     }
 }

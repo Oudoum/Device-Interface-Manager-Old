@@ -4,12 +4,12 @@ using System.Runtime.InteropServices;
 using System.Collections.ObjectModel;
 using Device_Interface_Manager.MVVM.View;
 using System.Threading;
-using static PMDG_SDK.PMDG_NG3_SDK;
+using static Device_Interface_Manager.Profiles.PMDG.PMDG_NG3_SDK;
 using Device_Interface_Manager.MVVM.Model;
 using Device_Interface_Manager.Profiles.PMDG.B737;
 using Device_Interface_Manager.MVVM.ViewModel;
 
-namespace Device_Interface_Manager
+namespace Device_Interface_Manager.Profiles
 {
 
     public class SimConnectClient
@@ -47,7 +47,7 @@ namespace Device_Interface_Manager
         struct Struct1
         {
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-            public String sValue;
+            public string sValue;
         };
 
 
@@ -188,7 +188,7 @@ namespace Device_Interface_Manager
                 {
 
                 }
-                if (token.IsCancellationRequested) 
+                if (token.IsCancellationRequested)
                 {
                     return;
                 }
@@ -242,12 +242,12 @@ namespace Device_Interface_Manager
                     }
                     if (!PMDGData.ELEC_BusPowered[3])
                     {
-                        PMDG737CDU0?.Dispatcher.BeginInvoke((Action)delegate ()
+                        PMDG737CDU0?.Dispatcher.BeginInvoke(delegate ()
                         {
                             GetPMDG737CDU0Settings();
                             PMDG737CDU0.ClearPMDGCDUCells();
                         });
-                        PMDG737CDU1?.Dispatcher.BeginInvoke((Action)delegate ()
+                        PMDG737CDU1?.Dispatcher.BeginInvoke(delegate ()
                         {
                             GetPMDG737CDU1Settings();
                             PMDG737CDU1.ClearPMDGCDUCells();
@@ -260,7 +260,7 @@ namespace Device_Interface_Manager
                     if (PMDG737CDU0 != null)
                     {
                         PMDG737CDU0.Closing += PMDG737CDU0_Closing;
-                        PMDG737CDU0.Dispatcher.BeginInvoke((Action)delegate ()
+                        PMDG737CDU0.Dispatcher.BeginInvoke(delegate ()
                         {
                             GetPMDG737CDU0Settings();
                             PMDG737CDU0.GetPMDGCDUCells((PMDG_NG3_CDU_Screen)data.dwData[0]);
@@ -280,7 +280,7 @@ namespace Device_Interface_Manager
                     if (PMDG737CDU1 != null)
                     {
                         PMDG737CDU1.Closing += PMDG737CDU1_Closing;
-                        PMDG737CDU1.Dispatcher.BeginInvoke((Action)delegate ()
+                        PMDG737CDU1.Dispatcher.BeginInvoke(delegate ()
                         {
                             GetPMDG737CDU1Settings();
                             PMDG737CDU1.GetPMDGCDUCells((PMDG_NG3_CDU_Screen)data.dwData[0]);

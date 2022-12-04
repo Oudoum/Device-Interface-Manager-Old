@@ -9,12 +9,12 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using System.IO.Enumeration;
 using Microsoft.VisualBasic;
 
-namespace Device_Interface_Manager.MVVM.Model
+namespace Device_Interface_Manager.interfaceIT.ENET
 {
     public class InterfaceITEthernet : ObservableObject
     {
         private NetworkStream stream;
-        private Byte[] data;
+        private byte[] data;
         private TcpClient Client;
 
         public InterfaceITEthernetInfo InterfaceITEthernetInfo { get; set; }
@@ -44,7 +44,7 @@ namespace Device_Interface_Manager.MVVM.Model
             finally
             {
                 ping?.Dispose();
-                this.ClientStatus = 1;
+                ClientStatus = 1;
             }
 
             try
@@ -59,18 +59,18 @@ namespace Device_Interface_Manager.MVVM.Model
 
             catch (ArgumentNullException)
             {
-                
+
             }
 
             catch (SocketException)
             {
-                
+
             }
 
             if (stream is not null)
             {
                 canread = stream.CanRead;
-                this.ClientStatus = 2;
+                ClientStatus = 2;
             }
         }
 
@@ -147,7 +147,7 @@ namespace Device_Interface_Manager.MVVM.Model
 
         private void GetIITEthernetInfo()
         {
-            this.InterfaceITEthernetInfo = new InterfaceITEthernetInfo
+            InterfaceITEthernetInfo = new InterfaceITEthernetInfo
             {
                 ID = list.Find(s => s.Contains("ID="))?[3..],
                 NAME = list.Find(s => s.Contains("NAME="))?[5..],
@@ -168,45 +168,45 @@ namespace Device_Interface_Manager.MVVM.Model
             if (list.Exists(s => s.Contains("CONFIG=1:LED")))
             {
                 infolist = list.Find(s => s.Contains("CONFIG=1:LED"))[13..].Split(':').ToList();
-                this.InterfaceITEthernetInfo.LEDStart = infolist[1];
-                this.InterfaceITEthernetInfo.LEDStop = infolist[3];
-                this.InterfaceITEthernetInfo.LEDTotal = infolist[5];
+                InterfaceITEthernetInfo.LEDStart = infolist[1];
+                InterfaceITEthernetInfo.LEDStop = infolist[3];
+                InterfaceITEthernetInfo.LEDTotal = infolist[5];
                 infolist.Clear();
             }
 
             if (list.Exists(s => s.Contains("CONFIG=1:7 SEGMENT")))
             {
                 infolist = list.Find(s => s.Contains("CONFIG=1:7 SEGMENT"))[19..].Split(':').ToList();
-                this.InterfaceITEthernetInfo.SEVENSEGMENTStart = infolist[1];
-                this.InterfaceITEthernetInfo.SEVENSEGMENTStop = infolist[3];
-                this.InterfaceITEthernetInfo.SEVENSEGMENTTotal = infolist[5];
+                InterfaceITEthernetInfo.SEVENSEGMENTStart = infolist[1];
+                InterfaceITEthernetInfo.SEVENSEGMENTStop = infolist[3];
+                InterfaceITEthernetInfo.SEVENSEGMENTTotal = infolist[5];
                 infolist.Clear();
             }
 
             if (list.Exists(s => s.Contains("CONFIG=1:SWITCH")))
             {
                 infolist = list.Find(s => s.Contains("CONFIG=1:SWITCH"))[16..].Split(':').ToList();
-                this.InterfaceITEthernetInfo.SWITCHStart = infolist[1];
-                this.InterfaceITEthernetInfo.SWITCHStop = infolist[3];
-                this.InterfaceITEthernetInfo.SWITCHTotal = infolist[5];
+                InterfaceITEthernetInfo.SWITCHStart = infolist[1];
+                InterfaceITEthernetInfo.SWITCHStop = infolist[3];
+                InterfaceITEthernetInfo.SWITCHTotal = infolist[5];
                 infolist.Clear();
             }
 
             if (list.Exists(s => s.Contains("CONFIG=1:DATALINE")))
             {
                 infolist = list.Find(s => s.Contains("CONFIG=1:DATALINE"))[18..].Split(':').ToList();
-                this.InterfaceITEthernetInfo.DATALINEStart = infolist[1];
-                this.InterfaceITEthernetInfo.DATALINEStop = infolist[3];
-                this.InterfaceITEthernetInfo.DATALINETotal = infolist[5];
+                InterfaceITEthernetInfo.DATALINEStart = infolist[1];
+                InterfaceITEthernetInfo.DATALINEStop = infolist[3];
+                InterfaceITEthernetInfo.DATALINETotal = infolist[5];
                 infolist.Clear();
             }
 
             if (list.Exists(s => s.Contains("CONFIG=1:ENCODER")))
             {
                 infolist = list.Find(s => s.Contains("CONFIG=1:ENCODER"))[17..].Split(':').ToList();
-                this.InterfaceITEthernetInfo.ENCODERStart = infolist[1];
-                this.InterfaceITEthernetInfo.ENCODERStop = infolist[3];
-                this.InterfaceITEthernetInfo.ENCODERTotal = infolist[5];
+                InterfaceITEthernetInfo.ENCODERStart = infolist[1];
+                InterfaceITEthernetInfo.ENCODERStop = infolist[3];
+                InterfaceITEthernetInfo.ENCODERTotal = infolist[5];
                 infolist = null;
             }
 
@@ -218,12 +218,12 @@ namespace Device_Interface_Manager.MVVM.Model
         }
 
         private readonly Queue<string> intefaceITEthernetData = new();
-        
+
         public void GetinterfaceITEthernetData(INTERFACEIT_ETHERNET_KEY_NOTIFY_PROC pROC, CancellationToken token)
         {
             while (stream.CanWrite)
             {
-            rc = null;
+                rc = null;
                 while (intefaceITEthernetData.Count > 0)
                 {
                     List<string> nData = intefaceITEthernetData.Dequeue().Split(':').ToList();
@@ -244,7 +244,7 @@ namespace Device_Interface_Manager.MVVM.Model
                 {
                     rc.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries).ToList().ForEach(s => intefaceITEthernetData.Enqueue(s));
                 }
-                
+
                 if (token.IsCancellationRequested)
                 {
                     return;
@@ -255,7 +255,7 @@ namespace Device_Interface_Manager.MVVM.Model
         public void CloseStream()
         {
             rc = null;
-            for (int i = int.Parse(this.InterfaceITEthernetInfo.LEDStart); i <= int.Parse(this.InterfaceITEthernetInfo.LEDStop); i++)
+            for (int i = int.Parse(InterfaceITEthernetInfo.LEDStart); i <= int.Parse(InterfaceITEthernetInfo.LEDStop); i++)
             {
                 SendintefaceITEthernetLED(i, 0);
                 Thread.Sleep(10);
@@ -264,7 +264,7 @@ namespace Device_Interface_Manager.MVVM.Model
             Client?.Dispose();
         }
 
-        public void SendintefaceITEthernetLED(int nLED, int bOn )
+        public void SendintefaceITEthernetLED(int nLED, int bOn)
         {
             stream?.Write(data = Encoding.ASCII.GetBytes(WriteENETLog("B1:LED:" + nLED + ":" + bOn + "\r\n")), 0, data.Length);
         }
@@ -301,59 +301,59 @@ namespace Device_Interface_Manager.MVVM.Model
 
         private void GetInterfaceITEthernetInfos()
         {
-            this.InterfaceITEthernetInfoText = new()
+            InterfaceITEthernetInfoText = new()
             {
-                "Board ID: " + this.InterfaceITEthernetInfo.ID,
-                "Name: " + this.InterfaceITEthernetInfo.NAME,
-                "Serial: " + this.InterfaceITEthernetInfo.SERIAL,
-                "Description: " + this.InterfaceITEthernetInfo.DESC,
-                "Version: " + this.InterfaceITEthernetInfo.VERSION,
-                "Firmware: " + this.InterfaceITEthernetInfo.FIRMWARE,
-                "Location: " + this.InterfaceITEthernetInfo.LOCATION,
-                "Usage: " + this.InterfaceITEthernetInfo.USAGE,
-                "Hostname: " + this.InterfaceITEthernetInfo.HOSTNAME,
-                "Client: " + this.InterfaceITEthernetInfo.CLIENT,
-                "Board " + this.InterfaceITEthernetInfo.ID + " has the flollowing features:",
+                "Board ID: " + InterfaceITEthernetInfo.ID,
+                "Name: " + InterfaceITEthernetInfo.NAME,
+                "Serial: " + InterfaceITEthernetInfo.SERIAL,
+                "Description: " + InterfaceITEthernetInfo.DESC,
+                "Version: " + InterfaceITEthernetInfo.VERSION,
+                "Firmware: " + InterfaceITEthernetInfo.FIRMWARE,
+                "Location: " + InterfaceITEthernetInfo.LOCATION,
+                "Usage: " + InterfaceITEthernetInfo.USAGE,
+                "Hostname: " + InterfaceITEthernetInfo.HOSTNAME,
+                "Client: " + InterfaceITEthernetInfo.CLIENT,
+                "Board " + InterfaceITEthernetInfo.ID + " has the flollowing features:",
             };
-            if (this.InterfaceITEthernetInfo.LEDTotal is not null)
+            if (InterfaceITEthernetInfo.LEDTotal is not null)
             {
-                this.InterfaceITEthernetInfoText.Add(this.InterfaceITEthernetInfo.LEDTotal + " | LEDs ( " + this.InterfaceITEthernetInfo.LEDStart + " - " + this.InterfaceITEthernetInfo.LEDStop + " )");
+                InterfaceITEthernetInfoText.Add(InterfaceITEthernetInfo.LEDTotal + " | LEDs ( " + InterfaceITEthernetInfo.LEDStart + " - " + InterfaceITEthernetInfo.LEDStop + " )");
             }
-            else if (this.InterfaceITEthernetInfo.LEDTotal is null)
+            else if (InterfaceITEthernetInfo.LEDTotal is null)
             {
-                this.InterfaceITEthernetInfoText.Add(null);
+                InterfaceITEthernetInfoText.Add(null);
             }
-            if (this.InterfaceITEthernetInfo.SWITCHTotal is not null)
+            if (InterfaceITEthernetInfo.SWITCHTotal is not null)
             {
-                this.InterfaceITEthernetInfoText.Add(this.InterfaceITEthernetInfo.SWITCHTotal + " | Switches ( " + this.InterfaceITEthernetInfo.SWITCHStart + " - " + this.InterfaceITEthernetInfo.SWITCHStop + " )");
+                InterfaceITEthernetInfoText.Add(InterfaceITEthernetInfo.SWITCHTotal + " | Switches ( " + InterfaceITEthernetInfo.SWITCHStart + " - " + InterfaceITEthernetInfo.SWITCHStop + " )");
             }
-            else if (this.InterfaceITEthernetInfo.SWITCHTotal is null)
+            else if (InterfaceITEthernetInfo.SWITCHTotal is null)
             {
-                this.InterfaceITEthernetInfoText.Add(null);
+                InterfaceITEthernetInfoText.Add(null);
             }
-            if (this.InterfaceITEthernetInfo.SEVENSEGMENTTotal is not null)
+            if (InterfaceITEthernetInfo.SEVENSEGMENTTotal is not null)
             {
-                this.InterfaceITEthernetInfoText.Add(this.InterfaceITEthernetInfo.SEVENSEGMENTTotal + " | 7 Segments ( " + this.InterfaceITEthernetInfo.SEVENSEGMENTStart + " - " + this.InterfaceITEthernetInfo.SEVENSEGMENTStop + " )");
+                InterfaceITEthernetInfoText.Add(InterfaceITEthernetInfo.SEVENSEGMENTTotal + " | 7 Segments ( " + InterfaceITEthernetInfo.SEVENSEGMENTStart + " - " + InterfaceITEthernetInfo.SEVENSEGMENTStop + " )");
             }
-            else if (this.InterfaceITEthernetInfo.SEVENSEGMENTTotal is null)
+            else if (InterfaceITEthernetInfo.SEVENSEGMENTTotal is null)
             {
-                this.InterfaceITEthernetInfoText.Add(null);
+                InterfaceITEthernetInfoText.Add(null);
             }
-            if (this.InterfaceITEthernetInfo.DATALINETotal is not null)
+            if (InterfaceITEthernetInfo.DATALINETotal is not null)
             {
-                this.InterfaceITEthernetInfoText.Add(this.InterfaceITEthernetInfo.DATALINETotal + " | Datalines ( " + this.InterfaceITEthernetInfo.DATALINEStart + " - " + this.InterfaceITEthernetInfo.DATALINEStop + " )");
+                InterfaceITEthernetInfoText.Add(InterfaceITEthernetInfo.DATALINETotal + " | Datalines ( " + InterfaceITEthernetInfo.DATALINEStart + " - " + InterfaceITEthernetInfo.DATALINEStop + " )");
             }
-            else if (this.InterfaceITEthernetInfo.DATALINETotal is null)
+            else if (InterfaceITEthernetInfo.DATALINETotal is null)
             {
-                this.InterfaceITEthernetInfoText.Add(null);
+                InterfaceITEthernetInfoText.Add(null);
             }
-            if (this.InterfaceITEthernetInfo.ENCODERTotal is not null)
+            if (InterfaceITEthernetInfo.ENCODERTotal is not null)
             {
-                this.InterfaceITEthernetInfoText.Add(this.InterfaceITEthernetInfo.ENCODERTotal + " | Encoders ( " + this.InterfaceITEthernetInfo.ENCODERStart + " - " + this.InterfaceITEthernetInfo.ENCODERStop + " )");
+                InterfaceITEthernetInfoText.Add(InterfaceITEthernetInfo.ENCODERTotal + " | Encoders ( " + InterfaceITEthernetInfo.ENCODERStart + " - " + InterfaceITEthernetInfo.ENCODERStop + " )");
             }
-            else if (this.InterfaceITEthernetInfo.ENCODERTotal is null)
+            else if (InterfaceITEthernetInfo.ENCODERTotal is null)
             {
-                this.InterfaceITEthernetInfoText.Add(null);
+                InterfaceITEthernetInfoText.Add(null);
             }
         }
 

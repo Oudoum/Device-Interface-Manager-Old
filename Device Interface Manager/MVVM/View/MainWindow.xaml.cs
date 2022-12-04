@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using Forms = System.Windows.Forms;
 
-namespace Device_Interface_Manager
+namespace Device_Interface_Manager.MVVM.View
 {
 
     public partial class MainWindow : Window

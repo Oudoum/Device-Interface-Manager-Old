@@ -1,8 +1,9 @@
 ﻿using Device_Interface_Manager.MVVM.ViewModel;
+using Device_Interface_Manager.Profiles;
 using Microsoft.FlightSimulator.SimConnect;
 using System;
-using static Device_Interface_Manager.InterfaceITAPI_Data;
-using static PMDG_SDK.PMDG_NG3_SDK;
+using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
+using static Device_Interface_Manager.Profiles.PMDG.PMDG_NG3_SDK;
 
 namespace Device_Interface_Manager.MVVM.Model
 {
@@ -22,7 +23,7 @@ namespace Device_Interface_Manager.MVVM.Model
                     if (value != cDU_annunEXEC0)
                     {
                         cDU_annunEXEC0 = value;
-                        interfaceIT_LED_Set(HomeModel.Profile0_MSFS_PMDG_737_CDU.Session, 1, Convert.ToInt32(cDU_annunEXEC0));
+                        interfaceIT_LED_Set(HomeModel.Profile0_MSFS_PMDG_737_CDU.Session, 1, cDU_annunEXEC0);
                     }     
                 }
             }
@@ -39,7 +40,7 @@ namespace Device_Interface_Manager.MVVM.Model
                     if (value != cDU_annunCALL0)
                     {
                         cDU_annunCALL0 = value;
-                        interfaceIT_LED_Set(HomeModel.Profile0_MSFS_PMDG_737_CDU.Session, 2, Convert.ToInt32(cDU_annunCALL0));
+                        interfaceIT_LED_Set(HomeModel.Profile0_MSFS_PMDG_737_CDU.Session, 2, cDU_annunCALL0);
                     }
                 }
             }
@@ -56,7 +57,7 @@ namespace Device_Interface_Manager.MVVM.Model
                     if (value != cDU_annunMSG0)
                     {
                         cDU_annunMSG0 = value;
-                        interfaceIT_LED_Set(HomeModel.Profile0_MSFS_PMDG_737_CDU.Session, 3, Convert.ToInt32(cDU_annunMSG0));
+                        interfaceIT_LED_Set(HomeModel.Profile0_MSFS_PMDG_737_CDU.Session, 3, cDU_annunMSG0);
                     }
                 }
             }
@@ -73,7 +74,7 @@ namespace Device_Interface_Manager.MVVM.Model
                     if (value != cDU_annunFAIL0)
                     {
                         cDU_annunFAIL0 = value;
-                        interfaceIT_LED_Set(HomeModel.Profile0_MSFS_PMDG_737_CDU.Session, 4, Convert.ToInt32(cDU_annunFAIL0));
+                        interfaceIT_LED_Set(HomeModel.Profile0_MSFS_PMDG_737_CDU.Session, 4, cDU_annunFAIL0);
                     }
                 }
             }
@@ -90,7 +91,7 @@ namespace Device_Interface_Manager.MVVM.Model
                     if (value != cDU_annunOFST0)
                     {
                         cDU_annunOFST0 = value;
-                        interfaceIT_LED_Set(HomeModel.Profile0_MSFS_PMDG_737_CDU.Session, 5, Convert.ToInt32(cDU_annunOFST0));
+                        interfaceIT_LED_Set(HomeModel.Profile0_MSFS_PMDG_737_CDU.Session, 5, cDU_annunOFST0);
                     }
                 }
             }
@@ -450,7 +451,7 @@ namespace Device_Interface_Manager.MVVM.Model
                     if (value != cDU_annunEXEC1)
                     {
                         cDU_annunEXEC1 = value;
-                        interfaceIT_LED_Set(HomeModel.Profile0_MSFS_PMDG_737_CDU.Session, 1, Convert.ToInt32(cDU_annunEXEC1));
+                        interfaceIT_LED_Set(HomeModel.Profile0_MSFS_PMDG_737_CDU.Session, 1, cDU_annunEXEC1);
                     }
                 }
             }
@@ -467,7 +468,7 @@ namespace Device_Interface_Manager.MVVM.Model
                     if (value != cDU_annunCALL1)
                     {
                         cDU_annunCALL1 = value;
-                        interfaceIT_LED_Set(HomeModel.Profile0_MSFS_PMDG_737_CDU.Session, 2, Convert.ToInt32(cDU_annunCALL1));
+                        interfaceIT_LED_Set(HomeModel.Profile0_MSFS_PMDG_737_CDU.Session, 2, cDU_annunCALL1);
                     }
                 }
             }
@@ -484,7 +485,7 @@ namespace Device_Interface_Manager.MVVM.Model
                     if (value != cDU_annunFAIL1)
                     {
                         cDU_annunFAIL1 = value;
-                        interfaceIT_LED_Set(HomeModel.Profile0_MSFS_PMDG_737_CDU.Session, 4, Convert.ToInt32(cDU_annunFAIL1));
+                        interfaceIT_LED_Set(HomeModel.Profile0_MSFS_PMDG_737_CDU.Session, 4, cDU_annunFAIL1);
                     }
                 }
             }
@@ -501,7 +502,7 @@ namespace Device_Interface_Manager.MVVM.Model
                     if (value != cDU_annunMSG1)
                     {
                         cDU_annunMSG1 = value;
-                        interfaceIT_LED_Set(HomeModel.Profile0_MSFS_PMDG_737_CDU.Session, 3, Convert.ToInt32(cDU_annunMSG1));
+                        interfaceIT_LED_Set(HomeModel.Profile0_MSFS_PMDG_737_CDU.Session, 3, cDU_annunMSG1);
                     }
                 }
             }
@@ -518,7 +519,7 @@ namespace Device_Interface_Manager.MVVM.Model
                     if (value != cDU_annunOFST1)
                     {
                         cDU_annunOFST1 = value;
-                        interfaceIT_LED_Set(HomeModel.Profile0_MSFS_PMDG_737_CDU.Session, 5, Convert.ToInt32(cDU_annunOFST1));
+                        interfaceIT_LED_Set(HomeModel.Profile0_MSFS_PMDG_737_CDU.Session, 5, cDU_annunOFST1);
                     }
                 }
             }

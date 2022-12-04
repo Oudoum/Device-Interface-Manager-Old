@@ -1,6 +1,6 @@
-﻿using static Device_Interface_Manager.InterfaceITAPI_Data;
+﻿using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
 
-namespace Device_Interface_Manager.MVVM.Model
+namespace Device_Interface_Manager.interfaceIT.USB.Controller
 {
     public class Controller_331A_CDU_MCDU
     {
@@ -10,12 +10,12 @@ namespace Device_Interface_Manager.MVVM.Model
 
         public void Controller_331A_CDU_MCDUStart()
         {
-                interfaceIT_Dataline_Enable(Session, true);
-                interfaceIT_Dataline_Set(Session, 6, true);
-                interfaceIT_Brightness_Enable(Session, true);
-                interfaceIT_Analog_Enable(Session, true);
-                interfaceIT_Switch_Enable_Callback(Session, true, KeyNotifyCallback);
-                interfaceIT_LED_Enable(Session, true);
+            interfaceIT_Dataline_Enable(Session, true);
+            interfaceIT_Dataline_Set(Session, 6, true);
+            interfaceIT_Brightness_Enable(Session, true);
+            interfaceIT_Analog_Enable(Session, true);
+            interfaceIT_Switch_Enable_Callback(Session, true, KeyNotifyCallback);
+            interfaceIT_LED_Enable(Session, true);
         }
 
         public void Controller_331A_CDU_MCDUStop()
@@ -27,7 +27,7 @@ namespace Device_Interface_Manager.MVVM.Model
             interfaceIT_Switch_Enable_Callback(Session, false, KeyNotifyCallback);
             for (int k = 1; k <= 13; k++)
             {
-                interfaceIT_LED_Set(Session, k, 0);
+                interfaceIT_LED_Set(Session, k, false);
             }
             interfaceIT_LED_Enable(Session, false);
         }

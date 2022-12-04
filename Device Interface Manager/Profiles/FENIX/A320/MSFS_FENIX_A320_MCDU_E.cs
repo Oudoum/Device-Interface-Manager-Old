@@ -1,4 +1,5 @@
-﻿using Device_Interface_Manager.MVVM.Model;
+﻿using Device_Interface_Manager.interfaceIT.ENET;
+using Device_Interface_Manager.MVVM.Model;
 using Device_Interface_Manager.MVVM.View;
 
 namespace Device_Interface_Manager.Profiles.FENIX.A320

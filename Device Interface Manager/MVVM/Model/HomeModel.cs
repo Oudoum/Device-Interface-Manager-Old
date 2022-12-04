@@ -1,4 +1,5 @@
-﻿using MobiFlight.SimConnectMSFS;
+﻿using Device_Interface_Manager.interfaceIT.USB.Controller;
+using MobiFlight.SimConnectMSFS;
 using System.Threading;
 
 namespace Device_Interface_Manager.MVVM.Model

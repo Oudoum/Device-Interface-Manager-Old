@@ -1,6 +1,7 @@
 ﻿using Device_Interface_Manager.MVVM.Model;
+using System;
 using System.Threading;
-using static Device_Interface_Manager.InterfaceITAPI_Data;
+using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
 
 namespace Device_Interface_Manager.Profiles.FENIX.A320
 {
@@ -42,8 +43,8 @@ namespace Device_Interface_Manager.Profiles.FENIX.A320
                 }
             }
 
-            private static int i_CDU1_FAIL;
-            public static int I_CDU1_FAIL
+            private static bool i_CDU1_FAIL;
+            public static bool I_CDU1_FAIL
             {
                 get
                 {
@@ -59,8 +60,8 @@ namespace Device_Interface_Manager.Profiles.FENIX.A320
                 }
             }
 
-            private static int i_CDU1_MCDU_MENU;
-            public static int I_CDU1_MCDU_MENU
+            private static bool i_CDU1_MCDU_MENU;
+            public static bool I_CDU1_MCDU_MENU
             {
                 get
                 {
@@ -77,8 +78,8 @@ namespace Device_Interface_Manager.Profiles.FENIX.A320
                 }
             }
 
-            private static int i_CDU1_FM;
-            public static int I_CDU1_FM
+            private static bool i_CDU1_FM;
+            public static bool I_CDU1_FM
             {
                 get
                 {
@@ -94,8 +95,8 @@ namespace Device_Interface_Manager.Profiles.FENIX.A320
                 }
             }
 
-            private static int i_CDU1_FM1;
-            public static int I_CDU1_FM1
+            private static bool i_CDU1_FM1;
+            public static bool I_CDU1_FM1
             {
                 get
                 {
@@ -111,8 +112,8 @@ namespace Device_Interface_Manager.Profiles.FENIX.A320
                 }
             }
 
-            private static int i_CDU1_IND;
-            public static int I_CDU1_IND
+            private static bool i_CDU1_IND;
+            public static bool I_CDU1_IND
             {
                 get
                 {
@@ -128,8 +129,8 @@ namespace Device_Interface_Manager.Profiles.FENIX.A320
                 }
             }
 
-            private static int i_CDU1_RDY;
-            public static int I_CDU1_RDY
+            private static bool i_CDU1_RDY;
+            public static bool I_CDU1_RDY
             {
                 get
                 {
@@ -145,8 +146,8 @@ namespace Device_Interface_Manager.Profiles.FENIX.A320
                 }
             }
 
-            private static int i_CDU1_DASH;
-            public static int I_CDU1_DASH
+            private static bool i_CDU1_DASH;
+            public static bool I_CDU1_DASH
             {
                 get
                 {
@@ -162,8 +163,8 @@ namespace Device_Interface_Manager.Profiles.FENIX.A320
                 }
             }
 
-            private static int i_CDU1_FM2;
-            public static int I_CDU1_FM2
+            private static bool i_CDU1_FM2;
+            public static bool I_CDU1_FM2
             {
                 get
                 {
@@ -186,21 +187,21 @@ namespace Device_Interface_Manager.Profiles.FENIX.A320
                 N_PED_LIGHTING_PEDESTAL = (int)HomeModel.simConnectCache.GetSimVar("(L:N_PED_LIGHTING_PEDESTAL)");
 
                 // Output LEDs
-                I_CDU1_FAIL = (int)HomeModel.simConnectCache.GetSimVar("(L:I_CDU1_FAIL)");
+                I_CDU1_FAIL = Convert.ToBoolean(HomeModel.simConnectCache.GetSimVar("(L:I_CDU1_FAIL)"));
 
-                I_CDU1_MCDU_MENU = (int)HomeModel.simConnectCache.GetSimVar("(L:I_CDU1_MCDU_MENU)");
+                I_CDU1_MCDU_MENU = Convert.ToBoolean(HomeModel.simConnectCache.GetSimVar("(L:I_CDU1_MCDU_MENU)"));
 
-                I_CDU1_FM = (int)HomeModel.simConnectCache.GetSimVar("(L:I_CDU1_FM)");
+                I_CDU1_FM = Convert.ToBoolean(HomeModel.simConnectCache.GetSimVar("(L:I_CDU1_FM)"));
 
-                I_CDU1_FM1 = (int)HomeModel.simConnectCache.GetSimVar("(L:I_CDU1_FM1)");
+                I_CDU1_FM1 = Convert.ToBoolean(HomeModel.simConnectCache.GetSimVar("(L:I_CDU1_FM1)"));
 
-                I_CDU1_IND = (int)HomeModel.simConnectCache.GetSimVar("(L:I_CDU1_IND)");
+                I_CDU1_IND = Convert.ToBoolean(HomeModel.simConnectCache.GetSimVar("(L:I_CDU1_IND)"));
 
-                I_CDU1_RDY = (int)HomeModel.simConnectCache.GetSimVar("(L:I_CDU1_RDY)");
+                I_CDU1_RDY = Convert.ToBoolean(HomeModel.simConnectCache.GetSimVar("(L:I_CDU1_RDY)"));
 
-                I_CDU1_DASH = (int)HomeModel.simConnectCache.GetSimVar("(L:I_CDU1_DASH)");
+                I_CDU1_DASH = Convert.ToBoolean(HomeModel.simConnectCache.GetSimVar("(L:I_CDU1_DASH)"));
 
-                I_CDU1_FM2 = (int)HomeModel.simConnectCache.GetSimVar("(L:I_CDU1_FM2)");
+                I_CDU1_FM2 = Convert.ToBoolean(HomeModel.simConnectCache.GetSimVar("(L:I_CDU1_FM2)"));
             }
         }
 

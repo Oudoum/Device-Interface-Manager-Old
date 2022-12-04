@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Device_Interface_Manager
+namespace Device_Interface_Manager.interfaceIT.USB
 {
     public class InterfaceIT_BoardInfo
     {

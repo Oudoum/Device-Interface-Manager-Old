@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModel="clr-namespace:Device_Interface_Manager.MVVM.ViewModel"
         xmlns:cnvs="clr-namespace:Device_Interface_Manager.Core"
-        x:Class="Device_Interface_Manager.MainWindow"
+        x:Class="Device_Interface_Manager.MVVM.View.MainWindow"
         mc:Ignorable="d"
         Title="Device Interface Manager"
         Height="600"

@@ -7,8 +7,9 @@ using System.Text;
 using AutoUpdaterDotNET;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using static Device_Interface_Manager.InterfaceIT_BoardInfo.BoardInformationStructure;
-using static Device_Interface_Manager.InterfaceITAPI_Data;
+using static Device_Interface_Manager.interfaceIT.USB.InterfaceIT_BoardInfo.BoardInformationStructure;
+using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
+using Device_Interface_Manager.interfaceIT.USB;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
@@ -321,7 +322,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                 {
                     for (int i = device.DeviceInfo.nSwitchFirst; i <= device.DeviceInfo.nLEDLast; i++)
                     {
-                        interfaceIT_LED_Set(device.Session, i, 0);
+                        interfaceIT_LED_Set(device.Session, i, false);
                     }
                     interfaceIT_LED_Enable(device.Session, false);
                 }

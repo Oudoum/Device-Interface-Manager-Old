@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Device_Interface_Manager.interfaceIT.USB;
 using Device_Interface_Manager.MVVM.Model;
 using System;
 using System.Collections.ObjectModel;
@@ -56,7 +57,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                     foreach (var led in this.LED)
                     {
                         led.IsChecked = true;
-                        InterfaceITAPI_Data.interfaceIT_LED_Set(GetSelectedDeviceSession(), led.Position, 1);
+                        InterfaceITAPI_Data.interfaceIT_LED_Set(GetSelectedDeviceSession(), led.Position, true);
                     }
                 }
                 else if (o is "Off")
@@ -64,14 +65,14 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                     foreach (var led in this.LED)
                     {
                         led.IsChecked = false;
-                        InterfaceITAPI_Data.interfaceIT_LED_Set(GetSelectedDeviceSession(), led.Position, 0);
+                        InterfaceITAPI_Data.interfaceIT_LED_Set(GetSelectedDeviceSession(), led.Position, false);
                     }
                 }
             });
 
             this.IsCheckedCommand = new RelayCommand<object>(o =>
             {
-                InterfaceITAPI_Data.interfaceIT_LED_Set(GetSelectedDeviceSession(), (int)o, Convert.ToInt16(this.LED.FirstOrDefault(x => x.Position == int.Parse(o.ToString())).IsChecked));
+                InterfaceITAPI_Data.interfaceIT_LED_Set(GetSelectedDeviceSession(), (int)o, this.LED.FirstOrDefault(x => x.Position == int.Parse(o.ToString())).IsChecked);
             });
         }
     }
