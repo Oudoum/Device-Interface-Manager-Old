@@ -80,7 +80,7 @@ namespace Device_Interface_Manager.interfaceIT.USB
         [DllImport("interfaceITAPI x64.dll")]
         public static extern int interfaceIT_OpenControllers();
 
-        [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.Unicode)]
+        [DllImport("interfaceITAPI x64.dll")]
         public static extern int interfaceIT_GetDeviceList([Out] byte[] pBuffer, ref int dwSize, string pBoardType);
 
         [DllImport("interfaceITAPI x64.dll")]
@@ -88,7 +88,7 @@ namespace Device_Interface_Manager.interfaceIT.USB
 
 
         //Controller Functions
-        [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.Unicode)]
+        [DllImport("interfaceITAPI x64.dll")]
         public static extern int interfaceIT_Bind(string pController, ref int phSession);
 
         [DllImport("interfaceITAPI x64.dll")]
@@ -130,7 +130,7 @@ namespace Device_Interface_Manager.interfaceIT.USB
 
 
         //7 Segment Functions
-        [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.Unicode)]
+        [DllImport("interfaceITAPI x64.dll")]
         public static extern int interfaceIT_7Segment_Display(int hSession, string pszData, int nStart);
 
         [DllImport("interfaceITAPI x64.dll")]
@@ -160,7 +160,7 @@ namespace Device_Interface_Manager.interfaceIT.USB
         [DllImport("interfaceITAPI x64.dll")]
         public static extern int interfaceIT_Analog_GetValue(int hSession, int nReserved, out int pnPos);
 
-        [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.Unicode)]
+        [DllImport("interfaceITAPI x64.dll")]
         public static extern int interfaceIT_Analog_GetValues(int hSession, StringBuilder pbValues, ref int nValuesSize);  //Not tested
 
 
@@ -170,7 +170,7 @@ namespace Device_Interface_Manager.interfaceIT.USB
 
 
         //Misc Functions
-        [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.Unicode)]
+        [DllImport("interfaceITAPI x64.dll")]
         public static extern int interfaceIT_GetAPIVersion(StringBuilder pBuffer, ref int dwSize);
 
         [DllImport("interfaceITAPI x64.dll")]
