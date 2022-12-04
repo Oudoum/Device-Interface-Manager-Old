@@ -6,7 +6,6 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.IO.Enumeration;
 using Microsoft.VisualBasic;
 
 namespace Device_Interface_Manager.interfaceIT.ENET
@@ -361,8 +360,7 @@ namespace Device_Interface_Manager.interfaceIT.ENET
         private string WriteENETLog(string data)
         {
             System.IO.Directory.CreateDirectory("Log");
-            System.IO.File.AppendAllText(enetlog, Environment.NewLine + DateAndTime.Now.ToString() + Environment.NewLine);
-            System.IO.File.AppendAllText(enetlog, data);
+            System.IO.File.AppendAllText(enetlog, Environment.NewLine + DateAndTime.Now.ToString() + Environment.NewLine + data);
             return data;
         }
     }
