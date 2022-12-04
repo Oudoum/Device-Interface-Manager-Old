@@ -357,10 +357,10 @@ namespace Device_Interface_Manager.interfaceIT.ENET
             }
         }
 
-        private const string enetlog = @"Log\ENET\ENETLog.txt";
+        private const string enetlog = @"Log\ENETLog.txt";
         private string WriteENETLog(string data)
         {
-            System.IO.Directory.CreateDirectory(@"Log\ENET");
+            System.IO.Directory.CreateDirectory("Log");
             System.IO.File.AppendAllText(enetlog, Environment.NewLine + DateAndTime.Now.ToString() + Environment.NewLine);
             System.IO.File.AppendAllText(enetlog, data);
             return data;

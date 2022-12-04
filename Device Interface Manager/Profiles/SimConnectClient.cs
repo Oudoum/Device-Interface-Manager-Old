@@ -8,6 +8,8 @@ using static Device_Interface_Manager.Profiles.PMDG.PMDG_NG3_SDK;
 using Device_Interface_Manager.MVVM.Model;
 using Device_Interface_Manager.Profiles.PMDG.B737;
 using Device_Interface_Manager.MVVM.ViewModel;
+using Microsoft.VisualBasic;
+using System.Diagnostics;
 
 namespace Device_Interface_Manager.Profiles
 {
@@ -454,8 +456,7 @@ namespace Device_Interface_Manager.Profiles
         {
             if (data.dwException != 9)
             {
-                SIMCONNECT_EXCEPTION eException = (SIMCONNECT_EXCEPTION)data.dwException;
-                Console.WriteLine("SimConnect_OnRecvException: " + eException.ToString());
+                WriteENETLog("SimConnect_OnRecvException: " + ((SIMCONNECT_EXCEPTION)data.dwException).ToString());
             }
         }
 
@@ -491,7 +492,17 @@ namespace Device_Interface_Manager.Profiles
                 }
             }
         }
+
+        private const string simconnectlog = @"Log\SimConnectLog.txt";
+        private string WriteENETLog(string data)
+        {
+            System.IO.Directory.CreateDirectory("Log");
+            System.IO.File.AppendAllText(simconnectlog, Environment.NewLine + DateAndTime.Now.ToString() + Environment.NewLine);
+            System.IO.File.AppendAllText(simconnectlog, data);
+            return data;
+        }
     }
+
 
     public enum DEFINITION
     {
