@@ -16,6 +16,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
     {
         public static int session;
         private const string updateLink = "https://raw.githubusercontent.com/Oudoum/Device-Interface-Manager/master/Updates/AutoUpdaterDIM.xml";
+        private const string version = "0.0.9.1";
 
         public RelayCommand HomeViewCommand { get; set; }
 
@@ -67,7 +68,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         public bool RadioButtonBoardinfoENETIsChecked { get; set; }
         public bool RadioButtonTestENETIsChecked { get; set; }
 
-        public static string DIMVersion { get; set; }
+        public static string DIMVersion { get; } = "DIM Version " + version;
 
         public static string InterfaceITAPIVersion { get; set; }
 
@@ -140,7 +141,8 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
         public MainViewModel()
         {
-            GetDIMVersion();
+            AutoUpdater.InstalledVersion = new Version(version);
+
             GetInterfaceITAPIVersion();
             GetInterfaceITDevices();
 
@@ -228,18 +230,6 @@ namespace Device_Interface_Manager.MVVM.ViewModel
             else if (!this.Enet)
             {
                 this.CurrentView = HomeENETVM;
-            }
-        }
-
-        private void GetDIMVersion()
-        {
-            try
-            {
-                DIMVersion = "DIM Version " + Assembly.GetEntryAssembly().GetName().Version;
-            }
-            catch (Exception)
-            {
-                DIMVersion = "DIM Version ERROR!";
             }
         }
 

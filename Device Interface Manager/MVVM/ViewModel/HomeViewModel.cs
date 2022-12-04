@@ -658,6 +658,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                 SimConnectClient = new SimConnectClient();
                 await Task.Run(() => SimConnectClient.SimConnect_Open());
                 this.SimConnectMessageThread = new Thread(() => SimConnectClient.ReceiveSimConnectMessage(this.SimConnectMessageCancellationTokenSource.Token));
+                SimConnectMessageThread.Name = SimConnectMessageThread.ToString();
                 SimConnectMessageThread.Start();
             }
         }

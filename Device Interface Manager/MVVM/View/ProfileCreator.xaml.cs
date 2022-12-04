@@ -373,7 +373,6 @@ namespace Device_Interface_Manager.MVVM.View
                 {
                     Connect.Background = new SolidColorBrush(Color.FromRgb(0, 200, 0));
                     Test.GetinterfaceITEthernetDataStart();
-                    Test.GetinterfaceITEthernetInfo();
 
 
                     //HomeViewModel.SimConnectClient = new SimConnectClient();

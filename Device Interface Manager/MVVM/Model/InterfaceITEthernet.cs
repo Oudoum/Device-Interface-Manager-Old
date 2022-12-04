@@ -6,6 +6,8 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using System.IO.Enumeration;
+using Microsoft.VisualBasic;
 
 namespace Device_Interface_Manager.MVVM.Model
 {
@@ -81,7 +83,7 @@ namespace Device_Interface_Manager.MVVM.Model
             Thread.Sleep(100);
             while (stream.DataAvailable)
             {
-                rc += Encoding.ASCII.GetString(data, 0, stream.Read(data, 0, data.Length));
+                rc += WriteENETLog(Encoding.ASCII.GetString(data, 0, stream.Read(data, 0, data.Length)));
                 Thread.Sleep(100);
             }
         }
@@ -215,11 +217,11 @@ namespace Device_Interface_Manager.MVVM.Model
             GetInterfaceITEthernetInfos();
         }
 
-        private Queue<string> intefaceITEthernetData = new();
+        private readonly Queue<string> intefaceITEthernetData = new();
         
         public void GetinterfaceITEthernetData(INTERFACEIT_ETHERNET_KEY_NOTIFY_PROC pROC, CancellationToken token)
         {
-            while (true)
+            while (stream.CanWrite)
             {
             rc = null;
                 while (intefaceITEthernetData.Count > 0)
@@ -227,14 +229,16 @@ namespace Device_Interface_Manager.MVVM.Model
                     List<string> nData = intefaceITEthernetData.Dequeue().Split(':').ToList();
                     if (nData.Count == 3)
                     {
-                        int.TryParse(nData[1], out int LED);
-                        pROC(LED, nData[2]);
+                        if (int.TryParse(nData[1], out int LED))
+                        {
+                            pROC(LED, nData[2]);
+                        }
                     }
                 }
                 do
                 {
                     Thread.Sleep(100);
-                    rc += Encoding.ASCII.GetString(data, 0, stream.Read(data, 0, data.Length));
+                    rc += WriteENETLog(Encoding.ASCII.GetString(data, 0, stream.Read(data, 0, data.Length)));
                 }
                 while (stream.DataAvailable);
                 {
@@ -250,10 +254,8 @@ namespace Device_Interface_Manager.MVVM.Model
 
         public void CloseStream()
         {
-            int.TryParse(this.InterfaceITEthernetInfo.LEDStart, out int iLEDStart);
-            int.TryParse(this.InterfaceITEthernetInfo.LEDStop, out int iLEDStop);
             rc = null;
-            for (int i = iLEDStart; i <= iLEDStop; i++)
+            for (int i = int.Parse(this.InterfaceITEthernetInfo.LEDStart); i <= int.Parse(this.InterfaceITEthernetInfo.LEDStop); i++)
             {
                 SendintefaceITEthernetLED(i, 0);
                 Thread.Sleep(10);
@@ -264,35 +266,35 @@ namespace Device_Interface_Manager.MVVM.Model
 
         public void SendintefaceITEthernetLED(int nLED, int bOn )
         {
-            stream?.Write(data = Encoding.ASCII.GetBytes("B1:LED:" + nLED + ":" + bOn + "\r\n"), 0, data.Length);
+            stream?.Write(data = Encoding.ASCII.GetBytes(WriteENETLog("B1:LED:" + nLED + ":" + bOn + "\r\n")), 0, data.Length);
         }
 
         public void LEDon()
         {
-            stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:1:1\r\n"), 0, data.Length);
-            stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:2:1\r\n"), 0, data.Length);
-            stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:3:1\r\n"), 0, data.Length);
-            stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:4:1\r\n"), 0, data.Length);
-            stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:5:1\r\n"), 0, data.Length);
-            stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:6:1\r\n"), 0, data.Length);
-            stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:7:1\r\n"), 0, data.Length);
-            stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:8:1\r\n"), 0, data.Length);
-            stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:9:1\r\n"), 0, data.Length);
-            stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:10:1\r\n"), 0, data.Length);
+            stream.Write(data = Encoding.ASCII.GetBytes(WriteENETLog("B1:LED:1:1\r\n")), 0, data.Length);
+            stream.Write(data = Encoding.ASCII.GetBytes(WriteENETLog("B1:LED:2:1\r\n")), 0, data.Length);
+            stream.Write(data = Encoding.ASCII.GetBytes(WriteENETLog("B1:LED:3:1\r\n")), 0, data.Length);
+            stream.Write(data = Encoding.ASCII.GetBytes(WriteENETLog("B1:LED:4:1\r\n")), 0, data.Length);
+            stream.Write(data = Encoding.ASCII.GetBytes(WriteENETLog("B1:LED:5:1\r\n")), 0, data.Length);
+            stream.Write(data = Encoding.ASCII.GetBytes(WriteENETLog("B1:LED:6:1\r\n")), 0, data.Length);
+            stream.Write(data = Encoding.ASCII.GetBytes(WriteENETLog("B1:LED:7:1\r\n")), 0, data.Length);
+            stream.Write(data = Encoding.ASCII.GetBytes(WriteENETLog("B1:LED:8:1\r\n")), 0, data.Length);
+            stream.Write(data = Encoding.ASCII.GetBytes(WriteENETLog("B1:LED:9:1\r\n")), 0, data.Length);
+            stream.Write(data = Encoding.ASCII.GetBytes(WriteENETLog("B1:LED:10:1\r\n")), 0, data.Length);
         }
 
         public void LEDoff()
         {
-            stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:1:0\r\n"), 0, data.Length);
-            stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:2:0\r\n"), 0, data.Length);
-            stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:3:0\r\n"), 0, data.Length);
-            stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:4:0\r\n"), 0, data.Length);
-            stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:5:0\r\n"), 0, data.Length);
-            stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:6:0\r\n"), 0, data.Length);
-            stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:7:0\r\n"), 0, data.Length);
-            stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:8:0\r\n"), 0, data.Length);
-            stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:9:0\r\n"), 0, data.Length);
-            stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:10:0\r\n"), 0, data.Length);
+            stream.Write(data = Encoding.ASCII.GetBytes(WriteENETLog("B1:LED:1:0\r\n")), 0, data.Length);
+            stream.Write(data = Encoding.ASCII.GetBytes(WriteENETLog("B1:LED:2:0\r\n")), 0, data.Length);
+            stream.Write(data = Encoding.ASCII.GetBytes(WriteENETLog("B1:LED:3:0\r\n")), 0, data.Length);
+            stream.Write(data = Encoding.ASCII.GetBytes(WriteENETLog("B1:LED:4:0\r\n")), 0, data.Length);
+            stream.Write(data = Encoding.ASCII.GetBytes(WriteENETLog("B1:LED:5:0\r\n")), 0, data.Length);
+            stream.Write(data = Encoding.ASCII.GetBytes(WriteENETLog("B1:LED:6:0\r\n")), 0, data.Length);
+            stream.Write(data = Encoding.ASCII.GetBytes(WriteENETLog("B1:LED:7:0\r\n")), 0, data.Length);
+            stream.Write(data = Encoding.ASCII.GetBytes(WriteENETLog("B1:LED:8:0\r\n")), 0, data.Length);
+            stream.Write(data = Encoding.ASCII.GetBytes(WriteENETLog("B1:LED:9:0\r\n")), 0, data.Length);
+            stream.Write(data = Encoding.ASCII.GetBytes(WriteENETLog("B1:LED:10:0\r\n")), 0, data.Length);
         }
 
         public ObservableCollection<string> InterfaceITEthernetInfoText { get; set; }
@@ -353,6 +355,15 @@ namespace Device_Interface_Manager.MVVM.Model
             {
                 this.InterfaceITEthernetInfoText.Add(null);
             }
+        }
+
+        private const string enetlog = @"Log\ENET\ENETLog.txt";
+        private string WriteENETLog(string data)
+        {
+            System.IO.Directory.CreateDirectory(@"Log\ENET");
+            System.IO.File.AppendAllText(enetlog, Environment.NewLine + DateAndTime.Now.ToString() + Environment.NewLine);
+            System.IO.File.AppendAllText(enetlog, data);
+            return data;
         }
     }
 

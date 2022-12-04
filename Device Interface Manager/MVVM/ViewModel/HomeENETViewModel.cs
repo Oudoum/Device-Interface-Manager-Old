@@ -77,7 +77,10 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                             MainViewModel.HomeVM.SimConnectProfilesEnabled.Add(true);
                             await MainViewModel.HomeVM.StartSimConnect();
                             this.EthernetCancellationTokenSource = new();
-                            MSFS_PMDG_737_CDU_E.MSFS_PMDG_737_Captain_Events.ReceivedDataThread = new Thread(() => MSFS_PMDG_737_CDU_E.InterfaceITEthernet.GetinterfaceITEthernetData(MSFS_PMDG_737_CDU_E.MSFS_PMDG_737_Captain_Events.EthernetKeyNotifyCallback, this.EthernetCancellationTokenSource.Token));
+                            MSFS_PMDG_737_CDU_E.MSFS_PMDG_737_Captain_Events.ReceivedDataThread = new Thread(() => MSFS_PMDG_737_CDU_E.InterfaceITEthernet.GetinterfaceITEthernetData(MSFS_PMDG_737_CDU_E.MSFS_PMDG_737_Captain_Events.EthernetKeyNotifyCallback, this.EthernetCancellationTokenSource.Token))
+                            {
+                                Name = "MSFS_PMDG_737_CDU_E.MSFS_PMDG_737_Captain_Events"
+                            };
                             MSFS_PMDG_737_CDU_E.MSFS_PMDG_737_Captain_Events.ReceivedDataThread.Start();
                         }
 
@@ -90,6 +93,12 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                         if (this.Connections[index].Status == 2)
                         {
                             StartinterfaceITEthernet(interfaceITEthernet);
+                            this.EthernetCancellationTokenSource = new();
+                            DataThread = new(() => interfaceITEthernet.GetinterfaceITEthernetData(INTERFACEIT_ETHERNET_KEY_NOTIFY_PROC = new(KeyPressedProcEthernet), this.EthernetCancellationTokenSource.Token))
+                            {
+                                Name = "TestDataThread"
+                            };
+                            DataThread.Start();
                         }
                     }
                 }
@@ -129,6 +138,15 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
             LoadENETData();
         }
+
+        // CDU/MCDU TEST START
+        private InterfaceITEthernet.INTERFACEIT_ETHERNET_KEY_NOTIFY_PROC INTERFACEIT_ETHERNET_KEY_NOTIFY_PROC { get; set; }
+        private Thread DataThread { get; set; }
+        private void KeyPressedProcEthernet(int Switch, string Direction)
+        {
+
+        }
+        // CDU/MCDU TEST END
 
         private void StartiterfaceITEthernetConnection(int i, InterfaceITEthernet interfaceITEthernet)
         {
