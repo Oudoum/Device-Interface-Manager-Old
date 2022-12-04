@@ -10,6 +10,8 @@ using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Device_Interface_Manager.interfaceIT.ENET;
+using MobiFlight.SimConnectMSFS;
+using static Device_Interface_Manager.MVVM.Model.HomeModel;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
@@ -51,20 +53,30 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
                 if (!this.IsENETEnabled)
                 {
-                    //if (this.Connections[0].Profile.Id == 1)
-                    //{
-                    //        InterfaceITEthernet interfaceITEthernet = new();
-                    //        StartiterfaceITEthernet(0, interfaceITEthernet);
-                    //    if (this.Connections[0].Status == 2)
-                    //    {
-
-
-                    //        Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data.ReceivedDataThread = new Thread(() => Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data.ReceiveDataThread());
-                    //        Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data.ReceivedDataThread.Start();
-                    //        Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_Events.ReceivedDataThread = new Thread(() => interfaceITEthernet.GetinterfaceITEthernetData(Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_Events.EthernetKeyNotifyCallback, this.EthernetCancellationTokenSource.Token));
-                    //        Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_Events.ReceivedDataThread.Start();
-                    //    }
-                    //}
+                    if (this.Connections.Any(o => o.Profile.Id == 1))
+                    {
+                        InterfaceITEthernet interfaceITEthernet = new();
+                        int index = this.Connections.IndexOf(this.Connections.First(o => o.Profile.Id == 1));
+                        await Task.Run(() => StartiterfaceITEthernetConnection(index, interfaceITEthernet));
+                        if (this.Connections[index].Status == 2)
+                        {
+                            SimConnectStart();
+                            // Cancel the threads???
+                            MainViewModel.HomeVM.MobiFlightWASMProfilesEnabled.Add(true);
+                            await Task.Run(() => simConnectCache.IsSimConnectConnected() == true);
+                            Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data.ReceivedDataThread = new Thread(() => Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data.ReceiveDataThread())
+                            {
+                                Name = "MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data"
+                            };
+                            Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data.ReceivedDataThread.Start();
+                            this.EthernetCancellationTokenSource = new();
+                            Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_Events.ReceivedDataThread = new Thread(() => interfaceITEthernet.GetinterfaceITEthernetData(Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_Events.EthernetKeyNotifyCallback, this.EthernetCancellationTokenSource.Token))
+                            {
+                                Name = "MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Events"
+                            };
+                            Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_Events.ReceivedDataThread.Start();
+                        }
+                    }
 
                     if (this.Connections.Any(o => o.Profile.Id == 5))
                     {
@@ -113,7 +125,73 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                     {
                         if (status.Status == 2)
                         {
-                            MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
+                            switch (status.Id)
+                            {
+                                case 1:
+                                    MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
+                                    break;
+
+                                case 2:
+                                    MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
+                                    break;
+
+                                case 3:
+                                    MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
+                                    break;
+
+                                case 4:
+                                    MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
+                                    break;
+
+                                default:
+                                    break;
+                            }
+
+                            switch (status.Id)
+                            {
+                                case 5:
+                                    MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
+                                    break;
+
+                                case 6:
+                                    MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
+                                    break;
+
+                                case 7:
+                                    MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
+                                    break;
+
+                                case 8:
+                                    MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
+                                    break;
+
+                                case 9:
+                                    MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
+                                    break;
+
+                                case 10:
+                                    MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
+                                    break;
+
+                                case 11:
+                                    MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
+                                    break;
+
+                                case 12:
+                                    MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
+                                    break;
+
+                                case 13:
+                                    MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
+                                    break;
+
+                                case 14:
+                                    MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
+                                    break;
+
+                                default:
+                                    break;
+                            }
                         }
                         status.Status = 0;
                     }
