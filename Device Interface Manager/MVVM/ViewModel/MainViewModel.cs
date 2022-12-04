@@ -16,7 +16,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
     class MainViewModel : ObservableObject
     {
         public static int session;
-        private const string updateLink = "https://raw.githubusercontent.com/Oudoum/Device-Interface-Manager/master/Updates/AutoUpdaterDIM.xml";
+        private const string updateLink = "https://raw.githubusercontent.com/Oudoum/Device-Interface-Manager-Download/main/Updates/AutoUpdaterDIM.xml";
         private const string version = "0.0.9.1";
 
         public RelayCommand HomeViewCommand { get; set; }
