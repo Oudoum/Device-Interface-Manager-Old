@@ -9,11 +9,11 @@ using CommunityToolkit.Mvvm.Input;
 using Device_Interface_Manager.MVVM.Model;
 using Device_Interface_Manager.MVVM.View;
 using Device_Interface_Manager.Profiles.FENIX.A320;
-using static Device_Interface_Manager.MVVM.Model.HomeModel;
-using static Device_Interface_Manager.MVVM.ViewModel.MainViewModel;
 using Device_Interface_Manager.interfaceIT.USB.Controller;
 using Device_Interface_Manager.interfaceIT.USB;
 using Device_Interface_Manager.Profiles;
+using static Device_Interface_Manager.MVVM.Model.HomeModel;
+using static Device_Interface_Manager.MVVM.ViewModel.MainViewModel;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {

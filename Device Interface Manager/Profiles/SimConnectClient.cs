@@ -87,94 +87,104 @@ namespace Device_Interface_Manager.Profiles
                 }
             }
 
-
             if (Simconnect != null)
             {
-                //
-                //PMDG NG3
-                //
-                //     //Methode 1
-                //     // Associate an ID with the PMDG control area name
-                //     simconnect.MapClientDataNameToID(PMDG_SDK.PMDG_NG3_SDK.PMDG_NG3_CONTROL_NAME, PMDG_SDK.PMDG_NG3_SDK.PMDG_NG3.CONTROL_ID);
-                //     // Define the control area - this is a required step
-                //     simconnect.AddToClientDataDefinition(PMDG_SDK.PMDG_NG3_SDK.PMDG_NG3.CONTROL_DEFINITION, 0, (uint)Marshal.SizeOf<PMDG_SDK.PMDG_NG3_SDK.PMDG_NG3_Control>(), 0, 0);
-                //     // Sign up for notification of control change
-                //     simconnect.RequestClientData(
-                //         PMDG_SDK.PMDG_NG3_SDK.PMDG_NG3.CONTROL_ID,
-                //         PMDG_SDK.PMDG_NG3_SDK.DATA_REQUEST_ID.CONTROL_REQUEST,
-                //         PMDG_SDK.PMDG_NG3_SDK.PMDG_NG3.CONTROL_DEFINITION,
-                //         SIMCONNECT_CLIENT_DATA_PERIOD.ON_SET,
-                //         (SIMCONNECT_CLIENT_DATA_REQUEST_FLAG)SIMCONNECT_DATA_REQUEST_FLAG.CHANGED,
-                //         0, 0, 0);
-                //
-                //     // Create new PMDG_NG3_Control object
-                //     PMDG_SDK.PMDG_NG3_SDK.PMDG_NG3_Control pmdg_NG3_Control = new PMDG_SDK.PMDG_NG3_SDK.PMDG_NG3_Control
-                //     {
-                //         Event = (uint)PMDG_SDK.PMDG_NG3_SDK.PMDGEvents.EVT_OH_ELEC_BATTERY_SWITCH,
-                //         Parameter = 1
-                //     };
-                //
-                //     // Set PMDG Event to Sim
-                //     simconnect.SetClientData(PMDG_SDK.PMDG_NG3_SDK.PMDG_NG3.CONTROL_ID, PMDG_SDK.PMDG_NG3_SDK.PMDG_NG3.CONTROL_DEFINITION, 0, (uint)Marshal.SizeOf<PMDG_SDK.PMDG_NG3_SDK.PMDG_NG3_Control>(), pmdg_NG3_Control);
-                //     simconnect.ReceiveMessage();
-
-                //Methode 2
-                // Map the PMDG Events to SimConnect
-                foreach (PMDGEvents eventid in Enum.GetValues(typeof(PMDGEvents)))
-                {
-                    Simconnect.MapClientEventToSimEvent(eventid, "#" + Convert.ChangeType(eventid, eventid.GetTypeCode()).ToString());
-                }
-
-
-                // Associate an ID with the PMDG data area name
-                Simconnect.MapClientDataNameToID(PMDG_NG3_DATA_NAME, PMDG_NG3.DATA_ID);
-                // Define the data area structure - this is a required step
-                Simconnect.AddToClientDataDefinition(PMDG_NG3.DATA_DEFINITION, 0, (uint)Marshal.SizeOf<PMDG_NG3_Data>(), 0, 0);
-                // Register the data are structure
-                Simconnect.RegisterStruct<SIMCONNECT_RECV_CLIENT_DATA, PMDG_NG3_Data>(PMDG_NG3.DATA_DEFINITION);
-                // Sign up for notification of data change
-                Simconnect.RequestClientData(
-                    PMDG_NG3.DATA_ID,
-                    DATA_REQUEST_ID.DATA_REQUEST,
-                    PMDG_NG3.DATA_DEFINITION,
-                    SIMCONNECT_CLIENT_DATA_PERIOD.ON_SET,
-                    (SIMCONNECT_CLIENT_DATA_REQUEST_FLAG)SIMCONNECT_DATA_REQUEST_FLAG.CHANGED,
-                    0, 0, 0);
-
-                // Associate an ID with the PMDG data CDU0 area name
-                Simconnect.MapClientDataNameToID(PMDG_NG3_CDU_0_NAME, PMDG_NG3.CDU_0_ID);
-                // Define the data area CDU0 structure - this is a required step
-                Simconnect.AddToClientDataDefinition(PMDG_NG3.CDU_0_DEFINITION, 0, (uint)Marshal.SizeOf<PMDG_NG3_CDU_Screen>(), 0, 0);
-                // Register the data area CDU0 structure
-                Simconnect.RegisterStruct<SIMCONNECT_RECV_CLIENT_DATA, PMDG_NG3_CDU_Screen>(PMDG_NG3.CDU_0_DEFINITION);
-                // Sign up for notification of CDU0 data change
-                Simconnect.RequestClientData(
-                    PMDG_NG3.CDU_0_ID,
-                    DATA_REQUEST_ID.CDU0_REQUEST,
-                    PMDG_NG3.CDU_0_DEFINITION,
-                    SIMCONNECT_CLIENT_DATA_PERIOD.ON_SET,
-                    SIMCONNECT_CLIENT_DATA_REQUEST_FLAG.CHANGED,
-                    0, 0, 0);
-
-
-                // Associate an ID with the PMDG data CDU1 area name
-                Simconnect.MapClientDataNameToID(PMDG_NG3_CDU_1_NAME, PMDG_NG3.CDU_1_ID);
-                // Define the data area CDU1 structure - this is a required step
-                Simconnect.AddToClientDataDefinition(PMDG_NG3.CDU_1_DEFINITION, 0, (uint)Marshal.SizeOf<PMDG_NG3_CDU_Screen>(), 0, 0);
-                // Register the data area CDU1 structure
-                Simconnect.RegisterStruct<SIMCONNECT_RECV_CLIENT_DATA, PMDG_NG3_CDU_Screen>(PMDG_NG3.CDU_1_DEFINITION);
-                // Sign up for notification of CDU1 data change
-                Simconnect.RequestClientData(
-                    PMDG_NG3.CDU_1_ID,
-                    DATA_REQUEST_ID.CDU1_REQUEST,
-                    PMDG_NG3.CDU_1_DEFINITION,
-                    SIMCONNECT_CLIENT_DATA_PERIOD.ON_SET,
-                    SIMCONNECT_CLIENT_DATA_REQUEST_FLAG.CHANGED,
-                    0, 0, 0);
-                //
-                //
-                //
+                CreatePMDG737NG3Events();
+                AssociatePMDG737NG3Data();
+                AssociatePMDG737NG3CDU0Data();
+                AssociatePMDG737NG3CDU1Data();
             }
+        }
+
+        private void PMDGEventsNotUsed()
+        {
+            //     //Methode 1
+            //     // Associate an ID with the PMDG control area name
+            //     simconnect.MapClientDataNameToID(PMDG_SDK.PMDG_NG3_SDK.PMDG_NG3_CONTROL_NAME, PMDG_SDK.PMDG_NG3_SDK.PMDG_NG3.CONTROL_ID);
+            //     // Define the control area - this is a required step
+            //     simconnect.AddToClientDataDefinition(PMDG_SDK.PMDG_NG3_SDK.PMDG_NG3.CONTROL_DEFINITION, 0, (uint)Marshal.SizeOf<PMDG_SDK.PMDG_NG3_SDK.PMDG_NG3_Control>(), 0, 0);
+            //     // Sign up for notification of control change
+            //     simconnect.RequestClientData(
+            //         PMDG_SDK.PMDG_NG3_SDK.PMDG_NG3.CONTROL_ID,
+            //         PMDG_SDK.PMDG_NG3_SDK.DATA_REQUEST_ID.CONTROL_REQUEST,
+            //         PMDG_SDK.PMDG_NG3_SDK.PMDG_NG3.CONTROL_DEFINITION,
+            //         SIMCONNECT_CLIENT_DATA_PERIOD.ON_SET,
+            //         (SIMCONNECT_CLIENT_DATA_REQUEST_FLAG)SIMCONNECT_DATA_REQUEST_FLAG.CHANGED,
+            //         0, 0, 0);
+            //
+            //     // Create new PMDG_NG3_Control object
+            //     PMDG_SDK.PMDG_NG3_SDK.PMDG_NG3_Control pmdg_NG3_Control = new PMDG_SDK.PMDG_NG3_SDK.PMDG_NG3_Control
+            //     {
+            //         Event = (uint)PMDG_SDK.PMDG_NG3_SDK.PMDGEvents.EVT_OH_ELEC_BATTERY_SWITCH,
+            //         Parameter = 1
+            //     };
+            //
+            //     // Set PMDG Event to Sim
+            //     simconnect.SetClientData(PMDG_SDK.PMDG_NG3_SDK.PMDG_NG3.CONTROL_ID, PMDG_SDK.PMDG_NG3_SDK.PMDG_NG3.CONTROL_DEFINITION, 0, (uint)Marshal.SizeOf<PMDG_SDK.PMDG_NG3_SDK.PMDG_NG3_Control>(), pmdg_NG3_Control);
+            //     simconnect.ReceiveMessage();
+        }
+
+        private void CreatePMDG737NG3Events()
+        {
+            // Map the PMDG Events to SimConnect
+            foreach (PMDGEvents eventid in Enum.GetValues(typeof(PMDGEvents)))
+            {
+                Simconnect.MapClientEventToSimEvent(eventid, "#" + Convert.ChangeType(eventid, eventid.GetTypeCode()).ToString());
+            }
+        }
+
+        private void AssociatePMDG737NG3Data()
+        {
+            // Associate an ID with the PMDG data area name
+            Simconnect.MapClientDataNameToID(PMDG_NG3_DATA_NAME, PMDG_NG3.DATA_ID);
+            // Define the data area structure - this is a required step
+            Simconnect.AddToClientDataDefinition(PMDG_NG3.DATA_DEFINITION, 0, (uint)Marshal.SizeOf<PMDG_NG3_Data>(), 0, 0);
+            // Register the data are structure
+            Simconnect.RegisterStruct<SIMCONNECT_RECV_CLIENT_DATA, PMDG_NG3_Data>(PMDG_NG3.DATA_DEFINITION);
+            // Sign up for notification of data change
+            Simconnect.RequestClientData(
+                PMDG_NG3.DATA_ID,
+                DATA_REQUEST_ID.DATA_REQUEST,
+                PMDG_NG3.DATA_DEFINITION,
+                SIMCONNECT_CLIENT_DATA_PERIOD.ON_SET,
+                (SIMCONNECT_CLIENT_DATA_REQUEST_FLAG)SIMCONNECT_DATA_REQUEST_FLAG.CHANGED,
+                0, 0, 0);
+        }
+
+        private void AssociatePMDG737NG3CDU0Data()
+        {
+            // Associate an ID with the PMDG data CDU0 area name
+            Simconnect.MapClientDataNameToID(PMDG_NG3_CDU_0_NAME, PMDG_NG3.CDU_0_ID);
+            // Define the data area CDU0 structure - this is a required step
+            Simconnect.AddToClientDataDefinition(PMDG_NG3.CDU_0_DEFINITION, 0, (uint)Marshal.SizeOf<PMDG_NG3_CDU_Screen>(), 0, 0);
+            // Register the data area CDU0 structure
+            Simconnect.RegisterStruct<SIMCONNECT_RECV_CLIENT_DATA, PMDG_NG3_CDU_Screen>(PMDG_NG3.CDU_0_DEFINITION);
+            // Sign up for notification of CDU0 data change
+            Simconnect.RequestClientData(
+                PMDG_NG3.CDU_0_ID,
+                DATA_REQUEST_ID.CDU0_REQUEST,
+                PMDG_NG3.CDU_0_DEFINITION,
+                SIMCONNECT_CLIENT_DATA_PERIOD.ON_SET,
+                SIMCONNECT_CLIENT_DATA_REQUEST_FLAG.CHANGED,
+                0, 0, 0);
+        }
+
+        private void AssociatePMDG737NG3CDU1Data()
+        {
+            // Associate an ID with the PMDG data CDU1 area name
+            Simconnect.MapClientDataNameToID(PMDG_NG3_CDU_1_NAME, PMDG_NG3.CDU_1_ID);
+            // Define the data area CDU1 structure - this is a required step
+            Simconnect.AddToClientDataDefinition(PMDG_NG3.CDU_1_DEFINITION, 0, (uint)Marshal.SizeOf<PMDG_NG3_CDU_Screen>(), 0, 0);
+            // Register the data area CDU1 structure
+            Simconnect.RegisterStruct<SIMCONNECT_RECV_CLIENT_DATA, PMDG_NG3_CDU_Screen>(PMDG_NG3.CDU_1_DEFINITION);
+            // Sign up for notification of CDU1 data change
+            Simconnect.RequestClientData(
+                PMDG_NG3.CDU_1_ID,
+                DATA_REQUEST_ID.CDU1_REQUEST,
+                PMDG_NG3.CDU_1_DEFINITION,
+                SIMCONNECT_CLIENT_DATA_PERIOD.ON_SET,
+                SIMCONNECT_CLIENT_DATA_REQUEST_FLAG.CHANGED,
+                0, 0, 0);
         }
 
         public static void ReceiveSimConnectMessage(CancellationToken token)
@@ -195,11 +205,6 @@ namespace Device_Interface_Manager.Profiles
                     return;
                 }
             }
-        }
-
-        private void SimConnect_OnRecvSystemState(SimConnect sender, SIMCONNECT_RECV_SYSTEM_STATE data)
-        {
-
         }
 
         public PMDG_NG3_Data PMDGData { get; set; }
@@ -491,6 +496,11 @@ namespace Device_Interface_Manager.Profiles
                     oSimvarRequest.BStillPending = false;
                 }
             }
+        }
+
+        private void SimConnect_OnRecvSystemState(SimConnect sender, SIMCONNECT_RECV_SYSTEM_STATE data)
+        {
+
         }
 
         private const string simconnectlog = @"Log\SimConnectLog.txt";
