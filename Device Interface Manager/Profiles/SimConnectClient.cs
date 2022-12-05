@@ -271,7 +271,7 @@ namespace Device_Interface_Manager.Profiles
                         {
                             GetPMDG737CDU0Settings();
                             PMDG737CDU0.GetPMDGCDUCells((PMDG_NG3_CDU_Screen)data.dwData[0]);
-                            if (!PMDG737CDU0.IsActive)
+                            if (!PMDG737CDU0.IsVisible)
                             {
                                 Thread.Sleep(500);
                                 Simconnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_L_DOT, MOUSE_FLAG_LEFTSINGLE, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
@@ -291,7 +291,7 @@ namespace Device_Interface_Manager.Profiles
                         {
                             GetPMDG737CDU1Settings();
                             PMDG737CDU1.GetPMDGCDUCells((PMDG_NG3_CDU_Screen)data.dwData[0]);
-                            if (!PMDG737CDU1.IsActive)
+                            if (!PMDG737CDU1.IsVisible)
                             {
                                 Thread.Sleep(500);
                                 Simconnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_DOT, MOUSE_FLAG_LEFTSINGLE, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);

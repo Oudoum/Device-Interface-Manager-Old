@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.Input;
 using Device_Interface_Manager.interfaceIT.ENET;
 using static Device_Interface_Manager.MVVM.Model.HomeENETModel;
 using static Device_Interface_Manager.MVVM.Model.HomeModel;
+using Device_Interface_Manager.MVVM.View;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
@@ -85,6 +86,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                             StartinterfaceITEthernet(MSFS_PMDG_737_CDU_E.InterfaceITEthernet);
                             MainViewModel.HomeVM.SimConnectProfilesEnabled.Add(true);
                             await MainViewModel.HomeVM.StartSimConnect();
+                            HomeViewModel.SimConnectClient.PMDG737CDU0 = new PMDG737CDU();
                             this.EthernetCancellationTokenSource = new();
                             MSFS_PMDG_737_CDU_E.MSFS_PMDG_737_Captain_Events.ReceivedDataThread = new Thread(() => MSFS_PMDG_737_CDU_E.InterfaceITEthernet.GetinterfaceITEthernetData(MSFS_PMDG_737_CDU_E.MSFS_PMDG_737_Captain_Events.EthernetKeyNotifyCallback, this.EthernetCancellationTokenSource.Token))
                             {
@@ -116,15 +118,11 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                     MainViewModel.BoardinfoENETVM.InterfaceITEthernetInfoTextCollection.Clear();
                     MainViewModel.BoardinfoENETVM.InterfaceITEthernetInfoIPCollection.Clear();
                     MainViewModel.BoardinfoENETVM.InterfaceITEthernetInfoText.Clear();
-                    this.EthernetCancellationTokenSource?.Cancel();
-                    SimConnectStop();
-                    simConnectCache = null;
-                    MainViewModel.HomeVM.StopSimConnect();
                     foreach (var status in this.Connections)
                     {
                         if (status.Status == 2)
                         {
-                            switch (status.Id)
+                            switch (status.Profile.Id)
                             {
                                 case 1:
                                     MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
@@ -142,14 +140,10 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                                     MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
                                     break;
 
-                                default:
-                                    break;
-                            }
-
-                            switch (status.Id)
-                            {
                                 case 5:
                                     MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
+                                    HomeViewModel.SimConnectClient.PMDG737CDU0?.Close();
+                                    HomeViewModel.SimConnectClient.PMDG737CDU0 = null;
                                     break;
 
                                 case 6:
@@ -192,6 +186,10 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                                     break;
                             }
                         }
+                        this.EthernetCancellationTokenSource?.Cancel();
+                        SimConnectStop();
+                        simConnectCache = null;
+                        MainViewModel.HomeVM.StopSimConnect();
                         status.Status = 0;
                     }
                 }
