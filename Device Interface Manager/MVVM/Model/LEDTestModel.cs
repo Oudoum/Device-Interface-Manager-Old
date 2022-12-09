@@ -1,23 +1,17 @@
-﻿
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace Device_Interface_Manager.MVVM.Model
 {
-    public class LEDTestModel
+    public partial class LEDTestModel
     {
-        public class DeviceLED : CommunityToolkit.Mvvm.ComponentModel.ObservableObject
+        [INotifyPropertyChanged]
+        public partial class DeviceLED
         {
             public int Id { get; set; }
             public string Name { get; set; }
             public int Position { get; set; }
+            [ObservableProperty]
             private bool _isChecked;
-            public bool IsChecked 
-            {
-                get => _isChecked;
-                set
-                {
-                    _isChecked = value;
-                    OnPropertyChanged();
-                }
-            }
         }
     }
 }

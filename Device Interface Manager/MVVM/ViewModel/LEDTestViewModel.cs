@@ -2,78 +2,66 @@
 using CommunityToolkit.Mvvm.Input;
 using Device_Interface_Manager.interfaceIT.USB;
 using Device_Interface_Manager.MVVM.Model;
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using static Device_Interface_Manager.MVVM.ViewModel.MainViewModel;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
-    class LEDTestViewModel : ObservableObject
+    [INotifyPropertyChanged]
+    partial class LEDTestViewModel
     {
-        public RelayCommand LEDEnableCommand { get; set; }
-        public RelayCommand<object> IsCheckedCommand { get; set; }
-        public RelayCommand<string> AllLEDOnOffCommand { get; set; }
-
-
+        [ObservableProperty]
         private bool _isEnabled;
-        public bool IsEnabled
+
+        public ObservableCollection<LEDTestModel.DeviceLED> LED { get; set; } = new();
+
+
+        [RelayCommand]
+        private void LEDEnable()
         {
-            get => this._isEnabled;
-            set
+            this.IsEnabled = !this.IsEnabled;
+            _ = InterfaceITAPI_Data.interfaceIT_LED_Enable(GetSelectedDeviceSession(), this.IsEnabled);
+
+            if (LED.Count == 0)
             {
-                this._isEnabled = value;
-                OnPropertyChanged();
+                for (int i = DeviceList[GetSeletedController()].DeviceInfo.nLEDFirst; i <= DeviceList[GetSeletedController()].DeviceInfo.nLEDLast; i++)
+                {
+                    this.LED.Add(new LEDTestModel.DeviceLED
+                    {
+                        Id = i - DeviceList[GetSeletedController()].DeviceInfo.nLEDFirst + 1,
+                        Name = "Board: " + DeviceList[GetSeletedController()].DeviceInfo.szBoardType + " [LED]",
+                        Position = i,
+                    });
+                }
             }
         }
 
-        public ObservableCollection<LEDTestModel.DeviceLED> LED { get; set; } = new ObservableCollection<LEDTestModel.DeviceLED>();
-
-        public LEDTestViewModel()
+        [RelayCommand]
+        private void IsChecked(object posLED)
         {
-            this.LEDEnableCommand = new RelayCommand(() =>
-            {
-                this.IsEnabled = !this.IsEnabled;
-                InterfaceITAPI_Data.interfaceIT_LED_Enable(GetSelectedDeviceSession(), this.IsEnabled);
+            _ = InterfaceITAPI_Data.interfaceIT_LED_Set(GetSelectedDeviceSession(), (int)posLED, this.LED.FirstOrDefault(x => x.Position == int.Parse(posLED.ToString())).IsChecked);
+        }
 
-                if (LED.Count == 0)
-                {
-                    for (int i = DeviceList[GetSeletedController()].DeviceInfo.nLEDFirst; i <= DeviceList[GetSeletedController()].DeviceInfo.nLEDLast; i++)
-                    {
-                        this.LED.Add(new LEDTestModel.DeviceLED
-                        {
-                            Id = i - DeviceList[GetSeletedController()].DeviceInfo.nLEDFirst + 1,
-                            Name = "Board: " + DeviceList[GetSeletedController()].DeviceInfo.szBoardType + " [LED]",
-                            Position = i,
-                        });
-                    }
-                }
-            });
-
-            this.AllLEDOnOffCommand = new RelayCommand<string>(o =>
+        [RelayCommand]
+        private void AllLEDOnOff(string direction)
+        {
+            if (direction is "On")
             {
-                if (o is "On")
+                foreach (var led in this.LED)
                 {
-                    foreach (var led in this.LED)
-                    {
-                        led.IsChecked = true;
-                        InterfaceITAPI_Data.interfaceIT_LED_Set(GetSelectedDeviceSession(), led.Position, true);
-                    }
+                    led.IsChecked = true;
+                    _ = InterfaceITAPI_Data.interfaceIT_LED_Set(GetSelectedDeviceSession(), led.Position, true);
                 }
-                else if (o is "Off")
-                {
-                    foreach (var led in this.LED)
-                    {
-                        led.IsChecked = false;
-                        InterfaceITAPI_Data.interfaceIT_LED_Set(GetSelectedDeviceSession(), led.Position, false);
-                    }
-                }
-            });
-
-            this.IsCheckedCommand = new RelayCommand<object>(o =>
+            }
+            else if (direction is "Off")
             {
-                InterfaceITAPI_Data.interfaceIT_LED_Set(GetSelectedDeviceSession(), (int)o, this.LED.FirstOrDefault(x => x.Position == int.Parse(o.ToString())).IsChecked);
-            });
+                foreach (var led in this.LED)
+                {
+                    led.IsChecked = false;
+                    _ = InterfaceITAPI_Data.interfaceIT_LED_Set(GetSelectedDeviceSession(), led.Position, false);
+                }
+            }
         }
     }
 }
