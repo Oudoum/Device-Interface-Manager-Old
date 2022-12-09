@@ -9,51 +9,32 @@ using CommunityToolkit.Mvvm.Input;
 using static Device_Interface_Manager.interfaceIT.USB.InterfaceIT_BoardInfo.BoardInformationStructure;
 using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
 using Device_Interface_Manager.interfaceIT.USB;
+using System.Runtime.CompilerServices;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
-    class MainViewModel : ObservableObject
+    [INotifyPropertyChanged]
+    partial class MainViewModel
     {
         public static int session;
         private const string updateLink = "https://raw.githubusercontent.com/Oudoum/Device-Interface-Manager-Download/main/Updates/AutoUpdaterDIM.xml";
         private const string version = "0.0.9.3";
 
-        public RelayCommand HomeViewCommand { get; set; }
-
-        public RelayCommand LEDTestViewCommand { get; set; }
-
-        public RelayCommand SwitchTestViewCommand { get; set; }
-
-        public RelayCommand TestViewCommand { get; set; }
-
-        public RelayCommand HomeENETViewToggleCommand { get; set; }
-
-        public RelayCommand HomeENETViewCommand { get; set; }
-
-        public RelayCommand BoardinfoENETViewCommand { get; set; }
-
-        public RelayCommand TestENETViewCommand { get; set; }
 
         public RelayCommand ProfileCreatorCommand { get; set; }
-
-        public RelayCommand WindowMaximizedCommand { get; set; }
-
-        public RelayCommand DeviceCountRefreshCommand { get; set; }
-
-        public RelayCommand DIMUpdaterCommand { get; set; }
 
 
         public static HomeViewModel HomeVM { get; set; }
 
         public static HomeENETViewModel HomeENETVM { get; set; }
 
-        public static ObservableCollection<LEDTestViewModel> LEDTestViewModels { get; set; } = new ObservableCollection<LEDTestViewModel>();
+        public static ObservableCollection<LEDTestViewModel> LEDTestViewModels { get; set; } = new();
 
-        public static ObservableCollection<SwitchTestViewModel> SwitchTestViewModels { get; set; } = new ObservableCollection<SwitchTestViewModel>();
+        public static ObservableCollection<SwitchTestViewModel> SwitchTestViewModels { get; set; } = new();
 
-        public static ObservableCollection<OtherTestsViewModel> OtherTestViewModels { get; set; } = new ObservableCollection<OtherTestsViewModel>();
+        public static ObservableCollection<OtherTestsViewModel> OtherTestViewModels { get; set; } = new();
 
-        public static ObservableCollection<InterfaceIT_BoardInfo.Device> DeviceList { get; set; } = new ObservableCollection<InterfaceIT_BoardInfo.Device>();
+        public static ObservableCollection<InterfaceIT_BoardInfo.Device> DeviceList { get; set; } = new();
 
         public static BoardinfoENETViewModel BoardinfoENETVM { get; set; }
 
@@ -68,61 +49,42 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         public bool RadioButtonBoardinfoENETIsChecked { get; set; }
         public bool RadioButtonTestENETIsChecked { get; set; }
 
+        public static int controllerCount;
+
         public static string DIMVersion { get; } = "DIM Version " + version;
 
         public static string InterfaceITAPIVersion { get; set; }
 
-        private bool _minimizedHide = Properties.Settings.Default.MinimizedHide;
-        public bool MinimizedHide
-        {
-            get => _minimizedHide;
-            set
-            {
-                Properties.Settings.Default.MinimizedHide = this._minimizedHide = value;
-                Properties.Settings.Default.Save();
-                OnPropertyChanged();
-            }
-        }
-
-        private bool _autoHide = Properties.Settings.Default.AutoHide;
-        public bool AutoHide
-        {
-            get => this._autoHide;
-            set
-            {
-                Properties.Settings.Default.AutoHide = this._autoHide = value;
-                Properties.Settings.Default.Save();
-                OnPropertyChanged();
-            }
-        }
-
-        private bool _enet = Properties.Settings.Default.ENET;
-        public bool Enet
-        {
-            get => this._enet;
-            set
-            {
-                this._enet = value;
-                Properties.Settings.Default.ENET = this._enet = value;
-                Properties.Settings.Default.Save();
-                OnPropertyChanged();
-            }
-        }
-
-        private object _currentView;
-        public object CurrentView
-        {
-            get => this._currentView;
-            set
-            {
-                this._currentView = value;
-                OnPropertyChanged();
-            }
-        }
-
         public string TotalControllers { get; set; }
 
-        public static int controllerCount;
+        [ObservableProperty]
+        private bool _minimizedHide = Properties.Settings.Default.MinimizedHide;
+        partial void OnMinimizedHideChanged(bool value)
+        {
+            Properties.Settings.Default.MinimizedHide = value;
+            Properties.Settings.Default.Save();
+        }
+
+        [ObservableProperty]
+        private bool _autoHide = Properties.Settings.Default.AutoHide;
+        partial void OnAutoHideChanged(bool value)
+        {
+            Properties.Settings.Default.AutoHide = value;
+            Properties.Settings.Default.Save();
+        }
+
+        [ObservableProperty]
+        private bool _enet = Properties.Settings.Default.ENET;
+        partial void OnEnetChanged(bool value)
+        {
+            Properties.Settings.Default.ENET = value;
+            Properties.Settings.Default.Save();
+        }
+
+        [ObservableProperty]
+        private object _currentView;
+
+
 
         public static int selectedController;
         private int _selectedController;
@@ -153,41 +115,6 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
             USB_ENET();
 
-            this.DIMUpdaterCommand = new RelayCommand(() => AutoUpdater.Start(updateLink));
-
-            this.HomeViewCommand = new RelayCommand(() => this.CurrentView = HomeVM);
-
-            this.LEDTestViewCommand = new RelayCommand(() => this.CurrentView = LEDTestViewModels.ElementAtOrDefault(SelectedController));
-
-            this.SwitchTestViewCommand = new RelayCommand(() => this.CurrentView = SwitchTestViewModels.ElementAtOrDefault(SelectedController));
-
-            this.TestViewCommand = new RelayCommand(() => this.CurrentView = OtherTestViewModels.ElementAtOrDefault(SelectedController));
-
-            this.HomeENETViewToggleCommand = new RelayCommand(() =>
-            {
-                if (this.Enet)
-                {
-                    this.RadioButtonHomeENETIsChecked = true;
-                    OnPropertyChanged(nameof(RadioButtonHomeENETIsChecked));
-                    this.CurrentView = HomeENETVM;
-                    this.Enet = !this.Enet;
-                }
-                else if (!this.Enet)
-                {
-                    this.RadioButtonHomeIsChecked = true;
-                    OnPropertyChanged(nameof(RadioButtonHomeIsChecked));
-                    this.CurrentView = HomeVM;
-                    this.Enet = !this.Enet;
-                }
-                OnPropertyChanged(nameof(Enet));
-            });
-
-            this.HomeENETViewCommand = new RelayCommand(() => this.CurrentView = HomeENETVM);
-
-            this.BoardinfoENETViewCommand = new RelayCommand(() => this.CurrentView = BoardinfoENETVM);
-
-            this.TestENETViewCommand = new RelayCommand(() => this.CurrentView = TestENETVM);
-
             //Opens ProfileCreator
             //MOVE THIS TO VIEW!
             this.ProfileCreatorCommand = new RelayCommand(() =>
@@ -199,26 +126,94 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                 }
             });
 
-            this.DeviceCountRefreshCommand = new RelayCommand(() =>
-            {
-                CloseInterfaceITDevices();
-                GetInterfaceITDevices();
-                while (this._selectedController > DeviceList.Count - 1)
-                {
-                    this._selectedController--;
-                }
-                if (this._selectedController == -1)
-                {
-                    this.SelectedController = 0;
-                }
-                else 
-                {
-                    this.SelectedController = this._selectedController;
-                }
-            });
             this.SelectedController = 0;
 
             AutoUpdater.Start(updateLink);
+        }
+
+        [RelayCommand]
+        private void DIMUpdater()
+        {
+            AutoUpdater.Start(updateLink);
+        }
+
+        [RelayCommand]
+        private void HomeView()
+        {
+            this.CurrentView = HomeVM;
+        }
+
+        [RelayCommand]
+        private void LEDTestView()
+        {
+            this.CurrentView = LEDTestViewModels.ElementAtOrDefault(SelectedController);
+        }
+
+        [RelayCommand]
+        private void SwitchTestView()
+        {
+            this.CurrentView = SwitchTestViewModels.ElementAtOrDefault(SelectedController);
+        }
+
+        [RelayCommand]
+        private void TestView()
+        {
+            this.CurrentView = OtherTestViewModels.ElementAtOrDefault(SelectedController);
+        }
+
+        [RelayCommand]
+        private void HomeENETViewToggle()
+        {
+            if (this.Enet)
+            {
+                this.RadioButtonHomeENETIsChecked = true;
+                OnPropertyChanged(nameof(RadioButtonHomeENETIsChecked));
+                this.CurrentView = HomeENETVM;
+                this.Enet = !this.Enet;
+            }
+            else if (!this.Enet)
+            {
+                this.RadioButtonHomeIsChecked = true;
+                OnPropertyChanged(nameof(RadioButtonHomeIsChecked));
+                this.CurrentView = HomeVM;
+                this.Enet = !this.Enet;
+            }
+            OnPropertyChanged(nameof(Enet));
+        }
+
+        [RelayCommand]
+        private void HomeENETView()
+        {
+            this.CurrentView = HomeENETVM;
+        }
+
+        [RelayCommand]
+        private void BoardinfoENETView()
+        {
+            this.CurrentView = BoardinfoENETVM;
+        }
+
+        [RelayCommand]
+        private void TestENETView()
+        {
+            this.CurrentView = TestENETVM;
+        }
+
+        [RelayCommand]
+        private void DeviceCountRefresh()
+        {
+            CloseInterfaceITDevices();
+            GetInterfaceITDevices();
+            while (this._selectedController > DeviceList.Count - 1)
+            {
+                this._selectedController--;
+            }
+            if (this._selectedController != -1)
+            {
+                this.SelectedController = this._selectedController;
+                return;
+            }
+            this.SelectedController = 0;
         }
 
         private void USB_ENET()
