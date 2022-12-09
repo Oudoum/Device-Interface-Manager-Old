@@ -45,7 +45,7 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top"
                 Margin="0,150,0,0"
-                Command="{Binding CallbackmodeEnableCommand}"
+                Command="{Binding CallbackModeCommand}"
                 Content="Callbackmode"
                 ToolTip="Every time a switch is pressed you will be notified (list on the right) with the switch number and the direction.">
                 <Button.Resources>
@@ -61,15 +61,15 @@
                         <Setter Property="BorderThickness" Value="0"/>
                         <Setter Property="Foreground" Value="Black"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding CallbackmodeEnabled}" Value="True">
+                            <DataTrigger Binding="{Binding CallbackModeEnabled}" Value="True">
                                 <Setter Property="Background" Value="Green"/>
                                 <Setter Property="Content" Value="Enabled"/>
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding CallbackmodeEnabled}" Value="False">
+                            <DataTrigger Binding="{Binding CallbackModeEnabled}" Value="False">
                                 <Setter Property="Background" Value="DimGray"/>
                                 <Setter Property="Content" Value="Disabled"/>
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding PollmodeEnabled}" Value="True">
+                            <DataTrigger Binding="{Binding PollModeEnabled}" Value="True">
                                 <Setter Property="Visibility" Value="Hidden"/>
                             </DataTrigger>
                         </Style.Triggers>
@@ -79,7 +79,7 @@
             <StackPanel>
                 <Button 
                 Margin="0,100,0,0"
-                Command="{Binding PollmodeEnableCommand}"
+                Command="{Binding PollModeCommand}"
                 Content="Pollmode"
                 ToolTip="Every time a switch is pressed it is added to the receive queue until you click the Get Switch button which removes it from the queue.">
                     <Button.Resources>
@@ -95,15 +95,15 @@
                             <Setter Property="BorderThickness" Value="0"/>
                             <Setter Property="Foreground" Value="Black"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding PollmodeEnabled}" Value="True">
+                                <DataTrigger Binding="{Binding PollModeEnabled}" Value="True">
                                     <Setter Property="Background" Value="Green"/>
                                     <Setter Property="Content" Value="Enabled"/>
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding PollmodeEnabled}" Value="False">
+                                <DataTrigger Binding="{Binding PollModeEnabled}" Value="False">
                                     <Setter Property="Background" Value="DimGray"/>
                                     <Setter Property="Content" Value="Disabled"/>
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding CallbackmodeEnabled}" Value="True">
+                                <DataTrigger Binding="{Binding CallbackModeEnabled}" Value="True">
                                     <Setter Property="Visibility" Value="Hidden"/>
                                 </DataTrigger>
                             </Style.Triggers>
@@ -132,7 +132,7 @@
                                 </Style>
                             </Style.Resources>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding CallbackmodeEnabled}" Value="True">
+                                <DataTrigger Binding="{Binding CallbackModeEnabled}" Value="True">
                                     <Setter Property="Visibility" Value="Hidden"/>
                                 </DataTrigger>
                             </Style.Triggers>
