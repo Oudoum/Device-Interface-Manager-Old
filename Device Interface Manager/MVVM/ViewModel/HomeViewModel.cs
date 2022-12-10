@@ -17,10 +17,10 @@ using static Device_Interface_Manager.MVVM.ViewModel.MainViewModel;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
-    class HomeViewModel : ObservableObject
+    [INotifyPropertyChanged]
+    partial class HomeViewModel
     {
         public static SimConnectClient SimConnectClient { get; set; }
-
 
 
         public Thread SimConnectMessageThread;
@@ -28,296 +28,166 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         public CancellationTokenSource SimConnectMessageCancellationTokenSource { get; set; }
 
 
-        public RelayCommand DiscordCommand { get; set; }
+        public ObservableCollection<string> BoardInfo { get; set; } = new();
 
-        public RelayCommand IPAndPortCheckCommand { get; set; }
+        public ObservableCollection<string> BoardType { get; set; } = new();
 
-        public RelayCommand<string> ProfileStartStopCommand { get; set; }
+        public List<bool> SimConnectProfilesEnabled { get; set; } = new();
 
-        public RelayCommand InstallUpdateHubhopCommand { get; set; }
+        public List<bool> MobiFlightWASMProfilesEnabled { get; set; } = new();
 
 
-
-        public ObservableCollection<string> BoardInfo { get; set; } = new ObservableCollection<string>();
-
-        public ObservableCollection<string> BoardType { get; set; } = new ObservableCollection<string>();
-
-        public List<bool> SimConnectProfilesEnabled { get; set; } = new List<bool>();
-
-        public List<bool> MobiFlightWASMProfilesEnabled { get; set; } = new List<bool>();
-
+        [ObservableProperty]
         private bool _areProfilesNotActive = true;
-        public bool AreProfilesNotActive
-        {
-            get => this._areProfilesNotActive;
-            set
-            {
-                this._areProfilesNotActive = value;
-                OnPropertyChanged();
-            }
-        }
-
 
         private string iP;
+        [ObservableProperty]
         private string _iP;
-        public string IP
-        {
-            get => this._iP;
-            set
-            {
-                this._iP = value;
-                OnPropertyChanged();
-            }
-        }
 
         private string port;
+        [ObservableProperty]
         private string _port;
-        public string Port
-        {
-            get => this._port;
-            set
-            {
-                this._port = value;
-                OnPropertyChanged();
-            }
-        }
 
-
-        private byte _mSFS_PMDG_B737_Captain_CDU_Enabled;
-        public byte MSFS_PMDG_B737_Captain_CDU_Enabled
-        {
-            get => this._mSFS_PMDG_B737_Captain_CDU_Enabled;
-            set
-            {
-                this._mSFS_PMDG_B737_Captain_CDU_Enabled = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private string _mSFS_PMDG_B737_Captain_CDU_SN = Properties.Settings.Default.MSFS_PMDG_B737_Captain_CDU_SN;
-        public string MSFS_PMDG_B737_Captain_CDU_SN
-        {
-            get => this._mSFS_PMDG_B737_Captain_CDU_SN;
-            set
-            {
-                Properties.Settings.Default.MSFS_PMDG_B737_Captain_CDU_SN = this._mSFS_PMDG_B737_Captain_CDU_SN = GetAssignedProfiles(value);
-                Properties.Settings.Default.Save();
-                OnPropertyChanged();
-            }
-        }
-
-        private byte _mSFS_PMDG_B737_Firstofficer_CDU_Enabled;
-        public byte MSFS_PMDG_B737_Firstofficer_CDU_Enabled
-        {
-            get => this._mSFS_PMDG_B737_Firstofficer_CDU_Enabled;
-            set
-            {
-                this._mSFS_PMDG_B737_Firstofficer_CDU_Enabled = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private string _mSFS_PMDG_B737_Firstofficer_CDU_SN = Properties.Settings.Default.MSFS_PMDG_B737_Firstofficer_CDU_SN;
-        public string MSFS_PMDG_B737_Firstofficer_CDU_SN
-        {
-            get => this._mSFS_PMDG_B737_Firstofficer_CDU_SN;
-            set
-            {
-                Properties.Settings.Default.MSFS_PMDG_B737_Firstofficer_CDU_SN = this._mSFS_PMDG_B737_Firstofficer_CDU_SN = GetAssignedProfiles(value);
-                Properties.Settings.Default.Save();
-                OnPropertyChanged();
-            }
-        }
-
-        private byte _mSFS_PMDG_B737_MCP_Enabled;
-        public byte MSFS_PMDG_B737_MCP_Enabled
-        {
-            get => this._mSFS_PMDG_B737_MCP_Enabled;
-            set
-            {
-                this._mSFS_PMDG_B737_MCP_Enabled = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private string _mSFS_PMDG_B737_MCP_SN = Properties.Settings.Default.MSFS_PMDG_B737_MCP_SN;
-        public string MSFS_PMDG_B737_MCP_SN
-        {
-            get => this._mSFS_PMDG_B737_MCP_SN;
-            set
-            {
-                Properties.Settings.Default.MSFS_PMDG_B737_MCP_SN = this._mSFS_PMDG_B737_MCP_SN = GetAssignedProfiles(value);
-                Properties.Settings.Default.Save();
-                OnPropertyChanged();
-            }
-        }
-
-        private byte _mSFS_FBW_A32NX_Captain_MCDU_Enabled;
-        public byte MSFS_FBW_A32NX_Captain_MCDU_Enabled
-        {
-            get => this._mSFS_FBW_A32NX_Captain_MCDU_Enabled;
-            set
-            {
-                this._mSFS_FBW_A32NX_Captain_MCDU_Enabled = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private string _mSFS_FBW_A32NX_Captain_MCDU_SN = Properties.Settings.Default.MSFS_FBW_A32NX_Captain_MCDU_SN;
-        public string MSFS_FBW_A32NX_Captain_MCDU_SN
-        {
-            get => this._mSFS_FBW_A32NX_Captain_MCDU_SN;
-            set
-            {
-                Properties.Settings.Default.MSFS_FBW_A32NX_Captain_MCDU_SN = this._mSFS_FBW_A32NX_Captain_MCDU_SN = GetAssignedProfiles(value);
-                Properties.Settings.Default.Save();
-                OnPropertyChanged();
-            }
-        }
-
-        private byte _mSFS_FBW_A32NX_Firstofficer_MCDU_Enabled;
-        public byte MSFS_FBW_A32NX_Firstofficer_MCDU_Enabled
-        {
-            get => this._mSFS_FBW_A32NX_Firstofficer_MCDU_Enabled;
-            set
-            {
-                this._mSFS_FBW_A32NX_Firstofficer_MCDU_Enabled = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private string _mSFS_FBW_A32NX_Firstofficer_MCDU_SN = Properties.Settings.Default.MSFS_FBW_A32NX_Firstofficer_MCDU_SN;
-        public string MSFS_FBW_A32NX_Firstofficer_MCDU_SN
-        {
-            get => this._mSFS_FBW_A32NX_Firstofficer_MCDU_SN;
-            set
-            {
-                Properties.Settings.Default.MSFS_FBW_A32NX_Firstofficer_MCDU_SN = this._mSFS_FBW_A32NX_Firstofficer_MCDU_SN = GetAssignedProfiles(value);
-                Properties.Settings.Default.Save();
-                OnPropertyChanged();
-            }
-        }
-
-        private byte _mSFS_FENIX_A320_Captain_MCDU_Enabled;
-        public byte MSFS_FENIX_A320_Captain_MCDU_Enabled
-        {
-            get => this._mSFS_FENIX_A320_Captain_MCDU_Enabled;
-            set
-            {
-                this._mSFS_FENIX_A320_Captain_MCDU_Enabled = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private string _mSFS_FENIX_A320_Captain_MCDU_SN = Properties.Settings.Default.MSFS_FENIX_A320_Captain_MCDU_SN;
-        public string MSFS_FENIX_A320_Captain_MCDU_SN
-        {
-            get => this._mSFS_FENIX_A320_Captain_MCDU_SN;
-            set
-            {
-                Properties.Settings.Default.MSFS_FENIX_A320_Captain_MCDU_SN = this._mSFS_FENIX_A320_Captain_MCDU_SN = GetAssignedProfiles(value);
-                Properties.Settings.Default.Save();
-                OnPropertyChanged();
-            }
-        }
-
+        [ObservableProperty]
         private bool _isSimConnectOpen;
-        public bool IsSimConnectOpen
-        {
-            get => this._isSimConnectOpen;
-            set
-            {
-                this._isSimConnectOpen = value;
-                OnPropertyChanged();
-            }
-        }
 
+        [ObservableProperty]
         private int _hubHopUpdateProgress;
-        public int HubHopUpdateProgress
+
+        [ObservableProperty]
+        private byte _mSFS_PMDG_B737_Captain_CDU_Enabled;
+
+        [ObservableProperty]
+        private string _mSFS_PMDG_B737_Captain_CDU_SN = Properties.Settings.Default.MSFS_PMDG_B737_Captain_CDU_SN;
+        partial void OnMSFS_PMDG_B737_Captain_CDU_SNChanged(string value)
         {
-            get => this._hubHopUpdateProgress;
-            set
-            {
-                this._hubHopUpdateProgress = value;
-                OnPropertyChanged();
-            }
+            Properties.Settings.Default.MSFS_PMDG_B737_Captain_CDU_SN = GetAssignedProfiles(value);
+            Properties.Settings.Default.Save();
         }
 
+        [ObservableProperty]
+        private byte _mSFS_PMDG_B737_Firstofficer_CDU_Enabled;
+
+        [ObservableProperty]
+        private string _mSFS_PMDG_B737_Firstofficer_CDU_SN = Properties.Settings.Default.MSFS_PMDG_B737_Firstofficer_CDU_SN;
+        partial void OnMSFS_PMDG_B737_Firstofficer_CDU_SNChanged(string value)
+        {
+            Properties.Settings.Default.MSFS_PMDG_B737_Firstofficer_CDU_SN = GetAssignedProfiles(value);
+            Properties.Settings.Default.Save();
+        }
+
+        [ObservableProperty]
+        private byte _mSFS_PMDG_B737_MCP_Enabled;
+
+        [ObservableProperty]
+        private string _mSFS_PMDG_B737_MCP_SN = Properties.Settings.Default.MSFS_PMDG_B737_MCP_SN;
+        partial void OnMSFS_PMDG_B737_MCP_SNChanged(string value)
+        {
+            Properties.Settings.Default.MSFS_PMDG_B737_MCP_SN = GetAssignedProfiles(value);
+            Properties.Settings.Default.Save();
+        }
+
+        [ObservableProperty]
+        private byte _mSFS_FBW_A32NX_Captain_MCDU_Enabled;
+
+        [ObservableProperty]
+        private string _mSFS_FBW_A32NX_Captain_MCDU_SN = Properties.Settings.Default.MSFS_FBW_A32NX_Captain_MCDU_SN;
+        partial void OnMSFS_FBW_A32NX_Captain_MCDU_SNChanged(string value)
+        {
+            Properties.Settings.Default.MSFS_FBW_A32NX_Captain_MCDU_SN = GetAssignedProfiles(value);
+            Properties.Settings.Default.Save();
+        }
+
+        [ObservableProperty]
+        private byte _mSFS_FBW_A32NX_Firstofficer_MCDU_Enabled;
+
+        [ObservableProperty]
+        private string _mSFS_FBW_A32NX_Firstofficer_MCDU_SN = Properties.Settings.Default.MSFS_FBW_A32NX_Firstofficer_MCDU_SN;
+        partial void OnMSFS_FBW_A32NX_Firstofficer_MCDU_SNChanged(string value)
+        {
+            Properties.Settings.Default.MSFS_FBW_A32NX_Firstofficer_MCDU_SN = GetAssignedProfiles(value);
+            Properties.Settings.Default.Save();
+        }
+
+        [ObservableProperty]
+        private byte _mSFS_FENIX_A320_Captain_MCDU_Enabled;
+
+        [ObservableProperty]
+        private string _mSFS_FENIX_A320_Captain_MCDU_SN = Properties.Settings.Default.MSFS_FENIX_A320_Captain_MCDU_SN;
+        partial void OnMSFS_FENIX_A320_Captain_MCDU_SNChanged(string value)
+        {
+            Properties.Settings.Default.MSFS_FENIX_A320_Captain_MCDU_SN = GetAssignedProfiles(value);
+            Properties.Settings.Default.Save();
+        }
 
         public HomeViewModel()
         {
             ReadSimConnectCfg();
+        }
 
-            this.DiscordCommand = new RelayCommand(() =>
+        [RelayCommand]
+        private void Discord()
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://discord.gg/MRR9zUMQhM") { UseShellExecute = true });
+        }
+
+        [RelayCommand]
+        private void IPAndPortCheck()
+        {
+            if (!System.Net.IPAddress.TryParse(this.IP, out System.Net.IPAddress adress) || !ushort.TryParse(this.Port, out ushort port) || this.Port == "0")
             {
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://discord.gg/MRR9zUMQhM") { UseShellExecute = true });
-            });
+                this.IP = this.iP;
+                this.Port = this.port;
+                return;
+            }
+            File.WriteAllText("SimConnect.cfg", File.ReadAllText("SimConnect.cfg").Replace("Address=" + this.iP, "Address=" + (this.IP = this.iP = adress.ToString())));
+            File.WriteAllText("SimConnect.cfg", File.ReadAllText("SimConnect.cfg").Replace("Port=" + this.port, "Port=" + (this.Port = this.port = port.ToString())));
+        }
 
-            this.IPAndPortCheckCommand = new RelayCommand(() =>
+        [RelayCommand]
+        private void ProfileStartStop(string profileName)
+        {
+            switch (profileName)
             {
-                if (System.Net.IPAddress.TryParse(this.IP, out System.Net.IPAddress adress))
-                {
-                    File.WriteAllText("SimConnect.cfg", File.ReadAllText("SimConnect.cfg").Replace("Address=" + this.iP, "Address=" + (this.IP = this.iP = adress.ToString())));
-                }
-                else
-                {
-                    this.IP = this.port;
-                }
+                case "MSFS_PMDG_B737_Captain_CDU":
+                    StartMSFS_PMDG_B737_Captain_CDU();
+                    break;
 
-                if (ushort.TryParse(this.Port, out ushort port) && this.Port != "0")
-                {
-                    File.WriteAllText("SimConnect.cfg", File.ReadAllText("SimConnect.cfg").Replace("Port=" + this.port, "Port=" + (this.Port = this.port = port.ToString())));
-                }
-                else
-                {
-                    this.Port = this.port;
-                }
-            });
+                case "MSFS_PMDG_B737_Firstofficer_CDU":
+                    StartMSFS_PMDG_B737_Firstofficer_CDU();
+                    break;
 
-            this.ProfileStartStopCommand = new RelayCommand<string>(o =>
-            {
-                switch (o)
-                {
-                    case "MSFS_PMDG_B737_Captain_CDU":
-                        StartMSFS_PMDG_B737_Captain_CDU();
-                        break;
+                case "MSFS_PMDG_B737_MCP":
+                    StartMSFS_PMDG_B737_MCP();
+                    break;
 
-                    case "MSFS_PMDG_B737_Firstofficer_CDU":
-                        StartMSFS_PMDG_B737_Firstofficer_CDU();
-                        break;
+                case "MSFS_FBW_A32NX_Captain_CDU":
+                    StartMSFS_FBW_A32NX_Captain_CDU();
+                    break;
 
-                    case "MSFS_PMDG_B737_MCP":
-                        StartMSFS_PMDG_B737_MCP();
-                        break;
+                case "MSFS_FBW_A32NX_Firstofficer_CDU":
+                    StartMSFS_FBW_A32NX_Firstofficer_CDU();
+                    break;
 
-                    case "MSFS_FBW_A32NX_Captain_CDU":
-                        StartMSFS_FBW_A32NX_Captain_CDU();
-                        break;
+                case "MSFS_FENIX_A320_Captain_CDU":
+                    StartMSFS_FENIX_A320_Captain_CDU();
+                    break;
 
-                    case "MSFS_FBW_A32NX_Firstofficer_CDU":
-                        StartMSFS_FBW_A32NX_Firstofficer_CDU();
-                        break;
+                default:
+                    break;
+            }
+            StopSimConnect();
+        }
 
-                    case "MSFS_FENIX_A320_Captain_CDU":
-                        StartMSFS_FENIX_A320_Captain_CDU();
-                        break;
-
-                    default:
-                        break;
-                }
-                StopSimConnect();
-
-            });
-
-            this.InstallUpdateHubhopCommand = new RelayCommand(async () =>
-            {
-                MobiFlight.SimConnectMSFS.WasmModuleUpdater wasmModuleUpdater = new();
-                wasmModuleUpdater.DownloadAndInstallProgress += WasmModuleUpdater_DownloadAndInstallProgress;
-                wasmModuleUpdater.AutoDetectCommunityFolder();
-                await Task.Run(() => wasmModuleUpdater.DownloadWasmEvents());
-                await Task.Run(() => wasmModuleUpdater.InstallWasmModule());
-                wasmModuleUpdater = null;
-            });
+        [RelayCommand]
+        private async void InstallUpdateHubhop()
+        {
+            MobiFlight.SimConnectMSFS.WasmModuleUpdater wasmModuleUpdater = new();
+            wasmModuleUpdater.DownloadAndInstallProgress += WasmModuleUpdater_DownloadAndInstallProgress;
+            wasmModuleUpdater.AutoDetectCommunityFolder();
+            await Task.Run(() => wasmModuleUpdater.DownloadWasmEvents());
+            await Task.Run(() => wasmModuleUpdater.InstallWasmModule());
+            wasmModuleUpdater = null;
         }
 
         private void WasmModuleUpdater_DownloadAndInstallProgress(object sender, MobiFlight.Base.ProgressUpdateEvent e)
