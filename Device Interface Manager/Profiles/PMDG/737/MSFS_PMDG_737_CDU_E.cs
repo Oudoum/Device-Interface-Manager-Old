@@ -121,7 +121,7 @@ namespace Device_Interface_Manager.Profiles.PMDG.B737
 
             private static void KeyPressedProcEthernet(int Switch, string Direction)
             {
-                uint oDirection;
+                uint oDirection = 0;
                 if (Direction == "ON")
                 {
                     oDirection = MOUSE_FLAG_LEFTSINGLE;
@@ -131,17 +131,20 @@ namespace Device_Interface_Manager.Profiles.PMDG.B737
                 {
                     oDirection = MOUSE_FLAG_LEFTRELEASE;
                 }
-
+                
                 else if (Direction == "OFF" && Switch == 63)
                 {
-                    oDirection = MOUSE_FLAG_LEFTRELEASE;
+                    SimConnectClient.Simconnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_L_BRITENESS, 1, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 }
                 else if (Direction == "OFF" && Switch == 64)
                 {
-                    oDirection = MOUSE_FLAG_LEFTRELEASE;
+                    SimConnectClient.Simconnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_L_BRITENESS, 1, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 }
 
-                else return;
+                if (oDirection == 0) 
+                { 
+                    return; 
+                }
 
                 switch (Switch)
                 {
@@ -393,12 +396,14 @@ namespace Device_Interface_Manager.Profiles.PMDG.B737
                         SimConnectClient.Simconnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_L_DES, oDirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                         break;
 
-                    case 63:
-                        //SimConnectClient.Simconnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_L_BRITENESS, 2, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    case 63 when Direction == "ON":
+                        if (Direction == "ON")
+                            SimConnectClient.Simconnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_L_BRITENESS, 2, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                         break;
 
-                    case 64:
-                        //SimConnectClient.Simconnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_L_BRITENESS, 0 , SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    case 64 when Direction == "ON":
+                        if (Direction == "ON")
+                            SimConnectClient.Simconnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_L_BRITENESS, 0, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                         break;
 
                     case 65:
