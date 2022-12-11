@@ -18,7 +18,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
     {
         public static int session;
         private const string updateLink = "https://raw.githubusercontent.com/Oudoum/Device-Interface-Manager-Download/main/Updates/AutoUpdaterDIM.xml";
-        private const string version = "0.0.9.3";
+        private const string version = "0.0.9.5";
 
 
         public RelayCommand ProfileCreatorCommand { get; set; }
