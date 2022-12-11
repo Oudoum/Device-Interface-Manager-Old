@@ -1,4 +1,5 @@
 ﻿using Device_Interface_Manager.Profiles.PMDG.B737;
+using Device_Interface_Manager.Profiles.FENIX.A320;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,7 +15,8 @@ using Device_Interface_Manager.MVVM.View;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
-    class HomeENETViewModel : ObservableObject
+    [INotifyPropertyChanged]
+    partial class HomeENETViewModel
     {
 
         private bool isENETEnabled = true;
@@ -23,19 +25,13 @@ namespace Device_Interface_Manager.MVVM.ViewModel
             get => this.isENETEnabled;
             set
             {
-                if (this.isENETEnabled != value)
-                {
                     this.isENETEnabled = value;
                     OnPropertyChanged();
-                }
+
             }
         }
 
         public RelayCommand StartENET { get; set; }
-
-        public RelayCommand<Connection> DeleteRow { get; set; }
-
-        public RelayCommand AddRow { get; set; }
 
         public ObservableCollection<Connection> Connections { get; set; } = new();
 
@@ -43,6 +39,8 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
         private CancellationTokenSource EthernetCancellationTokenSource { get; set; }
 
+
+        private MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_Events MSFS_FENIX_A320_Captain_Events { get; set; }
 
         public HomeENETViewModel()
         {
@@ -63,16 +61,18 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                             MainViewModel.HomeVM.MobiFlightWASMProfilesEnabled.Add(true);
                             await Task.Run(() => simConnectCache.IsSimConnectConnected() == true);
                             this.EthernetCancellationTokenSource = new();
-                            Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data.ReceivedDataThread = new Thread(() => Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data.ReceiveDataThread(this.EthernetCancellationTokenSource.Token))
+                            MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_Events mSFS_FENIX_A320_Captain_Events = new();
+                            MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data mSFS_FENIX_A320_Captain_MCDU_Data = new();
+                            mSFS_FENIX_A320_Captain_Events.ReceivedDataThread = new Thread(() => mSFS_FENIX_A320_Captain_MCDU_Data.ReceiveDataThread(this.EthernetCancellationTokenSource.Token))
                             {
                                 Name = "MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data"
                             };
-                            Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data.ReceivedDataThread.Start();
-                            Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_Events.ReceivedDataThread = new Thread(() => interfaceITEthernet.GetinterfaceITEthernetData(Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_Events.EthernetKeyNotifyCallback, this.EthernetCancellationTokenSource.Token))
+                            mSFS_FENIX_A320_Captain_MCDU_Data.ReceivedDataThread.Start();
+                            mSFS_FENIX_A320_Captain_Events.ReceivedDataThread = new Thread(() => interfaceITEthernet.GetinterfaceITEthernetData(mSFS_FENIX_A320_Captain_Events.EthernetKeyNotifyCallback, this.EthernetCancellationTokenSource.Token))
                             {
                                 Name = "MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Events"
                             };
-                            Device_Interface_Manager.Profiles.FENIX.A320.MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_Events.ReceivedDataThread.Start();
+                            mSFS_FENIX_A320_Captain_Events.ReceivedDataThread.Start();
                         }
                     }
 
@@ -195,23 +195,29 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                 }
             });
 
-            this.DeleteRow = new RelayCommand<Connection>(o =>
-            {
-                foreach (var conn in Connections)
-                {
-                    if (conn == o)
-                    {
-                        Connections.Remove(conn);
-                        return;
-                    }
-                }
-            });
-
-            this.AddRow = new RelayCommand(() => Connections.Add(new Connection() { Id = 0, Name = "NAME", IPAddress = "192.168.1.200", Profile = Profiles[0] }));
 
             CreateProfiles();
 
             LoadENETData();
+        }
+
+        [RelayCommand]
+        private void DeleteRow(Connection connection)
+        {
+            foreach (var conn in Connections)
+            {
+                if (conn == connection)
+                {
+                    Connections.Remove(conn);
+                    return;
+                }
+            }
+        }
+
+        [RelayCommand]
+        private void AddRow()
+        {
+            Connections.Add(new Connection() { Id = 0, Name = "NAME", IPAddress = "192.168.1.200", Profile = Profiles[0] });
         }
 
         // CDU/MCDU TEST START

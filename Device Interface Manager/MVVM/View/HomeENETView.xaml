@@ -145,7 +145,7 @@
                                 <Button Content="X" 
                                         Background="Transparent" 
                                         Foreground="White" BorderThickness="0" 
-                                        Command="{Binding DataContext.DeleteRow, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:HomeENETView}}}" 
+                                        Command="{Binding DataContext.DeleteRowCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:HomeENETView}}}" 
                                         CommandParameter="{Binding}">
                                     <Button.Resources>
                                         <Style TargetType="Button">
@@ -167,7 +167,7 @@
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
-            <Button Command="{Binding AddRow}"
+            <Button Command="{Binding AddRowCommand}"
                     Visibility="{Binding IsENETEnabled,Converter={StaticResource BooleanToVisibilityConverter}}"
                     BorderThickness="5,0,5,0"
                     Foreground="White"

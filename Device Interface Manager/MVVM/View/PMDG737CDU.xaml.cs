@@ -78,12 +78,20 @@ namespace Device_Interface_Manager.MVVM.View
                             case PMDG_NG3_CDU_FLAG_SMALL_FONT:
                                 lb.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "./Fonts/#PMDG_NGXu_DU_C");
                                 lb.FontWeight = FontWeight.FromOpenTypeWeight(550);
+
                                 break;
 
                             case PMDG_NG3_CDU_FLAG_REVERSE:
                                 break;
 
                             case PMDG_NG3_CDU_FLAG_UNUSED:
+                                lb.Foreground = new SolidColorBrush(Colors.White);
+                                lb.Opacity = 0.5;
+                                break;
+
+                            case PMDG_NG3_CDU_FLAG_SMALL_FONT + PMDG_NG3_CDU_FLAG_UNUSED:
+                                lb.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "./Fonts/#PMDG_NGXu_DU_C");
+                                lb.FontWeight = FontWeight.FromOpenTypeWeight(550);
                                 lb.Foreground = new SolidColorBrush(Colors.White);
                                 lb.Opacity = 0.5;
                                 break;
@@ -349,7 +357,7 @@ namespace Device_Interface_Manager.MVVM.View
                         }
                         break;
 
-                    case Key.Multiply:
+                    case Key.Add:
                         if (Keyboard.IsKeyDown(Key.LeftShift))
                         {
                             ++marginRight;

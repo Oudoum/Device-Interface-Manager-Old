@@ -1,18 +1,17 @@
 ﻿using Device_Interface_Manager.interfaceIT.ENET;
 using Device_Interface_Manager.MVVM.Model;
 using Device_Interface_Manager.MVVM.View;
-using Newtonsoft.Json.Linq;
 using System.Threading;
 
 namespace Device_Interface_Manager.Profiles.FENIX.A320
 {
     public class MSFS_FENIX_A320_MCDU_E
     {
-        public static class MSFS_FENIX_A320_Captain_MCDU_Data
+        public class MSFS_FENIX_A320_Captain_MCDU_Data
         {
-            public static Thread ReceivedDataThread { get; set; }
+            public Thread ReceivedDataThread { get; set; }
 
-            public static void ReceiveDataThread(CancellationToken token)
+            public void ReceiveDataThread(CancellationToken token)
             {
                 I_CDU1_FAIL = 9999;
                 I_CDU1_MCDU_MENU = 9999;
@@ -49,15 +48,15 @@ namespace Device_Interface_Manager.Profiles.FENIX.A320
             }
 
             //Get SimVars
-            static int I_CDU1_FAIL;
-            static int I_CDU1_MCDU_MENU;
-            static int I_CDU1_FM;
-            static int I_CDU1_FM1;
-            static int I_CDU1_IND;
-            static int I_CDU1_RDY;
-            static int I_CDU1_DASH;
-            static int I_CDU1_FM2;
-            private static void GetSimVar()
+            int I_CDU1_FAIL;
+            int I_CDU1_MCDU_MENU;
+            int I_CDU1_FM;
+            int I_CDU1_FM1;
+            int I_CDU1_IND;
+            int I_CDU1_RDY;
+            int I_CDU1_DASH;
+            int I_CDU1_FM2;
+            private void GetSimVar()
             {
                 // Output LEDs
 
@@ -105,12 +104,12 @@ namespace Device_Interface_Manager.Profiles.FENIX.A320
         }
 
 
-        public static class MSFS_FENIX_A320_Captain_Events
+        public class MSFS_FENIX_A320_Captain_Events
         {
-            public static System.Threading.Thread ReceivedDataThread { get; set; }
+            public Thread ReceivedDataThread { get; set; }
 
             //Delegate for button presses
-            public static InterfaceITEthernet.INTERFACEIT_ETHERNET_KEY_NOTIFY_PROC EthernetKeyNotifyCallback { get; set; } = new(KeyPressedProcEthernet);
+            public InterfaceITEthernet.INTERFACEIT_ETHERNET_KEY_NOTIFY_PROC EthernetKeyNotifyCallback { get; set; } = new(KeyPressedProcEthernet);
 
             private static void KeyPressedProcEthernet(int Switch, string Direction)
             {

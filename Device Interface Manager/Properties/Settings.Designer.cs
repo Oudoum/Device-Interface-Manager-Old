@@ -466,5 +466,29 @@ namespace Device_Interface_Manager.Properties {
                 this["ENET"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public byte PMDG737CDU0Fullscreen {
+            get {
+                return ((byte)(this["PMDG737CDU0Fullscreen"]));
+            }
+            set {
+                this["PMDG737CDU0Fullscreen"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public byte PMDG737CDU1Fullscreen {
+            get {
+                return ((byte)(this["PMDG737CDU1Fullscreen"]));
+            }
+            set {
+                this["PMDG737CDU1Fullscreen"] = value;
+            }
+        }
     }
 }

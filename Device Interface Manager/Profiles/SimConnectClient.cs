@@ -263,7 +263,6 @@ namespace Device_Interface_Manager.Profiles
                     break;
 
                 case (uint)DATA_REQUEST_ID.CDU0_REQUEST:
-
                     if (PMDG737CDU0 != null)
                     {
                         PMDG737CDU0.Closing += PMDG737CDU0_Closing;
@@ -318,6 +317,7 @@ namespace Device_Interface_Manager.Profiles
                 PMDG737CDU0.marginBottom = Properties.Settings.Default.PMDG737CDU0MarginBottom;
                 PMDG737CDU0.marginLeft = Properties.Settings.Default.PMDG737CDU0MarginLeft;
                 PMDG737CDU0.marginRight = Properties.Settings.Default.PMDG737CDU0MarginRight;
+                PMDG737CDU0.WindowState = (System.Windows.WindowState)Properties.Settings.Default.PMDG737CDU0Fullscreen;
                 if (Properties.Settings.Default.PMDG737CDU0GridWidth == 0)
                 {
                     PMDG737CDU0.CDUGrid.Width = double.NaN;
@@ -351,6 +351,7 @@ namespace Device_Interface_Manager.Profiles
                 PMDG737CDU1.marginBottom = Properties.Settings.Default.PMDG737CDU1MarginBottom;
                 PMDG737CDU1.marginLeft = Properties.Settings.Default.PMDG737CDU1MarginLeft;
                 PMDG737CDU1.marginRight = Properties.Settings.Default.PMDG737CDU1MarginRight;
+                PMDG737CDU1.WindowState = (System.Windows.WindowState)Properties.Settings.Default.PMDG737CDU1Fullscreen;
                 if (Properties.Settings.Default.PMDG737CDU1GridWidth == 0)
                 {
                     PMDG737CDU1.CDUGrid.Width = double.NaN;
@@ -384,6 +385,7 @@ namespace Device_Interface_Manager.Profiles
             Properties.Settings.Default.PMDG737CDU0MarginRight = PMDG737CDU0.marginRight;
             Properties.Settings.Default.PMDG737CDU0GridWidth = PMDG737CDU0.CDUGrid.Width;
             Properties.Settings.Default.PMDG737CDU0GridHeight = PMDG737CDU0.CDUGrid.Height;
+            Properties.Settings.Default.PMDG737CDU0Fullscreen = (byte)PMDG737CDU0.WindowState;
             Properties.Settings.Default.Save();
             pMDG737CDU0Settings = false;
         }
@@ -401,6 +403,7 @@ namespace Device_Interface_Manager.Profiles
             Properties.Settings.Default.PMDG737CDU1MarginRight = PMDG737CDU1.marginRight;
             Properties.Settings.Default.PMDG737CDU1GridWidth = PMDG737CDU1.CDUGrid.Width;
             Properties.Settings.Default.PMDG737CDU1GridHeight = PMDG737CDU1.CDUGrid.Height;
+            Properties.Settings.Default.PMDG737CDU1Fullscreen = (byte)PMDG737CDU1.WindowState;
             Properties.Settings.Default.Save();
             pMDG737CDU1Settings = false;
         }
