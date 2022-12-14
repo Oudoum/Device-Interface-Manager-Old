@@ -2,6 +2,7 @@
 using Device_Interface_Manager.MVVM.Model;
 using Device_Interface_Manager.MVVM.View;
 using System.Threading;
+using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
 
 namespace Device_Interface_Manager.Profiles.FENIX.A320
 {
@@ -108,7 +109,6 @@ namespace Device_Interface_Manager.Profiles.FENIX.A320
         {
             public Thread ReceivedDataThread { get; set; }
 
-            //Delegate for button presses
             public InterfaceITEthernet.INTERFACEIT_ETHERNET_KEY_NOTIFY_PROC EthernetKeyNotifyCallback { get; set; } = new(KeyPressedProcEthernet);
 
             private static void KeyPressedProcEthernet(int Switch, string Direction)

@@ -9,7 +9,6 @@ using CommunityToolkit.Mvvm.Input;
 using static Device_Interface_Manager.interfaceIT.USB.InterfaceIT_BoardInfo.BoardInformationStructure;
 using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
 using Device_Interface_Manager.interfaceIT.USB;
-using System.Runtime.CompilerServices;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
@@ -100,7 +99,6 @@ namespace Device_Interface_Manager.MVVM.ViewModel
             }
         }
 
-
         public MainViewModel()
         {
             AutoUpdater.InstalledVersion = new Version(version);
@@ -128,7 +126,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
             this.SelectedController = 0;
 
-            AutoUpdater.Start(updateLink);
+            DIMUpdater();
         }
 
         [RelayCommand]
@@ -231,15 +229,15 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         private void GetInterfaceITAPIVersion()
         {
             int intSize = 0;
-            interfaceIT_GetAPIVersion(null, ref intSize);
+            _ = interfaceIT_GetAPIVersion(null, ref intSize);
             StringBuilder aPIVersion = new(intSize);
-            interfaceIT_GetAPIVersion(aPIVersion, ref intSize);
+            _ = interfaceIT_GetAPIVersion(aPIVersion, ref intSize);
             InterfaceITAPIVersion = "interfaceIT API version " + aPIVersion;
         }
 
         private void GetInterfaceITDevices()
         {
-            interfaceIT_OpenControllers();
+            _ = interfaceIT_OpenControllers();
             GetTotalControllers();
             GetDeviceList();
         }
@@ -247,7 +245,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         private void GetTotalControllers()
         {
             controllerCount = -1;
-            interfaceIT_GetTotalControllers(ref controllerCount);
+            _ = interfaceIT_GetTotalControllers(ref controllerCount);
             if (controllerCount > 0)
             {
                 TotalControllers = "Total controllers detected: " + controllerCount + Environment.NewLine + "Click to refresh!";
@@ -259,12 +257,12 @@ namespace Device_Interface_Manager.MVVM.ViewModel
             OnPropertyChanged(nameof(TotalControllers));
         }
 
-        private void GetDeviceList()
+        private static void GetDeviceList()
         {
             int intSize = 0;
-            interfaceIT_GetDeviceList(null, ref intSize, null);
+            _ = interfaceIT_GetDeviceList(null, ref intSize, null);
             byte[] byteDeviceList = new byte[intSize];
-            interfaceIT_GetDeviceList(byteDeviceList, ref intSize, null);
+            _ = interfaceIT_GetDeviceList(byteDeviceList, ref intSize, null);
             DeviceList.Clear();
             LEDTestViewModels.Clear();
             SwitchTestViewModels.Clear();
@@ -275,8 +273,8 @@ namespace Device_Interface_Manager.MVVM.ViewModel
             {
                 if (!string.IsNullOrEmpty(device))
                 {
-                    interfaceIT_Bind(device, ref session);
-                    interfaceIT_GetBoardInfo(session, ref bOARDCAPS);
+                    _ = interfaceIT_Bind(device, ref session);
+                    _ = interfaceIT_GetBoardInfo(session, ref bOARDCAPS);
                     DeviceList.Add(new InterfaceIT_BoardInfo.Device { Id = i++, SerialNumber = device, Session = session, DeviceInfo = bOARDCAPS});
                     LEDTestViewModels.Add(new LEDTestViewModel());
                     SwitchTestViewModels.Add(new SwitchTestViewModel());
@@ -316,14 +314,14 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                 {
                     for (int i = device.DeviceInfo.nSwitchFirst; i <= device.DeviceInfo.nLEDLast; i++)
                     {
-                        interfaceIT_LED_Set(device.Session, i, false);
+                        _ = interfaceIT_LED_Set(device.Session, i, false);
                     }
-                    interfaceIT_LED_Enable(device.Session, false);
+                    _ = interfaceIT_LED_Enable(device.Session, false);
                 }
 
                 if ((device.DeviceInfo.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_INPUT_SWITCHES) != 0)
                 {
-                    interfaceIT_Switch_Enable_Poll(device.Session, false);
+                    _ = interfaceIT_Switch_Enable_Poll(device.Session, false);
                 }
 
 
@@ -331,9 +329,9 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                 {
                     for (int i = device.DeviceInfo.n7SegmentFirst; i <= device.DeviceInfo.n7SegmentLast; i++)
                     {
-                        interfaceIT_7Segment_Display(device.Session, null , i);
+                        _ = interfaceIT_7Segment_Display(device.Session, null , i);
                     }
-                    interfaceIT_7Segment_Enable(device.Session, false);
+                    _ = interfaceIT_7Segment_Enable(device.Session, false);
                 }
 
 
@@ -341,9 +339,9 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                 {
                     for (int i = device.DeviceInfo.nDatalineFirst; i <= device.DeviceInfo.nDatalineLast; i++)
                     {
-                        interfaceIT_Dataline_Set(device.Session, i , false);
+                        _ = interfaceIT_Dataline_Set(device.Session, i , false);
                     }
-                    interfaceIT_Dataline_Enable(device.Session, false);
+                    _ = interfaceIT_Dataline_Enable(device.Session, false);
                 }
 
 
@@ -355,24 +353,24 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
                 if ((device.DeviceInfo.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_SPECIAL_BRIGHTNESS) != 0)
                 {
-                    interfaceIT_Brightness_Set(device.Session, 0);
-                    interfaceIT_Brightness_Enable(device.Session, false);
+                    _ = interfaceIT_Brightness_Set(device.Session, 0);
+                    _ = interfaceIT_Brightness_Enable(device.Session, false);
                 }
 
 
                 if ((device.DeviceInfo.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_SPECIAL_ANALOG_INPUT) != 0)
                 {
-                    interfaceIT_Analog_Enable(device.Session, false);
+                    _ = interfaceIT_Analog_Enable(device.Session, false);
                 }
 
 
                 if ((device.DeviceInfo.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_SPECIAL_ANALOG16_INPUT) != 0)
                 {
-                    interfaceIT_Analog_Enable(device.Session, false);
+                    _ = interfaceIT_Analog_Enable(device.Session, false);
                 }
-                interfaceIT_UnBind(device.Session);
+                _ = interfaceIT_UnBind(device.Session);
             }
-            interfaceIT_CloseControllers();
+            _ = interfaceIT_CloseControllers();
         }
 
         public static int GetSeletedController()

@@ -59,7 +59,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
         [ObservableProperty]
         private string _mSFS_PMDG_B737_Captain_CDU_SN = Properties.Settings.Default.MSFS_PMDG_B737_Captain_CDU_SN;
-        partial void OnMSFS_PMDG_B737_Captain_CDU_SNChanged(string value)
+        partial void OnMSFS_PMDG_B737_Captain_CDU_SNChanging(string value)
         {
             Properties.Settings.Default.MSFS_PMDG_B737_Captain_CDU_SN = GetAssignedProfiles(value);
             Properties.Settings.Default.Save();
@@ -70,7 +70,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
         [ObservableProperty]
         private string _mSFS_PMDG_B737_Firstofficer_CDU_SN = Properties.Settings.Default.MSFS_PMDG_B737_Firstofficer_CDU_SN;
-        partial void OnMSFS_PMDG_B737_Firstofficer_CDU_SNChanged(string value)
+        partial void OnMSFS_PMDG_B737_Firstofficer_CDU_SNChanging(string value)
         {
             Properties.Settings.Default.MSFS_PMDG_B737_Firstofficer_CDU_SN = GetAssignedProfiles(value);
             Properties.Settings.Default.Save();
@@ -81,7 +81,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
         [ObservableProperty]
         private string _mSFS_PMDG_B737_MCP_SN = Properties.Settings.Default.MSFS_PMDG_B737_MCP_SN;
-        partial void OnMSFS_PMDG_B737_MCP_SNChanged(string value)
+        partial void OnMSFS_PMDG_B737_MCP_SNChanging(string value)
         {
             Properties.Settings.Default.MSFS_PMDG_B737_MCP_SN = GetAssignedProfiles(value);
             Properties.Settings.Default.Save();
@@ -92,7 +92,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
         [ObservableProperty]
         private string _mSFS_FBW_A32NX_Captain_MCDU_SN = Properties.Settings.Default.MSFS_FBW_A32NX_Captain_MCDU_SN;
-        partial void OnMSFS_FBW_A32NX_Captain_MCDU_SNChanged(string value)
+        partial void OnMSFS_FBW_A32NX_Captain_MCDU_SNChanging(string value)
         {
             Properties.Settings.Default.MSFS_FBW_A32NX_Captain_MCDU_SN = GetAssignedProfiles(value);
             Properties.Settings.Default.Save();
@@ -103,7 +103,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
         [ObservableProperty]
         private string _mSFS_FBW_A32NX_Firstofficer_MCDU_SN = Properties.Settings.Default.MSFS_FBW_A32NX_Firstofficer_MCDU_SN;
-        partial void OnMSFS_FBW_A32NX_Firstofficer_MCDU_SNChanged(string value)
+        partial void OnMSFS_FBW_A32NX_Firstofficer_MCDU_SNChanging(string value)
         {
             Properties.Settings.Default.MSFS_FBW_A32NX_Firstofficer_MCDU_SN = GetAssignedProfiles(value);
             Properties.Settings.Default.Save();
@@ -114,7 +114,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
         [ObservableProperty]
         private string _mSFS_FENIX_A320_Captain_MCDU_SN = Properties.Settings.Default.MSFS_FENIX_A320_Captain_MCDU_SN;
-        partial void OnMSFS_FENIX_A320_Captain_MCDU_SNChanged(string value)
+        partial void OnMSFS_FENIX_A320_Captain_MCDU_SNChanging(string value)
         {
             Properties.Settings.Default.MSFS_FENIX_A320_Captain_MCDU_SN = GetAssignedProfiles(value);
             Properties.Settings.Default.Save();

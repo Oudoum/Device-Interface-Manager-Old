@@ -151,7 +151,10 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                 this.AnalogValue = 0;
                 return;
             }
-            this.AnalogValueThread = new Thread(o => this.GetValues(GetValuesCancellationTokenSource.Token));
+            this.AnalogValueThread = new Thread(o => this.GetValues(GetValuesCancellationTokenSource.Token))
+            {
+                Name = "AnalogValueTest"
+            };
             this.AnalogValueThread.Start();
         }
 

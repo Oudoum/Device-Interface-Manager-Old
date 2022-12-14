@@ -18,18 +18,8 @@ namespace Device_Interface_Manager.MVVM.ViewModel
     [INotifyPropertyChanged]
     partial class HomeENETViewModel
     {
-
+        [ObservableProperty]
         private bool isENETEnabled = true;
-        public bool IsENETEnabled
-        {
-            get => this.isENETEnabled;
-            set
-            {
-                    this.isENETEnabled = value;
-                    OnPropertyChanged();
-
-            }
-        }
 
         public RelayCommand StartENET { get; set; }
 
@@ -41,6 +31,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
 
         private MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_Events MSFS_FENIX_A320_Captain_Events { get; set; }
+        private MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data MSFS_FENIX_A320_Captain_MCDU_Data { get; set; }
 
         public HomeENETViewModel()
         {
@@ -61,18 +52,18 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                             MainViewModel.HomeVM.MobiFlightWASMProfilesEnabled.Add(true);
                             await Task.Run(() => simConnectCache.IsSimConnectConnected() == true);
                             this.EthernetCancellationTokenSource = new();
-                            MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_Events mSFS_FENIX_A320_Captain_Events = new();
-                            MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data mSFS_FENIX_A320_Captain_MCDU_Data = new();
-                            mSFS_FENIX_A320_Captain_Events.ReceivedDataThread = new Thread(() => mSFS_FENIX_A320_Captain_MCDU_Data.ReceiveDataThread(this.EthernetCancellationTokenSource.Token))
+                            MSFS_FENIX_A320_Captain_MCDU_Data= new();
+                            MSFS_FENIX_A320_Captain_MCDU_Data.ReceivedDataThread = new Thread(() => MSFS_FENIX_A320_Captain_MCDU_Data.ReceiveDataThread(this.EthernetCancellationTokenSource.Token))
                             {
                                 Name = "MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data"
                             };
-                            mSFS_FENIX_A320_Captain_MCDU_Data.ReceivedDataThread.Start();
-                            mSFS_FENIX_A320_Captain_Events.ReceivedDataThread = new Thread(() => interfaceITEthernet.GetinterfaceITEthernetData(mSFS_FENIX_A320_Captain_Events.EthernetKeyNotifyCallback, this.EthernetCancellationTokenSource.Token))
+                            MSFS_FENIX_A320_Captain_MCDU_Data.ReceivedDataThread.Start();
+                            MSFS_FENIX_A320_Captain_Events = new();
+                            MSFS_FENIX_A320_Captain_Events.ReceivedDataThread = new Thread(() => interfaceITEthernet.GetinterfaceITEthernetData(MSFS_FENIX_A320_Captain_Events.EthernetKeyNotifyCallback, this.EthernetCancellationTokenSource.Token))
                             {
                                 Name = "MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Events"
                             };
-                            mSFS_FENIX_A320_Captain_Events.ReceivedDataThread.Start();
+                            MSFS_FENIX_A320_Captain_Events.ReceivedDataThread.Start();
                         }
                     }
 
