@@ -38,14 +38,15 @@ namespace Device_Interface_Manager.interfaceIT.ENET
                 {
                     ping.Send(Hostname);
                 }
-                catch (Exception)
+                catch (Exception data)
                 {
-
+                    WriteENETLog(data.Message);
                 }
                 finally
                 {
                     ping?.Dispose();
                     ClientStatus = 1;
+                    WriteENETLog("Device responded!");
                 }
 
                 try
@@ -57,15 +58,14 @@ namespace Device_Interface_Manager.interfaceIT.ENET
 
                     data = new byte[1024];
                 }
-
-                catch (ArgumentNullException)
+                catch (ArgumentNullException data)
                 {
-
+                    WriteENETLog(data.Message);
                 }
 
-                catch (SocketException)
+                catch (SocketException data)
                 {
-
+                    WriteENETLog(data.Message);
                 }
                 if(token.IsCancellationRequested) 
                 {
@@ -77,6 +77,7 @@ namespace Device_Interface_Manager.interfaceIT.ENET
             {
                 canread = stream.CanRead;
                 ClientStatus = 2;
+                WriteENETLog("Connected to Device!");
             }
         }
 
@@ -367,7 +368,7 @@ namespace Device_Interface_Manager.interfaceIT.ENET
         private string WriteENETLog(string data)
         {
             System.IO.Directory.CreateDirectory("Log");
-            System.IO.File.AppendAllText(enetlog, Environment.NewLine + DateAndTime.Now.ToString() + Environment.NewLine + data);
+            System.IO.File.AppendAllText(enetlog, DateAndTime.Now.ToString() + Environment.NewLine + data + Environment.NewLine + Environment.NewLine);
             return data;
         }
     }
