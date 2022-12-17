@@ -29,41 +29,48 @@ namespace Device_Interface_Manager.interfaceIT.ENET
 
         public byte ClientStatus { get; private set; }
 
-        public void InterfaceITEthernetConnection()
+        public void InterfaceITEthernetConnection(CancellationToken token)
         {
-            System.Net.NetworkInformation.Ping ping = new();
-            try
+            while (stream is null)
             {
-                ping.Send(Hostname);
-            }
-            catch (Exception)
-            {
+                System.Net.NetworkInformation.Ping ping = new();
+                try
+                {
+                    ping.Send(Hostname);
+                }
+                catch (Exception)
+                {
 
-            }
-            finally
-            {
-                ping?.Dispose();
-                ClientStatus = 1;
-            }
+                }
+                finally
+                {
+                    ping?.Dispose();
+                    ClientStatus = 1;
+                }
 
-            try
-            {
-                TcpClient client = new(hostname, port);
-                Client = client;
+                try
+                {
+                    TcpClient client = new(hostname, port);
+                    Client = client;
 
-                stream = client.GetStream();
+                    stream = client.GetStream();
 
-                data = new byte[1024];
-            }
+                    data = new byte[1024];
+                }
 
-            catch (ArgumentNullException)
-            {
+                catch (ArgumentNullException)
+                {
 
-            }
+                }
 
-            catch (SocketException)
-            {
+                catch (SocketException)
+                {
 
+                }
+                if(token.IsCancellationRequested) 
+                {
+                    return;
+                }
             }
 
             if (stream is not null)

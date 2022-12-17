@@ -49,6 +49,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
             if (!this.IsENETEnabled)
             {
+                this.EthernetCancellationTokenSource = new();
                 if (this.Connections.Any(o => o.Profile.Id == 1))
                 {
                     InterfaceITEthernet interfaceITEthernet = new();
@@ -59,7 +60,6 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                         await Task.Run(() => SimConnectStart());
                         MainViewModel.HomeVM.MobiFlightWASMProfilesEnabled.Add(true);
                         await Task.Run(() => simConnectCache.IsSimConnectConnected() == true);
-                        this.EthernetCancellationTokenSource = new();
                         MSFS_FENIX_A320_Captain_MCDU_Data = new();
                         MSFS_FENIX_A320_Captain_MCDU_Data.ReceivedDataThread = new Thread(() => MSFS_FENIX_A320_Captain_MCDU_Data.ReceiveDataThread(this.EthernetCancellationTokenSource.Token))
                         {
@@ -86,7 +86,6 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                         MainViewModel.HomeVM.SimConnectProfilesEnabled.Add(true);
                         await MainViewModel.HomeVM.StartSimConnect();
                         HomeViewModel.SimConnectClient.PMDG737CDU0 = new PMDG737CDU();
-                        this.EthernetCancellationTokenSource = new();
                         MSFS_PMDG_737_CDU_E.MSFS_PMDG_737_Captain_Events.ReceivedDataThread = new Thread(() => MSFS_PMDG_737_CDU_E.InterfaceITEthernet.GetinterfaceITEthernetData(MSFS_PMDG_737_CDU_E.MSFS_PMDG_737_Captain_Events.EthernetKeyNotifyCallback, this.EthernetCancellationTokenSource.Token))
                         {
                             Name = "MSFS_PMDG_737_CDU_E.MSFS_PMDG_737_Captain_Events"
@@ -103,7 +102,6 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                     if (this.Connections[index].Status == 2)
                     {
                         StartinterfaceITEthernet(interfaceITEthernet);
-                        this.EthernetCancellationTokenSource = new();
                         DataThread = new(() => interfaceITEthernet.GetinterfaceITEthernetData(INTERFACEIT_ETHERNET_KEY_NOTIFY_PROC = new(KeyPressedProcEthernet), this.EthernetCancellationTokenSource.Token))
                         {
                             Name = "TestDataThread"
@@ -225,7 +223,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         private void StartiterfaceITEthernetConnection(int i, InterfaceITEthernet interfaceITEthernet)
         {
             interfaceITEthernet.Hostname = this.Connections[i].IPAddress;
-            interfaceITEthernet.InterfaceITEthernetConnection();
+            interfaceITEthernet.InterfaceITEthernetConnection(this.EthernetCancellationTokenSource.Token);
             this.Connections[i].Status = interfaceITEthernet.ClientStatus;
         }
 
