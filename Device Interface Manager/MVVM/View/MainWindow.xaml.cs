@@ -19,7 +19,7 @@ namespace Device_Interface_Manager.MVVM.View
             notifyIcon.Text = "Device Interface Manager";
             notifyIcon.ContextMenuStrip = new Forms.ContextMenuStrip();
             notifyIcon.ContextMenuStrip.Items.Add("Exit", null, OnStatusClicked);
-            notifyIcon.DoubleClick += NotifyIcon_MouseClick;
+            notifyIcon.Click += NotifyIcon_MouseClick;
 
             if (Properties.Settings.Default.AutoHide)
             {
@@ -61,8 +61,12 @@ namespace Device_Interface_Manager.MVVM.View
         //Show Window if NotifyIcon Doublecklicked
         private void NotifyIcon_MouseClick(object sender, EventArgs e)
         {
-            Show();
-            ShowInTaskbar = true;
+            if(((Forms.MouseEventArgs)e).Button == Forms.MouseButtons.Left)
+            {
+                Show();
+                ShowInTaskbar = true;
+                notifyIcon.Visible = false;
+            }
         }
 
         //Maximize Window
