@@ -27,10 +27,10 @@ namespace Device_Interface_Manager.MVVM.Model
             if (simConnectCache == null)
             {
                 simConnectCache = new SimConnectCache();
-                simConnectCache.Start();
-                simConnectCache.Connect();
+                simConnectCache?.Start();
+                simConnectCache?.Connect();
                 Thread.Sleep(100);
-                simConnectCache.ReceiveSimConnectMessage();
+                simConnectCache?.ReceiveSimConnectMessage();
             }
         }
 

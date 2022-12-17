@@ -8,8 +8,8 @@
     <UseWPF>true</UseWPF>
     <Platforms>x64</Platforms>
     <UseWindowsForms>True</UseWindowsForms>
-    <FileVersion></FileVersion>
-    <AssemblyVersion></AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <ApplicationIcon>DIM.ico</ApplicationIcon>
   </PropertyGroup>
 
@@ -139,7 +139,7 @@
   <ItemGroup>
     <PackageReference Include="Autoupdater.NET.Official" Version="1.7.6" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1418.22" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1462.37" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>

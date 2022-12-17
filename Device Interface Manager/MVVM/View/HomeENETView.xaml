@@ -18,15 +18,27 @@
     </UserControl.Resources>
 
     <Grid>
-        <Button Command="{Binding StartENET}"
+        <Button Command="{Binding StartENETCommand}"
                 Margin="0,25,0,0"
                 VerticalAlignment="Top"
                 Height="30"
                 Width="150"
-                Background="DarkGray"
                 BorderThickness="0"
                 FontSize="20">
-                START
+            <Button.Resources>
+                <Style TargetType="Button">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsENETEnabled}" Value="True">
+                            <Setter Property="Content" Value="Start"/>
+                            <Setter Property="Background" Value="DarkGray"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsENETEnabled}" Value="False">
+                            <Setter Property="Content" Value="Stop"/>
+                            <Setter Property="Background" Value="Green"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Resources>
         </Button>
         <DockPanel LastChildFill="False"
                    HorizontalAlignment="Center">

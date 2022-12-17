@@ -123,6 +123,15 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         public HomeViewModel()
         {
             ReadSimConnectCfg();
+            if(Properties.Settings.Default.AutoHide)
+            {
+                ProfileStartStop("MSFS_PMDG_B737_Captain_CDU");
+                ProfileStartStop("MSFS_PMDG_B737_Firstofficer_CDU");
+                ProfileStartStop("MSFS_PMDG_B737_MCP");
+                ProfileStartStop("MSFS_FBW_A32NX_Captain_CDU");
+                ProfileStartStop("MSFS_FBW_A32NX_Firstofficer_CDU");
+                ProfileStartStop("MSFS_FENIX_A320_Captain_CDU");
+            }
         }
 
         [RelayCommand]
