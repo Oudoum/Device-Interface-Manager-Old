@@ -10,6 +10,7 @@ using Device_Interface_Manager.Profiles.PMDG.B737;
 using Device_Interface_Manager.MVVM.ViewModel;
 using Microsoft.VisualBasic;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace Device_Interface_Manager.Profiles
 {
@@ -333,7 +334,7 @@ namespace Device_Interface_Manager.Profiles
                 {
                     PMDG737CDU0.CDUGrid.Height = Properties.Settings.Default.PMDG737CDU0GridHeight;
                 }
-                PMDG737CDU0.WindowState = (System.Windows.WindowState)Properties.Settings.Default.PMDG737CDU0Fullscreen;
+                //PMDG737CDU0.WindowState = (System.Windows.WindowState)Properties.Settings.Default.PMDG737CDU0Fullscreen;
                 pMDG737CDU0Settings = true;
             }
         }

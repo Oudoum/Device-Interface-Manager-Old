@@ -58,7 +58,7 @@ namespace Device_Interface_Manager.MVVM.View
             Application.Current.Shutdown();
         }
 
-        //Show Window if NotifyIcon Doublecklicked
+        //Show Window if NotifyIcon is clicked
         private void NotifyIcon_MouseClick(object sender, EventArgs e)
         {
             if(((Forms.MouseEventArgs)e).Button == Forms.MouseButtons.Left)

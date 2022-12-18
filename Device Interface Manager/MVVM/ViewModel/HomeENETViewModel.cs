@@ -12,6 +12,7 @@ using Device_Interface_Manager.interfaceIT.ENET;
 using static Device_Interface_Manager.MVVM.Model.HomeENETModel;
 using static Device_Interface_Manager.MVVM.Model.HomeModel;
 using Device_Interface_Manager.MVVM.View;
+using Device_Interface_Manager.Profiles;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
@@ -36,7 +37,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
             CreateProfiles();
             LoadENETData();
 
-            if(Properties.Settings.Default.AutoHide && Connections.Count > 0)
+            if (Properties.Settings.Default.AutoHide && Connections.Count > 0)
             {
                 StartENET();
             }
@@ -49,14 +50,18 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
             if (!this.IsENETEnabled)
             {
+                MSFS_FENIX_A320_MCDU_En mSFS_FENIX_A320_MCDU_En = new();
+                mSFS_FENIX_A320_MCDU_En.Start("127.0.0.1");
+
                 this.EthernetCancellationTokenSource = new();
                 if (this.Connections.Any(o => o.Profile.Id == 1))
                 {
                     InterfaceITEthernet interfaceITEthernet = new();
                     int index = this.Connections.IndexOf(this.Connections.First(o => o.Profile.Id == 1));
-                    await Task.Run(() => StartiterfaceITEthernetConnection(index, interfaceITEthernet));
+                    await Task.Run(() => StartInterfaceITEthernetConnection(index, interfaceITEthernet));
                     if (this.Connections[index].Status == 2)
                     {
+                        StartinterfaceITEthernet(interfaceITEthernet);
                         await Task.Run(() => SimConnectStart());
                         MainViewModel.HomeVM.MobiFlightWASMProfilesEnabled.Add(true);
                         await Task.Run(() => simConnectCache.IsSimConnectConnected() == true);
@@ -79,7 +84,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                 {
                     MSFS_PMDG_737_CDU_E.InterfaceITEthernet = new();
                     int index = this.Connections.IndexOf(this.Connections.First(o => o.Profile.Id == 5));
-                    await Task.Run(() => StartiterfaceITEthernetConnection(index, MSFS_PMDG_737_CDU_E.InterfaceITEthernet));
+                    await Task.Run(() => StartInterfaceITEthernetConnection(index, MSFS_PMDG_737_CDU_E.InterfaceITEthernet));
                     if (this.Connections[index].Status == 2)
                     {
                         StartinterfaceITEthernet(MSFS_PMDG_737_CDU_E.InterfaceITEthernet);
@@ -98,7 +103,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                 {
                     InterfaceITEthernet interfaceITEthernet = new();
                     int index = this.Connections.IndexOf(this.Connections.First(o => o.Profile.Id == 99));
-                    await Task.Run(() => StartiterfaceITEthernetConnection(index, interfaceITEthernet));
+                    await Task.Run(() => StartInterfaceITEthernetConnection(index, interfaceITEthernet));
                     if (this.Connections[index].Status == 2)
                     {
                         StartinterfaceITEthernet(interfaceITEthernet);
@@ -220,7 +225,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         }
         // CDU/MCDU TEST END
 
-        private void StartiterfaceITEthernetConnection(int i, InterfaceITEthernet interfaceITEthernet)
+        private void StartInterfaceITEthernetConnection(int i, InterfaceITEthernet interfaceITEthernet)
         {
             interfaceITEthernet.Hostname = this.Connections[i].IPAddress;
             interfaceITEthernet.InterfaceITEthernetConnection(this.EthernetCancellationTokenSource.Token);
