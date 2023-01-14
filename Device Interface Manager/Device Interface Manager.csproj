@@ -32,6 +32,7 @@
     <None Remove="Images\settings-cog.png" />
     <None Remove="Images\small_logo_white_RGB_Discord.png" />
     <None Remove="interfaceITAPI x64.dll" />
+    <None Remove="LICENSE.txt" />
     <None Remove="Microsoft.FlightSimulator.SimConnect.dll" />
     <None Remove="MSFS2020-module\install-mobiflight-event-module.cmd" />
     <None Remove="MSFS2020-module\mobiflight-event-module\ContentInfo\mobiflight-event-module\Thumbnail.jpg" />
@@ -58,6 +59,9 @@
 
   <ItemGroup>
     <Content Include="DIM.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LICENSE.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
