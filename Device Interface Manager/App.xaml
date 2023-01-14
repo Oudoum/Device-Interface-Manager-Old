@@ -12,8 +12,8 @@
                 <ResourceDictionary Source="Theme/ButtonCloseTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             
-            <DataTemplate DataType="{x:Type viewModel:HomeViewModel}">
-                <view:HomeView/>
+            <DataTemplate DataType="{x:Type viewModel:HomeUSBViewModel}">
+                <view:HomeUSBView/>
             </DataTemplate>
 
             <DataTemplate DataType="{x:Type viewModel:LEDTestViewModel}">
@@ -27,15 +27,24 @@
             <DataTemplate DataType="{x:Type viewModel:OtherTestsViewModel}">
                 <view:TestView/>
             </DataTemplate>
+            
             <DataTemplate DataType="{x:Type viewModel:HomeENETViewModel}">
                 <view:HomeENETView/>
             </DataTemplate>
+            
             <DataTemplate DataType="{x:Type viewModel:BoardinfoENETViewModel}">
                 <view:BoardinfoENETView/>
             </DataTemplate>
+            
             <DataTemplate DataType="{x:Type viewModel:TestENETViewModel}">
                 <view:TestENETView/>
+                
             </DataTemplate>
+            
+            <DataTemplate DataType="{x:Type viewModel:SettingsViewModel}">
+                <view:SettingsView/>
+            </DataTemplate>
+            
             <FontFamily x:Key="PMDG_NG3_DU_A">pack://application:,,,/Fonts/#PMDG_NGXu_DU_A</FontFamily>
             <FontFamily x:Key="PMDG_NG3_DU_B">pack://application:,,,/Fonts/#PMDG_NGXu_DU_B</FontFamily>
             <FontFamily x:Key="PMDG_NG3_DU_C">pack://application:,,,/Fonts/#PMDG_NGXu_DU_C</FontFamily>

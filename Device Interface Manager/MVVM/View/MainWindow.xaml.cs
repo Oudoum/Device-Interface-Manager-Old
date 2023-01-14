@@ -1,5 +1,4 @@
-﻿using Device_Interface_Manager.MVVM.Model;
-using Device_Interface_Manager.MVVM.ViewModel;
+﻿using Device_Interface_Manager.MVVM.ViewModel;
 using System;
 using System.ComponentModel;
 using System.Windows;
@@ -88,21 +87,12 @@ namespace Device_Interface_Manager.MVVM.View
         {
             MainViewModel.CloseInterfaceITDevices();
 
-
-            HomeModel.Profile3_MSFS_FBW_A32NX_MCDU?.Controller_331A_CDU_MCDUStop();
-            HomeModel.Profile4_MSFS_FBW_A32NX_MCDU?.Controller_331A_CDU_MCDUStop();
-            HomeModel.SimConnectStop();
-
-            MainViewModel.HomeVM.SimConnectMessageCancellationTokenSource?.Cancel();
-            HomeViewModel.SimConnectClient?.PMDG737CDU0?.Close();
-            HomeViewModel.SimConnectClient?.PMDG737CDU1?.Close();
-            MSFS_PMDG_737_MCP_USB.MSFSPMDG737MCPClose();
-
             notifyIcon.Dispose();
 
             MainWindowPosition();
 
             MainViewModel.HomeENETVM.SaveENETData();
+            MainViewModel.HomeUSBVM.SaveUSBData();
 
             Environment.Exit(Environment.ExitCode);
         }

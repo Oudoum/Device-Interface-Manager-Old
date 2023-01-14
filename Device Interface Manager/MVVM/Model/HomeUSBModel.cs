@@ -1,21 +1,18 @@
 ﻿namespace Device_Interface_Manager.MVVM.Model
 {
-    public class HomeENETModel
+    public class HomeUSBModel
     {
         public class Connection : CommunityToolkit.Mvvm.ComponentModel.ObservableObject
         {
             public int Id { get; set; }
             public string Name { get; set; }
-            private string _iPAddress;
-            public string IPAddress
+            private string _serial;
+            public string Serial
             {
-                get => _iPAddress;
+                get => _serial;
                 set
                 {
-                    if (System.Net.IPAddress.TryParse(value, out System.Net.IPAddress ipAddress))
-                    {
-                        _iPAddress = ipAddress.ToString();
-                    }
+                    _serial = value;
                 }
             }
 

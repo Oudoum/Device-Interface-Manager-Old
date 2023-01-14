@@ -8,7 +8,7 @@
 //------------------------------------------------------------------------------
 using System.Runtime.InteropServices;
 
-namespace Device_Interface_Manager.Profiles.PMDG
+namespace Device_Interface_Manager.MSFSProfiles.PMDG
 {
     public class PMDG_NG3_SDK
     {

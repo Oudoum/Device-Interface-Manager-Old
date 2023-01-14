@@ -16,7 +16,6 @@
 
     <Grid 
         x:Name="CDUGrid">
-
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
@@ -60,6 +59,5 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
     </Grid>
 </Window>

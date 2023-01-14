@@ -1,0 +1,308 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:viewModel="clr-namespace:Device_Interface_Manager.MVVM.ViewModel"
+             xmlns:Device_Interface_Manager="clr-namespace:Device_Interface_Manager"
+             xmlns:local="clr-namespace:Device_Interface_Manager.MVVM.View"
+             d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type={x:Type viewModel:HomeUSBViewModel}}"
+             x:Class="Device_Interface_Manager.MVVM.View.HomeUSBView"
+             mc:Ignorable="d"
+             d:DesignWidth="1040"
+             d:DesignHeight="560" 
+             HorizontalAlignment="Center"
+             VerticalAlignment="Top">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="320"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel>
+                <TextBlock 
+                Foreground="White"
+                FontSize="28"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Center">
+                Board information
+                </TextBlock>
+                <Border 
+                Margin="0,10,0,0"
+                BorderBrush="DodgerBlue"
+                BorderThickness="3"
+                Width="520"
+                CornerRadius="10"
+                Background="Transparent">
+                    <StackPanel>
+                        <ListView
+                        Margin="5"
+                        Background="Transparent"
+                        Foreground="White"
+                        FontSize="15"
+                        BorderThickness="0"
+                        Height="250"
+                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                        ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                        ItemsSource="{Binding BoardInfo}">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="Focusable" Value="False"/>
+                                    <Setter Property="Background" Value="Transparent" />
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListViewItem">
+                                                <ContentPresenter HorizontalAlignment="Left"
+                                                              Margin="0,5,0,0"/>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                        </ListView>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+            <ListView 
+                Grid.Column="1"
+                Margin="0,20,0,0"
+                Background="Transparent"
+                Foreground="White"
+                FontSize="18"
+                Width="230"
+                Height="200"
+                ItemsSource="{Binding BoardType}">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListViewItem">
+                                    <ContentPresenter HorizontalAlignment="Center"/>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.Template>
+                    <ControlTemplate>
+                        <Border 
+                                CornerRadius="10"
+                                BorderThickness="5"
+                                BorderBrush="CadetBlue">
+                            <ScrollViewer
+                                    HorizontalScrollBarVisibility="Hidden"
+                                    VerticalScrollBarVisibility="Auto">
+                                <ItemsPresenter/>
+                            </ScrollViewer>
+                        </Border>
+                    </ControlTemplate>
+                </ListView.Template>
+            </ListView>
+        </Grid>
+
+        <StackPanel Grid.Row="1">
+            <Button Command="{Binding StartUSBCommand}"
+                Margin="0,25,0,0"
+                VerticalAlignment="Top"
+                Height="30"
+                Width="150"
+                BorderThickness="0"
+                FontSize="20">
+                <Button.Resources>
+                    <Style TargetType="Button">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsUSBEnabled}" Value="True">
+                                <Setter Property="Content" Value="Start"/>
+                                <Setter Property="Background" Value="DarkGray"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsUSBEnabled}" Value="False">
+                                <Setter Property="Content" Value="Stop"/>
+                                <Setter Property="Background" Value="Green"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Resources>
+            </Button>
+            <DockPanel LastChildFill="False" HorizontalAlignment="Center">
+                <DataGrid
+                DockPanel.Dock="Top"
+                CanUserDeleteRows="False"
+                CanUserAddRows="False"
+                CanUserReorderColumns="False"
+                CanUserResizeColumns="False"
+                CanUserResizeRows="False"
+                CanUserSortColumns="False"
+                IsEnabled="{Binding IsUSBEnabled}"
+                ItemsSource="{Binding Connections}"
+                Margin="0,10,0,80"
+                Background="Transparent"
+                BorderThickness="5"
+                BorderBrush="#FF152A7F" 
+                VerticalAlignment="Top" 
+                HorizontalAlignment="Center"
+                HorizontalScrollBarVisibility="Disabled" 
+                GridLinesVisibility="All"
+                FontSize="18"
+                Foreground="White"
+                VerticalGridLinesBrush="#FF152A7F" 
+                HorizontalGridLinesBrush="#FF152A7F"
+                HeadersVisibility="Column"
+                AutoGenerateColumns="False">
+                    <DataGrid.Resources>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="BorderBrush" Value="#FF152A7F"/>
+                            <Setter Property="BorderThickness" Value="0,0,3,3"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        </Style>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="3,3,0,0"/>
+                        </Style>
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="Background" Value="Transparent"/>
+                        </Style>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                    <Setter Property="Opacity" Value="0.5"/>
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="False">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                </Trigger>
+                                <Trigger Property="IsEditing" Value="True">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="DataGridCell">
+                                                <TextBox
+                                                Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content.Text, Mode=TwoWay, UpdateSourceTrigger=Default}"/>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.Resources>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="300">
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Serial" Binding="{Binding Serial, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="150">
+                            <DataGridTextColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="AllowDrop" Value="True"/>
+                                    <EventSetter Event="Drop" Handler="DataGridCell_Serial_Drop"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="Opacity" Value="0.5"/>
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="False">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                        </Trigger>
+                                        <Trigger Property="IsEditing" Value="True">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="DataGridCell">
+                                                        <TextBox
+                                                            Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content.Text, Mode=TwoWay, UpdateSourceTrigger=Default}"/>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
+                        <DataGridTemplateColumn Header="Select Profile" Width="300">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox
+                                    ItemsSource="{Binding DataContext.Profiles, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:HomeUSBView}}}"
+                                    SelectedValuePath="Id"
+                                    SelectedValue="{Binding Profile.Id}"
+                                    SelectedItem="{Binding Profile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Name}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Delete" Width="80" IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="X" 
+                                        Background="Transparent" 
+                                        Foreground="White" BorderThickness="0" 
+                                        Command="{Binding DataContext.DeleteRowCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:HomeUSBView}}}" 
+                                        CommandParameter="{Binding}">
+                                        <Button.Resources>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Background" Value="Transparent" />
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Grid Background="Transparent" HorizontalAlignment="Center">
+                                                                <ContentPresenter />
+                                                            </Grid>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <Button Command="{Binding AddRowCommand}"
+                    Visibility="{Binding IsUSBEnabled,Converter={StaticResource BooleanToVisibilityConverter}}"
+                    BorderThickness="5,0,5,0"
+                    Foreground="White"
+                    BorderBrush="#FF152A7F"
+                    Background="#FF152A7F"
+                    Margin="0,-80,0,55"
+                    DockPanel.Dock="Top" 
+                    FontSize="16"
+                    Height="25"
+                    FontFamily="Arial Black">
+                    Add
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="0,0,3,3"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </DockPanel>
+        </StackPanel>
+
+    </Grid>
+</UserControl>

@@ -1,12 +1,13 @@
 ﻿using MobiFlight.SimConnectMSFS;
 using System.Threading;
-using System.Threading.Tasks;
 
-namespace Device_Interface_Manager.Profiles
+namespace Device_Interface_Manager.MSFSProfiles.WASM
 {
     public abstract class ENETWASM : ENETBase
     {
         protected SimConnectCache MobiFlightSimConnect { get; set; }
+
+        protected abstract void GetSimVar();
 
         protected void ReceiveSimConnectData(CancellationToken token)
         {
@@ -18,7 +19,7 @@ namespace Device_Interface_Manager.Profiles
                 {
                     break;
                 }
-                GetSimVar();
+                this.GetSimVar();
                 Thread.Sleep(10);
                 if (token.IsCancellationRequested)
                 {
@@ -40,20 +41,20 @@ namespace Device_Interface_Manager.Profiles
             this.MobiFlightSimConnect?.Stop();
         }
 
-        public async void Start(string ipaddress)
+        public void Start(string ipaddress)
         {
             this.CancellationTokenSource = new CancellationTokenSource();
-            await Task.Run(() => this.StartInterfaceITEthernetConnection(this.InterfaceITEthernet = new(), ipaddress));
+            this.StartInterfaceITEthernetConnection(ipaddress);
             if (this.ConnectionStatus == 2)
             {
-                this.StartinterfaceITEthernet(this.InterfaceITEthernet);
-                await Task.Run(() => this.MobiFlightSimConnectStart());
+                this.StartinterfaceITEthernet();
+                this.MobiFlightSimConnectStart();
                 this.ReceiveSimConnectDataThread = new Thread(() => this.ReceiveSimConnectData(this.CancellationTokenSource.Token))
                 {
                     Name = this.ReceiveSimConnectDataThread?.ToString()
                 };
                 this.ReceiveSimConnectDataThread?.Start();
-                this.ReceiveInterfaceITEthernetDataThread = new Thread(() => this.InterfaceITEthernet.GetinterfaceITEthernetData(this.INTERFACEIT_ETHERNET_KEY_NOTIFY_PROC = new(KeyPressedProcEthernet), this.CancellationTokenSource.Token))
+                this.ReceiveInterfaceITEthernetDataThread = new Thread(() => this.InterfaceITEthernet.GetinterfaceITEthernetData(this.INTERFACEIT_ETHERNET_KEY_NOTIFY_PROC = new(this.KeyPressedProcEthernet), this.CancellationTokenSource.Token))
                 {
                     Name = this.ReceiveInterfaceITEthernetDataThread?.ToString()
                 };
@@ -61,9 +62,9 @@ namespace Device_Interface_Manager.Profiles
             }
         }
 
-        public void Stop()
+        public override void Stop()
         {
-            this.CancellationTokenSource?.Cancel();
+            base.Stop();
             this.MobiFlightSimConnectStop();
         }
     }

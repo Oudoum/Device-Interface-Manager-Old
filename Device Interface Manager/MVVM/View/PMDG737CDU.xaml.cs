@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using static Device_Interface_Manager.Profiles.PMDG.PMDG_NG3_SDK;
+using static Device_Interface_Manager.MSFSProfiles.PMDG.PMDG_NG3_SDK;
 
 namespace Device_Interface_Manager.MVVM.View
 {
@@ -20,7 +20,7 @@ namespace Device_Interface_Manager.MVVM.View
             CDUGrid.Children.Clear();
 
             int Column = 0;
-            if (pMDG_NG3_CDU_Screen.CDU_Columns != null && pMDG_NG3_CDU_Screen.Powered)
+            if (pMDG_NG3_CDU_Screen.CDU_Columns is not null && pMDG_NG3_CDU_Screen.Powered)
             {
                 foreach (var columns in pMDG_NG3_CDU_Screen.CDU_Columns)
                 {
@@ -36,12 +36,19 @@ namespace Device_Interface_Manager.MVVM.View
                             Background = new SolidColorBrush(Colors.Transparent),
                             FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "./Fonts/#PMDG_NGXu_DU_B"),
                             Name = "Label" + Column.ToString() + Row.ToString(),
-                            Content = Convert.ToChar(row.Symbol)
+                            BorderThickness = new Thickness(0),
+                            Padding = new Thickness(0),
+                            Content = Convert.ToChar(row.Symbol),
                         };
                         Grid.SetColumn(lb, Column);
                         Grid.SetRow(lb, Row);
-                        Grid.SetColumnSpan(lb, 24);
-                        Grid.SetRowSpan(lb, 14);
+                        //Grid.SetColumnSpan(lb, 2);
+                        //Grid.SetRowSpan(lb, 2);
+
+                        if (editormode)
+                        {
+                            lb.BorderThickness = new Thickness(1);
+                        }
 
                         switch (row.Color)
                         {
@@ -77,11 +84,12 @@ namespace Device_Interface_Manager.MVVM.View
                         {
                             case PMDG_NG3_CDU_FLAG_SMALL_FONT:
                                 lb.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "./Fonts/#PMDG_NGXu_DU_C");
-                                lb.FontWeight = FontWeight.FromOpenTypeWeight(550);
+                                lb.FontWeight = FontWeight.FromOpenTypeWeight(600);
 
                                 break;
 
                             case PMDG_NG3_CDU_FLAG_REVERSE:
+                                lb.Background = (Brush)new BrushConverter().ConvertFrom("#B7D2EF");
                                 break;
 
                             case PMDG_NG3_CDU_FLAG_UNUSED:
@@ -91,7 +99,7 @@ namespace Device_Interface_Manager.MVVM.View
 
                             case PMDG_NG3_CDU_FLAG_SMALL_FONT + PMDG_NG3_CDU_FLAG_UNUSED:
                                 lb.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "./Fonts/#PMDG_NGXu_DU_C");
-                                lb.FontWeight = FontWeight.FromOpenTypeWeight(550);
+                                lb.FontWeight = FontWeight.FromOpenTypeWeight(600);
                                 lb.Foreground = new SolidColorBrush(Colors.White);
                                 lb.Opacity = 0.5;
                                 break;
@@ -285,6 +293,10 @@ namespace Device_Interface_Manager.MVVM.View
                         }
                         else
                         {
+                            if (fontSize == 1)
+                            {
+                                return;
+                            }
                             --fontSize;
                             foreach (Label cells in CDUGrid.Children)
                             {

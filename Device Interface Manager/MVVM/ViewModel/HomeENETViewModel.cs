@@ -1,18 +1,16 @@
-﻿using Device_Interface_Manager.Profiles.PMDG.B737;
-using Device_Interface_Manager.Profiles.FENIX.A320;
-using System.Collections.ObjectModel;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Device_Interface_Manager.interfaceIT.ENET;
+using Device_Interface_Manager.MSFSProfiles.PMDG;
+using Device_Interface_Manager.MSFSProfiles.WASM;
 using static Device_Interface_Manager.MVVM.Model.HomeENETModel;
-using static Device_Interface_Manager.MVVM.Model.HomeModel;
-using Device_Interface_Manager.MVVM.View;
-using Device_Interface_Manager.Profiles;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
@@ -20,7 +18,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
     partial class HomeENETViewModel
     {
         [ObservableProperty]
-        private bool isENETEnabled = true;
+        private bool _isENETEnabled = true;
 
         public ObservableCollection<Connection> Connections { get; set; } = new();
 
@@ -28,9 +26,8 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
         private CancellationTokenSource EthernetCancellationTokenSource { get; set; }
 
-
-        private MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_Events MSFS_FENIX_A320_Captain_Events { get; set; }
-        private MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data MSFS_FENIX_A320_Captain_MCDU_Data { get; set; }
+        private List<ENETPMDG> ListPMDG { get; set; } = new();
+        private List<ENETWASM> ListWASM { get; set; } = new();
 
         public HomeENETViewModel()
         {
@@ -50,148 +47,89 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
             if (!this.IsENETEnabled)
             {
-                MSFS_FENIX_A320_MCDU_En mSFS_FENIX_A320_MCDU_En = new();
-                mSFS_FENIX_A320_MCDU_En.Start("127.0.0.1");
-
-                this.EthernetCancellationTokenSource = new();
-                if (this.Connections.Any(o => o.Profile.Id == 1))
+                foreach (var connection in this.Connections) 
                 {
-                    InterfaceITEthernet interfaceITEthernet = new();
-                    int index = this.Connections.IndexOf(this.Connections.First(o => o.Profile.Id == 1));
-                    await Task.Run(() => StartInterfaceITEthernetConnection(index, interfaceITEthernet));
-                    if (this.Connections[index].Status == 2)
+                    switch (connection.Profile.Id)
                     {
-                        StartinterfaceITEthernet(interfaceITEthernet);
-                        await Task.Run(() => SimConnectStart());
-                        MainViewModel.HomeVM.MobiFlightWASMProfilesEnabled.Add(true);
-                        await Task.Run(() => simConnectCache.IsSimConnectConnected() == true);
-                        MSFS_FENIX_A320_Captain_MCDU_Data = new();
-                        MSFS_FENIX_A320_Captain_MCDU_Data.ReceivedDataThread = new Thread(() => MSFS_FENIX_A320_Captain_MCDU_Data.ReceiveDataThread(this.EthernetCancellationTokenSource.Token))
-                        {
-                            Name = "MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Data"
-                        };
-                        MSFS_FENIX_A320_Captain_MCDU_Data.ReceivedDataThread.Start();
-                        MSFS_FENIX_A320_Captain_Events = new();
-                        MSFS_FENIX_A320_Captain_Events.ReceivedDataThread = new Thread(() => interfaceITEthernet.GetinterfaceITEthernetData(MSFS_FENIX_A320_Captain_Events.EthernetKeyNotifyCallback, this.EthernetCancellationTokenSource.Token))
-                        {
-                            Name = "MSFS_FENIX_A320_MCDU_E.MSFS_FENIX_A320_Captain_MCDU_Events"
-                        };
-                        MSFS_FENIX_A320_Captain_Events.ReceivedDataThread.Start();
+                        case 1:
+                            MSFSProfiles.WASM.FENIX.A320.MCDU_L_E mCDU_L_E = new();
+                            await Task.Run(() => mCDU_L_E.Start(connection.IPAddress));
+                            connection.Status = mCDU_L_E.ConnectionStatus;
+                            this.ListWASM.Add(mCDU_L_E);
+                            break;
+
+                        case 2:
+                            MSFSProfiles.WASM.FENIX.A320.MCDU_R_E mCDU_R_E = new();
+                            await Task.Run(() => mCDU_R_E.Start(connection.IPAddress));
+                            connection.Status = mCDU_R_E.ConnectionStatus;
+                            this.ListWASM.Add(mCDU_R_E);
+                            break;
+
+                        case 3:
+                            MSFSProfiles.WASM.FBW.A32NX.MCDU_L_E mCDU_L_E1 = new();
+                            await Task.Run(() => mCDU_L_E1.Start(connection.IPAddress));
+                            connection.Status = mCDU_L_E1.ConnectionStatus;
+                            this.ListWASM.Add(mCDU_L_E1);
+                            break;
+
+                        case 4:
+                            MSFSProfiles.WASM.FBW.A32NX.MCDU_R_E mCDU_R_E1 = new();
+                            await Task.Run(() => mCDU_R_E1.Start(connection.IPAddress));
+                            connection.Status = mCDU_R_E1.ConnectionStatus;
+                            this.ListWASM.Add(mCDU_R_E1);
+                            break;
+
+                        case 5:
+                            MSFSProfiles.PMDG.B737.NG_CDU_L_E nG_CDU_L_E = new();
+                            await Task.Run(() => nG_CDU_L_E.Start(connection.IPAddress));
+                            connection.Status = nG_CDU_L_E.ConnectionStatus;
+                            this.ListPMDG.Add(nG_CDU_L_E);
+                            break;
+
+                        case 6:
+                            MSFSProfiles.PMDG.B737.NG_CDU_R_E nG_CDU_R_E = new();
+                            await Task.Run(() => nG_CDU_R_E.Start(connection.IPAddress));
+                            connection.Status = nG_CDU_R_E.ConnectionStatus;
+                            this.ListPMDG.Add(nG_CDU_R_E);
+                            break;
+
+                        default:
+                            break;
                     }
                 }
 
-                if (this.Connections.Any(o => o.Profile.Id == 5))
-                {
-                    MSFS_PMDG_737_CDU_E.InterfaceITEthernet = new();
-                    int index = this.Connections.IndexOf(this.Connections.First(o => o.Profile.Id == 5));
-                    await Task.Run(() => StartInterfaceITEthernetConnection(index, MSFS_PMDG_737_CDU_E.InterfaceITEthernet));
-                    if (this.Connections[index].Status == 2)
-                    {
-                        StartinterfaceITEthernet(MSFS_PMDG_737_CDU_E.InterfaceITEthernet);
-                        MainViewModel.HomeVM.SimConnectProfilesEnabled.Add(true);
-                        await MainViewModel.HomeVM.StartSimConnect();
-                        HomeViewModel.SimConnectClient.PMDG737CDU0 = new PMDG737CDU();
-                        MSFS_PMDG_737_CDU_E.MSFS_PMDG_737_Captain_Events.ReceivedDataThread = new Thread(() => MSFS_PMDG_737_CDU_E.InterfaceITEthernet.GetinterfaceITEthernetData(MSFS_PMDG_737_CDU_E.MSFS_PMDG_737_Captain_Events.EthernetKeyNotifyCallback, this.EthernetCancellationTokenSource.Token))
-                        {
-                            Name = "MSFS_PMDG_737_CDU_E.MSFS_PMDG_737_Captain_Events"
-                        };
-                        MSFS_PMDG_737_CDU_E.MSFS_PMDG_737_Captain_Events.ReceivedDataThread.Start();
-                    }
-
-                }
                 if (this.Connections.Any(o => o.Profile.Id == 99))
                 {
                     InterfaceITEthernet interfaceITEthernet = new();
                     int index = this.Connections.IndexOf(this.Connections.First(o => o.Profile.Id == 99));
-                    await Task.Run(() => StartInterfaceITEthernetConnection(index, interfaceITEthernet));
+                    interfaceITEthernet.Hostname = this.Connections[index].IPAddress;
+                    await Task.Run(() => interfaceITEthernet.InterfaceITEthernetConnection(this.EthernetCancellationTokenSource.Token));
+                    this.Connections[index].Status = interfaceITEthernet.ClientStatus;
                     if (this.Connections[index].Status == 2)
                     {
-                        StartinterfaceITEthernet(interfaceITEthernet);
-                        DataThread = new(() => interfaceITEthernet.GetinterfaceITEthernetData(INTERFACEIT_ETHERNET_KEY_NOTIFY_PROC = new(KeyPressedProcEthernet), this.EthernetCancellationTokenSource.Token))
+                        interfaceITEthernet.GetinterfaceITEthernetDataStart();
+                        interfaceITEthernet.GetinterfaceITEthernetInfo();
+                        MainViewModel.BoardinfoENETVM.InterfaceITEthernetInfoTextCollection.Add(interfaceITEthernet.InterfaceITEthernetInfoText);
+                        MainViewModel.BoardinfoENETVM.InterfaceITEthernetInfoIPCollection.Add(interfaceITEthernet.InterfaceITEthernetInfo.CLIENT);
+                        this.DataThread = new(() => interfaceITEthernet.GetinterfaceITEthernetData(INTERFACEIT_ETHERNET_KEY_NOTIFY_PROC = new(KeyPressedProcEthernet), this.EthernetCancellationTokenSource.Token))
                         {
                             Name = "TestDataThread"
                         };
-                        DataThread.Start();
+                        this.DataThread.Start();
                     }
                 }
             }
+
             if (this.IsENETEnabled)
             {
-                MainViewModel.BoardinfoENETVM.InterfaceITEthernetInfoTextCollection.Clear();
-                MainViewModel.BoardinfoENETVM.InterfaceITEthernetInfoIPCollection.Clear();
-                MainViewModel.BoardinfoENETVM.InterfaceITEthernetInfoText.Clear();
-                foreach (var status in this.Connections)
+                this.ListWASM.ForEach(o => o.Stop());
+                this.ListPMDG.ForEach(o => o.Stop());
+
+                this.ListWASM.Clear();
+                this.ListPMDG.Clear();
+
+                foreach (var status in this.Connections) 
                 {
-                    if (status.Status == 2)
-                    {
-                        switch (status.Profile.Id)
-                        {
-                            case 1:
-                                MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
-                                break;
-
-                            case 2:
-                                MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
-                                break;
-
-                            case 3:
-                                MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
-                                break;
-
-                            case 4:
-                                MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
-                                break;
-
-                            case 5:
-                                MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
-                                HomeViewModel.SimConnectClient.PMDG737CDU0?.Close();
-                                HomeViewModel.SimConnectClient.PMDG737CDU0 = null;
-                                break;
-
-                            case 6:
-                                MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
-                                break;
-
-                            case 7:
-                                MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
-                                break;
-
-                            case 8:
-                                MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
-                                break;
-
-                            case 9:
-                                MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
-                                break;
-
-                            case 10:
-                                MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
-                                break;
-
-                            case 11:
-                                MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
-                                break;
-
-                            case 12:
-                                MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
-                                break;
-
-                            case 13:
-                                MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
-                                break;
-
-                            case 14:
-                                MainViewModel.HomeVM.SimConnectProfilesEnabled.Remove(true);
-                                break;
-
-                            default:
-                                break;
-                        }
-                    }
-                    this.EthernetCancellationTokenSource?.Cancel();
-                    SimConnectStop();
-                    simConnectCache = null;
-                    MainViewModel.HomeVM.StopSimConnect();
                     status.Status = 0;
                 }
             }
@@ -225,63 +163,67 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         }
         // CDU/MCDU TEST END
 
-        private void StartInterfaceITEthernetConnection(int i, InterfaceITEthernet interfaceITEthernet)
-        {
-            interfaceITEthernet.Hostname = this.Connections[i].IPAddress;
-            interfaceITEthernet.InterfaceITEthernetConnection(this.EthernetCancellationTokenSource.Token);
-            this.Connections[i].Status = interfaceITEthernet.ClientStatus;
-        }
-
-        private void StartinterfaceITEthernet(InterfaceITEthernet interfaceITEthernet)
-        {
-            interfaceITEthernet.GetinterfaceITEthernetDataStart();
-            interfaceITEthernet.GetinterfaceITEthernetInfo();
-            MainViewModel.BoardinfoENETVM.InterfaceITEthernetInfoTextCollection.Add(interfaceITEthernet.InterfaceITEthernetInfoText);
-            MainViewModel.BoardinfoENETVM.InterfaceITEthernetInfoIPCollection.Add(interfaceITEthernet.InterfaceITEthernetInfo.CLIENT);
-        }
-
         private void CreateProfiles()
         {
             Profiles.Add(new Profile { Id = 0, Name = "-- None --" });
 
-            Profiles.Add(new Profile { Id = 1, Name = "Fenix A320 Captain MCDU" });
-            //Profiles.Add(new Profile { Id = 2, Name = "Fenix A320 Firstofficer MCDU" });
+            Profiles.Add(new Profile { Id = 1, Name = "Fenix A320 Left MCDU" });
+            Profiles.Add(new Profile { Id = 2, Name = "Fenix A320 Right MCDU" });
 
-            //Profiles.Add(new Profile { Id = 3, Name = "FBW A32NX Captain MCDU" });
-            //Profiles.Add(new Profile { Id = 4, Name = "FBW A32NX Firstofficer MCDU" });
+            Profiles.Add(new Profile { Id = 3, Name = "FBW A32NX Left MCDU" });
+            Profiles.Add(new Profile { Id = 4, Name = "FBW A32NX Right MCDU" });
 
-            Profiles.Add(new Profile { Id = 5, Name = "PMDG 737NG Captain CDU" });
-            //Profiles.Add(new Profile { Id = 6, Name = "PMDG 737NG Firstofficer CDU" });
+            Profiles.Add(new Profile { Id = 5, Name = "PMDG 737NG Left CDU" });
+            Profiles.Add(new Profile { Id = 6, Name = "PMDG 737NG Right CDU" });
 
-            //Profiles.Add(new Profile { Id = 7, Name = "PMDG 737MAX Captain CDU" });
-            //Profiles.Add(new Profile { Id = 8, Name = "PMDG 737MAX Firstofficer CDU" });
+            //Profiles.Add(new Profile { Id = 7, Name = "PMDG 737MAX Left CDU" });
+            //Profiles.Add(new Profile { Id = 8, Name = "PMDG 737MAX Right CDU" });
 
-            //Profiles.Add(new Profile { Id = 9, Name = "PMDG 777 Captain CDU" });
-            //Profiles.Add(new Profile { Id = 10, Name = "PMDG 777 Firstofficer CDU" });
+            //Profiles.Add(new Profile { Id = 9, Name = "PMDG 777 Left CDU" });
+            //Profiles.Add(new Profile { Id = 10, Name = "PMDG 777 Right CDU" });
             //Profiles.Add(new Profile { Id = 11, Name = "PMDG 777 Center CDU" });
 
-            //Profiles.Add(new Profile { Id = 12, Name = "PMDG 747 Captain CDU" });
-            //Profiles.Add(new Profile { Id = 13, Name = "PMDG 747 Firstofficer CDU" });
+            //Profiles.Add(new Profile { Id = 12, Name = "PMDG 747 Left CDU" });
+            //Profiles.Add(new Profile { Id = 13, Name = "PMDG 747 Right CDU" });
             //Profiles.Add(new Profile { Id = 14, Name = "PMDG 747 Center CDU" });
 
             Profiles.Add(new Profile { Id = 99, Name = "CDU/MCDU Test" });
         }
 
+        private const string enet = @"Profiles\ENET.json";
         private void LoadENETData()
         {
-            if (File.Exists("enet.json"))
+            if (File.Exists(enet))
             {
-                this.Connections = JsonConvert.DeserializeObject<ObservableCollection<Connection>>(File.ReadAllText("enet.json"));
+                this.Connections = JsonConvert.DeserializeObject<ObservableCollection<Connection>>(File.ReadAllText(enet));
             }
         }
 
         public void SaveENETData()
         {
+            if (this.Connections.Count == 0)
+            {
+                if (Directory.Exists((enet.Remove(8))))
+                {
+                    File.Delete(enet);
+                }
+                return;
+            }
             foreach (var status in this.Connections)
             {
                 status.Status = 0;
             }
-            File.WriteAllText("enet.json", JsonConvert.SerializeObject(this.Connections, Formatting.Indented));
+            Directory.CreateDirectory(enet.Remove(8));
+            string json = JsonConvert.SerializeObject(this.Connections, Formatting.Indented);
+            if (File.Exists(enet))
+            {
+                if (File.ReadAllText(enet) != json)
+                {
+                    File.WriteAllText(enet, json);
+                }
+                return;
+            }
+            File.WriteAllText(enet, json);
         }
     }
 }

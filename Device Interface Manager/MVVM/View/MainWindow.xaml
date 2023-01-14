@@ -84,7 +84,7 @@
                     Content="Home"
                     IsChecked="{Binding RadioButtonHomeIsChecked}"
                     Style="{StaticResource MenuButtonTheme}"
-                    Command="{Binding HomeViewCommand}"/>
+                    Command="{Binding HomeUSBViewCommand}"/>
 
                 <RadioButton 
                     Content="LED Test"
@@ -141,14 +141,11 @@
                 </StackPanel.Style>
             </StackPanel>
 
-
-
-
             <StackPanel
                 VerticalAlignment="Top"
+                HorizontalAlignment="Center"
                 Orientation="Horizontal"
-                Height="35"
-                Margin="10,207,0,317" 
+                Margin="0,207,0,0" 
                 Grid.Row="1">
                 <Label
                         Margin="0,0,10,0"
@@ -156,10 +153,10 @@
                         Foreground="White"
                         FontSize="18"/>
                 <ToggleButton
-                        Style="{DynamicResource ToggleStyle}"
-                        Content="USB/Ethernet"
-                        Height="20" 
-                        Command="{Binding HomeENETViewToggleCommand}"/>
+                    Style="{DynamicResource ToggleStyle}"
+                    Content="USB/Ethernet"
+                    Height="20" 
+                    Command="{Binding HomeENETViewToggleCommand}"/>
                 <Label
                         Margin="10,0,0,0"
                         Content="ENET"
@@ -169,7 +166,7 @@
 
 
             <Grid 
-                    Margin="0,250,0,97" 
+                    Margin="0,250,0,70" 
                     Grid.Row="1"
                     Visibility="{Binding Enet, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <ListView 
@@ -278,7 +275,7 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Command="{Binding DeviceCountRefreshCommand}"
-                IsEnabled="{Binding HomeVM.AreProfilesNotActive}"
+                IsEnabled="{Binding HomeUSBVM.IsUSBEnabled}"
                 >
                 <Button.Resources>
                     <Style TargetType="{x:Type Button}">
@@ -330,43 +327,6 @@
                 Grid.Column="1"
                 Margin="770,0,70,0"/>
 
-            <Grid Margin="10,0,0,10"
-                  Grid.Row="1"
-                  HorizontalAlignment="Left"
-                  VerticalAlignment="Bottom" 
-                  Height="70" 
-                  Width="180">
-
-
-                <TextBlock
-                    Text="{Binding InterfaceITAPIVersion}"
-                    Foreground="White"
-                    Margin="0,50,0,0"
-                    Visibility="{Binding Enet, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-
-                <TextBlock Text="Autohide to tray on startup" 
-                           Foreground="White" 
-                           Margin="0,25,0,25"/>
-                <TextBlock Text="Hide to tray if minimized" 
-                           Foreground="White" 
-                           Margin="0,0,0,50"/>
-
-
-                <CheckBox 
-                    Width="15"
-                    Height="15"
-                    IsChecked="{Binding AutoHide}"
-                    ToolTip="Software will start directly into the tray and all assigned profiles will start automatically"
-                    Margin="155,25,10,25"/>
-
-                <CheckBox
-                    ToolTip="Software will minimize to tray"
-                    IsChecked="{Binding MinimizedHide}"
-                    Width="15"
-                    Height="15"
-                    Margin="155,0,10,55"/>
-            </Grid>
-
             <Ellipse 
                 HorizontalAlignment="Center"
                 Grid.Column="1" 
@@ -379,7 +339,7 @@
                     <Style TargetType="{x:Type Ellipse}">
                         <Setter Property="Fill" Value="Red"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding HomeVM.IsSimConnectOpen}" Value="True">
+                            <DataTrigger Binding="{Binding HomeUSBVM.IsSimConnectOpen}" Value="True">
                                 <Setter Property="Fill" Value="LimeGreen"/>
                             </DataTrigger>
                         </Style.Triggers>
@@ -387,6 +347,21 @@
                 </Ellipse.Style>
             </Ellipse>
 
+            <Grid
+                Grid.Row="1"
+                Margin="0,0,0,10"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Bottom" 
+                Height="50" >
+                <Button
+                    BorderThickness="0"
+                    Background="Transparent"
+                    Command="{Binding SettingsViewCommand}">
+                    <Image 
+                        RenderOptions.BitmapScalingMode="HighQuality"
+                        Source="pack://application:,,,/Images/settings-cog.png"/>
+                </Button>
+            </Grid>
         </Grid>
     </Border>
 </Window>

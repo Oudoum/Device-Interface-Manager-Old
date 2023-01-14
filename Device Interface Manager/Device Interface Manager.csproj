@@ -29,6 +29,7 @@
     <None Remove="Fonts\PMDG_NG3_DU_A.ttf" />
     <None Remove="Fonts\PMDG_NG3_DU_B.ttf" />
     <None Remove="Fonts\PMDG_NG3_DU_C.ttf" />
+    <None Remove="Images\settings-cog.png" />
     <None Remove="Images\small_logo_white_RGB_Discord.png" />
     <None Remove="interfaceITAPI x64.dll" />
     <None Remove="Microsoft.FlightSimulator.SimConnect.dll" />
@@ -62,9 +63,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Images\small_logo_white_RGB_Discord.png">
+    <Resource Include="Images\settings-cog.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </Resource>
+    <Resource Include="Images\small_logo_white_RGB_Discord.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Content Include="interfaceITAPI x64.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -140,7 +144,6 @@
     <PackageReference Include="Autoupdater.NET.Official" Version="1.7.6" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1462.37" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
 

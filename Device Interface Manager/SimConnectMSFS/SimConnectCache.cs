@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using System.Windows;
 using Device_Interface_Manager.MVVM.ViewModel;
 using Microsoft.FlightSimulator.SimConnect;
 
@@ -65,7 +63,7 @@ namespace MobiFlight.SimConnectMSFS
                 m_oSimConnect?.ReceiveMessage();
             } catch(Exception)
             {
-                MainViewModel.HomeVM.IsSimConnectOpen = false;
+                MainViewModel.HomeUSBVM.IsSimConnectOpen = false;
                 Disconnect();
             }
         }
@@ -166,7 +164,7 @@ namespace MobiFlight.SimConnectMSFS
 
         private void SimConnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
         {
-            MainViewModel.HomeVM.IsSimConnectOpen = _simConnectConnected = true;   //EDIT BY ME
+            MainViewModel.HomeUSBVM.IsSimConnectOpen = _simConnectConnected = true;   //EDIT BY ME
             // register Events
             foreach (string GroupKey in Events.Keys) { 
                 foreach (Tuple<string, uint> eventItem in Events[GroupKey])
@@ -301,7 +299,7 @@ namespace MobiFlight.SimConnectMSFS
 
             if (_simConnectConnected || _connected)
             {
-                MainViewModel.HomeVM.IsSimConnectOpen = _simConnectConnected = false; //EDIT BY ME
+                MainViewModel.HomeUSBVM.IsSimConnectOpen = _simConnectConnected = false; //EDIT BY ME
                 _connected = false;
 
                 Closed?.Invoke(this, null);

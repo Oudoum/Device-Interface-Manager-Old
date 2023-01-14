@@ -17,13 +17,13 @@ namespace Device_Interface_Manager.MVVM.ViewModel
     {
         public static int session;
         private const string updateLink = "https://raw.githubusercontent.com/Oudoum/Device-Interface-Manager-Download/main/Updates/AutoUpdaterDIM.xml";
-        private const string version = "0.0.9.9";
+        private const string version = "1.0.0";
 
 
         public RelayCommand ProfileCreatorCommand { get; set; }
 
 
-        public static HomeViewModel HomeVM { get; set; }
+        public static HomeUSBViewModel HomeUSBVM { get; set; }
 
         public static HomeENETViewModel HomeENETVM { get; set; }
 
@@ -39,6 +39,8 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
         public static TestENETViewModel TestENETVM { get; set; }
 
+        public static SettingsViewModel SettingsVM { get; set; }
+
 
         public bool RadioButtonHomeIsChecked { get; set; } = true;
         public bool RadioButtonLEDTestIsChecked { get; set; }
@@ -52,25 +54,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
         public static string DIMVersion { get; } = "DIM Version " + version;
 
-        public static string InterfaceITAPIVersion { get; set; }
-
         public string TotalControllers { get; set; }
-
-        [ObservableProperty]
-        private bool _minimizedHide = Properties.Settings.Default.MinimizedHide;
-        partial void OnMinimizedHideChanged(bool value)
-        {
-            Properties.Settings.Default.MinimizedHide = value;
-            Properties.Settings.Default.Save();
-        }
-
-        [ObservableProperty]
-        private bool _autoHide = Properties.Settings.Default.AutoHide;
-        partial void OnAutoHideChanged(bool value)
-        {
-            Properties.Settings.Default.AutoHide = value;
-            Properties.Settings.Default.Save();
-        }
 
         [ObservableProperty]
         private bool _enet = Properties.Settings.Default.ENET;
@@ -95,7 +79,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                 this._selectedController = selectedController = value;
                 GetCurrentView();
                 OnPropertyChanged();
-                HomeVM?.GetBoardInfo();
+                HomeUSBVM?.GetBoardInfo();
             }
         }
 
@@ -103,15 +87,15 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         {
             AutoUpdater.InstalledVersion = new Version(version);
 
-            GetInterfaceITAPIVersion();
-            GetInterfaceITDevices();
+            this.GetInterfaceITDevices();
 
-            HomeVM = new HomeViewModel();
+            HomeUSBVM = new HomeUSBViewModel();
             HomeENETVM = new HomeENETViewModel();
             BoardinfoENETVM = new BoardinfoENETViewModel();
             TestENETVM = new TestENETViewModel();
+            SettingsVM = new SettingsViewModel();
 
-            USB_ENET();
+            this.USB_ENET();
 
             //Opens ProfileCreator
             //MOVE THIS TO VIEW!
@@ -126,7 +110,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
             this.SelectedController = 0;
 
-            DIMUpdater();
+            this.DIMUpdater();
         }
 
         [RelayCommand]
@@ -136,9 +120,9 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         }
 
         [RelayCommand]
-        private void HomeView()
+        private void HomeUSBView()
         {
-            this.CurrentView = HomeVM;
+            this.CurrentView = HomeUSBVM;
         }
 
         [RelayCommand]
@@ -173,7 +157,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
             {
                 this.RadioButtonHomeIsChecked = true;
                 OnPropertyChanged(nameof(RadioButtonHomeIsChecked));
-                this.CurrentView = HomeVM;
+                this.CurrentView = HomeUSBVM;
                 this.Enet = !this.Enet;
             }
             OnPropertyChanged(nameof(Enet));
@@ -198,6 +182,26 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         }
 
         [RelayCommand]
+        private void SettingsView()
+        {
+            this.CurrentView = SettingsVM;
+            this.RadioButtonBoardinfoENETIsChecked = false;
+            this.RadioButtonHomeENETIsChecked = false;
+            this.RadioButtonHomeIsChecked = false;
+            this.RadioButtonLEDTestIsChecked = false;
+            this.RadioButtonOtherTestIsChecked = false;
+            this.RadioButtonSwitchTesteIsChecked = false;
+            this.RadioButtonTestENETIsChecked = false;
+            OnPropertyChanged(nameof(this.RadioButtonBoardinfoENETIsChecked));
+            OnPropertyChanged(nameof(this.RadioButtonHomeENETIsChecked));
+            OnPropertyChanged(nameof(this.RadioButtonHomeIsChecked));
+            OnPropertyChanged(nameof(this.RadioButtonLEDTestIsChecked));
+            OnPropertyChanged(nameof(this.RadioButtonOtherTestIsChecked));
+            OnPropertyChanged(nameof(this.RadioButtonSwitchTesteIsChecked));
+            OnPropertyChanged(nameof(this.RadioButtonTestENETIsChecked));
+        }
+
+        [RelayCommand]
         private void DeviceCountRefresh()
         {
             CloseInterfaceITDevices();
@@ -218,21 +222,12 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         {
             if (this.Enet)
             {
-                this.CurrentView = HomeVM;
+                this.CurrentView = HomeUSBVM;
             }
             else if (!this.Enet)
             {
                 this.CurrentView = HomeENETVM;
             }
-        }
-
-        private void GetInterfaceITAPIVersion()
-        {
-            int intSize = 0;
-            _ = interfaceIT_GetAPIVersion(null, ref intSize);
-            StringBuilder aPIVersion = new(intSize);
-            _ = interfaceIT_GetAPIVersion(aPIVersion, ref intSize);
-            InterfaceITAPIVersion = "interfaceIT API version " + aPIVersion;
         }
 
         private void GetInterfaceITDevices()

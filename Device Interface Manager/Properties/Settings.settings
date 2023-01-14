@@ -8,39 +8,6 @@
     <Setting Name="AutoHide" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="MSFS_PMDG_B737_Captain_CDU_SN" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="MSFS_PMDG_B737_Firstofficer_CDU_SN" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="MSFS_PMDG_B737_MCP_SN" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="MSFS_FBW_A32NX_Captain_MCDU_SN" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="MSFS_FBW_A32NX_MCDU_SelectedDisplay" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="MSFS_FBW_A32NX_Firstofficer_MCDU_SN" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="MSFS_FENIX_A320_Captain_MCDU_SN" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="PMDG737CDU0Top" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="PMDG737CDU0Left" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="PMDG737CDU0Height" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">770</Value>
-    </Setting>
-    <Setting Name="PMDG737CDU0Width" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">830</Value>
-    </Setting>
     <Setting Name="MainWindowTop" Type="System.Double" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
@@ -56,68 +23,8 @@
     <Setting Name="MainWindowMaximized" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="PMDG737CDU1Top" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="PMDG737CDU1Left" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="PMDG737CDU1Height" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">770</Value>
-    </Setting>
-    <Setting Name="PMDG737CDU1Width" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">830</Value>
-    </Setting>
-    <Setting Name="PMDG737CDU0FontSize" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">60</Value>
-    </Setting>
-    <Setting Name="PMDG737CDU0MarginTop" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="PMDG737CDU0MarginBottom" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="PMDG737CDU0MarginLeft" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="PMDG737CDU0MarginRight" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="PMDG737CDU0GridWidth" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="PMDG737CDU0GridHeight" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="PMDG737CDU1FontSize" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">60</Value>
-    </Setting>
-    <Setting Name="PMDG737CDU1MarginTop" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="PMDG737CDU1MarginBottom" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="PMDG737CDU1MarginLeft" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="PMDG737CDU1MarginRight" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="PMDG737CDU1GridWidth" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="PMDG737CDU1GridHeight" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
     <Setting Name="ENET" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="PMDG737CDU0Fullscreen" Type="System.Byte" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="PMDG737CDU1Fullscreen" Type="System.Byte" Scope="User">
-      <Value Profile="(Default)">0</Value>
     </Setting>
   </Settings>
 </SettingsFile>
