@@ -4,7 +4,6 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
 {
     public class PMDG_737_CDU_Screen
     {
-        public byte FullScreen { get; set; } = 0;
         public double Top { get; set; } = 0;
         public double Left { get; set; } = 0;
         public double Height { get; set; } = 770;
@@ -19,7 +18,6 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
 
         public void Load(PMDG737CDU pMDG737CDU)
         {
-            pMDG737CDU.WindowState = (System.Windows.WindowState)this.FullScreen;
             pMDG737CDU.Top = this.Top;
             pMDG737CDU.Left = this.Left;
             pMDG737CDU.Height = this.Height;
@@ -35,7 +33,6 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
 
         public void Save(PMDG737CDU pMDG737CDU)
         {
-            this.FullScreen = (byte)pMDG737CDU.WindowState;
             this.Top = pMDG737CDU.Top;
             this.Left = pMDG737CDU.Left;
             this.Height = pMDG737CDU.Height;
