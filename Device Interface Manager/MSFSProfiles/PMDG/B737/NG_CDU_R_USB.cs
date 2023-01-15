@@ -72,11 +72,33 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
         private byte _lTS_PedPanelKnob;
         private byte LTS_PedPanelKnob
         {
+            get => this._lTS_PedPanelKnob;
             set
             {
-                if (this._lTS_PedPanelKnob != value)
+                if (this._lTS_PedPanelKnob != value && this.ELEC_BusPowered_3)
                 {
                     _ = interfaceIT_Brightness_Set(this.Device.Session, (int)((this._lTS_PedPanelKnob = value) * 1.5));
+                }
+            }
+        }
+
+        private bool _eLEC_BusPowered_3;
+        private bool ELEC_BusPowered_3
+        {
+            get => this._eLEC_BusPowered_3;
+            set
+            {
+                if (this._eLEC_BusPowered_3 != value)
+                {
+                    this._eLEC_BusPowered_3 = value;
+                    if (value)
+                    {
+                        _ = interfaceIT_Brightness_Set(this.Device.Session, (int)(this.LTS_PedPanelKnob * 1.5));
+                    }
+                    else if (!value)
+                    {
+                        _ = interfaceIT_Brightness_Set(this.Device.Session, 0);
+                    }
                 }
             }
         }
@@ -90,7 +112,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
         protected override void PMDGSimConnectStart()
         {
             base.PMDGSimConnectStart();
-            B737.PMDG737 pMDG737 = new();
+            PMDG737 pMDG737 = new();
             pMDG737.RegisterPMDGDataEvents(this.PMDGSimConnectClient.Simconnect);
             this.pMDG737CDU.Closing += PMDG737CDU_Closing;
             this.pMDG737CDU.Dispatcher.BeginInvoke(delegate ()
@@ -116,7 +138,8 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
                 this.CDU_annunFAIL1 = ((PMDG_NG3_Data)data.dwData[0]).CDU_annunFAIL[1];
                 this.CDU_annunOFST1 = ((PMDG_NG3_Data)data.dwData[0]).CDU_annunOFST[1];
                 this.LTS_PedPanelKnob = ((PMDG_NG3_Data)data.dwData[0]).LTS_PedPanelKnob;
-                if (!((PMDG_NG3_Data)data.dwData[0]).ELEC_BusPowered[3])
+                this.ELEC_BusPowered_3 = ((PMDG_NG3_Data)data.dwData[0]).ELEC_BusPowered[3];
+                if (!this.ELEC_BusPowered_3)
                 {
                     this.pMDG737CDU?.Dispatcher.BeginInvoke(delegate ()
                     {
