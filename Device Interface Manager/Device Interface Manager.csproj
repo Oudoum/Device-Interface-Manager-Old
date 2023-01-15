@@ -35,12 +35,6 @@
     <None Remove="LICENSE.txt" />
     <None Remove="Microsoft.FlightSimulator.SimConnect.dll" />
     <None Remove="MSFS2020-module\install-mobiflight-event-module.cmd" />
-    <None Remove="MSFS2020-module\mobiflight-event-module\ContentInfo\mobiflight-event-module\Thumbnail.jpg" />
-    <None Remove="MSFS2020-module\mobiflight-event-module\layout.json" />
-    <None Remove="MSFS2020-module\mobiflight-event-module\manifest.json" />
-    <None Remove="MSFS2020-module\mobiflight-event-module\modules\events.txt" />
-    <None Remove="MSFS2020-module\mobiflight-event-module\modules\events.user.txt.inactive" />
-    <None Remove="MSFS2020-module\mobiflight-event-module\modules\MobiFlightWasmModule.wasm" />
     <None Remove="MSFS2020-module\README.txt" />
     <None Remove="Presets\msfs2020_eventids.cip" />
     <None Remove="Presets\msfs2020_eventids_user.cip.inactive" />
