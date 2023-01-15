@@ -434,7 +434,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
             get => this._mAIN_LightsSelector;
             set
             {
-                if (this._mAIN_LightsSelector != value && this.MCP_indication_powered && value != 2)
+                if (this._mAIN_LightsSelector != value && value != 2)
                 {
                     this._mAIN_LightsSelector = value;
                     if (value == 1)
@@ -463,7 +463,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
             get => this._mCP_IASMach;
             set
             {
-                if (this._mCP_IASMach != value && this.MCP_indication_powered && this.MAIN_LightsSelector != 0)
+                if (this._mCP_IASMach != value && this.MAIN_LightsSelector != 0)
                 {
                     this._mCP_IASMach = value;
                     if (value < 1)
@@ -484,7 +484,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
         {
             set
             {
-                if (this._mCP_Course_0 != value && this.MCP_indication_powered && this.MAIN_LightsSelector != 0)
+                if (this._mCP_Course_0 != value && this.MAIN_LightsSelector != 0)
                 {
                     _ = interfaceIT_7Segment_Display(this.Device.Session, (this._mCP_Course_0 = value)?.ToString("D3"), 1);
                 }
@@ -496,7 +496,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
         {
             set
             {
-                if (this._mCP_Course_1 != value && this.MCP_indication_powered && this.MAIN_LightsSelector != 0)
+                if (this._mCP_Course_1 != value && this.MAIN_LightsSelector != 0)
                 {
                     _ = interfaceIT_7Segment_Display(this.Device.Session, (this._mCP_Course_1 = value)?.ToString("D3"), 22);
                 }
@@ -508,7 +508,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
         {
             set
             {
-                if (this._mCP_Heading != value && this.MCP_indication_powered && this.MAIN_LightsSelector != 0)
+                if (this._mCP_Heading != value && this.MAIN_LightsSelector != 0)
                 {
                     _ = interfaceIT_7Segment_Display(this.Device.Session, (this._mCP_Heading = value)?.ToString("D3"), 9);
                 }
@@ -572,7 +572,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
         {
             set
             {
-                if (this._mCP_Altitude != value && this.MCP_indication_powered && this.MAIN_LightsSelector != 0)
+                if (this._mCP_Altitude != value && this.MAIN_LightsSelector != 0)
                 {
                     this._mCP_Altitude = value;
                     if (value == 0)
@@ -607,7 +607,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
         {
             set
             {
-                if (this._mCP_VertSpeed != value && this.MCP_indication_powered && !this.MCP_VertSpeedBlank && this.MAIN_LightsSelector != 0)
+                if (this._mCP_VertSpeed != value && !this.MCP_VertSpeedBlank && this.MAIN_LightsSelector != 0)
                 {
                     this._mCP_VertSpeed = value;
                     if (value == 0)
@@ -667,22 +667,23 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
                 this.LTS_MainPanelKnob_0 = ((PMDG_NG3_Data)data.dwData[0]).LTS_MainPanelKnob[0];
 
                 this.MCP_indication_powered = ((PMDG_NG3_Data)data.dwData[0]).MCP_indication_powered;
-                this.MAIN_LightsSelector = ((PMDG_NG3_Data)data.dwData[0]).MAIN_LightsSelector;
-                this.MCP_IASMach = ((PMDG_NG3_Data)data.dwData[0]).MCP_IASMach;
-                this.MCP_Course_0 = ((PMDG_NG3_Data)data.dwData[0]).MCP_Course[0];
-                this.MCP_Course_1 = ((PMDG_NG3_Data)data.dwData[0]).MCP_Course[1];
-                this.MCP_Heading = ((PMDG_NG3_Data)data.dwData[0]).MCP_Heading;
                 this.MCP_IASBlank = ((PMDG_NG3_Data)data.dwData[0]).MCP_IASBlank;
                 this.MCP_IASOverspeedFlash = ((PMDG_NG3_Data)data.dwData[0]).MCP_IASOverspeedFlash;
                 this.MCP_IASUnderspeedFlash = ((PMDG_NG3_Data)data.dwData[0]).MCP_IASUnderspeedFlash;
-                this.MCP_Altitude = ((PMDG_NG3_Data)data.dwData[0]).MCP_Altitude;
                 this.MCP_VertSpeedBlank = ((PMDG_NG3_Data)data.dwData[0]).MCP_VertSpeedBlank;
-                this.MCP_VertSpeed = ((PMDG_NG3_Data)data.dwData[0]).MCP_VertSpeed;
+            
+                if (this.MCP_indication_powered)
+                {
+                    this.MAIN_LightsSelector = ((PMDG_NG3_Data)data.dwData[0]).MAIN_LightsSelector;
+                    this.MCP_IASMach = ((PMDG_NG3_Data)data.dwData[0]).MCP_IASMach;
+                    this.MCP_Heading = ((PMDG_NG3_Data)data.dwData[0]).MCP_Heading;
+                    this.MCP_Course_0 = ((PMDG_NG3_Data)data.dwData[0]).MCP_Course[0];
+                    this.MCP_Course_1 = ((PMDG_NG3_Data)data.dwData[0]).MCP_Course[1];
+                    this.MCP_Altitude = ((PMDG_NG3_Data)data.dwData[0]).MCP_Altitude;
+                    this.MCP_VertSpeed = ((PMDG_NG3_Data)data.dwData[0]).MCP_VertSpeed;
+                }
             }
         }
-
-
-
 
         private uint EFIS_CPT_VOR_ADF_SELECTOR_R;
         private uint EFIS_CPT_VOR_ADF_SELECTOR_L;

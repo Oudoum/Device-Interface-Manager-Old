@@ -15,7 +15,7 @@ namespace Device_Interface_Manager.MSFSProfiles
         //The SimConnect_Open function is used to send a request to the Microsoft Flight Simulator server to open up communications with a new client.
         public void SimConnect_Open()
         {
-            while (MainViewModel.HomeUSBVM.IsSimConnectOpen == false)
+            while (true)
             {
                 try
                 {
