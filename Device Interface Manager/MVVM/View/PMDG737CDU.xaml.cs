@@ -17,7 +17,7 @@ namespace Device_Interface_Manager.MVVM.View
 
         public void GetPMDGCDUCells(PMDG_NG3_CDU_Screen pMDG_NG3_CDU_Screen)
         {
-            CDUGrid.Children.Clear();
+            this.ClearPMDGCDUCells();
 
             int Column = 0;
             if (pMDG_NG3_CDU_Screen.CDU_Columns is not null && pMDG_NG3_CDU_Screen.Powered)
@@ -27,11 +27,11 @@ namespace Device_Interface_Manager.MVVM.View
                     int Row = 0;
                     foreach (var row in columns.CDU_ROWS)
                     {
-                        lb = new Label
+                        this.lb = new Label
                         {
-                            FontSize = fontSize,
+                            FontSize = this.fontSize,
                             FontWeight = FontWeights.Normal,
-                            Margin = new Thickness(marginLeft, marginTop, marginRight, marginBottom),
+                            Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom),
                             BorderBrush = new SolidColorBrush(Colors.White),
                             Background = new SolidColorBrush(Colors.Transparent),
                             FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "./Fonts/#PMDG_NGXu_DU_B"),
@@ -42,38 +42,36 @@ namespace Device_Interface_Manager.MVVM.View
                         };
                         Grid.SetColumn(lb, Column);
                         Grid.SetRow(lb, Row);
-                        //Grid.SetColumnSpan(lb, 2);
-                        //Grid.SetRowSpan(lb, 2);
 
-                        if (editormode)
+                        if (this.editormode)
                         {
-                            lb.BorderThickness = new Thickness(1);
+                            this.lb.BorderThickness = new Thickness(1);
                         }
 
                         switch (row.Color)
                         {
                             case PMDG_NG3_CDU_COLOR_WHITE:
-                                lb.Foreground = new SolidColorBrush(Colors.White);
+                                this.lb.Foreground = new SolidColorBrush(Colors.White);
                                 break;
 
                             case PMDG_NG3_CDU_COLOR_CYAN:
-                                lb.Foreground = new SolidColorBrush(Colors.Cyan);
+                                this.lb.Foreground = new SolidColorBrush(Colors.Cyan);
                                 break;
 
                             case PMDG_NG3_CDU_COLOR_GREEN:
-                                lb.Foreground = (Brush)new BrushConverter().ConvertFrom("#10EF22");
+                                this.lb.Foreground = (Brush)new BrushConverter().ConvertFrom("#10EF22");
                                 break;
 
                             case PMDG_NG3_CDU_COLOR_MAGENTA:
-                                lb.Foreground = new SolidColorBrush(Colors.Magenta);
+                                this.lb.Foreground = new SolidColorBrush(Colors.Magenta);
                                 break;
 
                             case PMDG_NG3_CDU_COLOR_AMBER:
-                                lb.Foreground = (Brush)new BrushConverter().ConvertFrom("#F4CD2A");
+                                this.lb.Foreground = (Brush)new BrushConverter().ConvertFrom("#F4CD2A");
                                 break;
 
                             case PMDG_NG3_CDU_COLOR_RED:
-                                lb.Foreground = new SolidColorBrush(Colors.Red);
+                                this.lb.Foreground = new SolidColorBrush(Colors.Red);
                                 break;
 
                             default:
@@ -83,25 +81,25 @@ namespace Device_Interface_Manager.MVVM.View
                         switch (row.Flags)
                         {
                             case PMDG_NG3_CDU_FLAG_SMALL_FONT:
-                                lb.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "./Fonts/#PMDG_NGXu_DU_C");
-                                lb.FontWeight = FontWeight.FromOpenTypeWeight(600);
+                                this.lb.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "./Fonts/#PMDG_NGXu_DU_C");
+                                this.lb.FontWeight = FontWeight.FromOpenTypeWeight(600);
 
                                 break;
 
                             case PMDG_NG3_CDU_FLAG_REVERSE:
-                                lb.Background = (Brush)new BrushConverter().ConvertFrom("#B7D2EF");
+                                this.lb.Background = (Brush)new BrushConverter().ConvertFrom("#B7D2EF");
                                 break;
 
                             case PMDG_NG3_CDU_FLAG_UNUSED:
-                                lb.Foreground = new SolidColorBrush(Colors.White);
-                                lb.Opacity = 0.5;
+                                this.lb.Foreground = new SolidColorBrush(Colors.White);
+                                this.lb.Opacity = 0.5;
                                 break;
 
                             case PMDG_NG3_CDU_FLAG_SMALL_FONT + PMDG_NG3_CDU_FLAG_UNUSED:
-                                lb.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "./Fonts/#PMDG_NGXu_DU_C");
-                                lb.FontWeight = FontWeight.FromOpenTypeWeight(600);
-                                lb.Foreground = new SolidColorBrush(Colors.White);
-                                lb.Opacity = 0.5;
+                                this.lb.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "./Fonts/#PMDG_NGXu_DU_C");
+                                this.lb.FontWeight = FontWeight.FromOpenTypeWeight(600);
+                                this.lb.Foreground = new SolidColorBrush(Colors.White);
+                                this.lb.Opacity = 0.5;
                                 break;
 
                             default:
@@ -113,101 +111,101 @@ namespace Device_Interface_Manager.MVVM.View
                             case 0:
                                 if (Row == 0)
                                 {
-                                    lb.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "./Fonts/#PMDG_NGXu_DU_A");
+                                    this.lb.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "./Fonts/#PMDG_NGXu_DU_A");
                                 }
-                                CDUGrid.Children.Add(lb);
+                                this.CDUGrid.Children.Add(lb);
                                 break;
 
                             case 1:
-                                CDUGrid.Children.Add(lb);
+                                this.CDUGrid.Children.Add(lb);
                                 break;
 
                             case 2:
-                                CDUGrid.Children.Add(lb);
+                                this.CDUGrid.Children.Add(lb);
                                 break;
 
                             case 3:
-                                CDUGrid.Children.Add(lb);
+                                this.CDUGrid.Children.Add(lb);
                                 break;
 
                             case 4:
-                                CDUGrid.Children.Add(lb);
+                                this.CDUGrid.Children.Add(lb);
                                 break;
 
                             case 5:
-                                CDUGrid.Children.Add(lb);
+                                this.CDUGrid.Children.Add(lb);
                                 break;
 
                             case 6:
-                                CDUGrid.Children.Add(lb);
+                                this.CDUGrid.Children.Add(lb);
                                 break;
 
                             case 7:
-                                CDUGrid.Children.Add(lb);
+                                this.CDUGrid.Children.Add(lb);
                                 break;
 
                             case 8:
-                                CDUGrid.Children.Add(lb);
+                                this.CDUGrid.Children.Add(lb);
                                 break;
 
                             case 9:
-                                CDUGrid.Children.Add(lb);
+                                this.CDUGrid.Children.Add(lb);
                                 break;
 
                             case 10:
-                                CDUGrid.Children.Add(lb);
+                                this.CDUGrid.Children.Add(lb);
                                 break;
 
                             case 11:
-                                CDUGrid.Children.Add(lb);
+                                this.CDUGrid.Children.Add(lb);
                                 break;
 
                             case 12:
-                                CDUGrid.Children.Add(lb);
+                                this.CDUGrid.Children.Add(lb);
                                 break;
 
                             case 13:
-                                CDUGrid.Children.Add(lb);
+                                this.CDUGrid.Children.Add(lb);
                                 break;
 
                             case 14:
-                                CDUGrid.Children.Add(lb);
+                                this.CDUGrid.Children.Add(lb);
                                 break;
 
                             case 15:
-                                CDUGrid.Children.Add(lb);
+                                this.CDUGrid.Children.Add(lb);
                                 break;
 
                             case 16:
-                                CDUGrid.Children.Add(lb);
+                                this.CDUGrid.Children.Add(lb);
                                 break;
 
                             case 17:
-                                CDUGrid.Children.Add(lb);
+                                this.CDUGrid.Children.Add(lb);
                                 break;
 
                             case 18:
-                                CDUGrid.Children.Add(lb);
+                                this.CDUGrid.Children.Add(lb);
                                 break;
 
                             case 19:
-                                CDUGrid.Children.Add(lb);
+                                this.CDUGrid.Children.Add(lb);
                                 break;
 
                             case 20:
-                                CDUGrid.Children.Add(lb);
+                                this.CDUGrid.Children.Add(lb);
                                 break;
 
                             case 21:
-                                CDUGrid.Children.Add(lb);
+                                this.CDUGrid.Children.Add(lb);
                                 break;
 
                             case 22:
-                                CDUGrid.Children.Add(lb);
+                                this.CDUGrid.Children.Add(lb);
                                 break;
 
                             case 23:
-                                CDUGrid.Children.Add(lb);
+                                this.CDUGrid.Children.Add(lb);
                                 break;
 
                             default:
@@ -223,14 +221,14 @@ namespace Device_Interface_Manager.MVVM.View
 
         public void ClearPMDGCDUCells()
         {
-            CDUGrid.Children.Clear();
+            this.CDUGrid.Children.Clear();
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                DragMove();
+                this.DragMove();
             }
         }
 
@@ -238,33 +236,30 @@ namespace Device_Interface_Manager.MVVM.View
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                if (WindowState != WindowState.Maximized)
+                if (this.WindowState != WindowState.Maximized)
                 {
-                    WindowState = WindowState.Maximized;
+                    this.WindowState = WindowState.Maximized;
+                    return;
                 }
-                else
-                {
-                    WindowState = WindowState.Normal;
-                }
+                this.WindowState = WindowState.Normal;
             }
         }
 
         bool editormode = false;
         private void Window_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            foreach (Label cells in CDUGrid.Children)
+            foreach (Label cells in this.CDUGrid.Children)
             {
                 if (cells.BorderThickness == new Thickness(0))
                 {
                     cells.BorderThickness = new Thickness(1);
-                    editormode = true;
                 }
-                else
+                else 
                 {
                     cells.BorderThickness = new Thickness(0);
-                    editormode = false;
                 }
             }
+            this.editormode = !this.editormode;
         }
 
         public double fontSize;
@@ -274,193 +269,166 @@ namespace Device_Interface_Manager.MVVM.View
         public double marginRight;
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (!editormode && e.Key == Key.Escape)
+            if (!this.editormode && e.Key == Key.Escape)
             {
                 Hide();
             }
-            if (editormode)
+            if (this.editormode)
             {
                 switch (e.Key)
                 {
-                    case Key.F:
-                        if (Keyboard.IsKeyDown(Key.LeftShift))
+                    case Key.F when Keyboard.IsKeyDown(Key.LeftShift):
+                        ++this.fontSize;
+                        foreach (Label cells in this.CDUGrid.Children)
                         {
-                            ++fontSize;
-                            foreach (Label cells in CDUGrid.Children)
-                            {
-                                cells.FontSize = fontSize;
-                            }
+                            cells.FontSize = this.fontSize;
                         }
-                        else
+                        break;
+                    case Key.F when fontSize != 1:
+                        --this.fontSize;
+                        foreach (Label cells in this.CDUGrid.Children)
                         {
-                            if (fontSize == 1)
-                            {
-                                return;
-                            }
-                            --fontSize;
-                            foreach (Label cells in CDUGrid.Children)
-                            {
-                                cells.FontSize = fontSize;
-                            }
+                            cells.FontSize = this.fontSize;
                         }
                         break;
 
-                    case Key.Space:
-                        if (Keyboard.IsKeyDown(Key.LeftShift))
+                    case Key.Space when Keyboard.IsKeyDown(Key.LeftShift):
+                        this.CDUGrid.ClearValue(HeightProperty);
+                        this.CDUGrid.ClearValue(WidthProperty);
+                        break;
+
+                    case Key.Enter when Keyboard.IsKeyDown(Key.LeftShift):
+                        this.CDUGrid.ClearValue(HeightProperty);
+                        this.CDUGrid.ClearValue(WidthProperty);
+                        foreach (Label cells in this.CDUGrid.Children)
                         {
-                            CDUGrid.ClearValue(HeightProperty);
-                            CDUGrid.ClearValue(WidthProperty);
+                            cells.FontSize = 60;
+                            cells.Margin = new Thickness(0);
+                            this.marginLeft = 0;
+                            this.marginTop = 0;
+                            this.marginRight = 0;
+                            this.marginBottom = 0;
                         }
                         break;
 
-                    case Key.Enter:
-                        if (Keyboard.IsKeyDown(Key.LeftShift))
+                    case Key.PageUp when Keyboard.IsKeyDown(Key.LeftShift):
+                        --this.marginTop;
+                        foreach (Label cells in this.CDUGrid.Children)
                         {
-                            CDUGrid.ClearValue(HeightProperty);
-                            CDUGrid.ClearValue(WidthProperty);
-                            foreach (Label cells in CDUGrid.Children)
-                            {
-                                cells.FontSize = 60;
-                                cells.Margin = new Thickness(0);
-                                marginLeft = 0;
-                                marginTop = 0;
-                                marginRight = 0;
-                                marginBottom = 0;
-                            }
+                            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
                         }
                         break;
 
                     case Key.PageUp:
-
-                        if (Keyboard.IsKeyDown(Key.LeftShift))
+                        ++this.marginBottom;
+                        foreach (Label cells in this.CDUGrid.Children)
                         {
-                            --marginTop;
-                            foreach (Label cells in CDUGrid.Children)
-                            {
-                                cells.Margin = new Thickness(marginLeft, marginTop, marginRight, marginBottom);
-                            }
+                            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
                         }
-                        else
+                        break;
+
+                    case Key.PageDown when Keyboard.IsKeyDown(Key.LeftShift):
+                        ++this.marginTop;
+                        foreach (Label cells in this.CDUGrid.Children)
                         {
-                            ++marginBottom;
-                            foreach (Label cells in CDUGrid.Children)
-                            {
-                                cells.Margin = new Thickness(marginLeft, marginTop, marginRight, marginBottom);
-                            }
+                            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
                         }
                         break;
 
                     case Key.PageDown:
-                        if (Keyboard.IsKeyDown(Key.LeftShift))
+                        --this.marginBottom;
+                        foreach (Label cells in this.CDUGrid.Children)
                         {
-                            ++marginTop;
-                            foreach (Label cells in CDUGrid.Children)
-                            {
-                                cells.Margin = new Thickness(marginLeft, marginTop, marginRight, marginBottom);
-                            }
+                            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
                         }
-                        else
+                        break;
+
+                    case Key.Add when Keyboard.IsKeyDown(Key.LeftShift):
+                        ++this.marginRight;
+                        foreach (Label cells in this.CDUGrid.Children)
                         {
-                            --marginBottom;
-                            foreach (Label cells in CDUGrid.Children)
-                            {
-                                cells.Margin = new Thickness(marginLeft, marginTop, marginRight, marginBottom);
-                            }
+                            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
                         }
                         break;
 
                     case Key.Add:
-                        if (Keyboard.IsKeyDown(Key.LeftShift))
+                        --this.marginLeft;
+                        foreach (Label cells in this.CDUGrid.Children)
                         {
-                            ++marginRight;
-                            foreach (Label cells in CDUGrid.Children)
-                            {
-                                cells.Margin = new Thickness(marginLeft, marginTop, marginRight, marginBottom);
-                            }
+                            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
                         }
-                        else
+                        break;
+
+                    case Key.Subtract when Keyboard.IsKeyDown(Key.LeftShift):
+                        --this.marginRight;
+                        foreach (Label cells in this.CDUGrid.Children)
                         {
-                            --marginLeft;
-                            foreach (Label cells in CDUGrid.Children)
-                            {
-                                cells.Margin = new Thickness(marginLeft, marginTop, marginRight, marginBottom);
-                            }
+                            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
                         }
                         break;
 
                     case Key.Subtract:
-                        if (Keyboard.IsKeyDown(Key.LeftShift))
+                        ++this.marginLeft;
+                        foreach (Label cells in this.CDUGrid.Children)
                         {
-                            --marginRight;
-                            foreach (Label cells in CDUGrid.Children)
-                            {
-                                cells.Margin = new Thickness(marginLeft, marginTop, marginRight, marginBottom);
-                            }
-                        }
-                        else
-                        {
-                            ++marginLeft;
-                            foreach (Label cells in CDUGrid.Children)
-                            {
-                                cells.Margin = new Thickness(marginLeft, marginTop, marginRight, marginBottom);
-                            }
+                            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
                         }
                         break;
 
 
                     case Key.W:
-                        CDUGrid.Height = CDUGrid.ActualHeight;
-                        CDUGrid.Height = --CDUGrid.Height;
+                        this.CDUGrid.Height = this.CDUGrid.ActualHeight;
+                        this.CDUGrid.Height = --this.CDUGrid.Height;
                         break;
 
                     case Key.A:
-                        CDUGrid.Width = CDUGrid.ActualWidth;
-                        CDUGrid.Width = ++CDUGrid.Width;
+                        this.CDUGrid.Width = this.CDUGrid.ActualWidth;
+                        this.CDUGrid.Width = ++this.CDUGrid.Width;
                         break;
 
                     case Key.S:
-                        CDUGrid.Height = CDUGrid.ActualHeight;
-                        CDUGrid.Height = ++CDUGrid.Height;
+                        this.CDUGrid.Height = this.CDUGrid.ActualHeight;
+                        this.CDUGrid.Height = ++this.CDUGrid.Height;
                         break;
 
                     case Key.D:
-                        CDUGrid.Width = CDUGrid.ActualWidth;
-                        CDUGrid.Width = --CDUGrid.Width;
+                        this.CDUGrid.Width = this.CDUGrid.ActualWidth;
+                        this.CDUGrid.Width = --this.CDUGrid.Width;
                         break;
 
                     case Key.Up:
-                        --marginTop;
-                        ++marginBottom;
-                        foreach (Label cells in CDUGrid.Children)
+                        --this.marginTop;
+                        ++this.marginBottom;
+                        foreach (Label cells in this.CDUGrid.Children)
                         {
-                            cells.Margin = new Thickness(marginLeft, marginTop, marginRight, marginBottom);
+                            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
                         }
                         break;
 
                     case Key.Left:
-                        --marginLeft;
-                        ++marginRight;
-                        foreach (Label cells in CDUGrid.Children)
+                        --this.marginLeft;
+                        ++this.marginRight;
+                        foreach (Label cells in this.CDUGrid.Children)
                         {
-                            cells.Margin = new Thickness(marginLeft, marginTop, marginRight, marginBottom);
+                            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
                         }
                         break;
 
                     case Key.Down:
-                        ++marginTop;
-                        --marginBottom;
-                        foreach (Label cells in CDUGrid.Children)
+                        ++this.marginTop;
+                        --this.marginBottom;
+                        foreach (Label cells in this.CDUGrid.Children)
                         {
-                            cells.Margin = new Thickness(marginLeft, marginTop, marginRight, marginBottom);
+                            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
                         }
                         break;
 
                     case Key.Right:
-                        ++marginLeft;
-                        --marginRight;
-                        foreach (Label cells in CDUGrid.Children)
+                        ++this.marginLeft;
+                        --this.marginRight;
+                        foreach (Label cells in this.CDUGrid.Children)
                         {
-                            cells.Margin = new Thickness(marginLeft, marginTop, marginRight, marginBottom);
+                            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
                         }
                         break;
 
