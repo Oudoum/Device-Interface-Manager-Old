@@ -14,8 +14,7 @@ using static Device_Interface_Manager.MVVM.Model.HomeENETModel;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
-    [INotifyPropertyChanged]
-    partial class HomeENETViewModel
+    partial class HomeENETViewModel : ObservableObject
     {
         [ObservableProperty]
         private bool _isENETEnabled = true;

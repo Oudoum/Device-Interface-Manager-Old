@@ -4,8 +4,7 @@ namespace Device_Interface_Manager.MVVM.Model
 {
     public partial class LEDTestModel
     {
-        [INotifyPropertyChanged]
-        public partial class DeviceLED
+        public partial class DeviceLED : ObservableObject
         {
             public int Id { get; set; }
             public string Name { get; set; }

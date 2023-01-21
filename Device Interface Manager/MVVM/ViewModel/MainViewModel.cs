@@ -12,8 +12,7 @@ using Device_Interface_Manager.interfaceIT.USB;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
-    [INotifyPropertyChanged]
-    partial class MainViewModel
+    partial class MainViewModel : ObservableObject
     {
         public static int session;
         private const string updateLink = "https://raw.githubusercontent.com/Oudoum/Device-Interface-Manager-Download/main/Updates/AutoUpdaterDIM.xml";
@@ -110,11 +109,11 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
             this.SelectedController = 0;
 
-            this.DIMUpdater();
+            DIMUpdater();
         }
 
         [RelayCommand]
-        private void DIMUpdater()
+        private static void DIMUpdater()
         {
             AutoUpdater.Start(updateLink);
         }

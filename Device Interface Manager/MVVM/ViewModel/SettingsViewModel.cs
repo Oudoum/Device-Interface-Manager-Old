@@ -7,8 +7,7 @@ using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
-    [INotifyPropertyChanged]
-    partial class SettingsViewModel
+    partial class SettingsViewModel : ObservableObject
     {
         [ObservableProperty]
         private int _hubHopUpdateProgress;

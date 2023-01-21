@@ -8,8 +8,7 @@ using static Device_Interface_Manager.MVVM.ViewModel.MainViewModel;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
-    [INotifyPropertyChanged]
-    partial class OtherTestsViewModel
+    partial class OtherTestsViewModel : ObservableObject
     {
         public CancellationTokenSource GetValuesCancellationTokenSource { get; set; }
 

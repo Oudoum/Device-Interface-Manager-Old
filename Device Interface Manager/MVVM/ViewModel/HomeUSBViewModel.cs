@@ -14,8 +14,7 @@ using static Device_Interface_Manager.MVVM.Model.HomeUSBModel;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
-    [INotifyPropertyChanged]
-    partial class HomeUSBViewModel
+    partial class HomeUSBViewModel : ObservableObject
     {
         [ObservableProperty]
         private bool _isSimConnectOpen;

@@ -6,8 +6,7 @@ using static Device_Interface_Manager.MVVM.ViewModel.MainViewModel;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
-    [INotifyPropertyChanged]
-    partial class SwitchTestViewModel
+    partial class SwitchTestViewModel : ObservableObject
     {
         public ObservableCollection<string> SwitchLog { get; set; } = new ObservableCollection<string>();
 
