@@ -15,6 +15,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
         public double GridWidth { get; set; } = double.NaN;
         public double GridHeight { get; set; } = double.NaN;
         public double FontSize { get; set; } = 60;
+        public byte Fullscreen { get; set; } = 0;
 
         public void Load(PMDG737CDU pMDG737CDU)
         {
@@ -44,6 +45,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
             this.GridWidth = pMDG737CDU.CDUGrid.Width;
             this.GridHeight = pMDG737CDU.CDUGrid.Height;
             this.FontSize = pMDG737CDU.fontSize;
+            this.Fullscreen = (byte)pMDG737CDU.WindowState;
         }
     }
 }

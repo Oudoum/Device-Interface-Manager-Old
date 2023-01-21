@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using System.Windows;
 using Microsoft.FlightSimulator.SimConnect;
 using Newtonsoft.Json;
 using static Device_Interface_Manager.MSFSProfiles.PMDG.PMDG_NG3_SDK;
@@ -88,7 +89,8 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
                 this.PMDGSimConnectClient.Simconnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_L_DOT, MOUSE_FLAG_LEFTSINGLE, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 Thread.Sleep(500);
                 this.PMDGSimConnectClient.Simconnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_L_CLR, MOUSE_FLAG_LEFTSINGLE, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
-                this.pMDG737CDU?.Show();
+                this.pMDG737CDU.Show();
+                this.pMDG737CDU.WindowState = (WindowState)this.pMDG_737_CDU_Screen.Fullscreen;
             });
         }
 

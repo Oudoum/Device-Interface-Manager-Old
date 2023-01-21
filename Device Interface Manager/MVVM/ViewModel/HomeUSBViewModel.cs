@@ -34,9 +34,6 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         private List<USBPMDG> ListPMDG { get; set; } = new();
         private List<USBWASM> ListWASM { get; set; } = new();
 
-        private MSFSProfiles.PMDG.B737.NG_CDU_L NG_CDU_L { get; set; }
-        private MSFSProfiles.PMDG.B737.NG_CDU_R NG_CDU_R { get; set; }
-
         public HomeUSBViewModel()
         {
             CreateProfiles();
@@ -169,16 +166,6 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                             this.ListPMDG.Add(nG_MCP_USB);
                             break;
 
-                        case 50:
-                            this.NG_CDU_L = new();
-                            await Task.Run(() => this.NG_CDU_L.Start());
-                            break;
-
-                        case 51:
-                            this.NG_CDU_R = new();
-                            await Task.Run(() => this.NG_CDU_R.Start());
-                            break;
-
                         default:
                             break;
                     }
@@ -187,9 +174,6 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
             if(this.IsUSBEnabled) 
             { 
-                this.NG_CDU_L?.Stop();
-                this.NG_CDU_R?.Stop();
-
                 this.ListWASM.ForEach(o => o.Stop());
                 this.ListPMDG.ForEach(o => o.Stop());
 
@@ -242,9 +226,6 @@ namespace Device_Interface_Manager.MVVM.ViewModel
             //Profiles.Add(new Profile { Id = 12, Name = "PMDG 747 Left CDU" });
             //Profiles.Add(new Profile { Id = 13, Name = "PMDG 747 Right CDU" });
             //Profiles.Add(new Profile { Id = 14, Name = "PMDG 747 Center CDU" });
-
-            Profiles.Add(new Profile { Id = 50, Name = "PMDG 737NG Left CDU Screen" });
-            Profiles.Add(new Profile { Id = 51, Name = "PMDG 737NG Right CDU Screen" });
         }
 
         private const string usb = @"Profiles\USB.json";
