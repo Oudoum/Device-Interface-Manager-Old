@@ -178,6 +178,8 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
                 this.ListWASM.Clear();
                 this.ListPMDG.Clear();
+
+                this.SaveUSBData();
             }
         }
 

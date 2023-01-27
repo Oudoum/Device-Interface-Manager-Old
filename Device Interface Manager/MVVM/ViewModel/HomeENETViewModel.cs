@@ -127,10 +127,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                 this.ListWASM.Clear();
                 this.ListPMDG.Clear();
 
-                foreach (var status in this.Connections) 
-                {
-                    status.Status = 0;
-                }
+                this.SaveENETData();
             }
         }
 

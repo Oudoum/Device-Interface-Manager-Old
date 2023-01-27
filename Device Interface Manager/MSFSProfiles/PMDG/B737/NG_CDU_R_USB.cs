@@ -115,6 +115,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
             base.PMDGSimConnectStart();
             PMDG737 pMDG737 = new();
             pMDG737.RegisterPMDGDataEvents(this.PMDGSimConnectClient.Simconnect);
+            this.pMDG737CDU.EditormodeOff += PMDG737CDU_EditormodeOff;
             this.pMDG737CDU.Closing += PMDG737CDU_Closing;
             this.pMDG737CDU.Dispatcher.BeginInvoke(delegate ()
             {
@@ -126,6 +127,11 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
                 this.pMDG737CDU.Show();
                 this.pMDG737CDU.WindowState = (WindowState)this.pMDG_737_CDU_Screen.Fullscreen;
             });
+        }
+
+        private void PMDG737CDU_EditormodeOff(object sender, System.EventArgs e)
+        {
+            this.SaveScrenProperties();
         }
 
         private readonly MVVM.View.PMDG737CDU pMDG737CDU = new();
@@ -171,6 +177,11 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
         }
 
         private void PMDG737CDU_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            this.SaveScrenProperties();
+        }
+
+        private void SaveScrenProperties()
         {
             this.pMDG_737_CDU_Screen.Save(this.pMDG737CDU);
             string json = JsonConvert.SerializeObject(pMDG_737_CDU_Screen, Formatting.Indented);

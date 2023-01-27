@@ -262,6 +262,8 @@ namespace Device_Interface_Manager.MVVM.View
             this.editormode = !this.editormode;
         }
 
+        public event EventHandler EditormodeOff;
+
         public double fontSize;
         public double marginTop;
         public double marginBottom;
@@ -269,9 +271,14 @@ namespace Device_Interface_Manager.MVVM.View
         public double marginRight;
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (!this.editormode && e.Key == Key.Escape)
+            if (!this.editormode)
             {
-                Hide();
+                this.EditormodeOff?.Invoke(this, e);
+                if (e.Key == Key.Escape)
+                {
+                    Hide();
+                }
+                return;
             }
             if (this.editormode)
             {
