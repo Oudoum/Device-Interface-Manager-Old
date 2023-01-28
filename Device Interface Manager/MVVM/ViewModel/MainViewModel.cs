@@ -1,26 +1,21 @@
-﻿using Device_Interface_Manager.MVVM.View;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using AutoUpdaterDotNET;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using static Device_Interface_Manager.interfaceIT.USB.InterfaceIT_BoardInfo.BoardInformationStructure;
-using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
 using Device_Interface_Manager.interfaceIT.USB;
+using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
+using static Device_Interface_Manager.interfaceIT.USB.InterfaceIT_BoardInfo.BoardInformationStructure;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
     partial class MainViewModel : ObservableObject
     {
-        public static int session;
+        public int session;
         private const string updateLink = "https://raw.githubusercontent.com/Oudoum/Device-Interface-Manager-Download/main/Updates/AutoUpdaterDIM.xml";
         private const string version = "1.0.1";
-
-
-        public RelayCommand ProfileCreatorCommand { get; set; }
-
 
         public static HomeUSBViewModel HomeUSBVM { get; set; }
 
@@ -49,9 +44,9 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         public bool RadioButtonBoardinfoENETIsChecked { get; set; }
         public bool RadioButtonTestENETIsChecked { get; set; }
 
-        public static int controllerCount;
+        public int controllerCount;
 
-        public static string DIMVersion { get; } = "DIM Version " + version;
+        public string DIMVersion { get; } = "DIM Version " + version;
 
         public string TotalControllers { get; set; }
 
@@ -95,17 +90,6 @@ namespace Device_Interface_Manager.MVVM.ViewModel
             SettingsVM = new SettingsViewModel();
 
             this.USB_ENET();
-
-            //Opens ProfileCreator
-            //MOVE THIS TO VIEW!
-            this.ProfileCreatorCommand = new RelayCommand(() =>
-            {
-                if (System.Windows.Application.Current.Windows.OfType<ProfileCreator>().Any() == false)
-                {
-                    ProfileCreator profileCreator = new();
-                    profileCreator.Show();
-                }
-            });
 
             this.SelectedController = 0;
 
@@ -251,7 +235,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
             OnPropertyChanged(nameof(TotalControllers));
         }
 
-        private static void GetDeviceList()
+        private void GetDeviceList()
         {
             int intSize = 0;
             _ = interfaceIT_GetDeviceList(null, ref intSize, null);

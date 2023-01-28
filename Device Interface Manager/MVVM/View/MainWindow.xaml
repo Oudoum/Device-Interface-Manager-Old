@@ -313,7 +313,6 @@
                 Width="200"
                 Margin="420,20,420,20"
                 FontFamily="Arial Black"
-                Command="{Binding ProfileCreatorCommand}"
                 Grid.Column="1"/>
 
             <Label

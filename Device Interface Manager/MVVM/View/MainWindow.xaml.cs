@@ -1,6 +1,7 @@
 ﻿using Device_Interface_Manager.MVVM.ViewModel;
 using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Forms = System.Windows.Forms;
@@ -60,7 +61,7 @@ namespace Device_Interface_Manager.MVVM.View
         //Show Window if NotifyIcon is clicked
         private void NotifyIcon_MouseClick(object sender, EventArgs e)
         {
-            if(((Forms.MouseEventArgs)e).Button == Forms.MouseButtons.Left)
+            if (((Forms.MouseEventArgs)e).Button == Forms.MouseButtons.Left)
             {
                 Show();
                 ShowInTaskbar = true;
@@ -136,6 +137,17 @@ namespace Device_Interface_Manager.MVVM.View
             if (Properties.Settings.Default.MainWindowMaximized)
             {
                 WindowState = WindowState.Maximized;
+            }
+        }
+
+
+        //ProfileCreator
+        private void OpenProfileCreatorWindow()
+        {
+            if (Application.Current.Windows.OfType<ProfileCreator>().Any() == false)
+            {
+                ProfileCreator profileCreator = new();
+                profileCreator.Show();
             }
         }
 

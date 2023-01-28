@@ -34,8 +34,6 @@ namespace Device_Interface_Manager.MSFSProfiles
         {
             this.InterfaceITEthernet?.GetinterfaceITEthernetDataStart();
             this.InterfaceITEthernet?.GetinterfaceITEthernetInfo();
-            MainViewModel.BoardinfoENETVM.InterfaceITEthernetInfoTextCollection.Add(this.InterfaceITEthernet.InterfaceITEthernetInfoText); //change this later
-            MainViewModel.BoardinfoENETVM.InterfaceITEthernetInfoIPCollection.Add(this.InterfaceITEthernet.InterfaceITEthernetInfo.CLIENT); //change this later
         }
     }
 }

@@ -108,8 +108,6 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                     {
                         interfaceITEthernet.GetinterfaceITEthernetDataStart();
                         interfaceITEthernet.GetinterfaceITEthernetInfo();
-                        MainViewModel.BoardinfoENETVM.InterfaceITEthernetInfoTextCollection.Add(interfaceITEthernet.InterfaceITEthernetInfoText);
-                        MainViewModel.BoardinfoENETVM.InterfaceITEthernetInfoIPCollection.Add(interfaceITEthernet.InterfaceITEthernetInfo.CLIENT);
                         this.DataThread = new(() => interfaceITEthernet.GetinterfaceITEthernetData(INTERFACEIT_ETHERNET_KEY_NOTIFY_PROC = new(KeyPressedProcEthernet), this.EthernetCancellationTokenSource.Token))
                         {
                             Name = "TestDataThread"
