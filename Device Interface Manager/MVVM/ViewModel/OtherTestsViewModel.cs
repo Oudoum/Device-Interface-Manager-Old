@@ -168,7 +168,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
             }
         }
 
-        public void Reset7SegmentDisplay()
+        public static void Reset7SegmentDisplay()
         {
             _ = InterfaceITAPI_Data.interfaceIT_7Segment_Display(GetSelectedDeviceSession(), new string(' ', DeviceList[GetSeletedController()].DeviceInfo.n7SegmentCount), 1);
         }
