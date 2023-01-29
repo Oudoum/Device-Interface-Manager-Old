@@ -114,6 +114,11 @@
         </Grid>
 
         <StackPanel Grid.Row="1">
+            <Grid HorizontalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
             <Button Command="{Binding StartUSBCommand}"
                 Margin="0,25,0,0"
                 VerticalAlignment="Top"
@@ -136,6 +141,30 @@
                     </Style>
                 </Button.Resources>
             </Button>
+                <Button 
+                    Grid.Column="1"
+                    Command="{Binding ResetScreensCommand}"
+                    Margin="25,25,0,0"
+                    VerticalAlignment="Top"
+                    Height="30"
+                    Width="180"
+                    FontSize="20"
+                    Background="DarkGray">
+                    Reset CDU/MCDU
+                    <Button.Resources>
+                        <Style TargetType="Button">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsUSBEnabled}" Value="True">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsUSBEnabled}" Value="False">
+                                    <Setter  Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </Grid>
             <DockPanel LastChildFill="False" HorizontalAlignment="Center">
                 <DataGrid
                 DockPanel.Dock="Top"

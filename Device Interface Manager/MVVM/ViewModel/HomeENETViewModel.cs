@@ -11,6 +11,7 @@ using Device_Interface_Manager.interfaceIT.ENET;
 using Device_Interface_Manager.MSFSProfiles.PMDG;
 using Device_Interface_Manager.MSFSProfiles.WASM;
 using static Device_Interface_Manager.MVVM.Model.HomeENETModel;
+using System.Runtime.CompilerServices;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
@@ -182,6 +183,13 @@ namespace Device_Interface_Manager.MVVM.ViewModel
             //Profiles.Add(new Profile { Id = 14, Name = "PMDG 747 Center CDU" });
 
             Profiles.Add(new Profile { Id = 99, Name = "CDU/MCDU Test" });
+        }
+
+        [RelayCommand]
+        private void ResetScreens()
+        {
+            this.ListPMDG.ForEach(o => { o.pMDG737CDU.Top = 0; o.pMDG737CDU.Left = 0; });
+            this.ListWASM.ForEach(o => { o.fBWA32NXMCDU.Top = 0; o.fBWA32NXMCDU.Left = 0; });
         }
 
         private const string enet = @"Profiles\ENET.json";

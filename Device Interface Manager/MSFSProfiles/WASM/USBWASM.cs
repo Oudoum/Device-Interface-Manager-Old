@@ -1,10 +1,13 @@
-﻿using MobiFlight.SimConnectMSFS;
+﻿using Device_Interface_Manager.MVVM.View;
+using MobiFlight.SimConnectMSFS;
 using System.Threading;
 
 namespace Device_Interface_Manager.MSFSProfiles.WASM
 {
     public abstract class USBWASM : USBBase
     {
+        public FBWA32NXMCDU fBWA32NXMCDU;
+
         protected SimConnectCache MobiFlightSimConnect { get; set; }
 
         protected abstract void GetSimVar();

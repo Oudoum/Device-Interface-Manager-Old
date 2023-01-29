@@ -1,9 +1,8 @@
 ﻿using Device_Interface_Manager.MSFSProfiles.FBW.A32NX;
-using Device_Interface_Manager.MSFSProfiles.PMDG.B737;
-using Device_Interface_Manager.MVVM.View;
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Windows;
 using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
 
 namespace Device_Interface_Manager.MSFSProfiles.WASM.FBW.A32NX
@@ -137,10 +136,12 @@ namespace Device_Interface_Manager.MSFSProfiles.WASM.FBW.A32NX
             }
         }
 
-        private readonly FBWA32NXMCDU fBWA32NXMCDU = new();
-
         public MCDU_L_USB()
         {
+            Application.Current.Dispatcher.Invoke((Action)delegate
+            {
+                this.fBWA32NXMCDU = new();
+            });
             this.fBWA32NXMCDU.EditormodeOff += FBWA32NXMCDU_EditormodeOff; ;
             this.fBWA32NXMCDU.Closing += FBWA32NXMCDU_Closing; ;
             this.fBWA32NXMCDU.Dispatcher.BeginInvoke(delegate ()

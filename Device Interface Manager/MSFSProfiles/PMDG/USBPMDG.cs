@@ -4,6 +4,8 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG
 {
     public abstract class USBPMDG : USBBase
     {
+        public MVVM.View.PMDG737CDU pMDG737CDU;
+
         protected abstract void Simconnect_OnRecvClientData(Microsoft.FlightSimulator.SimConnect.SimConnect sender, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_RECV_CLIENT_DATA data);
 
         protected SimConnectClient PMDGSimConnectClient { get; set; }

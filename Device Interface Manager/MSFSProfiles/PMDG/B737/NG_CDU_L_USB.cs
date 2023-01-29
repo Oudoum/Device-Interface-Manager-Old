@@ -5,6 +5,7 @@ using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
 using Newtonsoft.Json;
 using System.IO;
 using System.Windows;
+using System;
 
 namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
 {
@@ -115,6 +116,10 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
             base.PMDGSimConnectStart();
             PMDG737 pMDG737 = new();
             pMDG737.RegisterPMDGDataEvents(this.PMDGSimConnectClient.Simconnect);
+            Application.Current.Dispatcher.Invoke((Action)delegate
+            {
+                this.pMDG737CDU = new();
+            });
             this.pMDG737CDU.EditormodeOff += PMDG737CDU_EditormodeOff;
             this.pMDG737CDU.Closing += PMDG737CDU_Closing;
             this.pMDG737CDU.Dispatcher.BeginInvoke(delegate ()
@@ -133,8 +138,6 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
         {
             this.SaveScreenProperties();
         }
-
-        private readonly MVVM.View.PMDG737CDU pMDG737CDU = new();
 
         protected override void Simconnect_OnRecvClientData(SimConnect sender, SIMCONNECT_RECV_CLIENT_DATA data)
         {

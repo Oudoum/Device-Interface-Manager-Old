@@ -229,6 +229,13 @@ namespace Device_Interface_Manager.MVVM.ViewModel
             //Profiles.Add(new Profile { Id = 14, Name = "PMDG 747 Center CDU" });
         }
 
+        [RelayCommand]
+        private void ResetScreens()
+        {
+            this.ListPMDG.ForEach(o => { o.pMDG737CDU.Top = 0; o.pMDG737CDU.Left = 0; });
+            this.ListWASM.ForEach(o => { o.fBWA32NXMCDU.Top = 0; o.fBWA32NXMCDU.Left = 0; });
+        }
+
         private const string usb = @"Profiles\USB.json";
         private void LoadUSBData()
         {
