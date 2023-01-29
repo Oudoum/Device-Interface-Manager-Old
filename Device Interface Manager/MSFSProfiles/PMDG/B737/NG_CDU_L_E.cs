@@ -97,7 +97,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
 
         private void PMDG737CDU_EditormodeOff(object sender, System.EventArgs e)
         {
-            this.SaveScrenProperties();
+            this.SaveScreenProperties();
         }
 
         private readonly MVVM.View.PMDG737CDU pMDG737CDU = new();
@@ -142,10 +142,10 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
 
         private void PMDG737CDU_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            this.SaveScrenProperties();
+            this.SaveScreenProperties();
         }
 
-        private void SaveScrenProperties()
+        private void SaveScreenProperties()
         {
             this.pMDG_737_CDU_Screen.Save(this.pMDG737CDU);
             string json = JsonConvert.SerializeObject(pMDG_737_CDU_Screen, Formatting.Indented);

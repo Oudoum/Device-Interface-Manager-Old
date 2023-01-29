@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Device_Interface_Manager.MSFSProfiles.FBW.A32NX;
+using Device_Interface_Manager.MVVM.View;
+using Newtonsoft.Json;
+using System;
+using System.IO;
 
 namespace Device_Interface_Manager.MSFSProfiles.WASM.FBW.A32NX
 {
@@ -119,6 +123,63 @@ namespace Device_Interface_Manager.MSFSProfiles.WASM.FBW.A32NX
             }
         }
 
+        private readonly FBWA32NXMCDU fBWA32NXMCDU = new();
+
+        public MCDU_L_E()
+        {
+            this.fBWA32NXMCDU.EditormodeOff += FBWA32NXMCDU_EditormodeOff; ;
+            this.fBWA32NXMCDU.Closing += FBWA32NXMCDU_Closing; ;
+            this.fBWA32NXMCDU.Dispatcher.BeginInvoke(delegate ()
+            {
+                this.GetPMDG737CDUSettings();
+                this.fBWA32NXMCDU.Show();
+                this.fBWA32NXMCDU.WindowState = (System.Windows.WindowState)this.fBW_A32NX_MCDU_Screen.Fullscreen;
+            });
+        }
+
+        public override void Stop()
+        {
+            base.Stop();
+            this.fBWA32NXMCDU?.Close();
+        }
+
+        private void FBWA32NXMCDU_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            this.SaveScreenProperties();
+        }
+
+        private void FBWA32NXMCDU_EditormodeOff(object sender, EventArgs e)
+        {
+            this.SaveScreenProperties();
+        }
+
+        private const string settings = @"Profiles\FBW A32NX\ENET MCDU Screen L.json";
+        FBW_A32NX_MCDU_Screen fBW_A32NX_MCDU_Screen = new();
+        private void GetPMDG737CDUSettings()
+        {
+            if (File.Exists(settings))
+            {
+                this.fBW_A32NX_MCDU_Screen = JsonConvert.DeserializeObject<FBW_A32NX_MCDU_Screen>(File.ReadAllText(settings));
+            }
+            this.fBW_A32NX_MCDU_Screen.Load(this.fBWA32NXMCDU);
+        }
+
+        private void SaveScreenProperties()
+        {
+            this.fBW_A32NX_MCDU_Screen.Save(this.fBWA32NXMCDU);
+            string json = JsonConvert.SerializeObject(fBW_A32NX_MCDU_Screen, Formatting.Indented);
+            Directory.CreateDirectory(settings.Remove(18));
+            if (File.Exists(settings))
+            {
+                if (File.ReadAllText(settings) != json)
+                {
+                    File.WriteAllText(settings, json);
+                }
+                return;
+            }
+            File.WriteAllText(settings, json);
+        }
+
         protected override void GetSimVar()
         {
             if (this.MobiFlightSimConnect.GetSimVar("(L:A32NX_OVHD_INTLT_ANN)") == 0 &&
@@ -149,167 +210,167 @@ namespace Device_Interface_Manager.MSFSProfiles.WASM.FBW.A32NX
             switch (key)
             {
                 case 1:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_DOT");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_DOT");
                     break;
 
                 case 2:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_O");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_O");
                     break;
 
                 case 3:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_PLUSMINUS");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_PLUSMINUS");
                     break;
 
                 case 4:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_Z");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_Z");
                     break;
 
                 case 5:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_DIV");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_DIV");
                     break;
 
                 case 6:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_SP");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_SP");
                     break;
 
                 case 7:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_OVFY");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_OVFY");
                     break;
 
                 case 8:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_CLR");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_CLR");
                     break;
 
                 case 9:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_7");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_7");
                     break;
 
                 case 10:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_8");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_8");
                     break;
 
                 case 11:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_9");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_9");
                     break;
 
                 case 12:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_U");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_U");
                     break;
 
                 case 13:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_V");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_V");
                     break;
 
                 case 14:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_W");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_W");
                     break;
 
                 case 15:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_X");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_X");
                     break;
 
                 case 16:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_Y");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_Y");
                     break;
 
                 case 17:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_4");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_4");
                     break;
 
                 case 18:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_5");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_5");
                     break;
 
                 case 19:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_6");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_6");
                     break;
 
                 case 20:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_P");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_P");
                     break;
 
                 case 21:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_Q");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_Q");
                     break;
 
                 case 22:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_R");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_R");
                     break;
 
                 case 23:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_S");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_S");
                     break;
 
                 case 24:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_T");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_T");
                     break;
 
                 case 25:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_1");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_1");
                     break;
 
                 case 26:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_2");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_2");
                     break;
 
                 case 27:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_3");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_3");
                     break;
 
                 case 28:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_K");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_K");
                     break;
 
                 case 29:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_L");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_L");
                     break;
 
                 case 30:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_M");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_M");
                     break;
 
                 case 31:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_N");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_N");
                     break;
 
                 case 32:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_O");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_O");
                     break;
 
                 case 33:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_PREVPAGE");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_PREVPAGE");
                     break;
 
                 case 34:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_UP");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_UP");
                     break;
 
                 case 35:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_L1");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_L1");
                     break;
 
                 case 36:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_F");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_F");
                     break;
 
                 case 37:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_G");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_G");
                     break;
 
                 case 38:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_H");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_H");
                     break;
 
                 case 39:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_I");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_I");
                     break;
 
                 case 40:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_J");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_J");
                     break;
 
                 case 41:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_AIRPORT");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_AIRPORT");
                     break;
 
                 case 42:
@@ -317,83 +378,83 @@ namespace Device_Interface_Manager.MSFSProfiles.WASM.FBW.A32NX
                     break;
 
                 case 43:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_L2");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_L2");
                     break;
 
                 case 44:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_A");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_A");
                     break;
 
                 case 45:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_B");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_B");
                     break;
 
                 case 46:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_C");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_C");
                     break;
 
                 case 47:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_D");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_D");
                     break;
 
                 case 48:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_E");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_E");
                     break;
 
                 case 49:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_FPLN");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_FPLN");
                     break;
 
                 case 50:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_RAD");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_RAD");
                     break;
 
                 case 51:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_L3");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_L3");
                     break;
 
                 case 52:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_FUEL");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_FUEL");
                     break;
 
                 case 53:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_FPLN");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_FPLN");
                     break;
 
                 case 54:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_ATC");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_ATC");
                     break;
 
                 case 55:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_MENU");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_MENU");
                     break;
 
                 case 56:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_L5");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_L5");
                     break;
 
                 case 57:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_DIR");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_DIR");
                     break;
 
                 case 58:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_PROG");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_PROG");
                     break;
 
                 case 59:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_L4");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_L4");
                     break;
 
                 case 60:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_PERF");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_PERF");
                     break;
 
                 case 61:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_INIT");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_INIT");
                     break;
 
                 case 62:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_DATA");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_DATA");
                     break;
 
                 case 63:
@@ -405,31 +466,31 @@ namespace Device_Interface_Manager.MSFSProfiles.WASM.FBW.A32NX
                     break;
 
                 case 65:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_R1");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_R1");
                     break;
 
                 case 66:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_R2");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_R2");
                     break;
 
                 case 67:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_R3");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_R3");
                     break;
 
                 case 68:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_R4");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_R4");
                     break;
 
                 case 69:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_R5");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_R5");
                     break;
 
                 case 70:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_R6");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_R6");
                     break;
 
                 case 71:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_L6");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_L6");
                     break;
 
                 case 72:
@@ -437,11 +498,11 @@ namespace Device_Interface_Manager.MSFSProfiles.WASM.FBW.A32NX
                     break;
 
                 case 73:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_NEXTPAGE");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_NEXTPAGE");
                     break;
 
                 case 74:
-                    this.MobiFlightSimConnect.SetSimVar("A320_Neo_CDU_1_BTN_DOWN");
+                    this.MobiFlightSimConnect.SetEventID("A320_Neo_CDU_1_BTN_DOWN");
                     break;
 
                 default:

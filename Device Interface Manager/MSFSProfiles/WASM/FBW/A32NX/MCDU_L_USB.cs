@@ -1,4 +1,9 @@
-﻿using System;
+﻿using Device_Interface_Manager.MSFSProfiles.FBW.A32NX;
+using Device_Interface_Manager.MSFSProfiles.PMDG.B737;
+using Device_Interface_Manager.MVVM.View;
+using Newtonsoft.Json;
+using System;
+using System.IO;
 using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
 
 namespace Device_Interface_Manager.MSFSProfiles.WASM.FBW.A32NX
@@ -130,6 +135,63 @@ namespace Device_Interface_Manager.MSFSProfiles.WASM.FBW.A32NX
                     _ = interfaceIT_LED_Set(this.Device.Session, 13, this._mCDU_L_LIGHTTEST);
                 }
             }
+        }
+
+        private readonly FBWA32NXMCDU fBWA32NXMCDU = new();
+
+        public MCDU_L_USB()
+        {
+            this.fBWA32NXMCDU.EditormodeOff += FBWA32NXMCDU_EditormodeOff; ;
+            this.fBWA32NXMCDU.Closing += FBWA32NXMCDU_Closing; ;
+            this.fBWA32NXMCDU.Dispatcher.BeginInvoke(delegate ()
+            {
+                this.GetPMDG737CDUSettings();
+                this.fBWA32NXMCDU.Show();
+                this.fBWA32NXMCDU.WindowState = (System.Windows.WindowState)this.fBW_A32NX_MCDU_Screen.Fullscreen;
+            });
+        }
+
+        public override void Stop()
+        {
+            base.Stop();
+            this.fBWA32NXMCDU?.Close();
+        }
+
+        private void FBWA32NXMCDU_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            this.SaveScreenProperties();
+        }
+
+        private void FBWA32NXMCDU_EditormodeOff(object sender, EventArgs e)
+        {
+            this.SaveScreenProperties();
+        }
+
+        private const string settings = @"Profiles\FBW A32NX\USB MCDU Screen L.json";
+        FBW_A32NX_MCDU_Screen fBW_A32NX_MCDU_Screen = new();
+        private void GetPMDG737CDUSettings()
+        {
+            if (File.Exists(settings))
+            {
+                this.fBW_A32NX_MCDU_Screen = JsonConvert.DeserializeObject<FBW_A32NX_MCDU_Screen>(File.ReadAllText(settings));
+            }
+            this.fBW_A32NX_MCDU_Screen.Load(this.fBWA32NXMCDU);
+        }
+
+        private void SaveScreenProperties()
+        {
+            this.fBW_A32NX_MCDU_Screen.Save(this.fBWA32NXMCDU);
+            string json = JsonConvert.SerializeObject(fBW_A32NX_MCDU_Screen, Formatting.Indented);
+            Directory.CreateDirectory(settings.Remove(18));
+            if (File.Exists(settings))
+            {
+                if (File.ReadAllText(settings) != json)
+                {
+                    File.WriteAllText(settings, json);
+                }
+                return;
+            }
+            File.WriteAllText(settings, json);
         }
 
         protected override void GetSimVar()

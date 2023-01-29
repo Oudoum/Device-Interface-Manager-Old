@@ -15,7 +15,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
     {
         public int session;
         private const string updateLink = "https://raw.githubusercontent.com/Oudoum/Device-Interface-Manager-Download/main/Updates/AutoUpdaterDIM.xml";
-        private const string version = "1.0.1";
+        private const string version = "1.1.0";
 
         public static HomeUSBViewModel HomeUSBVM { get; set; }
 

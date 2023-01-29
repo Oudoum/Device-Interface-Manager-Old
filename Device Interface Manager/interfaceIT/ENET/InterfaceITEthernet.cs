@@ -278,12 +278,20 @@ namespace Device_Interface_Manager.interfaceIT.ENET
 
         public void SendintefaceITEthernetLED(int nLED, int bOn)
         {
-            stream?.Write(data = Encoding.ASCII.GetBytes("B1:LED:" + nLED + ":" + bOn + "\r\n"), 0, data.Length);
+            try
+            {
+                stream?.Write(data = Encoding.ASCII.GetBytes("B1:LED:" + nLED + ":" + bOn + "\r\n"), 0, data.Length);
+            }
+            catch { }
         }
 
         public void SendintefaceITEthernetLED(int nLED, bool bOn)
         {
-            stream?.Write(data = Encoding.ASCII.GetBytes("B1:LED:" + nLED + ":" + Convert.ToInt32(bOn) + "\r\n"), 0, data.Length);
+            try
+            {
+                stream?.Write(data = Encoding.ASCII.GetBytes("B1:LED:" + nLED + ":" + Convert.ToInt32(bOn) + "\r\n"), 0, data.Length);
+            }
+            catch { }
         }
 
         public void LEDon()

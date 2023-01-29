@@ -9,6 +9,8 @@
         Title="PMDG737CDU"
         WindowStyle="None"
         Topmost="True"
+        Height="770"
+        Width="830"
         MouseDown="Window_MouseDown"
         MouseDoubleClick="Window_MouseDoubleClick"
         MouseRightButtonDown="Window_MouseRightButtonDown"

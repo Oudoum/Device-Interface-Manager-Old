@@ -248,18 +248,22 @@ namespace Device_Interface_Manager.MVVM.View
         bool editormode = false;
         private void Window_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
+            this.editormode = !this.editormode;
             foreach (Label cells in this.CDUGrid.Children)
             {
                 if (cells.BorderThickness == new Thickness(0))
                 {
                     cells.BorderThickness = new Thickness(1);
                 }
-                else 
+                else
                 {
                     cells.BorderThickness = new Thickness(0);
                 }
             }
-            this.editormode = !this.editormode;
+            if (!this.editormode) 
+            {
+                this.EditormodeOff?.Invoke(this, e);
+            }
         }
 
         public event EventHandler EditormodeOff;
@@ -271,16 +275,11 @@ namespace Device_Interface_Manager.MVVM.View
         public double marginRight;
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (!this.editormode)
+            if (!this.editormode && e.Key == Key.Escape)
             {
-                this.EditormodeOff?.Invoke(this, e);
-                if (e.Key == Key.Escape)
-                {
-                    Hide();
-                }
-                return;
+                Hide();
             }
-            if (this.editormode)
+            else if (this.editormode)
             {
                 switch (e.Key)
                 {
@@ -322,7 +321,7 @@ namespace Device_Interface_Manager.MVVM.View
                         --this.marginTop;
                         foreach (Label cells in this.CDUGrid.Children)
                         {
-                            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
+                            SetMargin(cells);
                         }
                         break;
 
@@ -330,7 +329,7 @@ namespace Device_Interface_Manager.MVVM.View
                         ++this.marginBottom;
                         foreach (Label cells in this.CDUGrid.Children)
                         {
-                            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
+                            SetMargin(cells);
                         }
                         break;
 
@@ -338,7 +337,7 @@ namespace Device_Interface_Manager.MVVM.View
                         ++this.marginTop;
                         foreach (Label cells in this.CDUGrid.Children)
                         {
-                            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
+                            SetMargin(cells);
                         }
                         break;
 
@@ -346,7 +345,7 @@ namespace Device_Interface_Manager.MVVM.View
                         --this.marginBottom;
                         foreach (Label cells in this.CDUGrid.Children)
                         {
-                            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
+                            SetMargin(cells);
                         }
                         break;
 
@@ -354,7 +353,7 @@ namespace Device_Interface_Manager.MVVM.View
                         ++this.marginRight;
                         foreach (Label cells in this.CDUGrid.Children)
                         {
-                            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
+                            SetMargin(cells);
                         }
                         break;
 
@@ -362,7 +361,7 @@ namespace Device_Interface_Manager.MVVM.View
                         --this.marginLeft;
                         foreach (Label cells in this.CDUGrid.Children)
                         {
-                            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
+                            SetMargin(cells);
                         }
                         break;
 
@@ -370,7 +369,7 @@ namespace Device_Interface_Manager.MVVM.View
                         --this.marginRight;
                         foreach (Label cells in this.CDUGrid.Children)
                         {
-                            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
+                            SetMargin(cells);
                         }
                         break;
 
@@ -378,7 +377,7 @@ namespace Device_Interface_Manager.MVVM.View
                         ++this.marginLeft;
                         foreach (Label cells in this.CDUGrid.Children)
                         {
-                            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
+                            SetMargin(cells);
                         }
                         break;
 
@@ -408,7 +407,7 @@ namespace Device_Interface_Manager.MVVM.View
                         ++this.marginBottom;
                         foreach (Label cells in this.CDUGrid.Children)
                         {
-                            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
+                            SetMargin(cells);
                         }
                         break;
 
@@ -417,7 +416,7 @@ namespace Device_Interface_Manager.MVVM.View
                         ++this.marginRight;
                         foreach (Label cells in this.CDUGrid.Children)
                         {
-                            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
+                            SetMargin(cells);
                         }
                         break;
 
@@ -426,7 +425,7 @@ namespace Device_Interface_Manager.MVVM.View
                         --this.marginBottom;
                         foreach (Label cells in this.CDUGrid.Children)
                         {
-                            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
+                            SetMargin(cells);
                         }
                         break;
 
@@ -435,7 +434,7 @@ namespace Device_Interface_Manager.MVVM.View
                         --this.marginRight;
                         foreach (Label cells in this.CDUGrid.Children)
                         {
-                            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
+                            SetMargin(cells);
                         }
                         break;
 
@@ -443,6 +442,11 @@ namespace Device_Interface_Manager.MVVM.View
                         break;
                 }
             }
+        }
+
+        private void SetMargin(Label cells)
+        {
+            cells.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
         }
     }
 }
