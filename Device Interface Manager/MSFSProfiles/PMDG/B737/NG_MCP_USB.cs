@@ -685,8 +685,8 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
             }
         }
 
-        private uint EFIS_CPT_VOR_ADF_SELECTOR_R;
-        private uint EFIS_CPT_VOR_ADF_SELECTOR_L;
+        private uint eFIS_CPT_VOR_ADF_SELECTOR_R;
+        private uint eFIS_CPT_VOR_ADF_SELECTOR_L;
         private uint nMCPCourse_0;
 
         protected override bool KeyPressedProc(int session, int key, int direction)
@@ -715,13 +715,13 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
                     ndirection = 2;
                 }
 
-                if (direction == 0 && (this.EFIS_CPT_VOR_ADF_SELECTOR_L != 0 || this.EFIS_CPT_VOR_ADF_SELECTOR_R != 0))
+                if (direction == 0 && (this.eFIS_CPT_VOR_ADF_SELECTOR_L != 0 || this.eFIS_CPT_VOR_ADF_SELECTOR_R != 0))
                 {
                     ndirection = 1;
                 }
             }
 
-            //-1 & -14
+            //-3 & -14
             if (new int[] { 4, 5, 6, 8, 9, 10, 12, 13, 14, 15, 17, 19, 20, 21, 23, 24, 73, 74, 75, 76, 77, 78, 81, 82, 83, 84, 85, 86, 87 }.Contains(key))
             {
                 if (direction == 1)
@@ -762,12 +762,12 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
 
                 case 69:
                     this.PMDGSimConnectClient.Simconnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_VOR_ADF_SELECTOR_L, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
-                    this.EFIS_CPT_VOR_ADF_SELECTOR_L = ndirection;
+                    this.eFIS_CPT_VOR_ADF_SELECTOR_L = ndirection;
                     break;
 
                 case 71:
                     this.PMDGSimConnectClient.Simconnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_VOR_ADF_SELECTOR_R, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
-                    this.EFIS_CPT_VOR_ADF_SELECTOR_R = ndirection;
+                    this.eFIS_CPT_VOR_ADF_SELECTOR_R = ndirection;
                     break;
 
                 case 79:
@@ -856,7 +856,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
                     this.PMDGSimConnectClient.Simconnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_RANGE, 7, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                     break;
 
-                //-1 & -14
+                //-3 & -14
                 case 4:
                     this.PMDGSimConnectClient.Simconnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_N1_SWITCH, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                     break;

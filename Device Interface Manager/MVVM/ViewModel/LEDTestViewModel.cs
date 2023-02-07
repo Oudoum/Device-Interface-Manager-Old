@@ -33,6 +33,15 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                         Position = i,
                     });
                 }
+                //for (int i = DeviceList[GetSeletedController()].DeviceInfo.n7SegmentFirst; i <= DeviceList[GetSeletedController()].DeviceInfo.nLEDLast; i++)
+                //{
+                //    this.LED.Add(new LEDTestModel.DeviceLED
+                //    {
+                //        Id = i - DeviceList[GetSeletedController()].DeviceInfo.n7SegmentFirst + 1,
+                //        Name = "Board: " + DeviceList[GetSeletedController()].DeviceInfo.szBoardType + " [LED]",
+                //        Position = i,
+                //    });
+                //}
             }
         }
 

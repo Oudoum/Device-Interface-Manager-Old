@@ -117,11 +117,11 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         {
             this.IsUSBEnabled = !this.IsUSBEnabled;
 
-            if(!this.IsUSBEnabled) 
-            { 
-                foreach(var connection in this.Connections) 
-                { 
-                    switch(connection.Profile.Id)
+            if (!this.IsUSBEnabled)
+            {
+                foreach (var connection in this.Connections)
+                {
+                    switch (connection.Profile.Id)
                     {
                         case 1:
                             MSFSProfiles.WASM.FENIX.A320.MCDU_L_USB mCDU_L_USB = new();
@@ -165,14 +165,20 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                             this.ListPMDG.Add(nG_MCP_USB);
                             break;
 
+                        case 8:
+                            MSFSProfiles.PMDG.B737.NG_MCP_777_USB nG_MCP_777_USB = new();
+                            await Task.Run(() => nG_MCP_777_USB.Start(DeviceList.FirstOrDefault(o => o.SerialNumber == connection.Serial)));
+                            this.ListPMDG.Add(nG_MCP_777_USB);
+                            break;
+
                         default:
                             break;
                     }
                 }
             }
 
-            if(this.IsUSBEnabled) 
-            { 
+            if (this.IsUSBEnabled)
+            {
                 this.ListWASM.ForEach(o => o.Stop());
                 this.ListPMDG.ForEach(o => o.Stop());
 
@@ -216,6 +222,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
             Profiles.Add(new Profile { Id = 6, Name = "PMDG 737NG Right CDU" });
 
             Profiles.Add(new Profile { Id = 7, Name = "PMDG 737NG MCP" });
+            Profiles.Add(new Profile { Id = 8, Name = "PMDG 737NG MCP (777)" });
 
             //Profiles.Add(new Profile { Id = 7, Name = "PMDG 737MAX Left CDU" });
             //Profiles.Add(new Profile { Id = 8, Name = "PMDG 737MAX Right CDU" });

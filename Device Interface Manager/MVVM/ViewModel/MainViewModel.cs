@@ -15,7 +15,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
     {
         public int session;
         private const string updateLink = "https://raw.githubusercontent.com/Oudoum/Device-Interface-Manager-Download/main/Updates/AutoUpdaterDIM.xml";
-        private const string version = "1.1.1";
+        private const string version = "1.1.2";
 
         public static HomeUSBViewModel HomeUSBVM { get; set; }
 
@@ -253,7 +253,13 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                 {
                     _ = interfaceIT_Bind(device, ref session);
                     _ = interfaceIT_GetBoardInfo(session, ref bOARDCAPS);
-                    DeviceList.Add(new InterfaceIT_BoardInfo.Device { Id = i++, SerialNumber = device, Session = session, DeviceInfo = bOARDCAPS});
+                    string boardType = string.Empty;
+                    foreach (var field in typeof(InterfaceIT_BoardIDs).GetFields())
+                    {
+                        if ((string)field.GetValue(null) == bOARDCAPS.szBoardType)
+                            boardType = field.Name.ToString().Replace('_', ' ');
+                    }
+                    DeviceList.Add(new InterfaceIT_BoardInfo.Device { Id = i++, BoardType = boardType, SerialNumber = device, Session = session, DeviceInfo = bOARDCAPS });
                     LEDTestViewModels.Add(new LEDTestViewModel());
                     SwitchTestViewModels.Add(new SwitchTestViewModel());
                     OtherTestViewModels.Add(new OtherTestsViewModel());

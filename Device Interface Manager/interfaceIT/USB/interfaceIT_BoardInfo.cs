@@ -8,6 +8,7 @@ namespace Device_Interface_Manager.interfaceIT.USB
         {
             public int Id { get; set; }
             public int Session { get; set; }
+            public string BoardType { get; set; }
             public string SerialNumber { get; set; }
             public BoardInformationStructure.BOARDCAPS DeviceInfo { get; set; }
         }

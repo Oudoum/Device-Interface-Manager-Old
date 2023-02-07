@@ -180,7 +180,13 @@
                           SelectedValue="{Binding SelectedController}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock MouseMove="ListViewItem_MouseMove" Text="{Binding SerialNumber}"/>
+                            <TextBlock MouseMove="ListViewItem_MouseMove" Text="{Binding BoardType}" ToolTip="{Binding SerialNumber}"/>
+                            <DataTemplate.Resources>
+                                <Style TargetType="ToolTip">
+                                    <Setter Property="Background" Value="Black"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                </Style>
+                            </DataTemplate.Resources>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                     <ListView.Template>
