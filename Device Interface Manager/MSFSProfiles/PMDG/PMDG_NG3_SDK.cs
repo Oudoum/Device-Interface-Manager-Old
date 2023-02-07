@@ -554,7 +554,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG
             // General and misc
             //------------------------------------------
 
-            public byte AircraftModel;                              // 1: -600  
+            public ushort AircraftModel;                            // 1: -600  
                                                                     // 2: -700  3: -700 BW  4: -700 SSW  
                                                                     // 5: -800  6: -800 BW  7: -800 SSW  
                                                                     // 8: -900  9: -900 BW  10: -900 SSW  11: -900ER BW  12: -900ER SSW 
@@ -1199,6 +1199,44 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG
             EVT_NAV2_OUTER_SELECTOR = THIRD_PARTY_EVENT_ID_MIN + 848,
             EVT_NAV2_INNER_SELECTOR = THIRD_PARTY_EVENT_ID_MIN + 849,
             EVT_NAV2_LAST = EVT_NAV2_INNER_SELECTOR,
+
+            // MMR Panels
+            EVT_MMR1_TRANSFER_SWITCH = THIRD_PARTY_EVENT_ID_MIN + 7210,
+            EVT_MMR1_FIRST = EVT_MMR1_TRANSFER_SWITCH,
+            EVT_MMR1_TEST_SWITCH = THIRD_PARTY_EVENT_ID_MIN + 7211,
+            EVT_MMR1_MODE_DN_SWITCH = THIRD_PARTY_EVENT_ID_MIN + 7212,
+            EVT_MMR1_MODE_UP_SWITCH = THIRD_PARTY_EVENT_ID_MIN +7213,
+            EVT_MMR1_KEYPAD_1 = THIRD_PARTY_EVENT_ID_MIN + 7214,
+            EVT_MMR1_KEYPAD_2 = THIRD_PARTY_EVENT_ID_MIN + 7215,
+            EVT_MMR1_KEYPAD_3 = THIRD_PARTY_EVENT_ID_MIN + 7216,
+            EVT_MMR1_KEYPAD_4 = THIRD_PARTY_EVENT_ID_MIN + 7217,
+            EVT_MMR1_KEYPAD_5 = THIRD_PARTY_EVENT_ID_MIN + 7218,
+            EVT_MMR1_KEYPAD_6 = THIRD_PARTY_EVENT_ID_MIN + 7229,
+            EVT_MMR1_KEYPAD_7 = THIRD_PARTY_EVENT_ID_MIN + 7220,
+            EVT_MMR1_KEYPAD_8 = THIRD_PARTY_EVENT_ID_MIN + 7221,
+            EVT_MMR1_KEYPAD_9 = THIRD_PARTY_EVENT_ID_MIN + 7222,
+            EVT_MMR1_KEYPAD_0 = THIRD_PARTY_EVENT_ID_MIN + 7223,
+            EVT_MMR1_KEYPAD_CLR = THIRD_PARTY_EVENT_ID_MIN + 7224,
+            EVT_MMR1_LAST = EVT_MMR1_KEYPAD_CLR,
+
+            EVT_MMR2_TRANSFER_SWITCH = THIRD_PARTY_EVENT_ID_MIN + 7225,
+            EVT_MMR2_FIRST = EVT_MMR2_TRANSFER_SWITCH,
+            EVT_MMR2_TEST_SWITCH = THIRD_PARTY_EVENT_ID_MIN + 7226,
+            EVT_MMR2_MODE_DN_SWITCH = THIRD_PARTY_EVENT_ID_MIN + 7227,
+            EVT_MMR2_MODE_UP_SWITCH = THIRD_PARTY_EVENT_ID_MIN + 7228,
+            EVT_MMR2_KEYPAD_1 = THIRD_PARTY_EVENT_ID_MIN + 7229,
+            EVT_MMR2_KEYPAD_2 = THIRD_PARTY_EVENT_ID_MIN + 7230,
+            EVT_MMR2_KEYPAD_3 = THIRD_PARTY_EVENT_ID_MIN + 7231,
+            EVT_MMR2_KEYPAD_4 = THIRD_PARTY_EVENT_ID_MIN + 7232,
+            EVT_MMR2_KEYPAD_5 = THIRD_PARTY_EVENT_ID_MIN + 7233,
+            EVT_MMR2_KEYPAD_6 = THIRD_PARTY_EVENT_ID_MIN + 7234,
+            EVT_MMR2_KEYPAD_7 = THIRD_PARTY_EVENT_ID_MIN + 7235,
+            EVT_MMR2_KEYPAD_8 = THIRD_PARTY_EVENT_ID_MIN + 7236,
+            EVT_MMR2_KEYPAD_9 = THIRD_PARTY_EVENT_ID_MIN + 7237,
+            EVT_MMR2_KEYPAD_0 = THIRD_PARTY_EVENT_ID_MIN + 7238,
+            EVT_MMR2_KEYPAD_CLR = THIRD_PARTY_EVENT_ID_MIN + 7239,
+            EVT_MMR2_LAST = EVT_MMR2_KEYPAD_CLR,
+
 
             // ADF Panel
             EVT_ADF_MODE_SELECTOR = THIRD_PARTY_EVENT_ID_MIN + 818,
