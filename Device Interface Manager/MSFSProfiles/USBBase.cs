@@ -32,7 +32,7 @@ namespace Device_Interface_Manager.MSFSProfiles
 
         protected void StopUSBConnection()
         {
-            _ = interfaceIT_Dataline_Set(this.Device.Session, 6, false);
+            _ = interfaceIT_Dataline_Set(this.Device.Session, this.Device.DeviceInfo.nDatalineFirst, false);
             _ = interfaceIT_Dataline_Enable(this.Device.Session, false);
             _ = interfaceIT_Analog_Enable(this.Device.Session, false);
             _ = interfaceIT_Brightness_Enable(this.Device.Session, false);

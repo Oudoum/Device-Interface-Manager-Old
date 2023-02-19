@@ -7,11 +7,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging.Messages;
 using Device_Interface_Manager.interfaceIT.ENET;
 using Device_Interface_Manager.MSFSProfiles.PMDG;
 using Device_Interface_Manager.MSFSProfiles.WASM;
 using static Device_Interface_Manager.MVVM.Model.HomeENETModel;
-using System.Runtime.CompilerServices;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
@@ -93,29 +94,30 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                             this.ListPMDG.Add(nG_CDU_R_E);
                             break;
 
+                        case 99:
+                            int index = this.Connections.IndexOf(this.Connections.First(o => o.Profile.Id == 99));
+                            InterfaceITEthernet interfaceITEthernet = new()
+                            {
+                                Hostname = this.Connections[index].IPAddress
+                            };
+                            this.EthernetCancellationTokenSource = new();
+                            await Task.Run(() => interfaceITEthernet.InterfaceITEthernetConnection(this.EthernetCancellationTokenSource.Token));
+                            this.Connections[index].Status = interfaceITEthernet.ClientStatus;
+                            if (this.Connections[index].Status == 2)
+                            {
+                                interfaceITEthernet.GetinterfaceITEthernetDataStart();
+                                interfaceITEthernet.GetinterfaceITEthernetInfo();
+                                WeakReferenceMessenger.Default.Send(new BoardinfoENETMessage(interfaceITEthernet));
+                            }
+                            break;
+
+
                         default:
                             break;
                     }
                 }
-
-                if (this.Connections.Any(o => o.Profile.Id == 99))
-                {
-                    InterfaceITEthernet interfaceITEthernet = new();
-                    int index = this.Connections.IndexOf(this.Connections.First(o => o.Profile.Id == 99));
-                    interfaceITEthernet.Hostname = this.Connections[index].IPAddress;
-                    await Task.Run(() => interfaceITEthernet.InterfaceITEthernetConnection(this.EthernetCancellationTokenSource.Token));
-                    this.Connections[index].Status = interfaceITEthernet.ClientStatus;
-                    if (this.Connections[index].Status == 2)
-                    {
-                        interfaceITEthernet.GetinterfaceITEthernetDataStart();
-                        interfaceITEthernet.GetinterfaceITEthernetInfo();
-                        this.DataThread = new(() => interfaceITEthernet.GetinterfaceITEthernetData(INTERFACEIT_ETHERNET_KEY_NOTIFY_PROC = new(KeyPressedProcEthernet), this.EthernetCancellationTokenSource.Token))
-                        {
-                            Name = "TestDataThread"
-                        };
-                        this.DataThread.Start();
-                    }
-                }
+                this.ListPMDG.ForEach(o => WeakReferenceMessenger.Default.Send(new BoardinfoENETMessage(o.InterfaceITEthernet)));
+                this.ListWASM.ForEach(o => WeakReferenceMessenger.Default.Send(new BoardinfoENETMessage(o.InterfaceITEthernet)));
             }
 
             if (this.IsENETEnabled)
@@ -148,15 +150,6 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         {
             Connections.Add(new Connection() { Id = 0, Name = "NAME", IPAddress = "192.168.1.200", Profile = Profiles[0] });
         }
-
-        // CDU/MCDU TEST START
-        private InterfaceITEthernet.INTERFACEIT_ETHERNET_KEY_NOTIFY_PROC INTERFACEIT_ETHERNET_KEY_NOTIFY_PROC { get; set; }
-        private Thread DataThread { get; set; }
-        private void KeyPressedProcEthernet(int Switch, string Direction)
-        {
-
-        }
-        // CDU/MCDU TEST END
 
         private void CreateProfiles()
         {
@@ -226,6 +219,13 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                 return;
             }
             File.WriteAllText(enet, json);
+        }
+    }
+
+    public class BoardinfoENETMessage : ValueChangedMessage<InterfaceITEthernet>
+    {
+        public BoardinfoENETMessage(InterfaceITEthernet value) : base(value)
+        {
         }
     }
 }

@@ -87,7 +87,13 @@ namespace Device_Interface_Manager.MVVM.View
                                 break;
 
                             case PMDG_NG3_CDU_FLAG_REVERSE:
-                                this.lb.Background = (Brush)new BrushConverter().ConvertFrom("#B7D2EF");
+                                this.lb.Background = new SolidColorBrush(Colors.Gray);
+                                break;
+
+                            case PMDG_NG3_CDU_FLAG_SMALL_FONT + PMDG_NG3_CDU_FLAG_REVERSE:
+                                this.lb.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "./Fonts/#PMDG_NGXu_DU_C");
+                                this.lb.FontWeight = FontWeight.FromOpenTypeWeight(600);
+                                this.lb.Background = new SolidColorBrush(Colors.Gray);
                                 break;
 
                             case PMDG_NG3_CDU_FLAG_UNUSED:

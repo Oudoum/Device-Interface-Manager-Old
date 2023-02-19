@@ -23,7 +23,7 @@
         <ComboBox HorizontalAlignment="Right" 
                   VerticalAlignment="Center"
                   Width="100"
-                  SelectedIndex="{Binding InterfaceInfoID}"
+                  SelectedItem="{Binding InterfaceITEthernetInfoIP}"
                   ItemsSource="{Binding InterfaceITEthernetInfoIPCollection}"/>
 
         <Border Grid.Column="1"
@@ -41,7 +41,7 @@
                         BorderThickness="0"
                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                         ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                        ItemsSource="{Binding InterfaceITEthernetInfoText, Mode=TwoWay , UpdateSourceTrigger=PropertyChanged}">
+                        ItemsSource="{Binding InterfaceITEthernetInfoText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                     <ListView.ItemContainerStyle>
                         <Style TargetType="{x:Type ListViewItem}">
                             <Setter Property="Focusable" Value="False"/>

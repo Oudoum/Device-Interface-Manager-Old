@@ -75,7 +75,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
                 {
                     return;
                 }
-                _ = interfaceIT_7Segment_Display(this.Device.Session, new string('-', 24).Replace("-", " "), 1);
+                _ = interfaceIT_7Segment_Display(this.Device.Session, new string(' ', 24), 1);
                 Thread.Sleep(1000);
             }
         }
@@ -423,7 +423,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
                     this._mCP_Heading = null;
                     this._mCP_IASMach = null;
                     this._mCP_VertSpeed = null;
-                    _ = interfaceIT_7Segment_Display(this.Device.Session, new string('-', 24).Replace("-", " "), 1);
+                    _ = interfaceIT_7Segment_Display(this.Device.Session, new string(' ', 24), 1);
                 }
             }
         }
@@ -440,7 +440,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
                     if (value == 1)
                     {
                         this.pmdg737MCPBlinkingCancellationTokenSource?.Cancel();
-                        _ = interfaceIT_7Segment_Display(this.Device.Session, new string('-', 24).Replace("-", " "), 1);
+                        _ = interfaceIT_7Segment_Display(this.Device.Session, new string(' ', 24), 1);
                         this._mCP_Altitude = null;
                         this._mCP_Course_0 = null;
                         this._mCP_Course_1 = null;
@@ -469,6 +469,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
                     if (value < 1)
                     {
                         _ = interfaceIT_7Segment_Display(this.Device.Session, string.Format("{0,3}", value?.ToString("#.00", System.Globalization.CultureInfo.InvariantCulture)).TrimStart('.'), 7);
+                        _ = interfaceIT_7Segment_Display(this.Device.Session, " ", 6);
                         _ = interfaceIT_LED_Set(this.Device.Session, 48, true);
                     }
                     if (value >= 100)
@@ -613,9 +614,15 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
                     if (value == 0)
                     {
                         _ = interfaceIT_7Segment_Display(this.Device.Session, "     ", 17);
-                        return;
                     }
-                    _ = interfaceIT_7Segment_Display(this.Device.Session, string.Format("{0,5}", value.ToString()), 17);
+                    else if (value < 0) 
+                    {
+                        _ = interfaceIT_7Segment_Display(this.Device.Session, "-" + string.Format("{0,4}", value?.ToString("D3").TrimStart('-')), 17);
+                    }
+                    else if (value > 0) 
+                    {
+                        _ = interfaceIT_7Segment_Display(this.Device.Session, string.Format("{0,5}", value?.ToString("D3")), 17);
+                    }
                 }
             }
         }
@@ -722,7 +729,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
             }
 
             //-3 & -14
-            if (new int[] { 4, 5, 6, 8, 9, 10, 12, 13, 14, 15, 17, 19, 20, 21, 23, 24, 73, 74, 75, 76, 77, 78, 81, 82, 83, 84, 85, 86, 87 }.Contains(key))
+            if (new int[] { 4, 5, 6, 8, 9, 10, 12, 13, 14, 15, 17, 18, 19, 20, 21, 23, 24, 73, 74, 75, 76, 77, 78, 81, 82, 83, 84, 85, 86, 87 }.Contains(key))
             {
                 if (direction == 1)
                 {
@@ -899,6 +906,10 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
 
                 case 17:
                     this.PMDGSimConnectClient.Simconnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_ALT_HOLD_SWITCH, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    break;
+
+                case 18:
+                    this.PMDGSimConnectClient.Simconnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_ALT_INTV_SWITCH, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                     break;
 
                 case 19:

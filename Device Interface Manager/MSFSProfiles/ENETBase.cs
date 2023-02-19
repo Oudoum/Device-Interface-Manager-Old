@@ -1,5 +1,4 @@
 ﻿using Device_Interface_Manager.interfaceIT.ENET;
-using Device_Interface_Manager.MVVM.ViewModel;
 using System.Threading;
 
 namespace Device_Interface_Manager.MSFSProfiles
@@ -12,7 +11,7 @@ namespace Device_Interface_Manager.MSFSProfiles
 
         protected InterfaceITEthernet.INTERFACEIT_ETHERNET_KEY_NOTIFY_PROC INTERFACEIT_ETHERNET_KEY_NOTIFY_PROC { get; set; }
 
-        protected InterfaceITEthernet InterfaceITEthernet { get; set; }
+        public InterfaceITEthernet InterfaceITEthernet { get; set; }
 
         protected abstract void KeyPressedProcEthernet(int key, string direction);
 

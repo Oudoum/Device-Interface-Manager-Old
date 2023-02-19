@@ -1,35 +1,45 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Windows;
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
-    class BoardinfoENETViewModel : ObservableObject
+    public partial class BoardinfoENETViewModel : ObservableObject, IRecipient<BoardinfoENETMessage>
     {
         public ObservableCollection<ObservableCollection<string>> InterfaceITEthernetInfoTextCollection { get; set; } = new();
-
-        public ObservableCollection<string> InterfaceITEthernetInfoIPCollection { get; set; } = new();
-
         public ObservableCollection<string> InterfaceITEthernetInfoText { get; set; } = new();
 
-        private int _interfaceInfoID = -1;
-        public int InterfaceInfoID
+        public ObservableCollection<string> InterfaceITEthernetInfoIPCollection { get; set; } = new();
+        [ObservableProperty]
+        private string _interfaceITEthernetInfoIP;
+
+        partial void OnInterfaceITEthernetInfoIPChanged(string value)
         {
-            get => this._interfaceInfoID;
-            set
+            if (value is not null)
             {
-                this._interfaceInfoID = value;
-                if (InterfaceITEthernetInfoTextCollection.Count >= value && InterfaceITEthernetInfoTextCollection.Count != 0)
-                {
-                    this.InterfaceITEthernetInfoText = this.InterfaceITEthernetInfoTextCollection[value];
-                    OnPropertyChanged(nameof(InterfaceITEthernetInfoText));
-                }
-                OnPropertyChanged();
+                this.InterfaceITEthernetInfoText = this.InterfaceITEthernetInfoTextCollection[this.InterfaceITEthernetInfoIPCollection.IndexOf(value)];
             }
         }
 
         public BoardinfoENETViewModel()
         {
+            WeakReferenceMessenger.Default.Register(this);
+        }
 
+        public void Receive(BoardinfoENETMessage message)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                if (this.InterfaceITEthernetInfoIPCollection.Contains(message.Value.Hostname))
+                {
+                    this.InterfaceITEthernetInfoIPCollection.Clear();
+                    this.InterfaceITEthernetInfoTextCollection.Clear();
+                }
+                this.InterfaceITEthernetInfoIPCollection.Add(message.Value.Hostname);
+                this.InterfaceITEthernetInfoTextCollection.Add(message.Value.InterfaceITEthernetInfoText);
+                this.InterfaceITEthernetInfoIP = message.Value.Hostname;
+            });
         }
     }
 }
