@@ -155,19 +155,9 @@
                         Width="180"/>
 
                     <TextBox
-                       Margin="0,30,0,0"
+                       Margin="0,30,0,20"
                        Width="100"
                        Text="{Binding Port}"/>
-
-                    <Button 
-                        Command="{Binding IPAndPortCheckCommand}"
-                        Margin="0,30,0,10"
-                        Height="30"
-                        Width="60"
-                        FontWeight="Bold"
-                        FontSize="24"
-                        FontFamily="BoeingType 737" 
-                        Content="OK"/>
                 </StackPanel>
             </Border>
         </Grid>

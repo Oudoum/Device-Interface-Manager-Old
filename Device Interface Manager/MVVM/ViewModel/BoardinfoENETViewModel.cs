@@ -1,11 +1,12 @@
-﻿using System.Windows;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
+using Device_Interface_Manager.interfaceIT.ENET;
+using CommunityToolkit.Mvvm.Messaging.Messages;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
-    public partial class BoardinfoENETViewModel : ObservableObject, IRecipient<BoardinfoENETMessage>
+    public partial class BoardinfoENETViewModel : ObservableObject, IRecipient<ValueChangedMessage<InterfaceITEthernet>>
     {
         public ObservableCollection<ObservableCollection<string>> InterfaceITEthernetInfoTextCollection { get; set; } = new();
         public ObservableCollection<string> InterfaceITEthernetInfoText { get; set; } = new();
@@ -27,19 +28,16 @@ namespace Device_Interface_Manager.MVVM.ViewModel
             WeakReferenceMessenger.Default.Register(this);
         }
 
-        public void Receive(BoardinfoENETMessage message)
+        public void Receive(ValueChangedMessage<InterfaceITEthernet> message)
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            if (this.InterfaceITEthernetInfoIPCollection.Contains(message.Value.Hostname))
             {
-                if (this.InterfaceITEthernetInfoIPCollection.Contains(message.Value.Hostname))
-                {
-                    this.InterfaceITEthernetInfoIPCollection.Clear();
-                    this.InterfaceITEthernetInfoTextCollection.Clear();
-                }
-                this.InterfaceITEthernetInfoIPCollection.Add(message.Value.Hostname);
-                this.InterfaceITEthernetInfoTextCollection.Add(message.Value.InterfaceITEthernetInfoText);
-                this.InterfaceITEthernetInfoIP = message.Value.Hostname;
-            });
+                this.InterfaceITEthernetInfoIPCollection.Clear();
+                this.InterfaceITEthernetInfoTextCollection.Clear();
+            }
+            this.InterfaceITEthernetInfoIPCollection.Add(message.Value.Hostname);
+            this.InterfaceITEthernetInfoTextCollection.Add(message.Value.InterfaceITEthernetInfoText);
+            this.InterfaceITEthernetInfoIP = message.Value.Hostname;
         }
     }
 }

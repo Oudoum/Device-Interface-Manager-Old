@@ -6,11 +6,11 @@ using static Device_Interface_Manager.MVVM.ViewModel.MainViewModel;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
-    partial class SwitchTestViewModel : ObservableObject
+    public partial class SwitchTestViewModel : ObservableObject
     {
-        public ObservableCollection<string> SwitchLog { get; set; } = new ObservableCollection<string>();
+        public ObservableCollection<string> SwitchLog { get; set; } = new();
 
-        public InterfaceITAPI_Data.INTERFACEIT_KEY_NOTIFY_PROC KeyNotifiyCallback { get; set; }
+        private InterfaceITAPI_Data.INTERFACEIT_KEY_NOTIFY_PROC keyNotifiyCallback;
 
         [ObservableProperty]
         private bool _pollModeEnabled;
@@ -21,23 +21,19 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         [RelayCommand]
         private void CallbackMode()
         {
-            if (this.KeyNotifiyCallback == null)
+            this.CallbackModeEnabled = !this.CallbackModeEnabled;
+            if (this.keyNotifiyCallback is null)
             {
-                this.CallbackModeEnabled = true;
-                _ = InterfaceITAPI_Data.interfaceIT_Switch_Enable_Callback(GetSelectedDeviceSession(), true, this.KeyNotifiyCallback = new InterfaceITAPI_Data.INTERFACEIT_KEY_NOTIFY_PROC(this.KeyPressedProc));
+                _ = InterfaceITAPI_Data.interfaceIT_Switch_Enable_Callback(GetSelectedDeviceSession(), true, this.keyNotifiyCallback = new InterfaceITAPI_Data.INTERFACEIT_KEY_NOTIFY_PROC(this.KeyPressedProc));
+                return;
             }
-            else
-            {
-                _ = InterfaceITAPI_Data.interfaceIT_Switch_Enable_Callback(GetSelectedDeviceSession(), false, this.KeyNotifiyCallback = null);
-                this.CallbackModeEnabled = false;
-            }
+            _ = InterfaceITAPI_Data.interfaceIT_Switch_Enable_Callback(GetSelectedDeviceSession(), false, this.keyNotifiyCallback = null);
         }
 
         [RelayCommand]
         private void PollMode()
         {
-            this.PollModeEnabled = !this.PollModeEnabled;
-            _ = InterfaceITAPI_Data.interfaceIT_Switch_Enable_Poll(GetSelectedDeviceSession(), this.PollModeEnabled);
+            _ = InterfaceITAPI_Data.interfaceIT_Switch_Enable_Poll(GetSelectedDeviceSession(), this.PollModeEnabled = !this.PollModeEnabled);
         }
 
         [RelayCommand]
@@ -45,8 +41,8 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         {
             while (InterfaceITAPI_Data.interfaceIT_Switch_Get_Item(GetSelectedDeviceSession(), out int _, out int _) == 0)
             {
-                _ = InterfaceITAPI_Data.interfaceIT_Switch_Get_Item(GetSelectedDeviceSession(), out int Switch, out int Direction);
-                this.KeyPressedProc(GetSelectedDeviceSession(), Switch, Direction);
+                _ = InterfaceITAPI_Data.interfaceIT_Switch_Get_Item(GetSelectedDeviceSession(), out int key, out int direction);
+                this.KeyPressedProc(GetSelectedDeviceSession(), key, direction);
             }
         }
 
@@ -56,11 +52,11 @@ namespace Device_Interface_Manager.MVVM.ViewModel
             this.SwitchLog.Clear();
         }
 
-        private bool KeyPressedProc(int Session, int Switch, int Direction)
+        private bool KeyPressedProc(int session, int key, int direction)
         {
             System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
-                this.SwitchLog.Add("Session " + Session + ", Switch " + Switch + " is now " + (Direction == InterfaceITAPI_Data.Data.INTERFACEIT_SWITCH_DIR_DOWN ? "on" : "off"));
+                this.SwitchLog.Add("Session " + session + ", Switch " + key + " is now " + (direction == InterfaceITAPI_Data.Data.INTERFACEIT_SWITCH_DIR_DOWN ? "on" : "off"));
             });
             return true;
         }

@@ -4,15 +4,14 @@ using Device_Interface_Manager.interfaceIT.USB;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading;
+using System.Threading.Tasks;
 using static Device_Interface_Manager.MVVM.ViewModel.MainViewModel;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
-    partial class OtherTestsViewModel : ObservableObject
+    public partial class OtherTestsViewModel : ObservableObject
     {
-        public CancellationTokenSource GetValuesCancellationTokenSource { get; set; }
-
-        public Thread AnalogValueThread { get; set; }
+        private CancellationTokenSource valuesCancellationTokenSource;
 
         public ObservableCollection<int> SevenSegmentPositions { get; set; } = new();
 
@@ -25,27 +24,27 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         partial void OnSevenSegmentSelectedPositionChanged(int value)
         {
             Reset7SegmentDisplay();
-            OnSevenSegmentTextChanged(_sevenSegmentText);
+            this.SevenSegmentText = this._sevenSegmentText;
         }
 
-        [ObservableProperty]
         private string _sevenSegmentText = string.Empty;
-        partial void OnSevenSegmentTextChanging(string value)
+        public string SevenSegmentText
         {
-            if (this.SevenSegmentText.Length > value.Length)
+            get => this._sevenSegmentText;
+            set
             {
-                Reset7SegmentDisplay();
+                if (this.SevenSegmentText.Length > value.Length)
+                {
+                    Reset7SegmentDisplay();
+                }
+                if (value.Length > DeviceList[GetSeletedController()].DeviceInfo.n7SegmentCount - this.SevenSegmentSelectedPosition + 1)
+                {
+                    this._sevenSegmentText = value.Remove(DeviceList[GetSeletedController()].DeviceInfo.n7SegmentCount - this.SevenSegmentSelectedPosition + 1);
+                    _ = InterfaceITAPI_Data.interfaceIT_7Segment_Display(GetSelectedDeviceSession(), this._sevenSegmentText, this.SevenSegmentSelectedPosition);
+                    return;
+                }
+                _ = InterfaceITAPI_Data.interfaceIT_7Segment_Display(GetSelectedDeviceSession(), this._sevenSegmentText = value, this.SevenSegmentSelectedPosition);
             }
-        }
-        partial void OnSevenSegmentTextChanged(string value)
-        {
-            if (value.Length > DeviceList[GetSeletedController()].DeviceInfo.n7SegmentCount - this.SevenSegmentSelectedPosition + 1)
-            {
-                this._sevenSegmentText = value.Remove(DeviceList[GetSeletedController()].DeviceInfo.n7SegmentCount - this.SevenSegmentSelectedPosition + 1);
-                _ = InterfaceITAPI_Data.interfaceIT_7Segment_Display(GetSelectedDeviceSession(), this._sevenSegmentText, this.SevenSegmentSelectedPosition);
-                return;
-            }
-            _ = InterfaceITAPI_Data.interfaceIT_7Segment_Display(GetSelectedDeviceSession(), this._sevenSegmentText = value, this.SevenSegmentSelectedPosition);
         }
 
         [ObservableProperty]
@@ -81,8 +80,9 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                 this.FeatureNotSupported = "7 Segment not supported!";
                 return;
             }
-            this.SevenSegmentEnabled = !this.SevenSegmentEnabled;
+            
             this.FeatureNotSupported = string.Empty;
+            _ = InterfaceITAPI_Data.interfaceIT_7Segment_Enable(GetSelectedDeviceSession(), this.SevenSegmentEnabled = !this.SevenSegmentEnabled);
             if (this.SevenSegmentEnabled)
             {
                 this.SevenSegmentPositions.Clear();
@@ -92,7 +92,6 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                     this.SevenSegmentPositions.Add(i);
                 }
             }
-            _ = InterfaceITAPI_Data.interfaceIT_7Segment_Enable(GetSelectedDeviceSession(), this.SevenSegmentEnabled);
         }
 
         [RelayCommand]
@@ -118,15 +117,14 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         [RelayCommand]
         private void BrightnessEnable()
         {
+            this.BrightnessValue = 0;
             if ((DeviceList[GetSeletedController()].DeviceInfo.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_SPECIAL_BRIGHTNESS) == 0)
             {
                 this.FeatureNotSupported = "Brightness not supported!";
                 return;
             }
-            this.BrightnessEnabled = !this.BrightnessEnabled;
             this.FeatureNotSupported = string.Empty;
-            this.BrightnessValue = 0;
-            _ = InterfaceITAPI_Data.interfaceIT_Brightness_Enable(GetSelectedDeviceSession(), this.BrightnessEnabled);
+            _ = InterfaceITAPI_Data.interfaceIT_Brightness_Enable(GetSelectedDeviceSession(), this.BrightnessEnabled = !this.BrightnessEnabled);
         }
 
         [RelayCommand]
@@ -138,30 +136,20 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                 this.FeatureNotSupported = "Analog input not supported!";
                 return;
             }
-            this.AnalogEnabled = !this.AnalogEnabled;
             this.FeatureNotSupported = string.Empty;
-
-            this.GetValuesCancellationTokenSource = new CancellationTokenSource();
-            _ = InterfaceITAPI_Data.interfaceIT_Analog_Enable(GetSelectedDeviceSession(), this.AnalogEnabled);
+            _ = InterfaceITAPI_Data.interfaceIT_Analog_Enable(GetSelectedDeviceSession(), this.AnalogEnabled = !this.AnalogEnabled);
             if (!this.AnalogEnabled)
             {
-                this.GetValuesCancellationTokenSource?.Cancel();
-                this.AnalogValueThread = null;
-                this.AnalogValue = 0;
+                this.valuesCancellationTokenSource.Cancel();
                 return;
             }
-            this.AnalogValueThread = new Thread(o => this.GetValues(GetValuesCancellationTokenSource.Token))
-            {
-                Name = "AnalogValueTest"
-            };
-            this.AnalogValueThread.Start();
+            Task.Run(() => this.GetValues((this.valuesCancellationTokenSource = new CancellationTokenSource()).Token));
         }
 
         [RelayCommand]
         private void LoggingEnable()
         {
-            this.LoggingEnabled = !this.LoggingEnabled;
-            _ = InterfaceITAPI_Data.interfaceIT_EnableLogging(this.LoggingEnabled);
+            _ = InterfaceITAPI_Data.interfaceIT_EnableLogging(this.LoggingEnabled = !this.LoggingEnabled);
             if (this.LoggingEnabled)
             {
                 System.Diagnostics.Process.Start("explorer.exe", Environment.ExpandEnvironmentVariables(@"%appdata%\TEKWorx Limited\interfaceIT API"));

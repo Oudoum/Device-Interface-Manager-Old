@@ -7,18 +7,10 @@ using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
-    partial class SettingsViewModel : ObservableObject
+    public partial class SettingsViewModel : ObservableObject
     {
         [ObservableProperty]
         private int _hubHopUpdateProgress;
-
-        private string iP;
-        [ObservableProperty]
-        private string _iP;
-
-        private string port;
-        [ObservableProperty]
-        private string _port;
 
         [ObservableProperty]
         private bool _minimizedHide = Properties.Settings.Default.MinimizedHide;
@@ -37,6 +29,42 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         }
 
         public string InterfaceITAPIVersion { get; set; }
+
+        private string _iP;
+        public string IP
+        {
+            get => this._iP;
+            set
+            {
+                if (this._iP is null) 
+                {
+                    this._iP = value;
+                    return;
+                }
+                if (this._iP != value && System.Net.IPAddress.TryParse(value, out System.Net.IPAddress adress))
+                {
+                    File.WriteAllText("SimConnect.cfg", File.ReadAllText("SimConnect.cfg").Replace("Address=" + this._iP, "Address=" + (this._iP = adress.ToString())));
+                }
+            }
+        }
+
+        private string _port;
+        public string Port
+        {
+            get => this._port;
+            set
+            {
+                if (this._port is null)
+                {
+                    this._port = value;
+                    return;
+                }
+                if (this._iP != value && ushort.TryParse(value, out ushort port) && value != "0")
+                {
+                    File.WriteAllText("SimConnect.cfg", File.ReadAllText("SimConnect.cfg").Replace("Port=" + this._port, "Port=" + (this._port = port.ToString())));
+                }
+            }
+        }
 
         public SettingsViewModel() 
         {
@@ -61,22 +89,18 @@ namespace Device_Interface_Manager.MVVM.ViewModel
             wasmModuleUpdater = null;
         }
 
-        [RelayCommand]
-        private void IPAndPortCheck()
-        {
-            if (!System.Net.IPAddress.TryParse(this.IP, out System.Net.IPAddress adress) || !ushort.TryParse(this.Port, out ushort port) || this.Port == "0")
-            {
-                this.IP = this.iP;
-                this.Port = this.port;
-                return;
-            }
-            File.WriteAllText("SimConnect.cfg", File.ReadAllText("SimConnect.cfg").Replace("Address=" + this.iP, "Address=" + (this.IP = this.iP = adress.ToString())));
-            File.WriteAllText("SimConnect.cfg", File.ReadAllText("SimConnect.cfg").Replace("Port=" + this.port, "Port=" + (this.Port = this.port = port.ToString())));
-        }
-
         private void WasmModuleUpdater_DownloadAndInstallProgress(object sender, MobiFlight.Base.ProgressUpdateEvent e)
         {
             this.HubHopUpdateProgress = e.Current;
+        }
+
+        private void GetInterfaceITAPIVersion()
+        {
+            int intSize = 0;
+            _ = interfaceIT_GetAPIVersion(null, ref intSize);
+            StringBuilder aPIVersion = new(intSize);
+            _ = interfaceIT_GetAPIVersion(aPIVersion, ref intSize);
+            this.InterfaceITAPIVersion = "interfaceIT API version " + aPIVersion;
         }
 
         private void ReadSimConnectCfg()
@@ -87,23 +111,14 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                 {
                     if (line.StartsWith("Address="))
                     {
-                        this.iP = this._iP = line.Replace("Address=", null);
+                        this.IP = line[8..];
                     }
                     if (line.StartsWith("Port="))
                     {
-                        this.port = this._port = line.Replace("Port=", null);
+                        this.Port = line[5..];
                     }
                 }
             }
-        }
-
-        private void GetInterfaceITAPIVersion()
-        {
-            int intSize = 0;
-            _ = interfaceIT_GetAPIVersion(null, ref intSize);
-            StringBuilder aPIVersion = new(intSize);
-            _ = interfaceIT_GetAPIVersion(aPIVersion, ref intSize);
-            this.InterfaceITAPIVersion = "interfaceIT API version " + aPIVersion;
         }
     }
 }

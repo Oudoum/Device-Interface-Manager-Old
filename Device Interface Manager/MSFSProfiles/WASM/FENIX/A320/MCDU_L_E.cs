@@ -11,7 +11,7 @@ namespace Device_Interface_Manager.MSFSProfiles.WASM.FENIX.A320
             {
                 if (this._cDU1_FAIL != value)
                 {
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(2, this._cDU1_FAIL = value);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(2, this._cDU1_FAIL = value);
                 }
             }
         }
@@ -23,8 +23,8 @@ namespace Device_Interface_Manager.MSFSProfiles.WASM.FENIX.A320
             {
                 if (this._cDU1_MCDU_MENU != value)
                 {
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(3, this._cDU1_MCDU_MENU = value);
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(5, value);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(3, this._cDU1_MCDU_MENU = value);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(5, value);
                 }
             }
         }
@@ -36,7 +36,7 @@ namespace Device_Interface_Manager.MSFSProfiles.WASM.FENIX.A320
             {
                 if (this._cDU1_FM != value)
                 {
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(4, this._cDU1_FM = value);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(4, this._cDU1_FM = value);
                 }
             }
         }
@@ -48,7 +48,7 @@ namespace Device_Interface_Manager.MSFSProfiles.WASM.FENIX.A320
             {
                 if (this._cDU1_FM1 != value)
                 {
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(6, this._cDU1_FM1 = value);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(6, this._cDU1_FM1 = value);
                 }
             }
         }
@@ -60,7 +60,7 @@ namespace Device_Interface_Manager.MSFSProfiles.WASM.FENIX.A320
             {
                 if (this._cDU1_IND != value)
                 {
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(7, this._cDU1_IND = value);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(7, this._cDU1_IND = value);
                 }
             }
         }
@@ -72,7 +72,7 @@ namespace Device_Interface_Manager.MSFSProfiles.WASM.FENIX.A320
             {
                 if (this._cDU1_RDY != value)
                 {
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(8, this._cDU1_RDY = value);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(8, this._cDU1_RDY = value);
                 }
             }
         }
@@ -84,7 +84,7 @@ namespace Device_Interface_Manager.MSFSProfiles.WASM.FENIX.A320
             {
                 if (this._cDU1_DASH != value)
                 {
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(9, this._cDU1_DASH = value);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(9, this._cDU1_DASH = value);
                 }
             }
         }
@@ -96,7 +96,7 @@ namespace Device_Interface_Manager.MSFSProfiles.WASM.FENIX.A320
             {
                 if (this._cDU1_FM2 != value)
                 {
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(10, this._cDU1_FM2 = value);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(10, this._cDU1_FM2 = value);
                 }
             }
         }

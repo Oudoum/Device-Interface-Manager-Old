@@ -54,7 +54,7 @@
 
         <DataGrid
             Grid.Column="1"
-            ItemsSource="{Binding LED}"
+            ItemsSource="{Binding LEDs}"
             d:Visibility="Visible"
             Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
             CanUserAddRows="False"
@@ -212,8 +212,7 @@
                 BorderBrush="#FF152A7F"
                 BorderThickness="0,2.55,5,5"
                 Background="DarkRed"
-                Command="{Binding AllLEDOnOffCommand}" 
-                CommandParameter="Off"
+                Command="{Binding AllLEDOnOffCommand}"
                 Grid.Row="1">
                 <Button.Content>
                     <TextBlock 

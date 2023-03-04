@@ -1,8 +1,10 @@
-﻿namespace Device_Interface_Manager.MVVM.Model
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
+namespace Device_Interface_Manager.MVVM.Model
 {
     public class HomeUSBModel
     {
-        public class Connection : CommunityToolkit.Mvvm.ComponentModel.ObservableObject
+        public class Connection : ObservableObject
         {
             public int Id { get; set; }
             public string Name { get; set; }
@@ -13,17 +15,6 @@
                 set
                 {
                     _serial = value;
-                }
-            }
-
-            private byte _status;
-            public byte Status
-            {
-                get => _status;
-                set
-                {
-                    _status = value;
-                    OnPropertyChanged();
                 }
             }
             public Profile Profile { get; set; }

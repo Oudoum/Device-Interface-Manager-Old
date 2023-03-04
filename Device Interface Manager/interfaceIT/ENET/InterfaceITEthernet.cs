@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using System.Windows;
 
 namespace Device_Interface_Manager.interfaceIT.ENET
 {
@@ -37,9 +38,7 @@ namespace Device_Interface_Manager.interfaceIT.ENET
                 {
                     ping.Send(Hostname);
                 }
-                catch (Exception)
-                {
-                }
+                catch { }
                 finally
                 {
                     ping?.Dispose();
@@ -55,16 +54,16 @@ namespace Device_Interface_Manager.interfaceIT.ENET
 
                     data = new byte[1024];
                 }
-                catch (ArgumentNullException)
+                catch (ArgumentNullException e)
                 {
-
+                    MessageBox.Show(e.Message);
                 }
 
-                catch (SocketException)
+                catch (SocketException e)
                 {
-
+                    MessageBox.Show(e.Message);
                 }
-                if(token.IsCancellationRequested) 
+                if (token.IsCancellationRequested) 
                 {
                     return;
                 }
@@ -268,7 +267,7 @@ namespace Device_Interface_Manager.interfaceIT.ENET
                 rc = null;
                 for (int i = int.Parse(InterfaceITEthernetInfo.LEDStart); i <= int.Parse(InterfaceITEthernetInfo.LEDStop); i++)
                 {
-                    SendintefaceITEthernetLED(i, 0);
+                    SendinterfaceITEthernetLED(i, 0);
                     Thread.Sleep(10);
                 }
                 stream?.Close();
@@ -276,22 +275,28 @@ namespace Device_Interface_Manager.interfaceIT.ENET
             }
         }
 
-        public void SendintefaceITEthernetLED(int nLED, int bOn)
+        public void SendinterfaceITEthernetLED(int nLED, int bOn)
         {
             try
             {
                 stream?.Write(data = Encoding.ASCII.GetBytes("B1:LED:" + nLED + ":" + bOn + "\r\n"), 0, data.Length);
             }
-            catch { }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
         }
 
-        public void SendintefaceITEthernetLED(int nLED, bool bOn)
+        public void SendinterfaceITEthernetLED(int nLED, bool bOn)
         {
             try
             {
                 stream?.Write(data = Encoding.ASCII.GetBytes("B1:LED:" + nLED + ":" + Convert.ToInt32(bOn) + "\r\n"), 0, data.Length);
             }
-            catch { }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
         }
 
         public void LEDon()

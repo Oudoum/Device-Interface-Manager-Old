@@ -15,7 +15,7 @@ namespace Device_Interface_Manager.MSFSProfiles.WASM.FBW.A32NX
             {
                 if (this._mCDU_R_ANNUNC_FAIL != value)
                 {
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(2, this._mCDU_R_ANNUNC_FAIL = value);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(2, this._mCDU_R_ANNUNC_FAIL = value);
                 }
             }
         }
@@ -27,7 +27,7 @@ namespace Device_Interface_Manager.MSFSProfiles.WASM.FBW.A32NX
             {
                 if (this._mCDU_R_ANNUNC_FMGC != value)
                 {
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(3, this._mCDU_R_ANNUNC_FMGC = value);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(3, this._mCDU_R_ANNUNC_FMGC = value);
                 }
             }
         }
@@ -39,7 +39,7 @@ namespace Device_Interface_Manager.MSFSProfiles.WASM.FBW.A32NX
             {
                 if (this._mCDU_R_ANNUNC_FM != value)
                 {
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(4, this._mCDU_R_ANNUNC_FM = value);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(4, this._mCDU_R_ANNUNC_FM = value);
                 }
             }
         }
@@ -51,7 +51,7 @@ namespace Device_Interface_Manager.MSFSProfiles.WASM.FBW.A32NX
             {
                 if (this._mCDU_R_ANNUNC_MCDU_MENU != value)
                 {
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(5, this._mCDU_R_ANNUNC_MCDU_MENU = value);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(5, this._mCDU_R_ANNUNC_MCDU_MENU = value);
                 }
             }
         }
@@ -63,7 +63,7 @@ namespace Device_Interface_Manager.MSFSProfiles.WASM.FBW.A32NX
             {
                 if (this._mCDU_R_ANNUNC_FM1 != value)
                 {
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(6, this._mCDU_R_ANNUNC_FM1 = value);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(6, this._mCDU_R_ANNUNC_FM1 = value);
                 }
             }
         }
@@ -75,7 +75,7 @@ namespace Device_Interface_Manager.MSFSProfiles.WASM.FBW.A32NX
             {
                 if (this._mCDU_R_ANNUNC_IND != value)
                 {
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(7, this._mCDU_R_ANNUNC_IND = value);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(7, this._mCDU_R_ANNUNC_IND = value);
                 }
             }
         }
@@ -87,7 +87,7 @@ namespace Device_Interface_Manager.MSFSProfiles.WASM.FBW.A32NX
             {
                 if (this._mCDU_R_ANNUNC_RDY != value)
                 {
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(8, this._mCDU_R_ANNUNC_RDY = value);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(8, this._mCDU_R_ANNUNC_RDY = value);
                 }
             }
         }
@@ -99,7 +99,7 @@ namespace Device_Interface_Manager.MSFSProfiles.WASM.FBW.A32NX
             {
                 if (this._mCDU_R_ANNUNC_FM2 != value)
                 {
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(10, this._mCDU_R_ANNUNC_FM2 = value);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(10, this._mCDU_R_ANNUNC_FM2 = value);
                 }
             }
         }
@@ -111,14 +111,14 @@ namespace Device_Interface_Manager.MSFSProfiles.WASM.FBW.A32NX
             {
                 if (this._mCDU_R_LIGHTTEST != value)
                 {
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(2, this._mCDU_R_LIGHTTEST = value);
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(3, this._mCDU_R_LIGHTTEST);
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(4, this._mCDU_R_LIGHTTEST);
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(5, this._mCDU_R_LIGHTTEST);
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(6, this._mCDU_R_LIGHTTEST);
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(7, this._mCDU_R_LIGHTTEST);
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(8, this._mCDU_R_LIGHTTEST);
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(10, this._mCDU_R_LIGHTTEST);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(2, this._mCDU_R_LIGHTTEST = value);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(3, this._mCDU_R_LIGHTTEST);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(4, this._mCDU_R_LIGHTTEST);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(5, this._mCDU_R_LIGHTTEST);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(6, this._mCDU_R_LIGHTTEST);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(7, this._mCDU_R_LIGHTTEST);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(8, this._mCDU_R_LIGHTTEST);
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(10, this._mCDU_R_LIGHTTEST);
                 }
             }
         }

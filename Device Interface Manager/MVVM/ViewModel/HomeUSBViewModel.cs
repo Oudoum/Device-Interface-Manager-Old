@@ -14,7 +14,7 @@ using static Device_Interface_Manager.MVVM.Model.HomeUSBModel;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
-    partial class HomeUSBViewModel : ObservableObject
+    public partial class HomeUSBViewModel : ObservableObject
     {
         [ObservableProperty]
         private bool _isSimConnectOpen;
@@ -115,77 +115,75 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         [RelayCommand]
         private async void StartUSB()
         {
-            this.IsUSBEnabled = !this.IsUSBEnabled;
-
-            if (!this.IsUSBEnabled)
+            if (!(this.IsUSBEnabled = !this.IsUSBEnabled))
             {
-                foreach (var connection in this.Connections)
-                {
-                    switch (connection.Profile.Id)
-                    {
-                        case 1:
-                            MSFSProfiles.WASM.FENIX.A320.MCDU_L_USB mCDU_L_USB = new();
-                            await Task.Run(() => mCDU_L_USB.Start(DeviceList.FirstOrDefault(o => o.SerialNumber == connection.Serial)));
-                            this.ListWASM.Add(mCDU_L_USB);
-                            break;
-
-                        case 2:
-                            MSFSProfiles.WASM.FENIX.A320.MCDU_R_USB mCDU_RUSB = new();
-                            await Task.Run(() => mCDU_RUSB.Start(DeviceList.FirstOrDefault(o => o.SerialNumber == connection.Serial)));
-                            this.ListWASM.Add(mCDU_RUSB);
-                            break;
-
-                        case 3:
-                            MSFSProfiles.WASM.FBW.A32NX.MCDU_L_USB mCDU_L_USB1 = new();
-                            await Task.Run(() => mCDU_L_USB1.Start(DeviceList.FirstOrDefault(o => o.SerialNumber == connection.Serial)));
-                            this.ListWASM.Add(mCDU_L_USB1);
-                            break;
-
-                        case 4:
-                            MSFSProfiles.WASM.FBW.A32NX.MCDU_R_USB mCDU_R_USB1 = new();
-                            await Task.Run(() => mCDU_R_USB1.Start(DeviceList.FirstOrDefault(o => o.SerialNumber == connection.Serial)));
-                            this.ListWASM.Add(mCDU_R_USB1);
-                            break;
-
-                        case 5:
-                            MSFSProfiles.PMDG.B737.NG_CDU_L_USB nG_CDU_L_USB = new();
-                            await Task.Run(() => nG_CDU_L_USB.Start(DeviceList.FirstOrDefault(o => o.SerialNumber == connection.Serial)));
-                            this.ListPMDG.Add(nG_CDU_L_USB);
-                            break;
-
-                        case 6:
-                            MSFSProfiles.PMDG.B737.NG_CDU_R_USB nG_CDU_R_USB = new();
-                            await Task.Run(() => nG_CDU_R_USB.Start(DeviceList.FirstOrDefault(o => o.SerialNumber == connection.Serial)));
-                            this.ListPMDG.Add(nG_CDU_R_USB);
-                            break;
-
-                        case 7:
-                            MSFSProfiles.PMDG.B737.NG_MCP_USB nG_MCP_USB = new();
-                            await Task.Run(() => nG_MCP_USB.Start(DeviceList.FirstOrDefault(o => o.SerialNumber == connection.Serial)));
-                            this.ListPMDG.Add(nG_MCP_USB);
-                            break;
-
-                        case 8:
-                            MSFSProfiles.PMDG.B737.NG_MCP_777_USB nG_MCP_777_USB = new();
-                            await Task.Run(() => nG_MCP_777_USB.Start(DeviceList.FirstOrDefault(o => o.SerialNumber == connection.Serial)));
-                            this.ListPMDG.Add(nG_MCP_777_USB);
-                            break;
-
-                        default:
-                            break;
-                    }
-                }
+                await StartUSBProfiles();
+                return;
             }
-
-            if (this.IsUSBEnabled)
-            {
-                this.ListWASM.ForEach(o => o.Stop());
+            this.ListWASM.ForEach(o => o.Stop());
                 this.ListPMDG.ForEach(o => o.Stop());
-
                 this.ListWASM.Clear();
                 this.ListPMDG.Clear();
-
                 this.SaveUSBData();
+        }
+
+        private async Task StartUSBProfiles()
+        {
+            foreach (var connection in this.Connections)
+            {
+                switch (connection.Profile.Id)
+                {
+                    case 1:
+                        MSFSProfiles.WASM.FENIX.A320.MCDU_L_USB mCDU_L_USB = new();
+                        await Task.Run(() => mCDU_L_USB.Start(DeviceList.FirstOrDefault(o => o.SerialNumber == connection.Serial)));
+                        this.ListWASM.Add(mCDU_L_USB);
+                        break;
+
+                    case 2:
+                        MSFSProfiles.WASM.FENIX.A320.MCDU_R_USB mCDU_RUSB = new();
+                        await Task.Run(() => mCDU_RUSB.Start(DeviceList.FirstOrDefault(o => o.SerialNumber == connection.Serial)));
+                        this.ListWASM.Add(mCDU_RUSB);
+                        break;
+
+                    case 3:
+                        MSFSProfiles.WASM.FBW.A32NX.MCDU_L_USB mCDU_L_USB1 = new();
+                        await Task.Run(() => mCDU_L_USB1.Start(DeviceList.FirstOrDefault(o => o.SerialNumber == connection.Serial)));
+                        this.ListWASM.Add(mCDU_L_USB1);
+                        break;
+
+                    case 4:
+                        MSFSProfiles.WASM.FBW.A32NX.MCDU_R_USB mCDU_R_USB1 = new();
+                        await Task.Run(() => mCDU_R_USB1.Start(DeviceList.FirstOrDefault(o => o.SerialNumber == connection.Serial)));
+                        this.ListWASM.Add(mCDU_R_USB1);
+                        break;
+
+                    case 5:
+                        MSFSProfiles.PMDG.B737.NG_CDU_L_USB nG_CDU_L_USB = new();
+                        await Task.Run(() => nG_CDU_L_USB.Start(DeviceList.FirstOrDefault(o => o.SerialNumber == connection.Serial)));
+                        this.ListPMDG.Add(nG_CDU_L_USB);
+                        break;
+
+                    case 6:
+                        MSFSProfiles.PMDG.B737.NG_CDU_R_USB nG_CDU_R_USB = new();
+                        await Task.Run(() => nG_CDU_R_USB.Start(DeviceList.FirstOrDefault(o => o.SerialNumber == connection.Serial)));
+                        this.ListPMDG.Add(nG_CDU_R_USB);
+                        break;
+
+                    case 7:
+                        MSFSProfiles.PMDG.B737.NG_MCP_USB nG_MCP_USB = new();
+                        await Task.Run(() => nG_MCP_USB.Start(DeviceList.FirstOrDefault(o => o.SerialNumber == connection.Serial)));
+                        this.ListPMDG.Add(nG_MCP_USB);
+                        break;
+
+                    case 8:
+                        MSFSProfiles.PMDG.B737.NG_MCP_777_USB nG_MCP_777_USB = new();
+                        await Task.Run(() => nG_MCP_777_USB.Start(DeviceList.FirstOrDefault(o => o.SerialNumber == connection.Serial)));
+                        this.ListPMDG.Add(nG_MCP_777_USB);
+                        break;
+
+                    default:
+                        break;
+                }
             }
         }
 
@@ -237,7 +235,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         }
 
         [RelayCommand]
-        private void ResetScreens()
+        private void ResetUSBScreens()
         {
             this.ListPMDG.ForEach(o => { o.pMDG737CDU.Top = 0; o.pMDG737CDU.Left = 0; });
             this.ListWASM.ForEach(o => { o.fBWA32NXMCDU.Top = 0; o.fBWA32NXMCDU.Left = 0; });
@@ -261,10 +259,6 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                     File.Delete(usb);
                 }
                 return;
-            }
-            foreach (var status in this.Connections)
-            {
-                status.Status = 0;
             }
             Directory.CreateDirectory(usb.Remove(8));
             string json = JsonConvert.SerializeObject(this.Connections, Formatting.Indented);

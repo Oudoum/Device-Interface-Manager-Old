@@ -17,7 +17,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
             {
                 if (this._cDU_annunEXEC0 != value)
                 {
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(1, Convert.ToInt32(this._cDU_annunEXEC0 = value));
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(1, Convert.ToInt32(this._cDU_annunEXEC0 = value));
                 }
             }
         }
@@ -29,7 +29,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
             {
                 if (this._cDU_annunCALL0 != value)
                 {
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(2, Convert.ToInt32(this._cDU_annunCALL0 = value));
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(2, Convert.ToInt32(this._cDU_annunCALL0 = value));
                 }
             }
         }
@@ -41,7 +41,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
             {
                 if (this._cDU_annunMSG0 != value)
                 {
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(3, Convert.ToInt32(this._cDU_annunMSG0 = value));
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(3, Convert.ToInt32(this._cDU_annunMSG0 = value));
                 }
             }
         }
@@ -53,7 +53,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
             {
                 if (this._cDU_annunFAIL0 != value)
                 {
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(4, Convert.ToInt32(this._cDU_annunFAIL0 = value));
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(4, Convert.ToInt32(this._cDU_annunFAIL0 = value));
                 }
             }
         }
@@ -65,7 +65,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
             {
                 if (this._cDU_annunOFST0 != value)
                 {
-                    this.InterfaceITEthernet.SendintefaceITEthernetLED(5, Convert.ToInt32(this._cDU_annunOFST0 = value));
+                    this.InterfaceITEthernet.SendinterfaceITEthernetLED(5, Convert.ToInt32(this._cDU_annunOFST0 = value));
                 }
             }
         }

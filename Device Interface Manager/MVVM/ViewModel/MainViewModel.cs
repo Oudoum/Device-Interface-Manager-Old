@@ -11,11 +11,11 @@ using static Device_Interface_Manager.interfaceIT.USB.InterfaceIT_BoardInfo.Boar
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
-    partial class MainViewModel : ObservableObject
+    public partial class MainViewModel : ObservableObject
     {
         public int session;
         private const string updateLink = "https://raw.githubusercontent.com/Oudoum/Device-Interface-Manager-Download/main/Updates/AutoUpdaterDIM.xml";
-        private const string version = "1.1.2";
+        private const string version = "1.1.3";
 
         public static HomeUSBViewModel HomeUSBVM { get; set; }
 

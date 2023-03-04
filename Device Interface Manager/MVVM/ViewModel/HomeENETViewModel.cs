@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.IO;
-using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -16,7 +15,7 @@ using static Device_Interface_Manager.MVVM.Model.HomeENETModel;
 
 namespace Device_Interface_Manager.MVVM.ViewModel
 {
-    partial class HomeENETViewModel : ObservableObject
+    public partial class HomeENETViewModel : ObservableObject
     {
         [ObservableProperty]
         private bool _isENETEnabled = true;
@@ -25,7 +24,9 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
         public ObservableCollection<Profile> Profiles { get; set; } = new();
 
-        private CancellationTokenSource EthernetCancellationTokenSource { get; set; }
+        private InterfaceITEthernet interfaceITEthernet;
+        private InterfaceITEthernet.INTERFACEIT_ETHERNET_KEY_NOTIFY_PROC pROC;
+        private CancellationTokenSource ethernetCancellationTokenSource;
 
         private List<ENETPMDG> ListPMDG { get; set; } = new();
         private List<ENETWASM> ListWASM { get; set; } = new();
@@ -44,93 +45,94 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         [RelayCommand]
         private async void StartENET()
         {
-            this.IsENETEnabled = !this.IsENETEnabled;
-
-            if (!this.IsENETEnabled)
+            if (!(this.IsENETEnabled = !this.IsENETEnabled))
             {
-                foreach (var connection in this.Connections) 
-                {
-                    switch (connection.Profile.Id)
-                    {
-                        case 1:
-                            MSFSProfiles.WASM.FENIX.A320.MCDU_L_E mCDU_L_E = new();
-                            await Task.Run(() => mCDU_L_E.Start(connection.IPAddress));
-                            connection.Status = mCDU_L_E.ConnectionStatus;
-                            this.ListWASM.Add(mCDU_L_E);
-                            break;
-
-                        case 2:
-                            MSFSProfiles.WASM.FENIX.A320.MCDU_R_E mCDU_R_E = new();
-                            await Task.Run(() => mCDU_R_E.Start(connection.IPAddress));
-                            connection.Status = mCDU_R_E.ConnectionStatus;
-                            this.ListWASM.Add(mCDU_R_E);
-                            break;
-
-                        case 3:
-                            MSFSProfiles.WASM.FBW.A32NX.MCDU_L_E mCDU_L_E1 = new();
-                            await Task.Run(() => mCDU_L_E1.Start(connection.IPAddress));
-                            connection.Status = mCDU_L_E1.ConnectionStatus;
-                            this.ListWASM.Add(mCDU_L_E1);
-                            break;
-
-                        case 4:
-                            MSFSProfiles.WASM.FBW.A32NX.MCDU_R_E mCDU_R_E1 = new();
-                            await Task.Run(() => mCDU_R_E1.Start(connection.IPAddress));
-                            connection.Status = mCDU_R_E1.ConnectionStatus;
-                            this.ListWASM.Add(mCDU_R_E1);
-                            break;
-
-                        case 5:
-                            MSFSProfiles.PMDG.B737.NG_CDU_L_E nG_CDU_L_E = new();
-                            await Task.Run(() => nG_CDU_L_E.Start(connection.IPAddress));
-                            connection.Status = nG_CDU_L_E.ConnectionStatus;
-                            this.ListPMDG.Add(nG_CDU_L_E);
-                            break;
-
-                        case 6:
-                            MSFSProfiles.PMDG.B737.NG_CDU_R_E nG_CDU_R_E = new();
-                            await Task.Run(() => nG_CDU_R_E.Start(connection.IPAddress));
-                            connection.Status = nG_CDU_R_E.ConnectionStatus;
-                            this.ListPMDG.Add(nG_CDU_R_E);
-                            break;
-
-                        case 99:
-                            int index = this.Connections.IndexOf(this.Connections.First(o => o.Profile.Id == 99));
-                            InterfaceITEthernet interfaceITEthernet = new()
-                            {
-                                Hostname = this.Connections[index].IPAddress
-                            };
-                            this.EthernetCancellationTokenSource = new();
-                            await Task.Run(() => interfaceITEthernet.InterfaceITEthernetConnection(this.EthernetCancellationTokenSource.Token));
-                            this.Connections[index].Status = interfaceITEthernet.ClientStatus;
-                            if (this.Connections[index].Status == 2)
-                            {
-                                interfaceITEthernet.GetinterfaceITEthernetDataStart();
-                                interfaceITEthernet.GetinterfaceITEthernetInfo();
-                                WeakReferenceMessenger.Default.Send(new BoardinfoENETMessage(interfaceITEthernet));
-                            }
-                            break;
-
-
-                        default:
-                            break;
-                    }
-                }
-                this.ListPMDG.ForEach(o => WeakReferenceMessenger.Default.Send(new BoardinfoENETMessage(o.InterfaceITEthernet)));
-                this.ListWASM.ForEach(o => WeakReferenceMessenger.Default.Send(new BoardinfoENETMessage(o.InterfaceITEthernet)));
+                await StartENETProfiles();
+                this.ListPMDG.ForEach(o => WeakReferenceMessenger.Default.Send(new ValueChangedMessage<InterfaceITEthernet>(o.InterfaceITEthernet)));
+                this.ListWASM.ForEach(o => WeakReferenceMessenger.Default.Send(new ValueChangedMessage<InterfaceITEthernet>(o.InterfaceITEthernet)));
+                return;
             }
+            this.interfaceITEthernet?.CloseStream();
+            this.ethernetCancellationTokenSource?.Cancel();
+            this.ListWASM.ForEach(o => o.Stop());
+            this.ListPMDG.ForEach(o => o.Stop());
+            this.ListWASM.Clear();
+            this.ListPMDG.Clear();
+            this.SaveENETData();
+        }
 
-            if (this.IsENETEnabled)
+        private async Task StartENETProfiles()
+        {
+            foreach (var connection in this.Connections)
             {
-                this.ListWASM.ForEach(o => o.Stop());
-                this.ListPMDG.ForEach(o => o.Stop());
+                switch (connection.Profile.Id)
+                {
+                    case 1:
+                        MSFSProfiles.WASM.FENIX.A320.MCDU_L_E mCDU_L_E = new();
+                        await Task.Run(() => mCDU_L_E.Start(connection.IPAddress));
+                        connection.Status = mCDU_L_E.ConnectionStatus;
+                        this.ListWASM.Add(mCDU_L_E);
+                        break;
 
-                this.ListWASM.Clear();
-                this.ListPMDG.Clear();
+                    case 2:
+                        MSFSProfiles.WASM.FENIX.A320.MCDU_R_E mCDU_R_E = new();
+                        await Task.Run(() => mCDU_R_E.Start(connection.IPAddress));
+                        connection.Status = mCDU_R_E.ConnectionStatus;
+                        this.ListWASM.Add(mCDU_R_E);
+                        break;
 
-                this.SaveENETData();
+                    case 3:
+                        MSFSProfiles.WASM.FBW.A32NX.MCDU_L_E mCDU_L_E1 = new();
+                        await Task.Run(() => mCDU_L_E1.Start(connection.IPAddress));
+                        connection.Status = mCDU_L_E1.ConnectionStatus;
+                        this.ListWASM.Add(mCDU_L_E1);
+                        break;
+
+                    case 4:
+                        MSFSProfiles.WASM.FBW.A32NX.MCDU_R_E mCDU_R_E1 = new();
+                        await Task.Run(() => mCDU_R_E1.Start(connection.IPAddress));
+                        connection.Status = mCDU_R_E1.ConnectionStatus;
+                        this.ListWASM.Add(mCDU_R_E1);
+                        break;
+
+                    case 5:
+                        MSFSProfiles.PMDG.B737.NG_CDU_L_E nG_CDU_L_E = new();
+                        await Task.Run(() => nG_CDU_L_E.Start(connection.IPAddress));
+                        connection.Status = nG_CDU_L_E.ConnectionStatus;
+                        this.ListPMDG.Add(nG_CDU_L_E);
+                        break;
+
+                    case 6:
+                        MSFSProfiles.PMDG.B737.NG_CDU_R_E nG_CDU_R_E = new();
+                        await Task.Run(() => nG_CDU_R_E.Start(connection.IPAddress));
+                        connection.Status = nG_CDU_R_E.ConnectionStatus;
+                        this.ListPMDG.Add(nG_CDU_R_E);
+                        break;
+
+                    case 99:
+                         this.interfaceITEthernet = new() { Hostname = connection.IPAddress };
+                        await Task.Run(() => this.interfaceITEthernet.InterfaceITEthernetConnection((this.ethernetCancellationTokenSource = new()).Token));
+                        if ((connection.Status = this.interfaceITEthernet.ClientStatus) == 2)
+                        {
+                            this.interfaceITEthernet.GetinterfaceITEthernetDataStart();
+                            this.interfaceITEthernet.GetinterfaceITEthernetInfo();
+                            this.GetinterfaceITEthernetData();
+                            WeakReferenceMessenger.Default.Send(new ValueChangedMessage<InterfaceITEthernet>(this.interfaceITEthernet));
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
             }
         }
+
+        private void GetinterfaceITEthernetData()
+        {
+            Task.Run(() => this.interfaceITEthernet.GetinterfaceITEthernetData(this.pROC = new(this.KeyPressedProcEthernet), this.ethernetCancellationTokenSource.Token));
+        }
+
+        private void KeyPressedProcEthernet(int key, string direction) { }
 
         [RelayCommand]
         private void DeleteRow(Connection connection)
@@ -179,7 +181,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         }
 
         [RelayCommand]
-        private void ResetScreens()
+        private void ResetENETScreens()
         {
             this.ListPMDG.ForEach(o => { o.pMDG737CDU.Top = 0; o.pMDG737CDU.Left = 0; });
             this.ListWASM.ForEach(o => { o.fBWA32NXMCDU.Top = 0; o.fBWA32NXMCDU.Left = 0; });
@@ -219,13 +221,6 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                 return;
             }
             File.WriteAllText(enet, json);
-        }
-    }
-
-    public class BoardinfoENETMessage : ValueChangedMessage<InterfaceITEthernet>
-    {
-        public BoardinfoENETMessage(InterfaceITEthernet value) : base(value)
-        {
         }
     }
 }
