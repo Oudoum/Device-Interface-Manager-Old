@@ -114,8 +114,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
         protected override void PMDGSimConnectStart()
         {
             base.PMDGSimConnectStart();
-            PMDG737 pMDG737 = new();
-            pMDG737.RegisterPMDGDataEvents(this.PMDGSimConnectClient.Simconnect);
+            PMDG737.RegisterPMDGDataEvents(this.PMDGSimConnectClient.Simconnect);
             Application.Current.Dispatcher.Invoke((Action)delegate
             {
                 this.pMDG737CDU = new();

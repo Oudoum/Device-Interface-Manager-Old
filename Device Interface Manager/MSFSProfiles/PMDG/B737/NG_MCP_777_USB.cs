@@ -499,8 +499,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
         protected override void PMDGSimConnectStart()
         {
             base.PMDGSimConnectStart();
-            PMDG737 pMDG737 = new();
-            pMDG737.RegisterPMDGDataEvents(this.PMDGSimConnectClient.Simconnect);
+            PMDG737.RegisterPMDGDataEvents(this.PMDGSimConnectClient.Simconnect);
         }
 
         protected override void Simconnect_OnRecvClientData(SimConnect sender, SIMCONNECT_RECV_CLIENT_DATA data)

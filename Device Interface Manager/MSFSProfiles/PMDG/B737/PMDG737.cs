@@ -7,15 +7,15 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
 {
     public class PMDG737
     {
-        public void RegisterPMDGDataEvents(SimConnect simConnect)
+        public static void RegisterPMDGDataEvents(SimConnect simConnect)
         {
-            this.CreatePMDG737NG3Events(simConnect);
-            this.AssociatePMDG737NG3Data(simConnect);
-            this.AssociatePMDG737NG3CDU0Data(simConnect);
-            this.AssociatePMDG737NG3CDU1Data(simConnect);
+            CreatePMDG737NG3Events(simConnect);
+            AssociatePMDG737NG3Data(simConnect);
+            AssociatePMDG737NG3CDU0Data(simConnect);
+            AssociatePMDG737NG3CDU1Data(simConnect);
         }
 
-        private void CreatePMDG737NG3Events(SimConnect simConnect)
+        private static void CreatePMDG737NG3Events(SimConnect simConnect)
         {
             // Map the PMDG Events to SimConnect
             foreach (PMDGEvents eventid in Enum.GetValues(typeof(PMDGEvents)))
@@ -24,7 +24,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
             }
         }
 
-        private void AssociatePMDG737NG3Data(SimConnect simConnect)
+        private static void AssociatePMDG737NG3Data(SimConnect simConnect)
         {
             // Associate an ID with the PMDG data area name
             simConnect.MapClientDataNameToID(PMDG_NG3_DATA_NAME, PMDG_NG3.DATA_ID);
@@ -42,7 +42,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
                 0, 0, 0);
         }
 
-        private void AssociatePMDG737NG3CDU0Data(SimConnect simConnect)
+        private static void AssociatePMDG737NG3CDU0Data(SimConnect simConnect)
         {
             // Associate an ID with the PMDG data CDU0 area name
             simConnect.MapClientDataNameToID(PMDG_NG3_CDU_0_NAME, PMDG_NG3.CDU_0_ID);
@@ -60,7 +60,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
                 0, 0, 0);
         }
 
-        private void AssociatePMDG737NG3CDU1Data(SimConnect simConnect)
+        private static void AssociatePMDG737NG3CDU1Data(SimConnect simConnect)
         {
             // Associate an ID with the PMDG data CDU1 area name
             simConnect.MapClientDataNameToID(PMDG_NG3_CDU_1_NAME, PMDG_NG3.CDU_1_ID);
@@ -78,7 +78,7 @@ namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737
                 0, 0, 0);
         }
 
-        //private void PMDGEventsNotUsed(SimConnect simConnect)
+        //private static void PMDGEventsNotUsed(SimConnect simConnect)
         //{
         //    //Methode 1
         //    // Associate an ID with the PMDG control area name

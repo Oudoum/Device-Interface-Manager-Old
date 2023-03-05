@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows.Documents;
 using System.Windows.Forms;
 using static Device_Interface_Manager.MSFSProfiles.PMDG.B737.NG_MCP_777_USB_MAPPING;
 using static Device_Interface_Manager.MSFSProfiles.PMDG.PMDG_NG3_SDK;

@@ -222,16 +222,16 @@ namespace Device_Interface_Manager.MVVM.ViewModel
             Profiles.Add(new Profile { Id = 7, Name = "PMDG 737NG MCP" });
             Profiles.Add(new Profile { Id = 8, Name = "PMDG 737NG MCP (777)" });
 
-            //Profiles.Add(new Profile { Id = 7, Name = "PMDG 737MAX Left CDU" });
-            //Profiles.Add(new Profile { Id = 8, Name = "PMDG 737MAX Right CDU" });
+            //Profiles.Add(new Profile { Id = , Name = "PMDG 737MAX Left CDU" });
+            //Profiles.Add(new Profile { Id = , Name = "PMDG 737MAX Right CDU" });
 
-            //Profiles.Add(new Profile { Id = 9, Name = "PMDG 777 Left CDU" });
-            //Profiles.Add(new Profile { Id = 10, Name = "PMDG 777 Right CDU" });
-            //Profiles.Add(new Profile { Id = 11, Name = "PMDG 777 Center CDU" });
+            //Profiles.Add(new Profile { Id = , Name = "PMDG 777 Left CDU" });
+            //Profiles.Add(new Profile { Id = , Name = "PMDG 777 Right CDU" });
+            //Profiles.Add(new Profile { Id = , Name = "PMDG 777 Center CDU" });
 
-            //Profiles.Add(new Profile { Id = 12, Name = "PMDG 747 Left CDU" });
-            //Profiles.Add(new Profile { Id = 13, Name = "PMDG 747 Right CDU" });
-            //Profiles.Add(new Profile { Id = 14, Name = "PMDG 747 Center CDU" });
+            //Profiles.Add(new Profile { Id = , Name = "PMDG 747 Left CDU" });
+            //Profiles.Add(new Profile { Id = , Name = "PMDG 747 Right CDU" });
+            //Profiles.Add(new Profile { Id = , Name = "PMDG 747 Center CDU" });
         }
 
         [RelayCommand]

@@ -25,7 +25,6 @@ namespace Device_Interface_Manager.MVVM.ViewModel
         public ObservableCollection<Profile> Profiles { get; set; } = new();
 
         private InterfaceITEthernet interfaceITEthernet;
-        private InterfaceITEthernet.INTERFACEIT_ETHERNET_KEY_NOTIFY_PROC pROC;
         private CancellationTokenSource ethernetCancellationTokenSource;
 
         private List<ENETPMDG> ListPMDG { get; set; } = new();
@@ -109,6 +108,20 @@ namespace Device_Interface_Manager.MVVM.ViewModel
                         this.ListPMDG.Add(nG_CDU_R_E);
                         break;
 
+                    case 7:
+                        MSFSProfiles.PMDG.B737.NG_CDU_MAX_L_E nG_CDU_MAX_L_E = new();
+                        await Task.Run(() => nG_CDU_MAX_L_E.Start(connection.IPAddress));
+                        connection.Status = nG_CDU_MAX_L_E.ConnectionStatus;
+                        this.ListPMDG.Add(nG_CDU_MAX_L_E);
+                        break;
+
+                    case 8:
+                        MSFSProfiles.PMDG.B737.NG_CDU_MAX_R_E nG_CDU_MAX_R_E = new();
+                        await Task.Run(() => nG_CDU_MAX_R_E.Start(connection.IPAddress));
+                        connection.Status = nG_CDU_MAX_R_E.ConnectionStatus;
+                        this.ListPMDG.Add(nG_CDU_MAX_R_E);
+                        break;
+
                     case 99:
                          this.interfaceITEthernet = new() { Hostname = connection.IPAddress };
                         await Task.Run(() => this.interfaceITEthernet.InterfaceITEthernetConnection((this.ethernetCancellationTokenSource = new()).Token));
@@ -129,7 +142,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel
 
         private void GetinterfaceITEthernetData()
         {
-            Task.Run(() => this.interfaceITEthernet.GetinterfaceITEthernetData(this.pROC = new(this.KeyPressedProcEthernet), this.ethernetCancellationTokenSource.Token));
+            Task.Run(() => this.interfaceITEthernet.GetinterfaceITEthernetData(this.KeyPressedProcEthernet, this.ethernetCancellationTokenSource.Token));
         }
 
         private void KeyPressedProcEthernet(int key, string direction) { }
@@ -166,16 +179,19 @@ namespace Device_Interface_Manager.MVVM.ViewModel
             Profiles.Add(new Profile { Id = 5, Name = "PMDG 737NG Left CDU" });
             Profiles.Add(new Profile { Id = 6, Name = "PMDG 737NG Right CDU" });
 
-            //Profiles.Add(new Profile { Id = 7, Name = "PMDG 737MAX Left CDU" });
-            //Profiles.Add(new Profile { Id = 8, Name = "PMDG 737MAX Right CDU" });
+            Profiles.Add(new Profile { Id = 7, Name = "PMDG 737NG Left CDU (MAX)" });
+            Profiles.Add(new Profile { Id = 8, Name = "PMDG 737NG Right CDU (MAX)" });
 
-            //Profiles.Add(new Profile { Id = 9, Name = "PMDG 777 Left CDU" });
-            //Profiles.Add(new Profile { Id = 10, Name = "PMDG 777 Right CDU" });
-            //Profiles.Add(new Profile { Id = 11, Name = "PMDG 777 Center CDU" });
+            //Profiles.Add(new Profile { Id = , Name = "PMDG 737MAX Left CDU" });
+            //Profiles.Add(new Profile { Id = , Name = "PMDG 737MAX Right CDU" });
 
-            //Profiles.Add(new Profile { Id = 12, Name = "PMDG 747 Left CDU" });
-            //Profiles.Add(new Profile { Id = 13, Name = "PMDG 747 Right CDU" });
-            //Profiles.Add(new Profile { Id = 14, Name = "PMDG 747 Center CDU" });
+            //Profiles.Add(new Profile { Id = , Name = "PMDG 777 Left CDU" });
+            //Profiles.Add(new Profile { Id = , Name = "PMDG 777 Right CDU" });
+            //Profiles.Add(new Profile { Id = , Name = "PMDG 777 Center CDU" });
+
+            //Profiles.Add(new Profile { Id = , Name = "PMDG 747 Left CDU" });
+            //Profiles.Add(new Profile { Id = , Name = "PMDG 747 Right CDU" });
+            //Profiles.Add(new Profile { Id = , Name = "PMDG 747 Center CDU" });
 
             Profiles.Add(new Profile { Id = 99, Name = "CDU/MCDU Test" });
         }
