@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net7.0-windows7.0</TargetFramework>
     <RootNamespace>Device_Interface_Manager</RootNamespace>
     <Nullable>disable</Nullable>
     <UseWPF>true</UseWPF>
     <Platforms>x64</Platforms>
     <UseWindowsForms>True</UseWindowsForms>
-    <FileVersion>1.0.0.0</FileVersion>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.1.5</FileVersion>
+    <AssemblyVersion>1.1.5</AssemblyVersion>
     <ApplicationIcon>DIM.ico</ApplicationIcon>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -25,7 +25,6 @@
 	</PropertyGroup>
 
   <ItemGroup>
-    <None Remove="DIM.ico" />
     <None Remove="Fonts\PMDG_NG3_DU_A.ttf" />
     <None Remove="Fonts\PMDG_NG3_DU_B.ttf" />
     <None Remove="Fonts\PMDG_NG3_DU_C.ttf" />
@@ -33,7 +32,6 @@
     <None Remove="Images\small_logo_white_RGB_Discord.png" />
     <None Remove="interfaceITAPI x64.dll" />
     <None Remove="LICENSE.txt" />
-    <None Remove="Microsoft.FlightSimulator.SimConnect.dll" />
     <None Remove="MSFS2020-module\install-mobiflight-event-module.cmd" />
     <None Remove="MSFS2020-module\README.txt" />
     <None Remove="Presets\msfs2020_eventids.cip" />
@@ -52,10 +50,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="DIM.ico">
+    <Content Include="LICENSE.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="LICENSE.txt">
+    <Content Include="SimConnect.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -68,9 +66,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Content Include="interfaceITAPI x64.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Microsoft.FlightSimulator.SimConnect.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="MSFS2020-module\install-mobiflight-event-module.cmd">
@@ -133,21 +128,20 @@
     <Content Include="SimConnect.cfg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="SimConnect.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Autoupdater.NET.Official" Version="1.7.7" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1587.40" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1661.34" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Microsoft.FlightSimulator.SimConnect">
-      <HintPath>Microsoft.FlightSimulator.SimConnect.dll</HintPath>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <HintPath>G:\MSFS SDK\SimConnect SDK\lib\managed\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
     </Reference>
   </ItemGroup>
 
@@ -172,7 +166,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="DIM.png">
+    <None Update="DIM.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="Images\DIM.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>

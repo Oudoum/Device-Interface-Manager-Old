@@ -1,151 +1,150 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Collections.Generic;
 
-namespace MobiFlight.HubHop
+namespace MobiFlight.HubHop;
+
+public class Msfs2020HubhopPreset
 {
-    public class Msfs2020HubhopPreset
+    public string path;
+    public string vendor;
+    public string aircraft;
+    public string system;
+    public string Code { get; set; }
+    public string Label { get; set; }
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public HubHopType presetType;
+    public int version;
+    public string status;
+    public string description;
+    public string createdDate;
+    public string author;
+    public string updatedBy;
+    public int reported;
+    public int score;
+    public string Id { get; set; }
+}
+
+public class Msfs2020HubhopPresetListSingleton
+{
+    public static Msfs2020HubhopPresetList Instance { get; } = new Msfs2020HubhopPresetList();
+}
+
+public class Msfs2020HubhopPresetList
+{
+    public List<Msfs2020HubhopPreset> Items = new();
+    string LoadedFile = null;
+
+    public void Clear()
     {
-        public String path;
-        public String vendor;
-        public String aircraft;
-        public String system;
-        public String Code { get; set; }
-        public String Label { get; set; }
-        [JsonConverter(typeof(StringEnumConverter))]
-        public HubHopType presetType;
-        public int version;
-        public String status;
-        public String description;
-        public String createdDate;
-        public String author;
-        public String updatedBy;
-        public int reported;
-        public int score;
-        public String Id { get; set; }
+        if (Items != null)
+        {
+            for (int i = 0; i != Items.Count; i++)
+            {
+                Items[i] = null;
+            }
+            Items = null;
+        }
+        LoadedFile = null;
     }
 
-    public class Msfs2020HubhopPresetListSingleton
+    public void Load(string Msfs2020HubhopPreset)
     {
-        public static Msfs2020HubhopPresetList Instance { get; } = new Msfs2020HubhopPresetList();
+        if (LoadedFile == Msfs2020HubhopPreset) return;
+
+        Clear();
+        try
+        {
+            Items = JsonSerializer.Deserialize<List<Msfs2020HubhopPreset>>
+                            (File.ReadAllText(Msfs2020HubhopPreset), new JsonSerializerOptions { IncludeFields = true });
+            LoadedFile = Msfs2020HubhopPreset;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
     }
 
-    public class Msfs2020HubhopPresetList
+    public List<string> AllVendors(HubHopType presetType)
     {
-        public List<Msfs2020HubhopPreset> Items = new();
-        String LoadedFile = null;
 
-        public void Clear()
-        {
-            if (Items != null)
-            {
-                for (int i = 0; i != Items.Count; i++)
-                {
-                    Items[i] = null;
-                }
-                Items = null;
-            }
-            LoadedFile = null;
-        }
+        return Items
+            .FindAll(x => (x.presetType & presetType) > 0)
+            .GroupBy(x => x.vendor)
+            .Select(g => g.FirstOrDefault().vendor)
+            .OrderBy(x => x)
+            .ToList();
+    }
 
-        public void Load(String Msfs2020HubhopPreset)
-        {
-            if (LoadedFile == Msfs2020HubhopPreset) return;
+    public List<string> AllAircraft(HubHopType presetType)
+    {
 
-            Clear();
-            try
-            {
-                Items = JsonConvert.DeserializeObject<List<Msfs2020HubhopPreset>>
-                                (File.ReadAllText(Msfs2020HubhopPreset), new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
-                LoadedFile = Msfs2020HubhopPreset;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-        }
+        return Items
+            .FindAll(x => (x.presetType & presetType) > 0)
+            .GroupBy(x => x.aircraft)
+            .Select(g => g.FirstOrDefault().aircraft)
+            .OrderBy(x => x)
+            .ToList();
+    }
 
-        public List<String> AllVendors(HubHopType presetType)
-        {
+    public List<string> AllSystems(HubHopType presetType)
+    {
+        return Items
+            .FindAll(x => (x.presetType & presetType) > 0)
+            .GroupBy(x => x.system)
+            .Select(g => g.FirstOrDefault().system)
+            .OrderBy(x => x)
+            .ToList();
+    }
 
-            return Items
-                .FindAll(x => (x.presetType & presetType) > 0)
-                .GroupBy(x => x.vendor)
-                .Select(g => g.FirstOrDefault().vendor)
-                .OrderBy(x => x)
-                .ToList();
-        }
+    public List<Msfs2020HubhopPreset> Filtered(HubHopType presetType, string selectedVendor, string selectedAircraft, string selectedSystem, string filterText)
+    {
+        List<Msfs2020HubhopPreset> temp;
 
-        public List<String> AllAircraft(HubHopType presetType)
-        {
+        temp = Items.FindAll(x => (x.presetType & presetType) > 0);
 
-            return Items
-                .FindAll(x => (x.presetType & presetType) > 0)
-                .GroupBy(x => x.aircraft)
-                .Select(g => g.FirstOrDefault().aircraft)
-                .OrderBy(x => x)
-                .ToList();
-        }
+        if (selectedVendor != null)
+            temp = temp.FindAll(x => x.vendor == selectedVendor);
 
-        public List<String> AllSystems(HubHopType presetType)
-        {
-            return Items
-                .FindAll(x => (x.presetType & presetType) > 0)
-                .GroupBy(x => x.system)
-                .Select(g => g.FirstOrDefault().system)
-                .OrderBy(x => x)
-                .ToList();
-        }
+        if (selectedAircraft != null)
+            temp = temp.FindAll(x => x.aircraft == selectedAircraft);
 
-        public List<Msfs2020HubhopPreset> Filtered(HubHopType presetType, string selectedVendor, string selectedAircraft, string selectedSystem, string filterText)
-        {
-            List<Msfs2020HubhopPreset> temp;
+        if (selectedSystem != null)
+            temp = temp.FindAll(x => x.system == selectedSystem);
 
-            temp = Items.FindAll(x => (x.presetType & presetType) > 0);
+        if (filterText != null)
+            temp = temp.FindAll(x => x.vendor.ToLower().Contains(filterText.ToLower(), StringComparison.CurrentCulture) ||
+                                    x.aircraft.ToLower().Contains(filterText.ToLower(), StringComparison.CurrentCulture) ||
+                                    x.system.ToLower().Contains(filterText.ToLower(), StringComparison.CurrentCulture) ||
+                                    x.Label.ToLower().Contains(filterText.ToLower(), StringComparison.CurrentCulture) ||
+                                    x.description?.ToLower().IndexOf(filterText.ToLower()) >= 0 ||
+                                    x.Code?.ToLower().IndexOf(filterText.ToLower()) >= 0);
 
-            if (selectedVendor != null)
-                temp = temp.FindAll(x => x.vendor == selectedVendor);
+        return new List<Msfs2020HubhopPreset>(
+            temp.OrderBy(x => x.Label)
+                .ToArray()
+        );
+    }
 
-            if (selectedAircraft != null)
-                temp = temp.FindAll(x => x.aircraft == selectedAircraft);
+    public Msfs2020HubhopPreset FindByCode(HubHopType presetType, string code)
+    {
+        Msfs2020HubhopPreset result = null;
+        string trimmedCode = code.Trim();
 
-            if (selectedSystem != null)
-                temp = temp.FindAll(x => x.system == selectedSystem);
+        result = Items.Find(x => (x.presetType & presetType) > 0 && x.Code.Replace('\n', ' ').Replace("  ", " ").TrimEnd() == trimmedCode);
 
-            if (filterText != null)
-                temp = temp.FindAll(x => x.vendor.ToLower().Contains(filterText.ToLower(), StringComparison.CurrentCulture) ||
-                                        x.aircraft.ToLower().Contains(filterText.ToLower(), StringComparison.CurrentCulture) ||
-                                        x.system.ToLower().Contains(filterText.ToLower(), StringComparison.CurrentCulture) ||
-                                        x.Label.ToLower().Contains(filterText.ToLower(), StringComparison.CurrentCulture) ||
-                                        x.description?.ToLower().IndexOf(filterText.ToLower()) >= 0 ||
-                                        x.Code?.ToLower().IndexOf(filterText.ToLower()) >= 0);
+        return result;
+    }
 
-            return new List<Msfs2020HubhopPreset>(
-                temp.OrderBy(x => x.Label)
-                    .ToArray()
-            );
-        }
+    public Msfs2020HubhopPreset FindByUUID(HubHopType presetType, string UUID)
+    {
+        Msfs2020HubhopPreset result = null;
 
-        public Msfs2020HubhopPreset FindByCode(HubHopType presetType, string code)
-        {
-            Msfs2020HubhopPreset result = null;
-            String trimmedCode = code.Trim();
+        result = Items.Find(x => (x.presetType & presetType) > 0 && x.Id == UUID);
 
-            result = Items.Find(x => (x.presetType & presetType) > 0 && x.Code.Replace('\n', ' ').Replace("  ", " ").TrimEnd() == trimmedCode);
-
-            return result;
-        }
-
-        public Msfs2020HubhopPreset FindByUUID(HubHopType presetType, string UUID)
-        {
-            Msfs2020HubhopPreset result = null;
-
-            result = Items.Find(x => (x.presetType & presetType) > 0 && x.Id == UUID);
-
-            return result;
-        }
+        return result;
     }
 }

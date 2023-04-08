@@ -39,8 +39,9 @@
         <StackPanel>
 
             <Button 
-            Margin="0,50,0,0"
-            Command="{Binding DatalineEnableCommand}">
+                Margin="0,50,0,0"
+                Cursor="Hand"
+                Command="{Binding DatalineEnableCommand}">
                 Dataline
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource ResourceKey=MyButton}">
@@ -55,6 +56,7 @@
 
             <Button
                 Margin="0,50,0,0"
+                Cursor="Hand"
                 Command="{Binding BrightnessEnableCommand}"
                 Content="Brightness">
                 <Button.Style>
@@ -72,14 +74,18 @@
                 Minimum="0"
                 Maximum="255"
                 Width="250"
-                Margin="0,20,0,0"
+                Margin="0,30,0,0"
+                Cursor="Hand"
                 d:Visibility="Visible"
+                AutoToolTipPlacement="TopLeft"
+                ToolTip="{Binding BrightnessValue}"
                 Visibility="{Binding BrightnessEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Value="{Binding BrightnessValue}">
             </Slider>
 
             <Button
                 Margin="0,50,0,0"
+                Cursor="Hand"
                 Command="{Binding AnalogEnableCommand}"
                 ToolTip="The returned value is 12 bit value indicating the input in relation to GND and board +5v.">
                 Analog Input
@@ -108,6 +114,7 @@
 
             <Button
                 Margin="0,160,0,0"
+                Cursor="Hand"
                 Command="{Binding LoggingEnableCommand}"
                 ToolTip="External logging"
                 Width="150">
@@ -128,6 +135,7 @@
             Grid.Column="1">
             <Button 
                 Margin="0,50,0,0"
+                Cursor="Hand"
                 Command="{Binding SevenSegmentEnableCommand}">
                 7 Segment
                 <Button.Style>
@@ -151,14 +159,21 @@
                 HorizontalAlignment="Center">
                 Select 7 segment digit:
             </Label>
-            <ComboBox
-                Margin="0,10,0,0"
-                FontSize="18"
-                FontWeight="Bold"
-                HorizontalContentAlignment="Center"
-                Width="100"
-                SelectedItem="{Binding SevenSegmentSelectedPosition, Mode=TwoWay}"
-                ItemsSource="{Binding SevenSegmentPositions}"/>
+                <ComboBox
+                    Margin="0,10,0,0"
+                    Cursor="Hand"
+                    FontSize="18"
+                    FontWeight="Bold"
+                    HorizontalContentAlignment="Center"
+                    Width="100"
+                    SelectedItem="{Binding SevenSegmentSelectedPosition, Mode=TwoWay}"
+                    ItemsSource="{Binding SevenSegmentPositions}">
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="Cursor" Value="Hand"/>
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
+                </ComboBox>
             <Label
                 FontSize="20"
                 FontWeight="SemiBold"
@@ -168,14 +183,14 @@
                 Type in 7 segment data:
             </Label>
                 <TextBox
-                Margin="0,10,0,0"
-                d:Text="123"
-                MinWidth="100"
-                HorizontalAlignment="Center"
-                HorizontalContentAlignment="Center"
-                FontSize="18"
-                FontWeight="Bold"
-                Text="{Binding SevenSegmentText, UpdateSourceTrigger=PropertyChanged}"/>
+                    Margin="0,10,0,0"
+                    d:Text="123"
+                    MinWidth="100"
+                    HorizontalAlignment="Center"
+                    HorizontalContentAlignment="Center"
+                    FontSize="18"
+                    FontWeight="Bold"
+                    Text="{Binding SevenSegmentText, UpdateSourceTrigger=PropertyChanged}"/>
             </StackPanel>
             <Label
                 d:Content="TEST!"

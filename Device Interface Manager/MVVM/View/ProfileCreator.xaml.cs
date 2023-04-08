@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Device_Interface_Manager.interfaceIT.ENET;
+using Device_Interface_Manager.SimConnectMSFS;
 using MobiFlight.HubHop;
 
 namespace Device_Interface_Manager.MVVM.View
@@ -25,7 +26,7 @@ namespace Device_Interface_Manager.MVVM.View
         public const string Hubhoppreset = @"Presets\msfs2020_hubhop_presets.json";
 
         protected List<String> lVars = new();
-        readonly MobiFlight.SimConnectMSFS.SimConnectCache simConnectCache = new();
+        readonly SimConnectCache simConnectCache = new();
         readonly Msfs2020HubhopPresetList PresetList = null;
         readonly Msfs2020HubhopPresetList FilteredPresetList = new();
 

@@ -1,48 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace MobiFlight.HubHop
+namespace MobiFlight.HubHop;
+
+public class Msfs2020EventPresetList
 {
-    public class Msfs2020EventPresetList
+    public Dictionary<string, string> Events { get; private set; }
+
+    public string PresetFile = null;
+    public string PresetFileUser = null;
+
+    public void Load()
     {
-        public Dictionary<String, String> Events { get; private set; }
+        Events ??= new Dictionary<string, string>();
+        Events.Clear();
 
-        public String PresetFile = null;
-        public String PresetFileUser = null;
+        PresetFile ??= @"MSFS2020-module\mobiflight-event-module\modules\events.txt";
 
-        public void Load()
+        if (!System.IO.File.Exists(PresetFile)) return;
+
+        string[] lines = System.IO.File.ReadAllLines(PresetFile);
+
+        foreach (string line in lines)
         {
-            Events ??= new Dictionary<string, String>();
-            Events.Clear();
+            if (line.StartsWith("//")) continue;
 
-            PresetFile ??= @"MSFS2020-module\mobiflight-event-module\modules\events.txt";
+            var cols = line.Split('#');
 
-            if (!System.IO.File.Exists(PresetFile)) return;
+            if (cols.Length != 2) continue;
 
-            string[] lines = System.IO.File.ReadAllLines(PresetFile);
+            Events[cols[0]] = cols[1];
+        }
+    }
 
-            foreach (string line in lines)
-            {
-                if (line.StartsWith("//")) continue;
+    public string FindCodeByEventId(string eventID)
+    {
+        string Code = null;
 
-                var cols = line.Split('#');
-
-                if (cols.Length != 2) continue;
-
-                Events[cols[0]] = cols[1];
-            }
+        if (Events.ContainsKey(eventID))
+        {
+            Code = Events[eventID];
         }
 
-        public String FindCodeByEventId(String eventID)
-        {
-            String Code = null;
-
-            if (Events.ContainsKey(eventID))
-            {
-                Code = Events[eventID];
-            }
-
-            return Code;
-        }
+        return Code;
     }
 }

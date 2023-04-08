@@ -1,5 +1,4 @@
-﻿using Device_Interface_Manager.interfaceIT.USB;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 
 namespace Device_Interface_Manager.MVVM.View
@@ -13,7 +12,7 @@ namespace Device_Interface_Manager.MVVM.View
 
         private void DataGridCell_Serial_Drop(object sender, DragEventArgs e)
         {
-            ((TextBlock)((DataGridCell)sender).Content).Text = ((InterfaceIT_BoardInfo.Device)e.Data.GetData(DataFormats.Serializable)).SerialNumber;
+            ((TextBlock)((DataGridCell)sender).Content).Text = ((interfaceIT.USB.InterfaceIT_BoardInfo.Device)e.Data.GetData(DataFormats.Serializable)).SerialNumber;
         }
     }
 }

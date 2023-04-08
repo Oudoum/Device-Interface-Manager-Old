@@ -18,6 +18,7 @@
                 VerticalAlignment="Top"
                 HorizontalAlignment="Center"
                 Background="Transparent"
+                Cursor="Hand"
                 Height="50">
                 <Button.Resources>
                     <Style TargetType="Border">
@@ -48,6 +49,7 @@
                 BorderThickness="0"
                 Foreground="Black"
                 FontFamily="Impact"
+                Cursor="Hand"
                 FontSize="23">
                 <Button.Content>
                     <Grid>
@@ -79,7 +81,7 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            
+
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock 
@@ -87,6 +89,7 @@
                     Foreground="White" 
                     Margin="0,0,0,0"/>
                     <CheckBox
+                    Cursor="Hand"
                     Margin="25,0,0,0"
                     Width="15"
                     Height="15"
@@ -95,15 +98,16 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock 
-                    Text="Hide to tray if minimized" 
-                    Foreground="White" 
-                    Margin="0,25,0,0"/>
+                        Text="Hide to tray if minimized" 
+                        Foreground="White" 
+                        Margin="0,25,0,0"/>
                     <CheckBox
-                    Margin="38.5,25,0,0"
-                    Width="15"
-                    Height="15"
-                    ToolTip="Software will minimize to tray"
-                    IsChecked="{Binding MinimizedHide}"/>
+                        Cursor="Hand"
+                        Margin="38.5,25,0,0"
+                        Width="15"
+                        Height="15"
+                        ToolTip="Software will minimize to tray"
+                        IsChecked="{Binding MinimizedHide}"/>
                 </StackPanel>
                 <TextBlock
                 Text="{Binding InterfaceITAPIVersion}"
@@ -134,6 +138,11 @@
                             <Setter Property="Background" Value="Transparent"/>
                             <Setter Property="TextAlignment" Value="Center"/>
                             <Setter Property="FontSize" Value="20"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                    <Setter Property="CaretBrush" Value="White"/>
+                                </Trigger>
+                            </Style.Triggers>
                         </Style>
                         <Style TargetType="Button">
                             <Style.Resources>

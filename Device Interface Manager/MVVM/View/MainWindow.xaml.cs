@@ -1,5 +1,4 @@
-﻿using Device_Interface_Manager.MVVM.ViewModel;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
@@ -15,7 +14,7 @@ namespace Device_Interface_Manager.MVVM.View
         {
             InitializeComponent();
 
-            notifyIcon.Icon = new System.Drawing.Icon("DIM.ico");
+            notifyIcon.Icon = System.Drawing.Icon.ExtractAssociatedIcon(Environment.ProcessPath);
             notifyIcon.Text = "Device Interface Manager";
             notifyIcon.ContextMenuStrip = new Forms.ContextMenuStrip();
             notifyIcon.ContextMenuStrip.Items.Add("Exit", null, OnStatusClicked);
@@ -86,16 +85,8 @@ namespace Device_Interface_Manager.MVVM.View
 
         public void OnWindowClosing(object sender, CancelEventArgs e)
         {
-            MainViewModel.CloseInterfaceITDevices();
-
             notifyIcon.Dispose();
-
             MainWindowPosition();
-
-            MainViewModel.HomeENETVM.SaveENETData();
-            MainViewModel.HomeUSBVM.SaveUSBData();
-
-            Environment.Exit(Environment.ExitCode);
         }
 
         // Save MainWindow location

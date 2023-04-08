@@ -12,7 +12,7 @@
     d:DesignHeight="560"
     d:Visibility="Visible"
     Visibility="Visible">
-    
+
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </UserControl.Resources>
@@ -23,8 +23,10 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Button Command="{Binding StartENETCommand}"
+            <Button 
+                Command="{Binding StartENETCommand}"
                 Margin="0,25,0,0"
+                Cursor="Hand"
                 VerticalAlignment="Top"
                 Height="30"
                 Width="150"
@@ -32,6 +34,16 @@
                 FontSize="20">
                 <Button.Resources>
                     <Style TargetType="Button">
+                        <Style.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="10"/>
+                            </Style>
+                        </Style.Resources>
+                        <Setter Property="Height" Value="40"/>
+                        <Setter Property="Width" Value="150"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Foreground" Value="Black"/>
+                        <Setter Property="FontSize" Value="23"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsENETEnabled}" Value="True">
                                 <Setter Property="Content" Value="Start"/>
@@ -45,18 +57,28 @@
                     </Style>
                 </Button.Resources>
             </Button>
-            <Button 
-                    Grid.Column="1"
-                    Command="{Binding ResetENETScreensCommand}"
-                    Margin="25,25,0,0"
-                    VerticalAlignment="Top"
-                    Height="30"
-                    Width="180"
-                    FontSize="20"
-                    Background="DarkGray">
+            <Button
+                Grid.Column="1"
+                 Command="{Binding ResetENETScreensCommand}"
+                 Margin="25,25,0,0"
+                 VerticalAlignment="Top"
+                 Height="30"
+                 Width="180"
+                 FontSize="20"
+                 Background="DarkGray">
                 Reset CDU/MCDU
                 <Button.Resources>
                     <Style TargetType="Button">
+                        <Style.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="10"/>
+                            </Style>
+                        </Style.Resources>
+                        <Setter Property="Height" Value="40"/>
+                        <Setter Property="Width" Value="150"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Foreground" Value="Black"/>
+                        <Setter Property="FontSize" Value="23"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsENETEnabled}" Value="True">
                                 <Setter Property="Visibility" Value="Hidden"/>
@@ -69,8 +91,8 @@
                 </Button.Resources>
             </Button>
         </Grid>
-        <DockPanel LastChildFill="False"
-                   HorizontalAlignment="Center">
+        
+        <DockPanel LastChildFill="False" HorizontalAlignment="Center">
             <DataGrid
                 DockPanel.Dock="Top"
                 CanUserDeleteRows="False"
@@ -128,6 +150,9 @@
                                     <Setter.Value>
                                         <ControlTemplate TargetType="DataGridCell">
                                             <TextBox
+                                                Foreground="White"
+                                                Background="Transparent"
+                                                CaretBrush="White"
                                                 Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content.Text, Mode=TwoWay, UpdateSourceTrigger=Default}"/>
                                         </ControlTemplate>
                                     </Setter.Value>
@@ -167,15 +192,62 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <ComboBox
-                                    ItemsSource="{Binding DataContext.Profiles, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:HomeENETView}}}"
-                                    SelectedValuePath="Id"
-                                    SelectedValue="{Binding Profile.Id}"
-                                    SelectedItem="{Binding Profile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                        ItemsSource="{Binding DataContext.Profiles, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:HomeENETView}}}"
+                                        SelectedValuePath="Id"
+                                        Cursor="Hand"
+                                        Foreground="White"
+                                        SelectedValue="{Binding Profile.Id}"
+                                        SelectedItem="{Binding Profile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate>
                                             <TextBlock Text="{Binding Name}"/>
                                         </DataTemplate>
                                     </ComboBox.ItemTemplate>
+                                    <ComboBox.ItemContainerStyle>
+                                        <Style TargetType="ComboBoxItem">
+                                            <Setter Property="Background" Value="#121212"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="Cursor" Value="Hand"/>
+                                        </Style>
+                                    </ComboBox.ItemContainerStyle>
+                                    <ComboBox.Resources>
+                                        <Style TargetType="ComboBox">
+                                            <Setter Property="Cursor" Value="Hand"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="ComboBox">
+                                                        <Grid>
+                                                            <ToggleButton Grid.Column="2" Focusable="False" IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}" >
+                                                                <ToggleButton.Template>
+                                                                    <ControlTemplate>
+                                                                        <Grid>
+                                                                            <Grid.ColumnDefinitions>
+                                                                                <ColumnDefinition Width="5*" />
+                                                                                <ColumnDefinition Width="*" />
+                                                                            </Grid.ColumnDefinitions>
+                                                                            <Border x:Name="Border" Grid.ColumnSpan="2" Background="Transparent"/>
+                                                                            <Path x:Name="Arrow" Grid.Column="1"  Fill="White" HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 4 4 L 8 0 Z"/>
+                                                                        </Grid>
+                                                                    </ControlTemplate>
+                                                                </ToggleButton.Template>
+                                                            </ToggleButton>
+                                                            <ContentPresenter Name="ContentSite" IsHitTestVisible="False"  Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" Margin="3"/>
+                                                            <TextBox x:Name="PART_EditableTextBox" Visibility="Hidden" IsReadOnly="{TemplateBinding IsReadOnly}"/>
+                                                            <Popup Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}" AllowsTransparency="True"  Focusable="False" PopupAnimation="Slide">
+                                                                <Grid  Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                                                    <Border x:Name="DropDownBorder" Background="#FF152A7F" />
+                                                                    <ScrollViewer SnapsToDevicePixels="True">
+                                                                        <StackPanel IsItemsHost="True" />
+                                                                    </ScrollViewer>
+                                                                </Grid>
+                                                            </Popup>
+                                                        </Grid>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ComboBox.Resources>
                                 </ComboBox>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -183,18 +255,23 @@
                     <DataGridTemplateColumn Header="Delete" Width="80" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="X" 
-                                        Background="Transparent" 
-                                        Foreground="White" BorderThickness="0" 
-                                        Command="{Binding DataContext.DeleteRowCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:HomeENETView}}}" 
-                                        CommandParameter="{Binding}">
+                                <Button 
+                                    Background="Transparent" 
+                                    Foreground="White" BorderThickness="0"
+                                    Cursor="Hand"
+                                    HorizontalAlignment="Stretch"
+                                    Command="{Binding DataContext.DeleteRowCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:HomeENETView}}}" 
+                                    CommandParameter="{Binding}">
+                                    <Button.Content>
+                                        <TextBlock Text="X" HorizontalAlignment="Center"/>
+                                    </Button.Content>
                                     <Button.Resources>
                                         <Style TargetType="Button">
                                             <Setter Property="Background" Value="Transparent" />
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="Button">
-                                                        <Grid Background="Transparent" HorizontalAlignment="Center">
+                                                        <Grid Background="Transparent">
                                                             <ContentPresenter />
                                                         </Grid>
                                                     </ControlTemplate>
@@ -208,21 +285,41 @@
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
-            <Button Command="{Binding AddRowCommand}"
-                    Visibility="{Binding IsENETEnabled,Converter={StaticResource BooleanToVisibilityConverter}}"
-                    BorderThickness="5,0,5,0"
-                    Foreground="White"
-                    BorderBrush="#FF152A7F"
-                    Background="#FF152A7F"
-                    Margin="0,-80,0,55"
-                    DockPanel.Dock="Top" 
-                    FontSize="16"
-                    Height="25"
-                    FontFamily="Arial Black">
+            <Button 
+                Command="{Binding AddRowCommand}"
+                Visibility="{Binding IsENETEnabled,Converter={StaticResource BooleanToVisibilityConverter}}"
+                BorderThickness="5,0,5,0"
+                Cursor="Hand"
+                Foreground="White"
+                BorderBrush="#FF152A7F"
+                Background="#FF152A7F"
+                Margin="0,-80,0,55"
+                DockPanel.Dock="Top" 
+                FontSize="16"
+                Height="25"
+                FontFamily="Arial Black">
                 Add
                 <Button.Resources>
                     <Style TargetType="Border">
                         <Setter Property="CornerRadius" Value="0,0,3,3"/>
+                    </Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border
+                                            Background="{TemplateBinding Background}">
+                                        <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="CadetBlue"/>
+                            </Trigger>
+                        </Style.Triggers>
                     </Style>
                 </Button.Resources>
             </Button>

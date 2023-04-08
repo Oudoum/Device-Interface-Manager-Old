@@ -5,18 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Device_Interface_Manager.MVVM.View"
         mc:Ignorable="d"
-        Background="Transparent"
+        Background="Black"
         Title="PMDG737CDU"
         WindowStyle="None"
         Topmost="True"
         Height="770"
         Width="830"
+        AllowsTransparency="True"
         MouseDown="Window_MouseDown"
         MouseDoubleClick="Window_MouseDoubleClick"
         MouseRightButtonDown="Window_MouseRightButtonDown"
         KeyDown="Window_KeyDown">
 
-    <Grid 
+    <WindowChrome.WindowChrome>
+        <WindowChrome ResizeBorderThickness="2"/>
+    </WindowChrome.WindowChrome>
+
+    <Grid
         x:Name="CDUGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>

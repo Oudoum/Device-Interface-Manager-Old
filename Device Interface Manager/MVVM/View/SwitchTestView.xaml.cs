@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Media;
-using static Device_Interface_Manager.MVVM.ViewModel.MainViewModel;
+using Device_Interface_Manager.MVVM.Model;
 
 namespace Device_Interface_Manager.MVVM.View
 {
@@ -9,14 +9,14 @@ namespace Device_Interface_Manager.MVVM.View
         public SwitchTestView()
         {
             InitializeComponent();
-            SwitchTestViewModels[GetSeletedController()].SwitchLog.CollectionChanged += SwitchLog_CollectionChanged;
+            Loaded += SwitchTestView_Loaded;
         }
 
-        private void SwitchLog_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void SwitchTestView_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
+            if (DataContext is ISwitchLogChanged slc)
             {
-                ((ScrollViewer)VisualTreeHelper.GetChild((Border)VisualTreeHelper.GetChild(SwitchLog, 0), 0)).ScrollToBottom();
+                slc.SwitchLogChanged += () => ((ScrollViewer)VisualTreeHelper.GetChild((Border)VisualTreeHelper.GetChild(SwitchLog, 0), 0)).ScrollToBottom();
             }
         }
     }

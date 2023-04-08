@@ -1,9 +1,6 @@
-﻿using System;
+﻿namespace Device_Interface_Manager.SimConnectMSFS;
 
-namespace MobiFlight.SimConnectMSFS
+public interface ISimConnectCacheInterface : ICacheInterface, IWriteCacheInterface
 {
-    public interface ISimConnectCacheInterface : Base.ICacheInterface, Base.IWriteCacheInterface
-    {
-        void SetSimVar(String SimVarCode);
-    }
+    public void SetSimVar(string SimVarCode);
 }

@@ -46,6 +46,7 @@
                 VerticalAlignment="Top"
                 Margin="0,150,0,0"
                 Command="{Binding CallbackModeCommand}"
+                Cursor="Hand"
                 Content="Callbackmode"
                 ToolTip="Every time a switch is pressed you will be notified (list on the right) with the switch number and the direction.">
                 <Button.Resources>
@@ -78,10 +79,11 @@
             </Button>
             <StackPanel>
                 <Button 
-                Margin="0,100,0,0"
-                Command="{Binding PollModeCommand}"
-                Content="Pollmode"
-                ToolTip="Every time a switch is pressed it is added to the receive queue until you click the Get Switch button which removes it from the queue.">
+                    Margin="0,100,0,0"
+                    Command="{Binding PollModeCommand}"
+                    Content="Pollmode"
+                    Cursor="Hand"
+                    ToolTip="Every time a switch is pressed it is added to the receive queue until you click the Get Switch button which removes it from the queue.">
                     <Button.Resources>
                         <Style TargetType="Button">
                             <Style.Resources>
@@ -112,10 +114,11 @@
                 </Button>
 
                 <Button
-                Margin="0,20,0,0"
-                Height="40"
-                Command="{Binding GetSwitchCommand}"
-                ToolTip="As switch notification are received they are added to the queue until this button is pressed to retrieve the oldes item (list on the right) and then remove it.">
+                    Margin="0,20,0,0"
+                    Height="40"
+                    Command="{Binding GetSwitchCommand}"
+                    Cursor="Hand"
+                    ToolTip="As switch notification are received they are added to the queue until this button is pressed to retrieve the oldes item (list on the right) and then remove it.">
                     <Button.Resources>
                         <Style TargetType="Button">
                             <Setter Property="Content" Value="Get Switch"/>
@@ -147,6 +150,7 @@
             Command="{Binding ClearSwitchListCommand}"
             Height="40"
             Content="Clear"
+            Cursor="Hand"
             ToolTip="Clear the switch list" Grid.Column="1"/>
 
         <ListView 
@@ -159,17 +163,17 @@
             Foreground="LightGray"
             Background="Transparent"
             ItemsSource="{Binding SwitchLog}"
-            
-            FontSize="22">
+            FontSize="22"
+            d:ItemsSource="{d:SampleData ItemCount=14}">
             <ListView.Template>
                 <ControlTemplate>
                     <Border 
-                                CornerRadius="10"
-                                BorderThickness="5"
-                                BorderBrush="LightGray">
+                        CornerRadius="10"
+                        BorderThickness="5"
+                        BorderBrush="LightGray">
                         <ScrollViewer
-                                    HorizontalScrollBarVisibility="Hidden"
-                                    VerticalScrollBarVisibility="Hidden">
+                            HorizontalScrollBarVisibility="Hidden"
+                            VerticalScrollBarVisibility="Hidden">
                             <ItemsPresenter/>
                         </ScrollViewer>
                     </Border>

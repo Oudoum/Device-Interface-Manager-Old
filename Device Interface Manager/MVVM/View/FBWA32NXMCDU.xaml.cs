@@ -16,7 +16,7 @@ namespace Device_Interface_Manager.MVVM.View
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                this.DragMove();
+                DragMove();
             }
         }
 
@@ -24,26 +24,26 @@ namespace Device_Interface_Manager.MVVM.View
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                if (this.WindowState != WindowState.Maximized)
+                if (WindowState != WindowState.Maximized)
                 {
-                    this.WindowState = WindowState.Maximized;
+                    WindowState = WindowState.Maximized;
                     return;
                 }
-                this.WindowState = WindowState.Normal;
+                WindowState = WindowState.Normal;
             }
         }
 
         bool editormode = false;
         private void Window_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            this.editormode = !this.editormode;
-            if (this.editormode)
+            editormode = !editormode;
+            if (editormode)
             {
-                this.Background = new SolidColorBrush(Colors.Blue);
+                Background = new SolidColorBrush(Colors.Blue);
                 return;
             }
-            this.EditormodeOff?.Invoke(this, e);
-            this.Background = new SolidColorBrush(Colors.Transparent);
+            EditormodeOff?.Invoke(this, e);
+            Background = new SolidColorBrush(Colors.Transparent);
         }
 
         public event EventHandler EditormodeOff;
@@ -54,112 +54,112 @@ namespace Device_Interface_Manager.MVVM.View
         public double marginRight;
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (!this.editormode && e.Key == Key.Escape)
+            if (!editormode && e.Key == Key.Escape)
             {
                 Hide();
             }
-            else if (this.editormode)
+            else if (editormode)
             {
                 switch (e.Key)
                 {
                     case Key.Space when Keyboard.IsKeyDown(Key.LeftShift):
-                        this.MCDUGrid.ClearValue(HeightProperty);
-                        this.MCDUGrid.ClearValue(WidthProperty);
+                        MCDUGrid.ClearValue(HeightProperty);
+                        MCDUGrid.ClearValue(WidthProperty);
                         break;
 
                     case Key.Enter when Keyboard.IsKeyDown(Key.LeftShift):
-                        this.MCDUGrid.ClearValue(HeightProperty);
-                        this.MCDUGrid.ClearValue(WidthProperty);
-                        this.WV.Margin = new Thickness(0);
-                        this.marginLeft = 0;
-                        this.marginTop = 0;
-                        this.marginRight = 0;
-                        this.marginBottom = 0;
+                        MCDUGrid.ClearValue(HeightProperty);
+                        MCDUGrid.ClearValue(WidthProperty);
+                        WV.Margin = new Thickness(0);
+                        marginLeft = 0;
+                        marginTop = 0;
+                        marginRight = 0;
+                        marginBottom = 0;
                         break;
 
                     case Key.PageUp when Keyboard.IsKeyDown(Key.LeftShift):
-                        --this.marginTop;
+                        --marginTop;
                         SetMargin();
                         break;
 
                     case Key.PageUp:
-                        ++this.marginBottom;
+                        ++marginBottom;
                         SetMargin();
                         break;
 
                     case Key.PageDown when Keyboard.IsKeyDown(Key.LeftShift):
-                        ++this.marginTop;
+                        ++marginTop;
                         SetMargin();
 
                         break;
 
                     case Key.PageDown:
-                        --this.marginBottom;
+                        --marginBottom;
                         SetMargin();
                         break;
 
                     case Key.Add when Keyboard.IsKeyDown(Key.LeftShift):
-                        ++this.marginRight;
+                        ++marginRight;
                         SetMargin();
                         break;
 
                     case Key.Add:
-                        --this.marginLeft;
+                        --marginLeft;
                         SetMargin();
                         break;
 
                     case Key.Subtract when Keyboard.IsKeyDown(Key.LeftShift):
-                        --this.marginRight;
+                        --marginRight;
                         SetMargin();
                         break;
 
                     case Key.Subtract:
-                        ++this.marginLeft;
+                        ++marginLeft;
                         SetMargin();
                         break;
 
 
                     case Key.W:
-                        this.MCDUGrid.Height = this.MCDUGrid.ActualHeight;
-                        this.MCDUGrid.Height = --this.MCDUGrid.Height;
+                        MCDUGrid.Height = MCDUGrid.ActualHeight;
+                        MCDUGrid.Height = --MCDUGrid.Height;
                         break;
 
                     case Key.A:
-                        this.MCDUGrid.Width = this.MCDUGrid.ActualWidth;
-                        this.MCDUGrid.Width = ++this.MCDUGrid.Width;
+                        MCDUGrid.Width = MCDUGrid.ActualWidth;
+                        MCDUGrid.Width = ++MCDUGrid.Width;
                         break;
 
                     case Key.S:
-                        this.MCDUGrid.Height = this.MCDUGrid.ActualHeight;
-                        this.MCDUGrid.Height = ++this.MCDUGrid.Height;
+                        MCDUGrid.Height = MCDUGrid.ActualHeight;
+                        MCDUGrid.Height = ++MCDUGrid.Height;
                         break;
 
                     case Key.D:
-                        this.MCDUGrid.Width = this.MCDUGrid.ActualWidth;
-                        this.MCDUGrid.Width = --this.MCDUGrid.Width;
+                        MCDUGrid.Width = MCDUGrid.ActualWidth;
+                        MCDUGrid.Width = --MCDUGrid.Width;
                         break;
 
                     case Key.Up:
-                        --this.marginTop;
-                        ++this.marginBottom;
+                        --marginTop;
+                        ++marginBottom;
                         SetMargin();
                         break;
 
                     case Key.Left:
-                        --this.marginLeft;
-                        ++this.marginRight;
+                        --marginLeft;
+                        ++marginRight;
                         SetMargin();
                         break;
 
                     case Key.Down:
-                        ++this.marginTop;
-                        --this.marginBottom;
+                        ++marginTop;
+                        --marginBottom;
                         SetMargin();
                         break;
 
                     case Key.Right:
-                        ++this.marginLeft;
-                        --this.marginRight;
+                        ++marginLeft;
+                        --marginRight;
                         SetMargin();
                         break;
 
@@ -171,7 +171,7 @@ namespace Device_Interface_Manager.MVVM.View
 
         private void SetMargin()
         {
-            this.WV.Margin = new Thickness(this.marginLeft, this.marginTop, this.marginRight, this.marginBottom);
+            WV.Margin = new Thickness(marginLeft, marginTop, marginRight, marginBottom);
         }
     }
 }

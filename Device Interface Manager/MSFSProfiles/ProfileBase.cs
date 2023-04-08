@@ -1,11 +1,10 @@
 ﻿using System.Threading;
 
-namespace Device_Interface_Manager.MSFSProfiles
-{
-    public class ProfileBase
-    {
-        protected CancellationTokenSource CancellationTokenSource { get; set; }
+namespace Device_Interface_Manager.MSFSProfiles;
 
-        protected Thread ReceiveSimConnectDataThread { get; set; }
-    }
+public class ProfileBase
+{
+    protected CancellationTokenSource CancellationTokenSource { get; set; }
+
+    protected Thread ReceiveSimConnectDataThread { get; set; }
 }

@@ -1,10 +1,9 @@
-﻿namespace Device_Interface_Manager.MVVM.ViewModel
+﻿namespace Device_Interface_Manager.MVVM.ViewModel;
+
+public partial class TestENETViewModel
 {
-    public partial class TestENETViewModel
-    {
-        public TestENETViewModel() 
-        { 
-        
-        }
+    public TestENETViewModel() 
+    { 
+    
     }
 }

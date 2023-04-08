@@ -20,11 +20,19 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <ComboBox HorizontalAlignment="Right" 
-                  VerticalAlignment="Center"
-                  Width="100"
-                  SelectedItem="{Binding InterfaceITEthernetInfoIP}"
-                  ItemsSource="{Binding InterfaceITEthernetInfoIPCollection}"/>
+        <ComboBox 
+            HorizontalAlignment="Right" 
+            VerticalAlignment="Center"
+            Width="100"
+            Cursor="Hand"
+            SelectedItem="{Binding InterfaceITEthernetInfoIP}"
+            ItemsSource="{Binding InterfaceITEthernetInfoIPCollection}">
+            <ComboBox.ItemContainerStyle>
+                <Style TargetType="ComboBoxItem">
+                    <Setter Property="Cursor" Value="Hand"/>
+                </Style>
+            </ComboBox.ItemContainerStyle>
+        </ComboBox>
 
         <Border Grid.Column="1"
                 BorderBrush="DodgerBlue"
