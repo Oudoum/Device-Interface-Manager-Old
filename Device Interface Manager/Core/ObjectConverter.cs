@@ -12,7 +12,9 @@ public class ObjectToUIElementConverter : IValueConverter
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         if (value is null)
+        {
             return DependencyProperty.UnsetValue;
+        }
         if (!uiElements.TryGetValue(value, out var element))
         {
             if (value is UIElement elm)
@@ -21,8 +23,7 @@ public class ObjectToUIElementConverter : IValueConverter
             }
             else
             {
-                element = new ContentControl()
-                { DataContext = value, Content = value };
+                element = new ContentControl() { DataContext = value, Content = value };
             }
             uiElements.Add(value, element);
         }

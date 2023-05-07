@@ -7,10 +7,10 @@
     <UseWPF>true</UseWPF>
     <Platforms>x64</Platforms>
     <UseWindowsForms>True</UseWindowsForms>
-    <FileVersion>1.1.5</FileVersion>
-    <AssemblyVersion>1.1.5</AssemblyVersion>
     <ApplicationIcon>DIM.ico</ApplicationIcon>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AssemblyVersion>1.1.7</AssemblyVersion>
+    <FileVersion>1.1.7</FileVersion>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -23,32 +23,7 @@
 		<DebugType>None</DebugType>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 	</PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Fonts\PMDG_NG3_DU_A.ttf" />
-    <None Remove="Fonts\PMDG_NG3_DU_B.ttf" />
-    <None Remove="Fonts\PMDG_NG3_DU_C.ttf" />
-    <None Remove="Images\settings-cog.png" />
-    <None Remove="Images\small_logo_white_RGB_Discord.png" />
-    <None Remove="interfaceITAPI x64.dll" />
-    <None Remove="LICENSE.txt" />
-    <None Remove="MSFS2020-module\install-mobiflight-event-module.cmd" />
-    <None Remove="MSFS2020-module\README.txt" />
-    <None Remove="Presets\msfs2020_eventids.cip" />
-    <None Remove="Presets\msfs2020_eventids_user.cip.inactive" />
-    <None Remove="Presets\msfs2020_hubhop_presets.json" />
-    <None Remove="Presets\msfs2020_simvars.cip" />
-    <None Remove="Presets\presets.aip" />
-    <None Remove="Presets\presets_eventids.cip" />
-    <None Remove="Presets\presets_eventids_pmdg_737.cip" />
-    <None Remove="Presets\presets_eventids_pmdg_747.cip" />
-    <None Remove="Presets\presets_eventids_pmdg_777.cip" />
-    <None Remove="Presets\presets_inputs.aip" />
-    <None Remove="Presets\presets_jeehell.cip" />
-    <None Remove="SimConnect.cfg" />
-    <None Remove="SimConnect.dll" />
-  </ItemGroup>
-
+	
   <ItemGroup>
     <Content Include="LICENSE.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -59,6 +34,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="dim-event-module\ContentInfo\dim-event-module\Thumbnail.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dim-event-module\layout.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dim-event-module\manifest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dim-event-module\modules\DIM_WASM_Module.wasm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="Fonts\BOEING-style.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Images\settings-cog.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
@@ -68,72 +58,15 @@
     <Content Include="interfaceITAPI x64.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="MSFS2020-module\install-mobiflight-event-module.cmd">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MSFS2020-module\mobiflight-event-module\ContentInfo\mobiflight-event-module\Thumbnail.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MSFS2020-module\mobiflight-event-module\layout.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MSFS2020-module\mobiflight-event-module\manifest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MSFS2020-module\mobiflight-event-module\modules\events.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MSFS2020-module\mobiflight-event-module\modules\events.user.txt.inactive">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MSFS2020-module\mobiflight-event-module\modules\MobiFlightWasmModule.wasm">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MSFS2020-module\README.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Presets\msfs2020_eventids.cip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Presets\msfs2020_eventids_user.cip.inactive">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Presets\msfs2020_hubhop_presets.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Presets\msfs2020_simvars.cip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Presets\presets.aip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Presets\presets_eventids.cip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Presets\presets_eventids_pmdg_737.cip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Presets\presets_eventids_pmdg_747.cip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Presets\presets_eventids_pmdg_777.cip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Presets\presets_inputs.aip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Presets\presets_jeehell.cip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="SimConnect.cfg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autoupdater.NET.Official" Version="1.7.7" />
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1661.34" />
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.8.1" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1722.45" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
   </ItemGroup>
 

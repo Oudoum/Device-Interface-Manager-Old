@@ -1,10 +1,12 @@
 ﻿using System;
-using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Threading;
+using System.IO;
+using System.Net;
 using System.Net.Sockets;
-using System.Collections.Generic;
+using System.Net.NetworkInformation;
+using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -12,384 +14,353 @@ namespace Device_Interface_Manager.interfaceIT.ENET;
 
 public class InterfaceITEthernet : ObservableObject
 {
+    private TcpClient client;
     private NetworkStream stream;
-    private byte[] data;
-    private TcpClient Client;
 
+    //private const string FDS_737_PRO_MX_MCP_E = "0E04";
+    //private const string FDS_A320_CDU_E = "0E09";
+    //private const string FDS_737_CDU_E = "0E08";
+    //private const string IIT_E_HIO_128_256_6 = "0E07";
+    //private const string IIT_E_HIO_64_128_3 = "0E06";
+    //private const string IIT_OEM_128_128_3_E = "0E0A";
+    //private const string IIT_OEM_128_256_6_E = "0E05";
+    //private const string IIT_OEM_256_256X_6_E = "0E0B";
+
+    public string HostIPAddress { get; set; }
+    public int TCPPort { get; set; } = 10346;
     public InterfaceITEthernetInfo InterfaceITEthernetInfo { get; set; }
+    public ObservableCollection<string> InterfaceITEthernetInfoText { get; set; }
 
-    public bool canread;
-
-    public delegate void INTERFACEIT_ETHERNET_KEY_NOTIFY_PROC(int nSwitch, string nDirection);
-
-    private string hostname = "127.0.0.1";
-    public string Hostname { get { return hostname; } set { hostname = value; } }
-
-    private const int port = 10346;
-
-    public byte ClientStatus { get; private set; }
-
-    public void InterfaceITEthernetConnection(CancellationToken token)
+    public static async Task<string[]> ReceiveControllerDiscoveryData()
     {
-        if (stream is null)
+        UdpClient client = new() { EnableBroadcast = true };
+        client.Send(Encoding.ASCII.GetBytes("D"), new IPEndPoint(IPAddress.Broadcast, 30303));
+        try
         {
-            System.Net.NetworkInformation.Ping ping = new();
-            try
-            {
-                ping.Send(Hostname);
-            }
-            catch { }
-            finally
-            {
-                ping?.Dispose();
-                ClientStatus = 1;
-            }
-
-            try
-            {
-                TcpClient client = new(hostname, port);
-                Client = client;
-
-                stream = client.GetStream();
-
-                data = new byte[1024];
-            }
-            catch (ArgumentNullException e)
-            {
-                MessageBox.Show(e.Message);
-            }
-
-            catch (SocketException e)
-            {
-                MessageBox.Show(e.Message);
-            }
-            if (token.IsCancellationRequested) 
-            {
-                return;
-            }
+            UdpReceiveResult result = await client.ReceiveAsync().WaitAsync(TimeSpan.FromSeconds(1));
+            return new string[] { Encoding.ASCII.GetString(result.Buffer).Split("\r\n")[5], result.RemoteEndPoint.Address.ToString() };
         }
-
-        if (stream is not null)
+        catch (Exception)
         {
-            canread = stream.CanRead;
-            ClientStatus = 2;
+            return null;
         }
     }
 
-
-
-    private string rc;
-    private List<string> list;
-    public void GetinterfaceITEthernetDataStart()
+    public enum ConnectionStatus
     {
-        Thread.Sleep(100);
-        while (stream.DataAvailable)
+        NotConnected,
+        PingSuccessful,
+        Connected
+    }
+
+    public async Task<ConnectionStatus> InterfaceITEthernetConnectionAsync(CancellationToken cancellationToken)
+    {
+        if (!await PingHostAsync())
         {
-            rc += Encoding.ASCII.GetString(data, 0, stream.Read(data, 0, data.Length));
-            Thread.Sleep(100);
+            return ConnectionStatus.NotConnected;
+        }
+        if (!await ConnectToHostAsync(cancellationToken))
+        {
+            return ConnectionStatus.PingSuccessful;
+        }
+        return ConnectionStatus.Connected;
+    }
+
+    private async Task<bool> PingHostAsync()
+    {
+        using Ping ping = new();
+        return (await ping.SendPingAsync(HostIPAddress)).Status == IPStatus.Success;
+    }
+
+    private async Task<bool> ConnectToHostAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            client = new();
+            await client.ConnectAsync(HostIPAddress, TCPPort, cancellationToken);
+            stream = client.GetStream();
+            return true;
+        }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
+        catch (ArgumentNullException)
+        {
+            return false;
+        }
+        catch (SocketException)
+        {
+            return false;
         }
     }
 
-    private const string FDS_737_PRO_MX_MCP_E = "ID=0E04";
-    private const string FDS_737_CDU_E = "ID=0E09";
-    private const string FDS_A320_CDU_E = "ID=0E08";
-    private const string IIT_E_HIO_128_256_6 = "ID=0E07";
-    private const string IIT_E_HIO_64_128_3 = "ID=0E06";
-    private const string IIT_OEM_128_128_3_E = "ID=0E0A";
-    private const string IIT_OEM_128_256_6_E = "ID=0E05";
-    private const string IIT_OEM_256_256X_6_E = "ID=0E0B";
-
-    public void GetinterfaceITEthernetInfo()
+    public async Task<InterfaceITEthernetInfo> GetInterfaceITEthernetDataAsync(Action<int, uint> interfacITKeyAction, CancellationToken cancellationToken)
     {
-        if (rc != null)
+        TaskCompletionSource<InterfaceITEthernetInfo> tcs = new();
+        _ = Task.Run(async () =>
         {
-            list = rc.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
-
-            string receivedID = list[1];
-            switch (receivedID)
-            {
-                case FDS_737_PRO_MX_MCP_E:
-                    GetIITEthernetInfo();
-                    return;
-
-                case FDS_737_CDU_E:
-                    GetIITEthernetInfo();
-                    return;
-
-                case FDS_A320_CDU_E:
-                    GetIITEthernetInfo();
-                    return;
-
-                case IIT_E_HIO_128_256_6:
-                    GetIITEthernetInfo();
-                    return;
-
-                case IIT_E_HIO_64_128_3:
-                    GetIITEthernetInfo();
-                    return;
-
-                case IIT_OEM_128_128_3_E:
-                    GetIITEthernetInfo();
-                    return;
-
-                case IIT_OEM_128_256_6_E:
-                    GetIITEthernetInfo();
-                    return;
-
-                case IIT_OEM_256_256X_6_E:
-                    GetIITEthernetInfo();
-                    return;
-
-                default:
-                    return;
-            }
-        }
-    }
-
-
-    private void GetIITEthernetInfo()
-    {
-        InterfaceITEthernetInfo = new InterfaceITEthernetInfo
-        {
-            ID = list.Find(s => s.Contains("ID="))?[3..],
-            NAME = list.Find(s => s.Contains("NAME="))?[5..],
-            SERIAL = list.Find(s => s.Contains("SERIAL="))?[7..],
-            DESC = list.Find(s => s.Contains("DESC="))?[5..],
-            COPYRIGHT = list.Find(s => s.Contains("COPYRIGHT="))?[10..],
-            VERSION = list.Find(s => s.Contains("VERSION="))?[8..],
-            FIRMWARE = list.Find(s => s.Contains("FIRMWARE="))?[9..],
-            LOCATION = list.Find(s => s.Contains("LOCATION="))?[9..],
-            USAGE = list.Find(s => s.Contains("USAGE="))?[6..],
-            HOSTNAME = list.Find(s => s.Contains("HOSTNAME="))?[9..],
-            CLIENT = list.Find(s => s.Contains("CLIENT="))?[7..],
-            BOARD = list.Find(s => s.Contains("BOARD="))?[8..],
-        };
-
-        List<string> infolist = new();
-
-        if (list.Exists(s => s.Contains("CONFIG=1:LED")))
-        {
-            infolist = list.Find(s => s.Contains("CONFIG=1:LED"))[13..].Split(':').ToList();
-            InterfaceITEthernetInfo.LEDStart = infolist[1];
-            InterfaceITEthernetInfo.LEDStop = infolist[3];
-            InterfaceITEthernetInfo.LEDTotal = infolist[5];
-            infolist.Clear();
-        }
-
-        if (list.Exists(s => s.Contains("CONFIG=1:7 SEGMENT")))
-        {
-            infolist = list.Find(s => s.Contains("CONFIG=1:7 SEGMENT"))[19..].Split(':').ToList();
-            InterfaceITEthernetInfo.SEVENSEGMENTStart = infolist[1];
-            InterfaceITEthernetInfo.SEVENSEGMENTStop = infolist[3];
-            InterfaceITEthernetInfo.SEVENSEGMENTTotal = infolist[5];
-            infolist.Clear();
-        }
-
-        if (list.Exists(s => s.Contains("CONFIG=1:SWITCH")))
-        {
-            infolist = list.Find(s => s.Contains("CONFIG=1:SWITCH"))[16..].Split(':').ToList();
-            InterfaceITEthernetInfo.SWITCHStart = infolist[1];
-            InterfaceITEthernetInfo.SWITCHStop = infolist[3];
-            InterfaceITEthernetInfo.SWITCHTotal = infolist[5];
-            infolist.Clear();
-        }
-
-        if (list.Exists(s => s.Contains("CONFIG=1:DATALINE")))
-        {
-            infolist = list.Find(s => s.Contains("CONFIG=1:DATALINE"))[18..].Split(':').ToList();
-            InterfaceITEthernetInfo.DATALINEStart = infolist[1];
-            InterfaceITEthernetInfo.DATALINEStop = infolist[3];
-            InterfaceITEthernetInfo.DATALINETotal = infolist[5];
-            infolist.Clear();
-        }
-
-        if (list.Exists(s => s.Contains("CONFIG=1:ENCODER")))
-        {
-            infolist = list.Find(s => s.Contains("CONFIG=1:ENCODER"))[17..].Split(':').ToList();
-            InterfaceITEthernetInfo.ENCODERStart = infolist[1];
-            InterfaceITEthernetInfo.ENCODERStop = infolist[3];
-            InterfaceITEthernetInfo.ENCODERTotal = infolist[5];
-            infolist = null;
-        }
-
-        list.RemoveAll(s => !s.Contains("B1="));
-        list.ForEach(s => intefaceITEthernetData.Enqueue(s));
-        list = null;
-
-        GetInterfaceITEthernetInfos();
-    }
-
-    private readonly Queue<string> intefaceITEthernetData = new();
-
-    public void GetinterfaceITEthernetData(INTERFACEIT_ETHERNET_KEY_NOTIFY_PROC pROC, CancellationToken token)
-    {
-        while (stream.CanWrite)
-        {
-            rc = null;
-            while (intefaceITEthernetData.Count > 0)
-            {
-                List<string> nData = intefaceITEthernetData.Dequeue().Split(':').ToList();
-                if (nData.Count == 3)
-                {
-                    if (int.TryParse(nData[1], out int LED))
-                    {
-                        pROC(LED, nData[2]);
-                    }
-                }
-            }
-            do
+            StringBuilder sb = new();
+            byte[] buffer = new byte[8192];
+            bool isInitializing = false;
+            bool isSwitchIdentifying = false;
+            while (!cancellationToken.IsCancellationRequested)
             {
                 try
                 {
-                    Thread.Sleep(100);
-                    rc += Encoding.ASCII.GetString(data, 0, stream.Read(data, 0, data.Length));
+                    int bytesRead = await stream.ReadAsync(buffer, cancellationToken);
+                    sb.Append(Encoding.ASCII.GetString(buffer, 0, bytesRead));
+                    if (buffer[bytesRead - 1] != 10)
+                    {
+                        continue;
+                    }
                 }
-                catch
+                catch (IOException)
                 {
-                    return;
+
                 }
+                catch (OperationCanceledException)
+                {
+
+                }
+
+                foreach (string ethernetData in sb.ToString().Split("\r\n", StringSplitOptions.RemoveEmptyEntries))
+                {
+                    switch (ethernetData)
+                    {
+                        case "STATE=2":
+                            isInitializing = true;
+                            InterfaceITEthernetInfo = new()
+                            {
+                                HOSTIPADDRESS = HostIPAddress,
+                            };
+                            break;
+
+                        case "STATE=3":
+                            isSwitchIdentifying = true;
+                            tcs.SetResult(InterfaceITEthernetInfo);
+                            break;
+
+                        case "STATE=4":
+                            isInitializing = false;
+                            isSwitchIdentifying = false;
+                            break;
+
+                        default:
+                            if (isSwitchIdentifying || !isInitializing)
+                            {
+                                ProcessSwitchData(interfacITKeyAction, ethernetData);
+                            }
+                            else if (isInitializing && !isSwitchIdentifying)
+                            {
+                                GetInterfaceITEthernetInfo(ethernetData);
+                            }
+                            break;
+                    }
+                }
+                sb.Clear();
             }
-            while (stream.DataAvailable);
+        }, cancellationToken);
+        return await tcs.Task;
+    }
+
+    private static void ProcessSwitchData(Action<int, uint> interfacITKeyAction, string ethernetData)
+    {
+        if (ethernetData.StartsWith("B1="))
+        {
+            string[] splittedSwitchData = ethernetData.Replace("B1=SW:", string.Empty).Split(':');
+            if (int.TryParse(splittedSwitchData[0], out int ledNumber))
             {
-                rc.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries).ToList().ForEach(s => intefaceITEthernetData.Enqueue(s));
-            }
-            if (token.IsCancellationRequested) 
-            {
-                return;
+                uint direction = 0;
+                if (splittedSwitchData[1] == "ON")
+                {
+                    direction = 1;
+                }
+                interfacITKeyAction(ledNumber, direction);
             }
         }
+        File.AppendAllText("Log.txt", ethernetData + Environment.NewLine);
+    }
+
+    private void GetInterfaceITEthernetInfo(string ethernetData)
+    {
+        int index = ethernetData.IndexOf('=');
+        if (index < 0)
+        {
+            return;
+        }
+
+        string value = ethernetData[(index + 1)..];
+        switch (ethernetData[..index])
+        {
+            case "ID":
+                InterfaceITEthernetInfo.ID = value;
+                break;
+
+            case "NAME":
+                InterfaceITEthernetInfo.NAME = value;
+                break;
+
+            case "SERIAL":
+                InterfaceITEthernetInfo.SERIAL = value;
+                break;
+
+            case "DESC":
+                InterfaceITEthernetInfo.DESC = value;
+                break;
+
+            case "COPYRIGHT":
+                InterfaceITEthernetInfo.COPYRIGHT = value;
+                break;
+
+            case "VERSION":
+                InterfaceITEthernetInfo.VERSION = value;
+                break;
+
+            case "FIRMWARE":
+                InterfaceITEthernetInfo.FIRMWARE = value;
+                break;
+
+            case "LOCATION":
+                InterfaceITEthernetInfo.LOCATION = Convert.ToInt32(value);
+                break;
+
+            case "USAGE":
+                InterfaceITEthernetInfo.USAGE = Convert.ToInt32(value);
+                InterfaceITEthernetInfo.BOARDS = new InterfaceITEthernetInfoBoard[InterfaceITEthernetInfo.USAGE];
+                break;
+
+            case "HOSTNAME":
+                InterfaceITEthernetInfo.HOSTNAME = value;
+                break;
+
+            case "CLIENT":
+                InterfaceITEthernetInfo.CLIENT = value;
+                break;
+
+            case "BOARD":
+                string[] board = value.Split(':');
+                int boardNumber = Convert.ToInt32(board[0]);
+                InterfaceITEthernetInfo.BOARDS[boardNumber - 1] = new() { BOARDNUMBER = boardNumber, ID = board[1], DESC = board[2] };
+                break;
+
+            case "CONFIG":
+                GetConfigData(value);
+                break;
+        }
+    }
+
+    private void GetConfigData(string value)
+    {
+        string[] config = value.Split(":");
+        int boardNumberMinusOne = Convert.ToInt32(config[0]) -1;
+        switch (config[1])
+        {
+            case "LED":
+                InterfaceITEthernetInfo.BOARDS[boardNumberMinusOne].LEDS = GetConfigData(config);
+                break;
+
+            case "SWITCH":
+                InterfaceITEthernetInfo.BOARDS[boardNumberMinusOne].SWITCHES = GetConfigData(config);
+                break;
+
+            case "7 SEGMENT":
+                InterfaceITEthernetInfo.BOARDS[boardNumberMinusOne].SEVENSEGMENTS = GetConfigData(config);
+                break;
+
+            case "DATALINE":
+                InterfaceITEthernetInfo.BOARDS[boardNumberMinusOne].DATALINES = GetConfigData(config);
+                break;
+
+            case "ENCODER":
+                InterfaceITEthernetInfo.BOARDS[boardNumberMinusOne].ENCODERS = GetConfigData(config);
+                break;
+
+            case "ANALOG IN":
+                InterfaceITEthernetInfo.BOARDS[boardNumberMinusOne].ANALOGINS = GetConfigData(config);
+                break;
+
+            case "PULSE WIDTH":
+                InterfaceITEthernetInfo.BOARDS[boardNumberMinusOne].PULSEWIDTHS = GetConfigData(config);
+                break;
+        }
+    }
+
+    private static InterfaceITEthernetInfoBoardConfig GetConfigData(string[] config)
+    {
+        return new InterfaceITEthernetInfoBoardConfig
+        {
+            Start = Convert.ToInt32(config[3]),
+            Stop = Convert.ToInt32(config[5]),
+            Total = Convert.ToInt32(config[7])
+        };
     }
 
     public void CloseStream()
     {
-        if (Client is not null)
-        {
-            rc = null;
-            for (int i = int.Parse(InterfaceITEthernetInfo.LEDStart); i <= int.Parse(InterfaceITEthernetInfo.LEDStop); i++)
-            {
-                SendinterfaceITEthernetLED(i, 0);
-                Thread.Sleep(10);
-            }
-            stream?.Close();
-            Client?.Dispose();
-        }
-    }
-
-    public void SendinterfaceITEthernetLED(int nLED, int bOn)
-    {
         try
         {
-            stream?.Write(data = Encoding.ASCII.GetBytes("B1:LED:" + nLED + ":" + bOn + "\r\n"), 0, data.Length);
+            SendinterfaceITEthernetLEDAllOff();
+            stream?.Write(Encoding.ASCII.GetBytes("DISCONNECT" + "\r\n"));
+            client?.Close();
         }
         catch (Exception e)
         {
             MessageBox.Show(e.Message);
         }
+    }
+
+    public void SendinterfaceITEthernetLEDAllOff()
+    {
+        stream?.Write(Encoding.ASCII.GetBytes("B1:CLEAR" + "\r\n"));
     }
 
     public void SendinterfaceITEthernetLED(int nLED, bool bOn)
     {
+        SendinterfaceITEthernetLED<bool>(nLED, bOn);
+    }
+
+    public void SendinterfaceITEthernetLED(int nLED, int bOn)
+    {
+        SendinterfaceITEthernetLED<int>(nLED, bOn);
+    }
+
+    public void SendinterfaceITEthernetLED(int nLED, double bOn)
+    {
+        SendinterfaceITEthernetLED<double>(nLED, bOn);
+    }
+
+    bool hasErrorBeenShown;
+    private void SendinterfaceITEthernetLED<T>(int nLED, T bOn)
+    {
+        if (nLED < 0)
+        {
+            throw new ArgumentException("nLED must be a non-negative integer.");
+        }
+
+        if (bOn is not bool && bOn is not int && bOn is not double)
+        {
+            throw new ArgumentException("bOn must be of type bool, int, or double.");
+        }
+
         try
         {
-            stream?.Write(data = Encoding.ASCII.GetBytes("B1:LED:" + nLED + ":" + Convert.ToInt32(bOn) + "\r\n"), 0, data.Length);
+            stream?.Write(Encoding.ASCII.GetBytes("B1:LED:" + nLED + ":" + Convert.ToUInt16(bOn) + "\r\n"));
         }
         catch (Exception e)
         {
-            MessageBox.Show(e.Message);
-        }
-    }
-
-    public void LEDon()
-    {
-        stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:1:1\r\n"), 0, data.Length);
-        stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:2:1\r\n"), 0, data.Length);
-        stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:3:1\r\n"), 0, data.Length);
-        stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:4:1\r\n"), 0, data.Length);
-        stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:5:1\r\n"), 0, data.Length);
-        stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:6:1\r\n"), 0, data.Length);
-        stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:7:1\r\n"), 0, data.Length);
-        stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:8:1\r\n"), 0, data.Length);
-        stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:9:1\r\n"), 0, data.Length);
-        stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:10:1\r\n"), 0, data.Length);
-    }
-
-    public void LEDoff()
-    {
-        stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:1:0\r\n"), 0, data.Length);
-        stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:2:0\r\n"), 0, data.Length);
-        stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:3:0\r\n"), 0, data.Length);
-        stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:4:0\r\n"), 0, data.Length);
-        stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:5:0\r\n"), 0, data.Length);
-        stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:6:0\r\n"), 0, data.Length);
-        stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:7:0\r\n"), 0, data.Length);
-        stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:8:0\r\n"), 0, data.Length);
-        stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:9:0\r\n"), 0, data.Length);
-        stream.Write(data = Encoding.ASCII.GetBytes("B1:LED:10:0\r\n"), 0, data.Length);
-    }
-
-    public ObservableCollection<string> InterfaceITEthernetInfoText { get; set; }
-
-    private void GetInterfaceITEthernetInfos()
-    {
-        InterfaceITEthernetInfoText = new()
-        {
-            "Board ID: " + InterfaceITEthernetInfo.ID,
-            "Name: " + InterfaceITEthernetInfo.NAME,
-            "Serial: " + InterfaceITEthernetInfo.SERIAL,
-            "Description: " + InterfaceITEthernetInfo.DESC,
-            "Version: " + InterfaceITEthernetInfo.VERSION,
-            "Firmware: " + InterfaceITEthernetInfo.FIRMWARE,
-            "Location: " + InterfaceITEthernetInfo.LOCATION,
-            "Usage: " + InterfaceITEthernetInfo.USAGE,
-            "Hostname: " + InterfaceITEthernetInfo.HOSTNAME,
-            "Client: " + InterfaceITEthernetInfo.CLIENT,
-            "Board " + InterfaceITEthernetInfo.ID + " has the flollowing features:",
-        };
-        if (InterfaceITEthernetInfo.LEDTotal is not null)
-        {
-            InterfaceITEthernetInfoText.Add(InterfaceITEthernetInfo.LEDTotal + " | LEDs ( " + InterfaceITEthernetInfo.LEDStart + " - " + InterfaceITEthernetInfo.LEDStop + " )");
-        }
-        else if (InterfaceITEthernetInfo.LEDTotal is null)
-        {
-            InterfaceITEthernetInfoText.Add(null);
-        }
-        if (InterfaceITEthernetInfo.SWITCHTotal is not null)
-        {
-            InterfaceITEthernetInfoText.Add(InterfaceITEthernetInfo.SWITCHTotal + " | Switches ( " + InterfaceITEthernetInfo.SWITCHStart + " - " + InterfaceITEthernetInfo.SWITCHStop + " )");
-        }
-        else if (InterfaceITEthernetInfo.SWITCHTotal is null)
-        {
-            InterfaceITEthernetInfoText.Add(null);
-        }
-        if (InterfaceITEthernetInfo.SEVENSEGMENTTotal is not null)
-        {
-            InterfaceITEthernetInfoText.Add(InterfaceITEthernetInfo.SEVENSEGMENTTotal + " | 7 Segments ( " + InterfaceITEthernetInfo.SEVENSEGMENTStart + " - " + InterfaceITEthernetInfo.SEVENSEGMENTStop + " )");
-        }
-        else if (InterfaceITEthernetInfo.SEVENSEGMENTTotal is null)
-        {
-            InterfaceITEthernetInfoText.Add(null);
-        }
-        if (InterfaceITEthernetInfo.DATALINETotal is not null)
-        {
-            InterfaceITEthernetInfoText.Add(InterfaceITEthernetInfo.DATALINETotal + " | Datalines ( " + InterfaceITEthernetInfo.DATALINEStart + " - " + InterfaceITEthernetInfo.DATALINEStop + " )");
-        }
-        else if (InterfaceITEthernetInfo.DATALINETotal is null)
-        {
-            InterfaceITEthernetInfoText.Add(null);
-        }
-        if (InterfaceITEthernetInfo.ENCODERTotal is not null)
-        {
-            InterfaceITEthernetInfoText.Add(InterfaceITEthernetInfo.ENCODERTotal + " | Encoders ( " + InterfaceITEthernetInfo.ENCODERStart + " - " + InterfaceITEthernetInfo.ENCODERStop + " )");
-        }
-        else if (InterfaceITEthernetInfo.ENCODERTotal is null)
-        {
-            InterfaceITEthernetInfoText.Add(null);
+            if (!hasErrorBeenShown)
+            {
+                MessageBox.Show(e.Message);
+                hasErrorBeenShown = true;
+            }
         }
     }
 }
 
 public class InterfaceITEthernetInfo
 {
+    public string HOSTIPADDRESS { get; set; }
     public string ID { get; set; }
     public string NAME { get; set; }
     public string SERIAL { get; set; }
@@ -397,29 +368,30 @@ public class InterfaceITEthernetInfo
     public string COPYRIGHT { get; set; }
     public string VERSION { get; set; }
     public string FIRMWARE { get; set; }
-    public string LOCATION { get; set; }
-    public string USAGE { get; set; }
+    public int LOCATION { get; set; }
+    public int USAGE { get; set; }
     public string HOSTNAME { get; set; }
     public string CLIENT { get; set; }
-    public string BOARD { get; set; }
+    public InterfaceITEthernetInfoBoard[] BOARDS { get; set; }
+}
 
-    public string LEDStart { get; set; }
-    public string LEDStop { get; set; }
-    public string LEDTotal { get; set; }
+public class InterfaceITEthernetInfoBoard
+{
+    public int BOARDNUMBER { get; set; }
+    public string ID { get; set; }
+    public string DESC { get; set; }
+    public InterfaceITEthernetInfoBoardConfig LEDS { get; set; }
+    public InterfaceITEthernetInfoBoardConfig SWITCHES { get; set; }
+    public InterfaceITEthernetInfoBoardConfig SEVENSEGMENTS { get; set; }
+    public InterfaceITEthernetInfoBoardConfig DATALINES { get; set; }
+    public InterfaceITEthernetInfoBoardConfig ENCODERS { get; set; }
+    public InterfaceITEthernetInfoBoardConfig ANALOGINS { get; set; }
+    public InterfaceITEthernetInfoBoardConfig PULSEWIDTHS { get; set; }
+}
 
-    public string SWITCHStart { get; set; }
-    public string SWITCHStop { get; set; }
-    public string SWITCHTotal { get; set; }
-
-    public string SEVENSEGMENTStart { get; set; }
-    public string SEVENSEGMENTStop { get; set; }
-    public string SEVENSEGMENTTotal { get; set; }
-
-    public string DATALINEStart { get; set; }
-    public string DATALINEStop { get; set; }
-    public string DATALINETotal { get; set; }
-
-    public string ENCODERStart { get; set; }
-    public string ENCODERStop { get; set; }
-    public string ENCODERTotal { get; set; }
+public class InterfaceITEthernetInfoBoardConfig
+{
+    public int Start { get; set; }
+    public int Stop { get; set; }
+    public int Total { get; set; }
 }

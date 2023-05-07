@@ -64,7 +64,7 @@
 
 
     <Border
-        Background="#121212"
+        Background="#FF151515"
         CornerRadius="10"
         MouseDown="Border_MouseDown">
         <Grid>
@@ -78,6 +78,9 @@
                 <RowDefinition Height="75"/>
                 <RowDefinition />
             </Grid.RowDefinitions>
+
+            <Border Background="#121212" Grid.RowSpan="2" CornerRadius="10,0,0,10"/>
+            <Border Background="#121212" Grid.Column="1" CornerRadius="0,10,0,0"/>
 
             <TextBlock
                 VerticalAlignment="Center"
@@ -178,6 +181,7 @@
                     Content="USB/Ethernet"
                     Height="20" 
                     Cursor="Hand"
+                    IsTabStop="False"
                     Command="{Binding HomeENETViewToggleCommand}"/>
                 <Label
                     Margin="10,0,0,0"
@@ -209,9 +213,11 @@
                     VerticalAlignment="Top"
                     Background="Transparent"
                     Foreground="White"
+                    IsTabStop="False"
                     ItemsSource="{Binding DeviceList}"
                     SelectedValuePath="Id"
-                    SelectedValue="{Binding SelectedController}">
+                    SelectedValue="{Binding SelectedController}"
+                    d:ItemsSource="{d:SampleData ItemCount=2}">
                     <ListView.Template>
                         <ControlTemplate>
                             <Border
@@ -271,6 +277,7 @@
                 BorderThickness="0"
                 HorizontalAlignment="Right"
                 Cursor="Hand"
+                IsTabStop="False"
                 Click="ButtonMinimize_Click"/>
 
             <Button
@@ -284,6 +291,7 @@
                 BorderThickness="0"
                 HorizontalAlignment="Right"
                 Cursor="Hand"
+                IsTabStop="False"
                 Click="ButtonMaximized_Click"/>
 
             <Button
@@ -297,11 +305,14 @@
                 HorizontalAlignment="Right"
                 Click="ButtonClose_Click"
                 Cursor="Hand"
+                IsTabStop="False"
                 Style="{StaticResource ButtonCloseTheme}"/>
 
             <ContentControl
+                x:Name="test"
                 Grid.Row="1"
                 Grid.Column="1"
+                IsTabStop="False"
                 Content="{Binding CurrentView, Converter={x:Static cnvs:ObjectToUIElementConverter.Default}}"/>
 
             <Button
@@ -315,7 +326,8 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Cursor="Hand"
-                Command="{Binding DeviceCountRefreshCommand}"
+                IsTabStop="False"
+                Command="{Binding RefreshDeviceListCommand}"
                 IsEnabled="{Binding HomeUSBVM.IsUSBEnabled}">
                 <Button.Resources>
                     <Style TargetType="Button">
@@ -344,15 +356,17 @@
             </Button>
 
             <Button
+                Command="{Binding OpenProfileCreatorCommand}"
                 d:Visibility="Visible"
-                Content="Open ProfileCreator"
+                Content="TestProfileCreator"
                 HorizontalAlignment="Center"
-                Visibility="Hidden"
+                Visibility="Visible"
                 FontSize="16"
                 FontWeight="Bold"
                 Width="200"
                 Margin="420,20,420,20"
                 FontFamily="Arial Black"
+                IsTabStop="False"
                 Grid.Column="1"/>
 
             <Label
@@ -361,7 +375,8 @@
                 Foreground="White"
                 HorizontalAlignment="Right"
                 VerticalContentAlignment="Center"
-                Grid.Column="1" 
+                Grid.Column="1"
+                IsTabStop="False"
                 Margin="0,0,200,0"/>
 
             <Ellipse 
@@ -391,9 +406,11 @@
                 VerticalAlignment="Bottom" 
                 Cursor="Hand"
                 Height="50" >
-                <Button x:Name="button"
+                <Button 
+                    x:Name="button"
                     BorderThickness="0"
                     Background="Transparent"
+                    IsTabStop="False"
                     Command="{Binding SettingsViewCommand}">
                     <Button.Style>
                         <Style TargetType="Button">

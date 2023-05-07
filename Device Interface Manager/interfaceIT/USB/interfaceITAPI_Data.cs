@@ -1,17 +1,19 @@
-﻿using System.Text;
+﻿using System;
 using System.Runtime.InteropServices;
+using System.Text;
 using static Device_Interface_Manager.interfaceIT.USB.InterfaceIT_BoardInfo.BoardInformationStructure;
 
 namespace Device_Interface_Manager.interfaceIT.USB;
 
-public class InterfaceITAPI_Data
+public partial class InterfaceITAPI_Data
 {
 
     //Switch Callback Definition
-    public delegate bool INTERFACEIT_KEY_NOTIFY_PROC(int hSession, int nSwitch, int nDirection);
+    public delegate void INTERFACEIT_KEY_NOTIFY_PROC(uint hSession, int nSwitch, int nDirection);
+    public delegate void INTERFACEIT_KEY_NOTIFY_PROC_UINT(uint hSession, int nSwitch, uint nDirection);
 
     //Device Change Notification
-    public delegate bool INTERFACEIT_DEVICE_CHANGE_NOTIFY_PROC(int nAction);
+    public delegate void INTERFACEIT_DEVICE_CHANGE_NOTIFY_PROC(int nAction);
 
     public class Data
     {
@@ -76,102 +78,132 @@ public class InterfaceITAPI_Data
 
 
     //Main Functions
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None)]
-    internal static extern int interfaceIT_OpenControllers();
+    [LibraryImport("interfaceITAPI x64.dll")]
+    internal static partial void interfaceIT_OpenControllers();
 
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-    internal static extern int interfaceIT_GetDeviceList([Out] byte[] pBuffer, ref int dwSize, string pBoardType);
+    [LibraryImport("interfaceITAPI x64.dll", StringMarshalling = StringMarshalling.Utf8)]
+    private static partial void interfaceIT_GetDeviceList(byte[] pBuffer, ref uint dwSize, string pBoardType);
 
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None)]
-    internal static extern int interfaceIT_CloseControllers();
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
+    internal static string[] interfaceIT_GetDeviceList()
+    {
+        uint bufferSize = 0;
+        interfaceIT_GetDeviceList(null, ref bufferSize, null);
+        byte[] deviceList = new byte[bufferSize];
+        interfaceIT_GetDeviceList(deviceList, ref bufferSize, null);
+        return Encoding.Default.GetString(deviceList).TrimEnd('\0').Split('\0');
+    }
+
+    [LibraryImport("interfaceITAPI x64.dll")]
+    internal static partial void interfaceIT_CloseControllers();
 
 
     //Controller Functions
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-    internal static extern int interfaceIT_Bind(string pController, ref int phSession);
+    [LibraryImport("interfaceITAPI x64.dll", StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial void interfaceIT_Bind(string pController, out uint phSession);
 
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None)]
-    internal static extern int interfaceIT_UnBind(int hSession);
+    [LibraryImport("interfaceITAPI x64.dll")]
+    internal static partial void interfaceIT_UnBind(uint hSession);
 
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None)]
-    internal static extern int interfaceIT_GetBoardInfo(int hSession, ref BOARDCAPS pbc);
+    [DllImport("interfaceITAPI x64.dll")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "SYSLIB1054:Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time", Justification = "<Pending>")]
+    internal static extern void interfaceIT_GetBoardInfo(uint hSession, out BOARDCAPS pbc);
 
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None)]
-    internal static extern int interfaceIT_SetBoardOptions(int hSession, int dwOptions);  //Not tested
+    [LibraryImport("interfaceITAPI x64.dll")]
+    internal static partial void interfaceIT_SetBoardOptions(uint hSession, uint dwOptions);  //Not tested
 
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None)]
-    internal static extern int interfaceIT_GetTotalControllers(ref int pnControllerCount);
-
+    [LibraryImport("interfaceITAPI x64.dll")]
+    internal static partial void interfaceIT_GetTotalControllers(ref int pnControllerCount);
 
     //LED Functions
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None)]
-    internal static extern int interfaceIT_LED_Enable(int hSession, bool bEnable);
+    [LibraryImport("interfaceITAPI x64.dll")]
+    internal static partial void interfaceIT_LED_Enable(uint hSession, [MarshalAs(UnmanagedType.Bool)] bool bEnable);
 
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None)]
-    internal static extern int interfaceIT_LED_Set(int hSession, int nLED, bool bOn);
+    [LibraryImport("interfaceITAPI x64.dll")]
+    internal static partial void interfaceIT_LED_Set(uint hSession, int nLED, [MarshalAs(UnmanagedType.Bool)] bool bOn);
 
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None)]
-    internal static extern int interfaceIT_LED_Test(int hSession, bool bEnable);
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
+    internal static void interfaceIT_LED_Set(uint hSession, int nLED, double bOn)
+    {
+        interfaceIT_LED_Set(hSession, nLED, Convert.ToBoolean(bOn));
+    }
+
+    [LibraryImport("interfaceITAPI x64.dll")]
+    internal static partial void interfaceIT_LED_Test(uint hSession, [MarshalAs(UnmanagedType.Bool)] bool bEnable);
 
 
     //Switch Functions
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None)]
-    internal static extern int interfaceIT_Switch_Enable_Callback(int hSession, bool bEnable, INTERFACEIT_KEY_NOTIFY_PROC pProc);
+    [LibraryImport("interfaceITAPI x64.dll")]
+    internal static partial void interfaceIT_Switch_Enable_Callback(uint hSession, [MarshalAs(UnmanagedType.Bool)] bool bEnable, INTERFACEIT_KEY_NOTIFY_PROC pROC);
 
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None)]
-    internal static extern int interfaceIT_Switch_Enable_Poll(int hSession, bool bEnable);
+    [LibraryImport("interfaceITAPI x64.dll")]
+    internal static partial void interfaceIT_Switch_Enable_Callback(uint hSession, [MarshalAs(UnmanagedType.Bool)] bool bEnable, INTERFACEIT_KEY_NOTIFY_PROC_UINT pROC);
 
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None)]
-    internal static extern int interfaceIT_Switch_Get_Item(int hSession, out int pnSwitch, out int pnDirection);
+    [LibraryImport("interfaceITAPI x64.dll")]
+    internal static partial void interfaceIT_Switch_Enable_Poll(uint hSession, [MarshalAs(UnmanagedType.Bool)] bool bEnable);
 
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None)]
-    internal static extern int interfaceIT_Switch_Get_State(int hSession, int nSwitch, int pnState);  //Not tested
+    [LibraryImport("interfaceITAPI x64.dll")]
+    internal static partial int interfaceIT_Switch_Get_Item(uint hSession, out int pnSwitch, out int pnDirection);
+
+    [LibraryImport("interfaceITAPI x64.dll")]
+    internal static partial void interfaceIT_Switch_Get_State(uint hSession, int nSwitch, int pnState);  //Not tested
 
 
     //7 Segment Functions
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-    internal static extern int interfaceIT_7Segment_Display(int hSession, string pszData, int nStart);
+    [LibraryImport("interfaceITAPI x64.dll", StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial void interfaceIT_7Segment_Display(uint hSession, string pszData, int nStart);
 
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None)]
-    internal static extern int interfaceIT_7Segment_Enable(int hSession, bool bEnable);
+    [LibraryImport("interfaceITAPI x64.dll")]
+    internal static partial void interfaceIT_7Segment_Enable(uint hSession, [MarshalAs(UnmanagedType.Bool)] bool bEnable);
 
 
     //Dataline Functions
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None)]
-    internal static extern int interfaceIT_Dataline_Enable(int hSession, bool bEnable);
+    [LibraryImport("interfaceITAPI x64.dll")]
+    internal static partial void interfaceIT_Dataline_Enable(uint hSession, [MarshalAs(UnmanagedType.Bool)] bool bEnable);
 
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None)]
-    internal static extern int interfaceIT_Dataline_Set(int hSession, int nDataline, bool bOn);
+    [LibraryImport("interfaceITAPI x64.dll")]
+    internal static partial void interfaceIT_Dataline_Set(uint hSession, int nDataline, [MarshalAs(UnmanagedType.Bool)] bool bOn);
 
 
     //Brightness Functions
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None)]
-    internal static extern int interfaceIT_Brightness_Enable(int hSession, bool bEnable);
+    [LibraryImport("interfaceITAPI x64.dll")]
+    internal static partial void interfaceIT_Brightness_Enable(uint hSession, [MarshalAs(UnmanagedType.Bool)] bool bEnable);
 
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None)]
-    internal static extern int interfaceIT_Brightness_Set(int hSession, int nBrightness);
+    [LibraryImport("interfaceITAPI x64.dll")]
+    internal static partial void interfaceIT_Brightness_Set(uint hSession, int nBrightness);
 
 
     //Analog Input Functions
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None)]
-    internal static extern int interfaceIT_Analog_Enable(int hSession, bool bEnable);
+    [LibraryImport("interfaceITAPI x64.dll")]
+    internal static partial void interfaceIT_Analog_Enable(uint hSession, [MarshalAs(UnmanagedType.Bool)] bool bEnable);
 
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None)]
-    internal static extern int interfaceIT_Analog_GetValue(int hSession, int nReserved, out int pnPos);
+    [LibraryImport("interfaceITAPI x64.dll")]
+    internal static partial void interfaceIT_Analog_GetValue(uint hSession, int nReserved, out int pnPos);
 
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-    internal static extern int interfaceIT_Analog_GetValues(int hSession, StringBuilder pbValues, ref int nValuesSize);  //Not tested
+    [LibraryImport("interfaceITAPI x64.dll")]
+    internal static partial void interfaceIT_Analog_GetValues(uint hSession, byte[] pbValues, ref int nValuesSize);  //Not tested
 
 
     //Device Change Notification
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None)]
-    internal static extern int interfaceIT_Enable_DeviceChange_Notification_Callback(bool bEnable, INTERFACEIT_DEVICE_CHANGE_NOTIFY_PROC nAction);  //NOT WORKING!!!
+    [LibraryImport("interfaceITAPI x64.dll")]
+    internal static partial void interfaceIT_Enable_DeviceChange_Notification_Callback([MarshalAs(UnmanagedType.Bool)] bool bEnable, INTERFACEIT_DEVICE_CHANGE_NOTIFY_PROC nAction);  //NOT WORKING!!!
 
 
     //Misc Functions
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-    internal static extern int interfaceIT_GetAPIVersion(StringBuilder pBuffer, ref int dwSize);
+    [LibraryImport("interfaceITAPI x64.dll")]
+    private static partial void interfaceIT_GetAPIVersion(byte[] pBuffer, ref uint dwSize);
 
-    [DllImport("interfaceITAPI x64.dll", CharSet = CharSet.None)]
-    internal static extern int interfaceIT_EnableLogging(bool bEnable);
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
+    internal static string interfaceIT_GetAPIVersion()
+    {
+        uint bufferSize = 0;
+        interfaceIT_GetAPIVersion(null, ref bufferSize);
+        byte[] aPIversion = new byte[bufferSize];
+        interfaceIT_GetAPIVersion(aPIversion, ref bufferSize);
+        return Encoding.Default.GetString(aPIversion);
+    }
+
+
+    [LibraryImport("interfaceITAPI x64.dll")]
+    internal static partial void interfaceIT_EnableLogging([MarshalAs(UnmanagedType.Bool)] bool bEnable);
 }

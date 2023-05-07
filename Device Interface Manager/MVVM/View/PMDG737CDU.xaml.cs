@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -9,225 +10,206 @@ namespace Device_Interface_Manager.MVVM.View
 {
     public partial class PMDG737CDU : Window
     {
-        Label lb;
+        private bool editormode = false;
+
+        private FontFamily PMDGFontBig { get; set; } = new(new Uri("pack://application:,,,/"), "./Fonts/#PMDG_NGXu_DU_A");
+        private FontFamily PMDGFontNormal { get; set; } = new(new Uri("pack://application:,,,/"), "./Fonts/#PMDG_NGXu_DU_B");
+        private FontFamily PMDGFontsSmall { get; set; } = new(new Uri("pack://application:,,,/"), "./Fonts/#PMDG_NGXu_DU_C");
+
+        private SolidColorBrush Transparent { get; set; } = new SolidColorBrush(Colors.Transparent);
+        private SolidColorBrush Gray { get; set; } = new SolidColorBrush(Colors.Gray);
+
+        private SolidColorBrush White { get; set; } = new(Colors.White);
+        private SolidColorBrush Cyan { get; set; } = new(Colors.Cyan);
+        private SolidColorBrush Green { get; set; } = new(Color.FromRgb(0x10, 0xEF, 0x22));
+        private SolidColorBrush Magenta { get; set; } = new(Colors.Magenta);
+        private SolidColorBrush Amber { get; set; } = new(Color.FromRgb(0xF4, 0xCD, 0x2A));
+        private SolidColorBrush Red { get; set; } = new(Colors.Red);
+
+        private Thickness Zero { get; set; } = new(0);
+        private Thickness One { get; set; } = new(1);
+
+
+        public double LabelFontSize { get; set; }
+        public double MarginTop { get; set; }
+        public double MarginBottom { get; set; }
+        public double MarginLeft { get; set; }
+        public double MarginRight { get; set; }
+
+        public event EventHandler OnEditormodeOff;
+
         public PMDG737CDU()
         {
             InitializeComponent();
         }
 
+        public void CreatePMDGCDUCells()
+        {
+            int count = 0;
+            for (int column = 0; column < 24; column++)
+            {
+                for (int row = 0; row < 14; row++)
+                {
+                    Label lb = new()
+                    {
+                        FontSize = LabelFontSize,
+                        FontWeight = FontWeights.Normal,
+                        Margin = new Thickness(MarginLeft, MarginTop, MarginRight, MarginBottom),
+                        Name = "Label" + count,
+                        BorderBrush = new SolidColorBrush(Colors.White),
+                        BorderThickness = new Thickness(0),
+                        Padding = new Thickness(0),
+                    };
+                    Grid.SetColumn(lb, column);
+                    Grid.SetRow(lb, row);
+                    CDUGrid.Children.Add(lb);
+                    count++;
+                }
+            }
+        }
+
+        private int? _brightness;
+        public int? Brightness
+        {
+            get => _brightness;
+            set
+            {
+                if (_brightness != value)
+                {
+                    _brightness = value;
+                    CDUGrid.Opacity = (double)(1d / 4095 * value);
+                }
+            }
+        }
+
         public void GetPMDGCDUCells(PMDG_NG3_CDU_Screen pMDG_NG3_CDU_Screen)
         {
-            ClearPMDGCDUCells();
-
-            int Column = 0;
             if (pMDG_NG3_CDU_Screen.CDU_Columns is not null && pMDG_NG3_CDU_Screen.Powered)
             {
-                foreach (var columns in pMDG_NG3_CDU_Screen.CDU_Columns)
+                int count = 0;
+                int columnCount = 0;
+                byte brightness = 0;
+                foreach (var column in pMDG_NG3_CDU_Screen.CDU_Columns)
                 {
-                    int Row = 0;
-                    foreach (var row in columns.CDU_ROWS)
+                    int rowCount = 0;
+                    foreach (var rowitem in column.CDU_ROWS)
                     {
-                        lb = new Label
+                        Label label = (Label)CDUGrid.Children[count];
+                        char symbol = Convert.ToChar(rowitem.Symbol);
+                        label.Content = symbol;
+
+                        if (symbol == 'ë' && Brightness is null)
                         {
-                            FontSize = fontSize,
-                            FontWeight = FontWeights.Normal,
-                            Margin = new Thickness(marginLeft, marginTop, marginRight, marginBottom),
-                            BorderBrush = new SolidColorBrush(Colors.White),
-                            Background = new SolidColorBrush(Colors.Transparent),
-                            FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "./Fonts/#PMDG_NGXu_DU_B"),
-                            Name = "Label" + Column.ToString() + Row.ToString(),
-                            BorderThickness = new Thickness(0),
-                            Padding = new Thickness(0),
-                            Content = Convert.ToChar(row.Symbol),
-                        };
-                        Grid.SetColumn(lb, Column);
-                        Grid.SetRow(lb, Row);
+                            CDUGrid.Opacity = 1d / 23 * ++brightness;
+                        }
+
+                        if (brightness == 0 && columnCount == 23 && rowCount == 13 && symbol == '-' && rowitem.Flags == PMDG_NG3_CDU_FLAG_UNUSED && Brightness is null)
+                        {
+                            CDUGrid.Opacity = 0;
+                        }
 
                         if (editormode)
                         {
-                            lb.BorderThickness = new Thickness(1);
+                            label.BorderThickness = One;
                         }
 
-                        switch (row.Color)
+                        switch (rowitem.Color)
                         {
                             case PMDG_NG3_CDU_COLOR_WHITE:
-                                lb.Foreground = new SolidColorBrush(Colors.White);
+                                label.Foreground = White;
                                 break;
 
                             case PMDG_NG3_CDU_COLOR_CYAN:
-                                lb.Foreground = new SolidColorBrush(Colors.Cyan);
+                                label.Foreground = Cyan;
                                 break;
 
                             case PMDG_NG3_CDU_COLOR_GREEN:
-                                lb.Foreground = (Brush)new BrushConverter().ConvertFrom("#10EF22");
+                                label.Foreground = Green;
                                 break;
 
                             case PMDG_NG3_CDU_COLOR_MAGENTA:
-                                lb.Foreground = new SolidColorBrush(Colors.Magenta);
+                                label.Foreground = Magenta;
                                 break;
 
                             case PMDG_NG3_CDU_COLOR_AMBER:
-                                lb.Foreground = (Brush)new BrushConverter().ConvertFrom("#F4CD2A");
+                                label.Foreground = Amber;
                                 break;
 
                             case PMDG_NG3_CDU_COLOR_RED:
-                                lb.Foreground = new SolidColorBrush(Colors.Red);
+                                label.Foreground = Red;
                                 break;
 
                             default:
                                 break;
                         }
 
-                        switch (row.Flags)
+                        switch (rowitem.Flags)
                         {
-                            case PMDG_NG3_CDU_FLAG_SMALL_FONT:
-                                lb.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "./Fonts/#PMDG_NGXu_DU_C");
-                                lb.FontWeight = FontWeight.FromOpenTypeWeight(600);
+                            case 0x00:
+                                label.FontFamily = PMDGFontNormal;
+                                label.FontWeight = FontWeights.Normal;
+                                label.Background = Transparent;
+                                label.Opacity = 1;
+                                break;
 
+                            case PMDG_NG3_CDU_FLAG_SMALL_FONT:
+                                label.FontFamily = PMDGFontsSmall;
+                                label.FontWeight = FontWeight.FromOpenTypeWeight(550);
+                                label.Background = Transparent;
+                                label.Opacity = 1;
                                 break;
 
                             case PMDG_NG3_CDU_FLAG_REVERSE:
-                                lb.Background = new SolidColorBrush(Colors.Gray);
+                                label.FontFamily = PMDGFontNormal;
+                                label.FontWeight = FontWeights.Normal;
+                                label.Background = Gray;
+                                label.Opacity = 1;
                                 break;
 
                             case PMDG_NG3_CDU_FLAG_SMALL_FONT + PMDG_NG3_CDU_FLAG_REVERSE:
-                                lb.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "./Fonts/#PMDG_NGXu_DU_C");
-                                lb.FontWeight = FontWeight.FromOpenTypeWeight(600);
-                                lb.Background = new SolidColorBrush(Colors.Gray);
+                                label.FontFamily = PMDGFontsSmall;
+                                label.FontWeight = FontWeight.FromOpenTypeWeight(550);
+                                label.Background = Gray;
+                                label.Opacity = 1;
                                 break;
 
                             case PMDG_NG3_CDU_FLAG_UNUSED:
-                                lb.Foreground = new SolidColorBrush(Colors.White);
-                                lb.Opacity = 0.5;
+                                label.FontFamily = PMDGFontNormal;
+                                label.FontWeight = FontWeights.Normal;
+                                label.Background = Transparent;
+                                label.Opacity = 0.5;
+                                label.Foreground = White;
                                 break;
 
                             case PMDG_NG3_CDU_FLAG_SMALL_FONT + PMDG_NG3_CDU_FLAG_UNUSED:
-                                lb.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "./Fonts/#PMDG_NGXu_DU_C");
-                                lb.FontWeight = FontWeight.FromOpenTypeWeight(600);
-                                lb.Foreground = new SolidColorBrush(Colors.White);
-                                lb.Opacity = 0.5;
-                                break;
-
-                            default:
+                                label.FontFamily = PMDGFontsSmall;
+                                label.FontWeight = FontWeight.FromOpenTypeWeight(550);
+                                label.Background = Transparent;
+                                label.Opacity = 0.5;
                                 break;
                         }
 
-                        switch (Column)
+                        if (columnCount == 0 && rowCount == 0)
                         {
-                            case 0:
-                                if (Row == 0)
-                                {
-                                    lb.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "./Fonts/#PMDG_NGXu_DU_A");
-                                }
-                                CDUGrid.Children.Add(lb);
-                                break;
-
-                            case 1:
-                                CDUGrid.Children.Add(lb);
-                                break;
-
-                            case 2:
-                                CDUGrid.Children.Add(lb);
-                                break;
-
-                            case 3:
-                                CDUGrid.Children.Add(lb);
-                                break;
-
-                            case 4:
-                                CDUGrid.Children.Add(lb);
-                                break;
-
-                            case 5:
-                                CDUGrid.Children.Add(lb);
-                                break;
-
-                            case 6:
-                                CDUGrid.Children.Add(lb);
-                                break;
-
-                            case 7:
-                                CDUGrid.Children.Add(lb);
-                                break;
-
-                            case 8:
-                                CDUGrid.Children.Add(lb);
-                                break;
-
-                            case 9:
-                                CDUGrid.Children.Add(lb);
-                                break;
-
-                            case 10:
-                                CDUGrid.Children.Add(lb);
-                                break;
-
-                            case 11:
-                                CDUGrid.Children.Add(lb);
-                                break;
-
-                            case 12:
-                                CDUGrid.Children.Add(lb);
-                                break;
-
-                            case 13:
-                                CDUGrid.Children.Add(lb);
-                                break;
-
-                            case 14:
-                                CDUGrid.Children.Add(lb);
-                                break;
-
-                            case 15:
-                                CDUGrid.Children.Add(lb);
-                                break;
-
-                            case 16:
-                                CDUGrid.Children.Add(lb);
-                                break;
-
-                            case 17:
-                                CDUGrid.Children.Add(lb);
-                                break;
-
-                            case 18:
-                                CDUGrid.Children.Add(lb);
-                                break;
-
-                            case 19:
-                                CDUGrid.Children.Add(lb);
-                                break;
-
-                            case 20:
-                                CDUGrid.Children.Add(lb);
-                                break;
-
-                            case 21:
-                                CDUGrid.Children.Add(lb);
-                                break;
-
-                            case 22:
-                                CDUGrid.Children.Add(lb);
-                                break;
-
-                            case 23:
-                                CDUGrid.Children.Add(lb);
-                                break;
-
-                            default:
-                                break;
-
+                            label.FontFamily = PMDGFontBig;
                         }
-                        ++Row;
+
+                        CDUGrid.Children[count] = label;
+
+                        count++;
+                        rowCount++;
                     }
-                    ++Column;
+                    columnCount++;
                 }
             }
         }
 
         public void ClearPMDGCDUCells()
         {
-            CDUGrid.Children.Clear();
+            foreach (Label lb in CDUGrid.Children.OfType<Label>())
+            {
+                lb.Content = null;
+            }
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -251,34 +233,26 @@ namespace Device_Interface_Manager.MVVM.View
             }
         }
 
-        bool editormode = false;
         private void Window_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             editormode = !editormode;
             foreach (Label cells in CDUGrid.Children)
             {
-                if (cells.BorderThickness == new Thickness(0))
+                if (cells.BorderThickness == Zero)
                 {
-                    cells.BorderThickness = new Thickness(1);
+                    cells.BorderThickness = One;
                 }
                 else
                 {
-                    cells.BorderThickness = new Thickness(0);
+                    cells.BorderThickness = Zero;
                 }
             }
-            if (!editormode) 
+            if (!editormode)
             {
-                EditormodeOff?.Invoke(this, e);
+                OnEditormodeOff?.Invoke(this, e);
             }
         }
 
-        public event EventHandler EditormodeOff;
-
-        public double fontSize;
-        public double marginTop;
-        public double marginBottom;
-        public double marginLeft;
-        public double marginRight;
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (!editormode && e.Key == Key.Escape)
@@ -290,17 +264,17 @@ namespace Device_Interface_Manager.MVVM.View
                 switch (e.Key)
                 {
                     case Key.F when Keyboard.IsKeyDown(Key.LeftShift):
-                        ++fontSize;
+                        LabelFontSize++;
                         foreach (Label cells in CDUGrid.Children)
                         {
-                            cells.FontSize = fontSize;
+                            cells.FontSize = LabelFontSize;
                         }
                         break;
-                    case Key.F when fontSize != 1:
-                        --fontSize;
+                    case Key.F when LabelFontSize != 1:
+                        LabelFontSize--;
                         foreach (Label cells in CDUGrid.Children)
                         {
-                            cells.FontSize = fontSize;
+                            cells.FontSize = LabelFontSize;
                         }
                         break;
 
@@ -316,15 +290,15 @@ namespace Device_Interface_Manager.MVVM.View
                         {
                             cells.FontSize = 60;
                             cells.Margin = new Thickness(0);
-                            marginLeft = 0;
-                            marginTop = 0;
-                            marginRight = 0;
-                            marginBottom = 0;
+                            MarginLeft = 0;
+                            MarginTop = 0;
+                            MarginRight = 0;
+                            MarginBottom = 0;
                         }
                         break;
 
                     case Key.PageUp when Keyboard.IsKeyDown(Key.LeftShift):
-                        --marginTop;
+                        MarginTop--;
                         foreach (Label cells in CDUGrid.Children)
                         {
                             SetMargin(cells);
@@ -332,7 +306,7 @@ namespace Device_Interface_Manager.MVVM.View
                         break;
 
                     case Key.PageUp:
-                        ++marginBottom;
+                        MarginBottom++;
                         foreach (Label cells in CDUGrid.Children)
                         {
                             SetMargin(cells);
@@ -340,7 +314,7 @@ namespace Device_Interface_Manager.MVVM.View
                         break;
 
                     case Key.PageDown when Keyboard.IsKeyDown(Key.LeftShift):
-                        ++marginTop;
+                        MarginTop++;
                         foreach (Label cells in CDUGrid.Children)
                         {
                             SetMargin(cells);
@@ -348,7 +322,7 @@ namespace Device_Interface_Manager.MVVM.View
                         break;
 
                     case Key.PageDown:
-                        --marginBottom;
+                        MarginBottom--;
                         foreach (Label cells in CDUGrid.Children)
                         {
                             SetMargin(cells);
@@ -356,7 +330,7 @@ namespace Device_Interface_Manager.MVVM.View
                         break;
 
                     case Key.Add when Keyboard.IsKeyDown(Key.LeftShift):
-                        ++marginRight;
+                        MarginRight++;
                         foreach (Label cells in CDUGrid.Children)
                         {
                             SetMargin(cells);
@@ -364,7 +338,7 @@ namespace Device_Interface_Manager.MVVM.View
                         break;
 
                     case Key.Add:
-                        --marginLeft;
+                        MarginLeft--;
                         foreach (Label cells in CDUGrid.Children)
                         {
                             SetMargin(cells);
@@ -372,7 +346,7 @@ namespace Device_Interface_Manager.MVVM.View
                         break;
 
                     case Key.Subtract when Keyboard.IsKeyDown(Key.LeftShift):
-                        --marginRight;
+                        MarginRight--;
                         foreach (Label cells in CDUGrid.Children)
                         {
                             SetMargin(cells);
@@ -380,7 +354,7 @@ namespace Device_Interface_Manager.MVVM.View
                         break;
 
                     case Key.Subtract:
-                        ++marginLeft;
+                        MarginLeft++;
                         foreach (Label cells in CDUGrid.Children)
                         {
                             SetMargin(cells);
@@ -409,8 +383,8 @@ namespace Device_Interface_Manager.MVVM.View
                         break;
 
                     case Key.Up:
-                        --marginTop;
-                        ++marginBottom;
+                        MarginTop--;
+                        MarginBottom++;
                         foreach (Label cells in CDUGrid.Children)
                         {
                             SetMargin(cells);
@@ -418,8 +392,8 @@ namespace Device_Interface_Manager.MVVM.View
                         break;
 
                     case Key.Left:
-                        --marginLeft;
-                        ++marginRight;
+                        MarginLeft--;
+                        MarginRight++;
                         foreach (Label cells in CDUGrid.Children)
                         {
                             SetMargin(cells);
@@ -427,8 +401,8 @@ namespace Device_Interface_Manager.MVVM.View
                         break;
 
                     case Key.Down:
-                        ++marginTop;
-                        --marginBottom;
+                        MarginTop++;
+                        MarginBottom--;
                         foreach (Label cells in CDUGrid.Children)
                         {
                             SetMargin(cells);
@@ -436,15 +410,12 @@ namespace Device_Interface_Manager.MVVM.View
                         break;
 
                     case Key.Right:
-                        ++marginLeft;
-                        --marginRight;
+                        MarginLeft++;
+                        MarginRight--;
                         foreach (Label cells in CDUGrid.Children)
                         {
                             SetMargin(cells);
                         }
-                        break;
-
-                    default:
                         break;
                 }
             }
@@ -452,7 +423,7 @@ namespace Device_Interface_Manager.MVVM.View
 
         private void SetMargin(Label cells)
         {
-            cells.Margin = new Thickness(marginLeft, marginTop, marginRight, marginBottom);
+            cells.Margin = new Thickness(MarginLeft, MarginTop, MarginRight, MarginBottom);
         }
     }
 }

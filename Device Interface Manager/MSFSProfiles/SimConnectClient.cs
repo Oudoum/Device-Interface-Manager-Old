@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.Messaging;
@@ -14,10 +16,12 @@ public class SimConnectClient
     public SimConnect simConnect;
     private readonly IntPtr handle = new(0);
     private const int wM_USER_SIMCONNECT = 0x0402;
+    private const int MESSAGE_SIZE = 1024;
+    private const string CLIENT_DATA_NAME_COMMAND = "DIM.Command";
 
-    public void SimConnect_Open()
+    public async Task SimConnect_OpenAsync(CancellationToken cancellationToken)
     {
-        while (true)
+        while (!cancellationToken.IsCancellationRequested)
         {
             try
             {
@@ -30,13 +34,16 @@ public class SimConnectClient
 
                 simConnect.RequestSystemState(DATA_REQUEST_ID.AIR_PATH_REQUEST, "AircraftLoaded");
 
-                LoadEventPresets();
+                simConnect.MapClientDataNameToID(CLIENT_DATA_NAME_COMMAND, CLIENT_DATA_ID.CLIENT_DATA_ID_COMMAND);
+                simConnect.CreateClientData(CLIENT_DATA_ID.CLIENT_DATA_ID_COMMAND, MESSAGE_SIZE, SIMCONNECT_CREATE_CLIENT_DATA_FLAG.DEFAULT);
+                simConnect.AddToClientDataDefinition(DEFINE_ID.DATA_DEFINITION_ID_COMMAND, 0, MESSAGE_SIZE, 0, 0);
+
                 simConnect.OnRecvSimobjectData += Simconnect_OnRecvSimobjectData;
                 break;
             }
             catch (COMException)
             {
-
+                await Task.Delay(1000, cancellationToken);
             }
         }
     }
@@ -49,7 +56,7 @@ public class SimConnectClient
         }
         catch (Exception)
         {
-            StrongReferenceMessenger.Default.Send(new SimConnectStausMessage(isConnected = false));
+            StrongReferenceMessenger.Default.Send(new SimConnectStausMessage(false));
         }
     }
 
@@ -57,115 +64,69 @@ public class SimConnectClient
     {
         simConnect?.Dispose();
         simConnect = null;
-        StrongReferenceMessenger.Default.Send(new SimConnectStausMessage(isConnected = false));
+        StrongReferenceMessenger.Default.Send(new SimConnectStausMessage(false));
     }
 
     private void SimConnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
     {
-        StrongReferenceMessenger.Default.Send(new SimConnectStausMessage(isConnected = true));
+        StrongReferenceMessenger.Default.Send(new SimConnectStausMessage(true));
     }
 
     private void SimConnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
     {
-        StrongReferenceMessenger.Default.Send(new SimConnectStausMessage(isConnected = false));
+        StrongReferenceMessenger.Default.Send(new SimConnectStausMessage(false));
     }
 
     private void SimConnect_OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data)
     {
-        if (data.dwException != 9)
-        {
 
-        }
     }
 
-    //NEW
-    public delegate void SimVarChanged (SimVar simVar);
+    public delegate void SimVarChanged(SimVar simVar);
     public event SimVarChanged OnSimVarChanged;
 
     private void Simconnect_OnRecvSimobjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
     {
-        if (data.dwRequestID != 0)
+        if (data.dwRequestID >= 5)
         {
             if (SimVars.Count < (int)data.dwRequestID)
             {
                 return;
             }
-            SimVars[(int)data.dwRequestID - 1].Data = (double)data.dwData[0];
-            OnSimVarChanged?.Invoke(SimVars[(int)data.dwRequestID - 1]);
+            SimVars[(int)data.dwRequestID - 6].Data = (double)data.dwData[0];
+            OnSimVarChanged?.Invoke(SimVars[(int)data.dwRequestID - 6]);
         }
     }
 
-    private bool isConnected;
     private uint maxClientDataDefinition;
     private readonly List<SimVar> SimVars = new();
-    private Dictionary<string, List<Tuple<string, uint>>> Events { get; set; }
 
-    private void LoadEventPresets()
+    public void TransmitEvent(uint data, Enum eventID)
     {
-        Events ??= new Dictionary<string, List<Tuple<string, uint>>>();
-        Events.Clear();
-
-        string[] lines = System.IO.File.ReadAllLines(@"Presets\msfs2020_eventids.cip");
-        var groupKey = "Dummy";
-        uint eventIdx = 0;
-
-        Events[groupKey] = new List<Tuple<string, uint>>();
-        foreach (string line in lines)
-        {
-            if (line.StartsWith("//"))
-            {
-                continue;
-            }
-
-            var cols = line.Split(':');
-            if (cols.Length > 1)
-            {
-                groupKey = cols[0];
-                if (Events.ContainsKey(groupKey))
-                {
-                    continue;
-                }
-
-                Events[groupKey] = new List<Tuple<string, uint>>();
-                continue;
-            }
-
-            Events[groupKey].Add(new Tuple<string, uint>(cols[0], eventIdx++));
-        }
+        simConnect.TransmitClientEvent(
+            0,
+            eventID,
+            data,
+            SIMCONNECT_GROUP_PRIORITY.HIGHEST,
+            SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
     }
 
-    public void SetEventID(string eventID)
+    public void SendEvent(string eventID)
     {
-        if (simConnect is null || !isConnected)
-        {
-            return;
-        }
-
-        Tuple<string, uint> eventItem = null;
-
-        foreach (string groupKey in Events.Keys)
-        {
-            eventItem = Events[groupKey].Find(x => x.Item1 == eventID);
-            if (eventItem is not null)
-            {
-                break;
-            }
-        }
-
-        if (eventItem is null)
-        {
-            return;
-        }
-
-        simConnect?.TransmitClientEvent(
-                0,
-                (EVENT_ID)eventItem.Item2,
-                1,
-                SIMCONNECT_GROUP_PRIORITY.DEFAULT,
-                SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+        simConnect.SetClientData(
+            CLIENT_DATA_ID.CLIENT_DATA_ID_COMMAND,
+            DEFINE_ID.DATA_DEFINITION_ID_COMMAND,
+            SIMCONNECT_CLIENT_DATA_SET_FLAG.DEFAULT,
+            0,
+            new CommandStruct() { command = "(>" + eventID + ')' });
     }
 
     public void SetSimVar(int simVarValue, string simVarName)
+    {
+        SetSimVars(simVarName, null, simVarValue);
+    }
+
+    public void SetSimVar(uint simVarValue, string simVarName)
     {
         SetSimVars(simVarName, null, simVarValue);
     }
@@ -254,18 +215,29 @@ public class SimConnectClient
         }
     }
 
+    private enum CLIENT_DATA_ID
+    {
+        CLIENT_DATA_ID_COMMAND
+    }
+
     private enum REQUEST_ID
     {
-        DUMMY
+        DATA_REQUEST_ID_COMMAND = 5
     }
 
     private enum DEFINE_ID
     {
-        DUMMY
+        DATA_DEFINITION_ID_COMMAND
     }
 
     private enum EVENT_ID
     {
         DUMMY
+    }
+
+    private struct CommandStruct
+    {
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MESSAGE_SIZE)]
+        public string command;
     }
 }

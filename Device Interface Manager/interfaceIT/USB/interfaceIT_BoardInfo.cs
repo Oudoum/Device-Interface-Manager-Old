@@ -7,7 +7,7 @@ public class InterfaceIT_BoardInfo
     public class Device
     {
         public int Id { get; init; }
-        public int Session { get; init; }
+        public uint Session { get; init; }
         public string BoardType { get; init; }
         public string SerialNumber { get; init; }
         public BoardInformationStructure.BOARDCAPS DeviceInfo { get; init; }
@@ -39,11 +39,11 @@ public class InterfaceIT_BoardInfo
             public int nReserved8;
             public int nReserved9;
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 5)]
-            public string szBoardType;        // Null-terminated string containing the board type identifier
+            public string szBoardType;         // Null-terminated string containing the board type identifier
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 9)]
-            public string szManufactureDate;  // Null-terminated string containing the manufacture date of the board
+            public string szManufactureDate;   // Null-terminated string containing the manufacture date of the board
             public int dwFeatures;             // Features that are currently enabled on the board
-            public int nUpdateLevel;          // Update level that is currently applied to this board
+            public int nUpdateLevel;           // Update level that is currently applied to this board
         }
     }
 

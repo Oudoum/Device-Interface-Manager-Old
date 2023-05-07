@@ -1,71 +1,38 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading.Tasks;
+using Device_Interface_Manager.interfaceIT.ENET;
 
 namespace Device_Interface_Manager.MSFSProfiles;
 
-public abstract class ENET : ENETBase
+public abstract class ENET : ProfileBase
 {
-    public MVVM.View.PMDG737CDU pMDG737CDU;
+    public InterfaceITEthernet.ConnectionStatus ConnectionStatus { get; set; }
 
-    public MVVM.View.FBWA32NXMCDU fBWA32NXMCDU;
+    public InterfaceITEthernet interfaceITEthernet;
 
-    protected SimConnectClient simConnectClient;
+    public Action<int, uint> interfacITKeyAction;
 
-    protected void ReceiveSimConnectData(CancellationToken token)
+    protected Task receiveInterfaceITEthernetDataTask;
+
+    protected abstract void KeyPressedAction(int key, uint direction);
+
+    public async Task<InterfaceITEthernet.ConnectionStatus> Start(string ipaddress)
     {
-        while (!token.IsCancellationRequested)
+        interfaceITEthernet = new() { HostIPAddress = ipaddress };
+        ConnectionStatus = interfaceITEthernet.InterfaceITEthernetConnectionAsync(cancellationTokenSource.Token).Result;
+        if (ConnectionStatus == InterfaceITEthernet.ConnectionStatus.Connected)
         {
-            simConnectClient?.ReceiveSimConnectMessage();
-            Thread.Sleep(10);
+            await StartSimConnect();
+            receiveSimConnectDataTask = Task.Run(() => ReceiveSimConnectData(cancellationTokenSource.Token));
+            receiveInterfaceITEthernetDataTask = Task.Run(async () => await interfaceITEthernet.GetInterfaceITEthernetDataAsync(interfacITKeyAction = KeyPressedAction, cancellationTokenSource.Token));
         }
+        return ConnectionStatus;
     }
 
-    protected virtual void StartSimConnect()
+    public virtual void Stop()
     {
-        simConnectClient = new SimConnectClient();
-        simConnectClient?.SimConnect_Open();
-        simConnectClient.simConnect.OnRecvClientData += Simconnect_OnRecvClientData;
-        simConnectClient.simConnect.OnRecvOpen += Simconnect_OnRecvOpen;
-    }
-
-    protected virtual void Simconnect_OnRecvClientData(Microsoft.FlightSimulator.SimConnect.SimConnect sender, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_RECV_CLIENT_DATA data)
-    {
-
-    }
-
-    protected virtual void Simconnect_OnRecvOpen(Microsoft.FlightSimulator.SimConnect.SimConnect sender, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_RECV_OPEN data)
-    {
-
-    }
-
-    private void StopSimConnect()
-    {
-        simConnectClient?.SimConnect_Close();
-    }
-
-    public void Start(string ipaddress)
-    {
-        CancellationTokenSource = new CancellationTokenSource();
-        StartInterfaceITEthernetConnection(ipaddress);
-        if (ConnectionStatus == 2)
-        {
-            StartinterfaceITEthernet();
-            StartSimConnect();
-            ReceiveSimConnectDataThread = new Thread(() => ReceiveSimConnectData(CancellationTokenSource.Token))
-            {
-                Name = ReceiveSimConnectDataThread?.ToString()
-            };
-            ReceiveSimConnectDataThread?.Start();
-            ReceiveInterfaceITEthernetDataThread = new Thread(() => InterfaceITEthernet.GetinterfaceITEthernetData(INTERFACEIT_ETHERNET_KEY_NOTIFY_PROC = new(KeyPressedProcEthernet), CancellationTokenSource.Token))
-            {
-                Name = ReceiveInterfaceITEthernetDataThread?.ToString()
-            };
-            ReceiveInterfaceITEthernetDataThread?.Start();
-        }
-    }
-
-    public override void Stop()
-    {
-        base.Stop();
-        StopSimConnect();
+        simConnectClient.SimConnect_Close();
+        cancellationTokenSource.Cancel();
+        interfaceITEthernet.CloseStream();
     }
 }

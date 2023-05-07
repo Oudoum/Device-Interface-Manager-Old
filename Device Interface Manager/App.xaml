@@ -47,6 +47,7 @@
             <FontFamily x:Key="PMDG_NG3_DU_A">pack://application:,,,/Fonts/#PMDG_NGXu_DU_A</FontFamily>
             <FontFamily x:Key="PMDG_NG3_DU_B">pack://application:,,,/Fonts/#PMDG_NGXu_DU_B</FontFamily>
             <FontFamily x:Key="PMDG_NG3_DU_C">pack://application:,,,/Fonts/#PMDG_NGXu_DU_C</FontFamily>
+            <FontFamily x:Key="BOEING">pack://application:,,,/Fonts/#BOEING-style</FontFamily>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -26,6 +26,7 @@
             VerticalAlignment="Top" 
             HorizontalAlignment="Center" 
             Cursor="Hand"
+            IsTabStop="False"
             Margin="0,255,0,0">
             <Button.Resources>
                 <Style TargetType="Button">
@@ -62,7 +63,6 @@
                 Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                 CanUserAddRows="False"
                 CanUserDeleteRows="False"
-                IsReadOnly="False"
                 Background="Transparent"
                 Foreground="#FF152A7F"
                 BorderBrush="#FF152A7F"
@@ -85,7 +85,13 @@
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter Property="Background" Value="Transparent" />
                                 <Setter Property="Foreground" Value="White"/>
-                                <Setter Property="BorderBrush" Value="Transparent" />
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="Green"/>
+                                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="False">
+                                <Setter Property="BorderBrush" Value="Transparent"/>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -101,25 +107,34 @@
                 </DataGrid.Resources>
 
                 <DataGrid.Columns>
-
-                    <DataGridTemplateColumn Header="Id" MinWidth="50" SortMemberPath="Id" CanUserResize="False">
+                    <DataGridTemplateColumn Header="Id" MinWidth="50" SortMemberPath="Id" CanUserResize="False" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Id}" HorizontalAlignment="Center"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="IsTabStop" Value="False"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="Transparent"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                        <Setter Property="BorderBrush" Value="Transparent"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGridTemplateColumn.CellStyle>
                     </DataGridTemplateColumn>
 
                     <DataGridTextColumn Header="Name" Binding="{Binding Name}" SortMemberPath="Name" CanUserResize="False">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock">
-                                <Setter Property="HorizontalAlignment" Value="Center"/>
-                                <Setter Property="Margin" Value="10,1,10,1"/>
+                                <Setter Property="Margin" Value="3,1,3,1"/>
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                         <DataGridTextColumn.EditingElementStyle>
                             <Style TargetType="TextBox">
-                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
                                 <Setter Property="Background" Value="Transparent"/>
                                 <Setter Property="Foreground" Value="White"/>
                                 <Setter Property="CaretBrush" Value="White"/>
@@ -128,28 +143,41 @@
                     </DataGridTextColumn>
 
 
-                    <DataGridTemplateColumn Header="Position" MinWidth="100" SortMemberPath="Position" CanUserResize="False">
+                    <DataGridTemplateColumn Header="Position" MinWidth="100" SortMemberPath="Position" CanUserResize="False" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Position}" HorizontalAlignment="Center"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="IsTabStop" Value="False"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="Transparent"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                        <Setter Property="BorderBrush" Value="Transparent"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGridTemplateColumn.CellStyle>
                     </DataGridTemplateColumn>
 
-                    <DataGridTemplateColumn Header="On/Off" MinWidth="100" SortMemberPath="IsChecked" CanUserResize="False">
+                    <DataGridTemplateColumn Header="On/Off" MinWidth="100" SortMemberPath="IsChecked" CanUserResize="False" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <CheckBox 
                                 IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                 CommandParameter="{Binding Position}"
                                 Cursor="Hand"
+                                IsTabStop="False"
                                 Command="{Binding DataContext.IsCheckedCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LEDTestView}}}">
                                     <CheckBox.Resources>
                                         <Style TargetType="CheckBox">
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="CheckBox">
-                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" >
+                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
                                                             <Border BorderBrush="Transparent" Background="Transparent" BorderThickness="{TemplateBinding BorderThickness}" Width="99" Height="29">
                                                                 <Path 
                                                                     Stretch="Uniform" 
@@ -163,7 +191,7 @@
                                                         </StackPanel>
                                                         <ControlTemplate.Triggers>
                                                             <Trigger Property="IsChecked" Value="True">
-                                                                <Setter TargetName="ThisCheck" Property="Visibility" Value="Visible" />
+                                                                <Setter TargetName="ThisCheck" Property="Visibility" Value="Visible"/>
                                                             </Trigger>
                                                         </ControlTemplate.Triggers>
                                                     </ControlTemplate>
@@ -174,6 +202,18 @@
                                 </CheckBox>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="IsTabStop" Value="False"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="Transparent"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                        <Setter Property="BorderBrush" Value="Transparent"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGridTemplateColumn.CellStyle>
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
@@ -196,6 +236,7 @@
                     BorderThickness="0,5,5,2.5"
                     Cursor="Hand"
                     Background="DarkGreen"
+                    IsTabStop="False"
                     Command="{Binding AllLEDOnOffCommand}"
                     CommandParameter="On">
                     <Button.Content>
@@ -222,6 +263,7 @@
                     BorderThickness="0,2.55,5,5"
                     Cursor="Hand"
                     Background="DarkRed"
+                    IsTabStop="False"
                     Command="{Binding AllLEDOnOffCommand}"
                     Grid.Row="1">
                     <Button.Content>

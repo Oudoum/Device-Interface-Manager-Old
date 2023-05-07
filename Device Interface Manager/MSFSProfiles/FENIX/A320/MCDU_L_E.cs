@@ -23,37 +23,36 @@ public class MCDU_L_E : ENET
         switch (simVar.Name)
         {
             case "L:I_CDU1_FAIL":
-                InterfaceITEthernet.SendinterfaceITEthernetLED(2, simVar.BData());
+                interfaceITEthernet.SendinterfaceITEthernetLED(2, simVar.Data);
                 break;
 
             case "L:I_CDU1_MCDU_MENU":
-                bool value = simVar.BData();
-                InterfaceITEthernet.SendinterfaceITEthernetLED(3, value);
-                InterfaceITEthernet.SendinterfaceITEthernetLED(5, value);
+                interfaceITEthernet.SendinterfaceITEthernetLED(3, simVar.Data);
+                interfaceITEthernet.SendinterfaceITEthernetLED(5, simVar.Data);
                 break;
 
             case "L:I_CDU1_FM":
-                InterfaceITEthernet.SendinterfaceITEthernetLED(4, simVar.BData());
+                interfaceITEthernet.SendinterfaceITEthernetLED(4, simVar.Data);
                 break;
 
             case "L:I_CDU1_FM1":
-                InterfaceITEthernet.SendinterfaceITEthernetLED(6, simVar.BData());
+                interfaceITEthernet.SendinterfaceITEthernetLED(6, simVar.Data);
                 break;
 
             case "L:I_CDU1_IND":
-                InterfaceITEthernet.SendinterfaceITEthernetLED(7, simVar.BData());
+                interfaceITEthernet.SendinterfaceITEthernetLED(7, simVar.Data);
                 break;
 
             case "L:I_CDU1_RDY":
-                InterfaceITEthernet.SendinterfaceITEthernetLED(8, simVar.BData());
+                interfaceITEthernet.SendinterfaceITEthernetLED(8, simVar.Data);
                 break;
 
             case "L:I_CDU1_DASH":
-                InterfaceITEthernet.SendinterfaceITEthernetLED(9, simVar.BData());
+                interfaceITEthernet.SendinterfaceITEthernetLED(9, simVar.Data);
                 break;
 
             case "L:I_CDU1_FM2":
-                InterfaceITEthernet.SendinterfaceITEthernetLED(10, simVar.BData());
+                interfaceITEthernet.SendinterfaceITEthernetLED(10, simVar.Data);
                 break;
 
             default:
@@ -61,19 +60,8 @@ public class MCDU_L_E : ENET
         }
     }
 
-    protected override void KeyPressedProcEthernet(int key, string sdirection)
+    protected override void KeyPressedAction(int key, uint direction)
     {
-        int direction = 0;
-        if (sdirection == "ON")
-        {
-            direction = 1;
-        }
-
-        else if (sdirection == "OFF")
-        {
-            direction = 0;
-        }
-
         switch (key)
         {
             case 1:

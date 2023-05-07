@@ -7,7 +7,7 @@
              xmlns:viewModel="clr-namespace:Device_Interface_Manager.MVVM.ViewModel"
              mc:Ignorable="d" 
              d:DesignWidth="1040"
-             d:DesignHeight="560" >
+             d:DesignHeight="560">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
@@ -29,6 +29,7 @@
                 <Setter Property="Foreground" Value="Black"/>
                 <Setter Property="Background" Value="DimGray"/>
                 <Setter Property="FontSize" Value="23"/>
+                <Setter Property="IsTabStop" Value="False"/>
                 <Style.Resources>
                     <Style TargetType="Border">
                         <Setter Property="CornerRadius" Value="10"/>
@@ -78,6 +79,7 @@
                 Cursor="Hand"
                 d:Visibility="Visible"
                 AutoToolTipPlacement="TopLeft"
+                IsTabStop="False"
                 ToolTip="{Binding BrightnessValue}"
                 Visibility="{Binding BrightnessEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Value="{Binding BrightnessValue}">
@@ -113,7 +115,7 @@
                 Visibility="{Binding AnalogEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
             <Button
-                Margin="0,160,0,0"
+                Margin="0,130,0,0"
                 Cursor="Hand"
                 Command="{Binding LoggingEnableCommand}"
                 ToolTip="External logging"

@@ -2,33 +2,33 @@
 
 public class NG_CDU_MAX_L_E : NG_CDU_L_E
 {
-    protected override void KeyPressedProcEthernet(int Switch, string Direction)
+    protected override void KeyPressedAction(int key, uint direction)
     {
-        switch (Switch)
+        switch (key)
         {
             case 41:
-                Switch = 49;
+                key = 49;
                 break;
 
             case 42:
-                Switch = 41;
+                key = 41;
                 break;
 
             case 49:
-                Switch = 42;
+                key = 42;
                 break;
 
             case 52:
-                Switch = 53;
+                key = 53;
                 break;
 
             case 60:
-                Switch = 52;
+                key = 52;
                 break;
 
             default:
                 break;
         }
-        base.KeyPressedProcEthernet(Switch, Direction);
+        base.KeyPressedAction(key, direction);
     }
 }

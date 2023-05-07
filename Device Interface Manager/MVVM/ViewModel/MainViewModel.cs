@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
-using System.Text;
+using System.IO;
+using System.Text.Json;
+using System.Reflection;
 using System.Collections.ObjectModel;
 using AutoUpdaterDotNET;
 using CommunityToolkit.Mvvm.Input;
@@ -10,16 +12,14 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Device_Interface_Manager.interfaceIT.USB;
 using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
 using static Device_Interface_Manager.interfaceIT.USB.InterfaceIT_BoardInfo.BoardInformationStructure;
-using Device_Interface_Manager.MSFSProfiles;
-using System.Threading.Tasks;
+using Device_Interface_Manager.MVVM.View;
 
 namespace Device_Interface_Manager.MVVM.ViewModel;
 
 public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStausMessage>
 {
-    public int session;
     private const string updateLink = "https://raw.githubusercontent.com/Oudoum/Device-Interface-Manager-Download/main/Updates/AutoUpdaterDIM.xml";
-    private const string version = "1.1.5";
+    private const string version = "1.1.7";
 
     public HomeUSBViewModel HomeUSBVM { get; set; }
 
@@ -39,23 +39,35 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
 
     public SettingsViewModel SettingsVM { get; set; }
 
-    public bool IsSimConnectOpen { get; set; }
+    [ObservableProperty]
+    public bool _isSimConnectOpen;
 
-    public bool RadioButtonHomeIsChecked { get; set; } = true;
-    public bool RadioButtonLEDTestIsChecked { get; set; }
-    public bool RadioButtonSwitchTesteIsChecked { get; set; }
-    public bool RadioButtonOtherTestIsChecked { get; set; }
-    public bool RadioButtonHomeENETIsChecked { get; set; } = true;
-    public bool RadioButtonBoardinfoENETIsChecked { get; set; }
-    public bool RadioButtonTestENETIsChecked { get; set; }
+    [ObservableProperty]
+    public bool _radioButtonHomeIsChecked = true;
 
-    public bool SettingsIsChecked { get; set; }
+    [ObservableProperty]
+    public bool _radioButtonLEDTestIsChecked;
 
-    public int controllerCount;
+    [ObservableProperty]
+    public bool _radioButtonSwitchTesteIsChecked;
 
-    public string DIMVersion { get; } = "DIM Version " + version;
+    [ObservableProperty]
+    public bool _radioButtonOtherTestIsChecked;
 
-    public string TotalControllers { get; set; }
+    [ObservableProperty]
+    public bool _radioButtonHomeENETIsChecked = true;
+
+    [ObservableProperty]
+    public bool _radioButtonBoardinfoENETIsChecked;
+
+    [ObservableProperty]
+    public bool _radioButtonTestENETIsChecked;
+
+    [ObservableProperty]
+    public bool _settingsIsChecked;
+
+    [ObservableProperty]
+    public string _totalControllers;
 
     [ObservableProperty]
     private bool _enet = Properties.Settings.Default.ENET;
@@ -70,8 +82,7 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
 
     partial void OnCurrentViewChanged(object value)
     {
-        this.SettingsIsChecked = (value?.GetType() == typeof(SettingsViewModel));
-        this.OnPropertyChanged(nameof(this.SettingsIsChecked));
+        SettingsIsChecked = (value?.GetType() == typeof(SettingsViewModel));
     }
 
     private int _selectedController;
@@ -90,6 +101,8 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
             }
         }
     }
+
+    public string DIMVersion { get; } = "DIM Version " + version;
 
     public MainViewModel()
     {
@@ -112,11 +125,21 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
     }
 
     [RelayCommand]
+    private void OpenProfileCreator()
+    {
+        if (!System.Windows.Application.Current.Windows.OfType<TestProfileView>().Any())
+        {
+            TestProfileView profileCreator = new();
+            profileCreator.Show();
+        }
+    }
+
+    [RelayCommand]
     private void OnWindowClosing()
     {
         CloseInterfaceITDevices();
-        HomeENETVM.SaveENETData();
-        HomeUSBVM.SaveUSBData();
+        HomeENETVM.SaveENETConnections();
+        HomeUSBVM.SaveUSBConnections();
         Environment.Exit(Environment.ExitCode);
     }
 
@@ -147,21 +170,14 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
     [RelayCommand]
     private void HomeENETViewToggle()
     {
-        if (Enet)
-        {
-            RadioButtonHomeENETIsChecked = true;
-            OnPropertyChanged(nameof(RadioButtonHomeENETIsChecked));
-            CurrentView = HomeENETVM;
-            Enet = !Enet;
-        }
-        else if (!Enet)
+        if (Enet = !Enet)
         {
             RadioButtonHomeIsChecked = true;
-            OnPropertyChanged(nameof(RadioButtonHomeIsChecked));
             CurrentView = HomeUSBVM;
-            Enet = !Enet;
+            return;
         }
-        OnPropertyChanged(nameof(Enet));
+        RadioButtonHomeENETIsChecked = true;
+        CurrentView = HomeENETVM;
     }
 
     [RelayCommand]
@@ -193,27 +209,16 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
         RadioButtonOtherTestIsChecked = false;
         RadioButtonSwitchTesteIsChecked = false;
         RadioButtonTestENETIsChecked = false;
-        OnPropertyChanged(nameof(RadioButtonBoardinfoENETIsChecked));
-        OnPropertyChanged(nameof(RadioButtonHomeENETIsChecked));
-        OnPropertyChanged(nameof(RadioButtonHomeIsChecked));
-        OnPropertyChanged(nameof(RadioButtonLEDTestIsChecked));
-        OnPropertyChanged(nameof(RadioButtonOtherTestIsChecked));
-        OnPropertyChanged(nameof(RadioButtonSwitchTesteIsChecked));
-        OnPropertyChanged(nameof(RadioButtonTestENETIsChecked));
     }
 
     [RelayCommand]
-    private void DeviceCountRefresh()
+    private void RefreshDeviceList()
     {
         CloseInterfaceITDevices();
         GetInterfaceITDevices();
-        while (_selectedController > DeviceList.Count - 1)
+        if (DeviceList.Count > 0)
         {
-            _selectedController--;
-        }
-        if (_selectedController != -1)
-        {
-            SelectedController = _selectedController;
+            SelectedController = Math.Min(_selectedController, DeviceList.Count - 1);
             return;
         }
         SelectedController = 0;
@@ -224,56 +229,46 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
         if (Enet)
         {
             CurrentView = HomeUSBVM;
+            return;
         }
-        else if (!Enet)
-        {
-            CurrentView = HomeENETVM;
-        }
+        CurrentView = HomeENETVM;
     }
 
     private void GetInterfaceITDevices()
     {
-        _ = interfaceIT_OpenControllers();
+        interfaceIT_OpenControllers();
         GetTotalControllers();
         GetDeviceList();
     }
 
     private void GetTotalControllers()
     {
-        controllerCount = -1;
-        _ = interfaceIT_GetTotalControllers(ref controllerCount);
-        if (controllerCount > 0)
+        int totalControllers = -1;
+        interfaceIT_GetTotalControllers(ref totalControllers);
+        if (totalControllers > 0)
         {
-            TotalControllers = "Total controllers detected: " + controllerCount + Environment.NewLine + "Click to refresh!";
+            TotalControllers = $"Total controllers detected: {totalControllers}\nClick to refresh!";
+            return;
         }
-        else
-        {
-            TotalControllers = "No controllers detected!" + Environment.NewLine + "Click to refresh!";
-        }
-        OnPropertyChanged(nameof(TotalControllers));
+        TotalControllers = "No controllers detected!\nClick to refresh!";
     }
 
     private void GetDeviceList()
     {
-        int intSize = 0;
-        _ = interfaceIT_GetDeviceList(null, ref intSize, null);
-        byte[] byteDeviceList = new byte[intSize];
-        _ = interfaceIT_GetDeviceList(byteDeviceList, ref intSize, null);
         DeviceList.Clear();
         HomeUSBVM.GetBoardInfo();
         LEDTestViewModels.Clear();
         SwitchTestViewModels.Clear();
         OtherTestViewModels.Clear();
         int i = 0;
-        BOARDCAPS bOARDCAPS = new();
-        foreach (var device in Encoding.Default.GetString(byteDeviceList).TrimEnd('\0').Split('\0'))
+        foreach (string device in interfaceIT_GetDeviceList())
         {
             if (!string.IsNullOrEmpty(device))
             {
-                _ = interfaceIT_Bind(device, ref session);
-                _ = interfaceIT_GetBoardInfo(session, ref bOARDCAPS);
+                interfaceIT_Bind(device, out uint session);
+                interfaceIT_GetBoardInfo(session, out BOARDCAPS bOARDCAPS);
                 string boardType = string.Empty;
-                foreach (var field in typeof(InterfaceIT_BoardIDs).GetFields())
+                foreach (FieldInfo field in typeof(InterfaceIT_BoardIDs).GetFields())
                 {
                     if ((string)field.GetValue(null) == bOARDCAPS.szBoardType)
                         boardType = field.Name.ToString().Replace('_', ' ');
@@ -314,17 +309,19 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
     {
         if (DeviceList.Count != 0)
         {
-            if (RadioButtonLEDTestIsChecked)
+            switch (true)
             {
-                CurrentView = LEDTestViewModels.ElementAtOrDefault(SelectedController);
-            }
-            else if (RadioButtonSwitchTesteIsChecked)
-            {
-                CurrentView = SwitchTestViewModels.ElementAtOrDefault(SelectedController);
-            }
-            else if (RadioButtonOtherTestIsChecked)
-            {
-                CurrentView = OtherTestViewModels.ElementAtOrDefault(SelectedController);
+                case bool _ when RadioButtonLEDTestIsChecked:
+                    CurrentView = LEDTestViewModels.ElementAtOrDefault(SelectedController);
+                    break;
+
+                case bool _ when RadioButtonSwitchTesteIsChecked:
+                    CurrentView = SwitchTestViewModels.ElementAtOrDefault(SelectedController);
+                    break;
+
+                case bool _ when RadioButtonOtherTestIsChecked:
+                    CurrentView = OtherTestViewModels.ElementAtOrDefault(SelectedController);
+                    break;
             }
         }
         else if (!RadioButtonHomeIsChecked)
@@ -335,20 +332,20 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
 
     public void CloseInterfaceITDevices()
     {
-        foreach (var device in DeviceList)
+        foreach (InterfaceIT_BoardInfo.Device device in DeviceList)
         {
             if ((device.DeviceInfo.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_OUTPUT_LED) != 0)
             {
                 for (int i = device.DeviceInfo.nSwitchFirst; i <= device.DeviceInfo.nLEDLast; i++)
                 {
-                    _ = interfaceIT_LED_Set(device.Session, i, false);
+                    interfaceIT_LED_Set(device.Session, i, false);
                 }
-                _ = interfaceIT_LED_Enable(device.Session, false);
+                interfaceIT_LED_Enable(device.Session, false);
             }
 
             if ((device.DeviceInfo.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_INPUT_SWITCHES) != 0)
             {
-                _ = interfaceIT_Switch_Enable_Poll(device.Session, false);
+                interfaceIT_Switch_Enable_Poll(device.Session, false);
             }
 
 
@@ -356,9 +353,9 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
             {
                 for (int i = device.DeviceInfo.n7SegmentFirst; i <= device.DeviceInfo.n7SegmentLast; i++)
                 {
-                    _ = interfaceIT_7Segment_Display(device.Session, null, i);
+                    interfaceIT_7Segment_Display(device.Session, null, i);
                 }
-                _ = interfaceIT_7Segment_Enable(device.Session, false);
+                interfaceIT_7Segment_Enable(device.Session, false);
             }
 
 
@@ -366,9 +363,9 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
             {
                 for (int i = device.DeviceInfo.nDatalineFirst; i <= device.DeviceInfo.nDatalineLast; i++)
                 {
-                    _ = interfaceIT_Dataline_Set(device.Session, i, false);
+                    interfaceIT_Dataline_Set(device.Session, i, false);
                 }
-                _ = interfaceIT_Dataline_Enable(device.Session, false);
+                interfaceIT_Dataline_Enable(device.Session, false);
             }
 
 
@@ -380,30 +377,58 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
 
             if ((device.DeviceInfo.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_SPECIAL_BRIGHTNESS) != 0)
             {
-                _ = interfaceIT_Brightness_Set(device.Session, 0);
-                _ = interfaceIT_Brightness_Enable(device.Session, false);
+                interfaceIT_Brightness_Set(device.Session, 0);
+                interfaceIT_Brightness_Enable(device.Session, false);
             }
 
 
             if ((device.DeviceInfo.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_SPECIAL_ANALOG_INPUT) != 0)
             {
-                _ = interfaceIT_Analog_Enable(device.Session, false);
+                interfaceIT_Analog_Enable(device.Session, false);
             }
 
 
             if ((device.DeviceInfo.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_SPECIAL_ANALOG16_INPUT) != 0)
             {
-                _ = interfaceIT_Analog_Enable(device.Session, false);
+                interfaceIT_Analog_Enable(device.Session, false);
             }
-            _ = interfaceIT_UnBind(device.Session);
+            interfaceIT_UnBind(device.Session);
         }
-        _ = interfaceIT_CloseControllers();
+        interfaceIT_CloseControllers();
+    }
+
+    public static T LoadConnectionsData<T>(string fullPath) where T : new()
+    {
+        if (File.Exists(fullPath))
+        {
+            return JsonSerializer.Deserialize<T>(File.ReadAllText(fullPath));
+        }
+        return new T();
+    }
+
+    public static void SaveConnectionsData<T>(string fullPath, T connections) where T : System.Collections.ICollection
+    {
+        string directory = Path.GetDirectoryName(fullPath);
+        if (connections.Count == 0)
+        {
+            if (Directory.Exists(directory))
+            {
+                File.Delete(fullPath);
+            }
+            return;
+        }
+        Directory.CreateDirectory(directory);
+        string json = JsonSerializer.Serialize(connections, new JsonSerializerOptions { WriteIndented = true });
+        if (File.Exists(fullPath) && File.ReadAllText(fullPath) == json)
+        {
+            return;
+        }
+        File.WriteAllText(fullPath, json);
     }
 
     public void Receive(SimConnectStausMessage message)
     {
         IsSimConnectOpen = message.Value;
-        OnPropertyChanged(nameof(IsSimConnectOpen));
     }
 }
 

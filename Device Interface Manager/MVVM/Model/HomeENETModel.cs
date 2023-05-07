@@ -18,9 +18,9 @@ public class HomeENETModel
                 }
             }
         }
-        private byte _status;
+        private interfaceIT.ENET.InterfaceITEthernet.ConnectionStatus _status;
         [System.Text.Json.Serialization.JsonIgnore]
-        public byte Status
+        public interfaceIT.ENET.InterfaceITEthernet.ConnectionStatus Status
         {
             get => _status;
             set

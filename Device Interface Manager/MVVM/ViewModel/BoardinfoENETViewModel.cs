@@ -1,42 +1,61 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
-using CommunityToolkit.Mvvm.Messaging.Messages;
 using Device_Interface_Manager.interfaceIT.ENET;
 
 namespace Device_Interface_Manager.MVVM.ViewModel;
 
-public partial class BoardinfoENETViewModel : ObservableObject, IRecipient<ValueChangedMessage<InterfaceITEthernet>>
+public partial class BoardinfoENETViewModel : ObservableObject, IRecipient<InterfaceITEthernetInfo>
 {
-    public ObservableCollection<ObservableCollection<string>> InterfaceITEthernetInfoTextCollection { get; set; } = new();
-    public ObservableCollection<string> InterfaceITEthernetInfoText { get; set; } = new();
+    public ObservableCollection<string> InterfaceITEthernetInfoTextCollection { get; set; }
 
-    public ObservableCollection<string> InterfaceITEthernetInfoIPCollection { get; set; } = new();
     [ObservableProperty]
     private string _interfaceITEthernetInfoIP;
-
-    partial void OnInterfaceITEthernetInfoIPChanged(string value)
-    {
-        if (value is not null)
-        {
-            this.InterfaceITEthernetInfoText = this.InterfaceITEthernetInfoTextCollection[this.InterfaceITEthernetInfoIPCollection.IndexOf(value)];
-        }
-    }
 
     public BoardinfoENETViewModel()
     {
         WeakReferenceMessenger.Default.Register(this);
     }
 
-    public void Receive(ValueChangedMessage<InterfaceITEthernet> message)
+    public void Receive(InterfaceITEthernetInfo message)
     {
-        if (InterfaceITEthernetInfoIPCollection.Contains(message.Value.Hostname))
+        InterfaceITEthernetInfoIP = message.HOSTIPADDRESS;
+        if (message.ID is null)
         {
-            InterfaceITEthernetInfoIPCollection.Clear();
-            InterfaceITEthernetInfoTextCollection.Clear();
+            InterfaceITEthernetInfoTextCollection = null;
+            OnPropertyChanged(nameof(InterfaceITEthernetInfoTextCollection));
+            return;
         }
-        InterfaceITEthernetInfoIPCollection.Add(message.Value.Hostname);
-        InterfaceITEthernetInfoTextCollection.Add(message.Value.InterfaceITEthernetInfoText);
-        InterfaceITEthernetInfoIP = message.Value.Hostname;
+        GetIITEthernetInfos(message);
+        OnPropertyChanged(nameof(InterfaceITEthernetInfoTextCollection));
+    }
+
+    private void GetIITEthernetInfos(InterfaceITEthernetInfo interfaceITEthernetInfo)
+    {
+        InterfaceITEthernetInfoTextCollection = new()
+        {
+            "Board ID: " + interfaceITEthernetInfo.ID,
+            "Name: " + interfaceITEthernetInfo.NAME,
+            "Serial: " + interfaceITEthernetInfo.SERIAL,
+            "Description: " + interfaceITEthernetInfo.DESC,
+            "Version: " + interfaceITEthernetInfo.VERSION,
+            "Firmware: " + interfaceITEthernetInfo.FIRMWARE,
+            "Location: " + interfaceITEthernetInfo.LOCATION,
+            "Usage: " + interfaceITEthernetInfo.USAGE,
+            "Hostname: " + interfaceITEthernetInfo.HOSTNAME,
+            "Client: " + interfaceITEthernetInfo.CLIENT,
+            "Board " + interfaceITEthernetInfo.ID + " has the flollowing features:",
+        };
+
+        int boardNumberMinusOne = interfaceITEthernetInfo.USAGE - 1;
+        string[] componentTypes = { "LEDS", "SWITCHES", "SEVENSEGMENTS", "DATALINES", "ENCODERS", "ANALOGINS", "PULSEWIDTHS" };
+        foreach (string componentType in componentTypes)
+        {
+            var component = interfaceITEthernetInfo.BOARDS[boardNumberMinusOne].GetType().GetProperty(componentType).GetValue(interfaceITEthernetInfo.BOARDS[boardNumberMinusOne], null);
+            if (component is not null)
+            {
+                InterfaceITEthernetInfoTextCollection.Add(((InterfaceITEthernetInfoBoardConfig)component).Total + $" | {componentType} ( " + ((InterfaceITEthernetInfoBoardConfig)component).Start + " - " + ((InterfaceITEthernetInfoBoardConfig)component).Stop + " )");
+            }
+        }
     }
 }

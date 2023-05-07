@@ -40,35 +40,35 @@ public class NG_MCP_777_USB : USB
     {
         while (!token.IsCancellationRequested)
         {
-            _ = interfaceIT_7Segment_Display(Device.Session, "888-888088888880", 1);
+            interfaceIT_7Segment_Display(device.Session, "888-888088888880", 1);
             Thread.Sleep(2000);
             if (token.IsCancellationRequested)
             {
                 return;
             }
-            _ = interfaceIT_7Segment_Display(Device.Session, new string(' ', 16), 1);
+            interfaceIT_7Segment_Display(device.Session, new string(' ', 16), 1);
             Thread.Sleep(1000);
         }
     }
 
     private void BackgroundLED(bool status)
     {
-        _ = interfaceIT_LED_Set(Device.Session, 129, status);
-        _ = interfaceIT_LED_Set(Device.Session, 130, status);
-        _ = interfaceIT_LED_Set(Device.Session, 132, status);
-        _ = interfaceIT_LED_Set(Device.Session, 133, status);
-        _ = interfaceIT_LED_Set(Device.Session, 134, status);
-        _ = interfaceIT_LED_Set(Device.Session, 135, status);
-        _ = interfaceIT_LED_Set(Device.Session, 136, status);
-        _ = interfaceIT_LED_Set(Device.Session, 137, status);
-        _ = interfaceIT_LED_Set(Device.Session, 138, status);
-        _ = interfaceIT_LED_Set(Device.Session, 139, status);
-        _ = interfaceIT_LED_Set(Device.Session, 140, status);
-        _ = interfaceIT_LED_Set(Device.Session, 141, status);
-        _ = interfaceIT_LED_Set(Device.Session, 177, status);
-        _ = interfaceIT_LED_Set(Device.Session, 178, status);
-        _ = interfaceIT_LED_Set(Device.Session, 179, status);
-        _ = interfaceIT_LED_Set(Device.Session, 180, status);
+        interfaceIT_LED_Set(device.Session, 129, status);
+        interfaceIT_LED_Set(device.Session, 130, status);
+        interfaceIT_LED_Set(device.Session, 132, status);
+        interfaceIT_LED_Set(device.Session, 133, status);
+        interfaceIT_LED_Set(device.Session, 134, status);
+        interfaceIT_LED_Set(device.Session, 135, status);
+        interfaceIT_LED_Set(device.Session, 136, status);
+        interfaceIT_LED_Set(device.Session, 137, status);
+        interfaceIT_LED_Set(device.Session, 138, status);
+        interfaceIT_LED_Set(device.Session, 139, status);
+        interfaceIT_LED_Set(device.Session, 140, status);
+        interfaceIT_LED_Set(device.Session, 141, status);
+        interfaceIT_LED_Set(device.Session, 177, status);
+        interfaceIT_LED_Set(device.Session, 178, status);
+        interfaceIT_LED_Set(device.Session, 179, status);
+        interfaceIT_LED_Set(device.Session, 180, status);
     }
 
     private bool _eLEC_BusPowered_2;
@@ -157,7 +157,7 @@ public class NG_MCP_777_USB : USB
         {
             if (_mCP_annunN1 != value)
             {
-                _ = interfaceIT_LED_Set(Device.Session, 193, _mCP_annunN1 = value);
+                interfaceIT_LED_Set(device.Session, 193, _mCP_annunN1 = value);
             }
         }
     }
@@ -169,7 +169,7 @@ public class NG_MCP_777_USB : USB
         {
             if (_mCP_annunSPEED != value)
             {
-                _ = interfaceIT_LED_Set(Device.Session, 146, _mCP_annunSPEED = value);
+                interfaceIT_LED_Set(device.Session, 146, _mCP_annunSPEED = value);
             }
         }
     }
@@ -181,7 +181,7 @@ public class NG_MCP_777_USB : USB
         {
             if (_mCP_annunVNAV != value)
             {
-                _ = interfaceIT_LED_Set(Device.Session, 148, _mCP_annunVNAV = value);
+                interfaceIT_LED_Set(device.Session, 148, _mCP_annunVNAV = value);
             }
         }
     }
@@ -193,7 +193,7 @@ public class NG_MCP_777_USB : USB
         {
             if (_mCP_annunLVL_CHG != value)
             {
-                _ = interfaceIT_LED_Set(Device.Session, 149, _mCP_annunLVL_CHG = value);
+                interfaceIT_LED_Set(device.Session, 149, _mCP_annunLVL_CHG = value);
             }
         }
     }
@@ -205,7 +205,7 @@ public class NG_MCP_777_USB : USB
         {
             if (_mCP_annunHDG_SEL != value)
             {
-                _ = interfaceIT_LED_Set(Device.Session, 150, _mCP_annunHDG_SEL = value);
+                interfaceIT_LED_Set(device.Session, 150, _mCP_annunHDG_SEL = value);
             }
         }
     }
@@ -217,7 +217,7 @@ public class NG_MCP_777_USB : USB
         {
             if (_mCP_annunLNAV != value)
             {
-                _ = interfaceIT_LED_Set(Device.Session, 147, _mCP_annunLNAV = value);
+                interfaceIT_LED_Set(device.Session, 147, _mCP_annunLNAV = value);
             }
         }
     }
@@ -229,7 +229,7 @@ public class NG_MCP_777_USB : USB
         {
             if (_mCP_annunVOR_LOC != value)
             {
-                _ = interfaceIT_LED_Set(Device.Session, 153, _mCP_annunVOR_LOC = value);
+                interfaceIT_LED_Set(device.Session, 153, _mCP_annunVOR_LOC = value);
             }
         }
     }
@@ -241,7 +241,7 @@ public class NG_MCP_777_USB : USB
         {
             if (_mCP_annunAPP != value)
             {
-                _ = interfaceIT_LED_Set(Device.Session, 154, _mCP_annunAPP = value);
+                interfaceIT_LED_Set(device.Session, 154, _mCP_annunAPP = value);
             }
         }
     }
@@ -253,7 +253,7 @@ public class NG_MCP_777_USB : USB
         {
             if (_mCP_annunALT_HOLD != value)
             {
-                _ = interfaceIT_LED_Set(Device.Session, 152, _mCP_annunALT_HOLD = value);
+                interfaceIT_LED_Set(device.Session, 152, _mCP_annunALT_HOLD = value);
             }
         }
     }
@@ -265,7 +265,7 @@ public class NG_MCP_777_USB : USB
         {
             if (_mCP_annunVS != value)
             {
-                _ = interfaceIT_LED_Set(Device.Session, 151, _mCP_annunVS = value);
+                interfaceIT_LED_Set(device.Session, 151, _mCP_annunVS = value);
             }
         }
     }
@@ -277,7 +277,7 @@ public class NG_MCP_777_USB : USB
         {
             if (_mCP_annunCMD_A != value)
             {
-                _ = interfaceIT_LED_Set(Device.Session, 145, _mCP_annunCMD_A = value);
+                interfaceIT_LED_Set(device.Session, 145, _mCP_annunCMD_A = value);
             }
         }
     }
@@ -289,7 +289,7 @@ public class NG_MCP_777_USB : USB
         {
             if (_mCP_annunCMD_B != value)
             {
-                _ = interfaceIT_LED_Set(Device.Session, 155, _mCP_annunCMD_B = value);
+                interfaceIT_LED_Set(device.Session, 155, _mCP_annunCMD_B = value);
             }
         }
     }
@@ -314,7 +314,7 @@ public class NG_MCP_777_USB : USB
                 _mCP_VertSpeed = null;
                 IAS = false;
                 MACH = false;
-                _ = interfaceIT_7Segment_Display(Device.Session, new string(' ', 16), 1);
+                interfaceIT_7Segment_Display(device.Session, new string(' ', 16), 1);
             }
         }
     }
@@ -331,7 +331,7 @@ public class NG_MCP_777_USB : USB
                 if (value == 1)
                 {
                     pmdg737MCPBlinkingCancellationTokenSource?.Cancel();
-                    _ = interfaceIT_7Segment_Display(Device.Session, new string(' ', 16), 1);
+                    interfaceIT_7Segment_Display(device.Session, new string(' ', 16), 1);
                     _mCP_Altitude = null;
                     _mCP_Heading = null;
                     _mCP_IASMach = null;
@@ -341,7 +341,7 @@ public class NG_MCP_777_USB : USB
                 }
                 if (value == 0)
                 {
-                    _ = interfaceIT_7Segment_Display(Device.Session, "888-888088888880", 1);
+                    interfaceIT_7Segment_Display(device.Session, "888-888088888880", 1);
                     Task.Run(() => PMDG737MCPBlinking((pmdg737MCPBlinkingCancellationTokenSource = new()).Token));
                     IAS = true;
                     MACH = true;
@@ -360,15 +360,15 @@ public class NG_MCP_777_USB : USB
                 _mCP_IASMach = value;
                 if (value < 1)
                 {
-                    _ = interfaceIT_7Segment_Display(Device.Session, string.Format("{0,3}", value?.ToString("#.00", System.Globalization.CultureInfo.InvariantCulture)).TrimStart('.'), 2);
-                    _ = interfaceIT_7Segment_Display(Device.Session, " ", 1);
-                    _ = interfaceIT_LED_Set(Device.Session, 8, true);
+                    interfaceIT_7Segment_Display(device.Session, string.Format("{0,3}", value?.ToString("#.00", System.Globalization.CultureInfo.InvariantCulture)).TrimStart('.'), 2);
+                    interfaceIT_7Segment_Display(device.Session, " ", 1);
+                    interfaceIT_LED_Set(device.Session, 8, true);
                     IAS = false;
                     MACH = true;
                 }
                 if (value >= 100)
                 {
-                    _ = interfaceIT_7Segment_Display(Device.Session, string.Format("{0,3}", value?.ToString(System.Globalization.CultureInfo.InvariantCulture)), 1);
+                    interfaceIT_7Segment_Display(device.Session, string.Format("{0,3}", value?.ToString(System.Globalization.CultureInfo.InvariantCulture)), 1);
                     MACH = false;
                     IAS = true;
                 }
@@ -383,7 +383,7 @@ public class NG_MCP_777_USB : USB
         {
             if (_iAS != value)
             {
-                _ = interfaceIT_LED_Set(Device.Session, 185, _iAS = value);
+                interfaceIT_LED_Set(device.Session, 185, _iAS = value);
             }
         }
     }
@@ -395,7 +395,7 @@ public class NG_MCP_777_USB : USB
         {
             if (_mACH != value)
             {
-                _ = interfaceIT_LED_Set(Device.Session, 186, _mACH = value);
+                interfaceIT_LED_Set(device.Session, 186, _mACH = value);
             }
         }
     }
@@ -407,7 +407,7 @@ public class NG_MCP_777_USB : USB
         {
             if (_mCP_Heading != value && MAIN_LightsSelector != 0)
             {
-                _ = interfaceIT_7Segment_Display(Device.Session, (_mCP_Heading = value)?.ToString("D3"), 9);
+                interfaceIT_7Segment_Display(device.Session, (_mCP_Heading = value)?.ToString("D3"), 9);
             }
         }
     }
@@ -422,7 +422,7 @@ public class NG_MCP_777_USB : USB
                 _mCP_IASBlank = value;
                 if (value)
                 {
-                    _ = interfaceIT_7Segment_Display(Device.Session, "   ", 1);
+                    interfaceIT_7Segment_Display(device.Session, "   ", 1);
                     IAS = false;
                     MACH = false;
                 }
@@ -440,10 +440,10 @@ public class NG_MCP_777_USB : USB
                 _mCP_Altitude = value;
                 if (value == 0)
                 {
-                    _ = interfaceIT_7Segment_Display(Device.Session, "0000", 13);
+                    interfaceIT_7Segment_Display(device.Session, "0000", 13);
                     return;
                 }
-                _ = interfaceIT_7Segment_Display(Device.Session, string.Format("{0,5}", value.ToString()), 12);
+                interfaceIT_7Segment_Display(device.Session, string.Format("{0,5}", value.ToString()), 12);
             }
         }
     }
@@ -459,7 +459,7 @@ public class NG_MCP_777_USB : USB
                 _mCP_VertSpeedBlank = value;
                 if (value)
                 {
-                    _ = interfaceIT_7Segment_Display(Device.Session, "     ", 4);
+                    interfaceIT_7Segment_Display(device.Session, "     ", 4);
                 }
             }
         }
@@ -475,15 +475,15 @@ public class NG_MCP_777_USB : USB
                 _mCP_VertSpeed = value;
                 if (value == 0)
                 {
-                    _ = interfaceIT_7Segment_Display(Device.Session, "     ", 4);
+                    interfaceIT_7Segment_Display(device.Session, "     ", 4);
                 }
                 else if (value < 0)
                 {
-                    _ = interfaceIT_7Segment_Display(Device.Session, "-" + string.Format("{0,4}", value?.ToString("D3").TrimStart('-')), 4);
+                    interfaceIT_7Segment_Display(device.Session, "-" + string.Format("{0,4}", value?.ToString("D3").TrimStart('-')), 4);
                 }
                 else if (value > 0)
                 {
-                    _ = interfaceIT_7Segment_Display(Device.Session, string.Format("{0,5}", value?.ToString("D3")), 4);
+                    interfaceIT_7Segment_Display(device.Session, string.Format("{0,5}", value?.ToString("D3")), 4);
                 }
             }
         }
@@ -496,9 +496,9 @@ public class NG_MCP_777_USB : USB
         pmdg737MCPLightCancellationTokenSource?.Cancel();
     }
 
-    protected override void StartSimConnect()
+    protected override async Task StartSimConnect()
     {
-        base.StartSimConnect();
+        await base.StartSimConnect();
         PMDG737.RegisterPMDGDataEvents(simConnectClient.simConnect);
     }
 
@@ -566,49 +566,47 @@ public class NG_MCP_777_USB : USB
     private ushort? heading_Course0;
     private ushort? altitude_Course1;
 
-    protected override bool KeyPressedProc(int session, int key, int direction)
+    protected override void KeyPressedProc(uint session, int key, uint direction)
     {
-        uint ndirection = (uint)direction;
-
         //1-0
         if (new int[] { 17, 18, 24, 69, 71, 81, 82 }.Contains(key))
         {
             if (direction == 1)
             {
-                ndirection = 0;
+                direction = 0;
             }
 
-            if (direction == 0)
+            else if (direction == 0)
             {
-                ndirection = 1;
+                direction = 1;
             }
         }
 
         //1-2
-        if (new int[] { 70, 72 }.Contains(key))
+        else if (new int[] { 70, 72 }.Contains(key))
         {
             if (direction == 1)
             {
-                ndirection = 2;
+                direction = 2;
             }
 
-            if (direction == 0 && (eFIS_CPT_VOR_ADF_SELECTOR_L != 0 || eFIS_CPT_VOR_ADF_SELECTOR_R != 0))
+            else if (direction == 0 && (eFIS_CPT_VOR_ADF_SELECTOR_L != 0 || eFIS_CPT_VOR_ADF_SELECTOR_R != 0))
             {
-                ndirection = 1;
+                direction = 1;
             }
         }
 
         //-3 & -14
-        if (new int[] { 20, 22, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 83, 84, 85, 85, 87, 88, 89, 90, 91, 92, 93, 94, 95 }.Contains(key))
+        else if (new int[] { 20, 22, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 83, 84, 85, 85, 87, 88, 89, 90, 91, 92, 93, 94, 95 }.Contains(key))
         {
             if (direction == 1)
             {
-                ndirection = MOUSE_FLAG_LEFTSINGLE;
+                direction = MOUSE_FLAG_LEFTSINGLE;
             }
 
-            if (direction == 0)
+            else if (direction == 0)
             {
-                ndirection = MOUSE_FLAG_LEFTRELEASE;
+                direction = MOUSE_FLAG_LEFTRELEASE;
             }
         }
 
@@ -616,11 +614,11 @@ public class NG_MCP_777_USB : USB
         {
             //Special
             case 39:
-                speed_rotary_push = ndirection;
+                speed_rotary_push = direction;
                 break;
 
             case 63:
-                hdg_rotary_push = ndirection;
+                hdg_rotary_push = direction;
                 if (heading_Course0 is not null)
                 {
                     MCP_Heading = heading_Course0;
@@ -628,7 +626,7 @@ public class NG_MCP_777_USB : USB
                 break;
 
             case 64:
-                alt_rotary_push = ndirection;
+                alt_rotary_push = direction;
                 if (altitude_Course1 is not null)
                 {
                     MCP_Altitude = altitude_Course1;
@@ -637,47 +635,47 @@ public class NG_MCP_777_USB : USB
 
             //0-1
             case 21:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_DISENGAGE_BAR, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_DISENGAGE_BAR, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             //1-0
             case 17:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_FD_SWITCH_L, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_FD_SWITCH_L, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 18:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_AT_ARM_SWITCH, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_AT_ARM_SWITCH, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 24:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_FD_SWITCH_R, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_FD_SWITCH_R, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 69:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_VOR_ADF_SELECTOR_L, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
-                eFIS_CPT_VOR_ADF_SELECTOR_L = ndirection;
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_VOR_ADF_SELECTOR_L, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                eFIS_CPT_VOR_ADF_SELECTOR_L = direction;
                 break;
 
             case 71:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_VOR_ADF_SELECTOR_R, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
-                eFIS_CPT_VOR_ADF_SELECTOR_R = ndirection;
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_VOR_ADF_SELECTOR_R, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                eFIS_CPT_VOR_ADF_SELECTOR_R = direction;
                 break;
 
             case 81:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_MINIMUMS_RADIO_BARO, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_MINIMUMS_RADIO_BARO, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 82:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_BARO_IN_HPA, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_BARO_IN_HPA, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             //1-2
             case 70:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_VOR_ADF_SELECTOR_L, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_VOR_ADF_SELECTOR_L, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 72:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_VOR_ADF_SELECTOR_R, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_VOR_ADF_SELECTOR_R, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             //0-...
@@ -747,111 +745,111 @@ public class NG_MCP_777_USB : USB
 
             //-3 & -14
             case 20:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_CO_SWITCH, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_CO_SWITCH, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 22:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_SPD_INTV_SWITCH, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_SPD_INTV_SWITCH, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 23:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_ALT_INTV_SWITCH, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_ALT_INTV_SWITCH, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 25:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_CMD_A_SWITCH, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_CMD_A_SWITCH, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 26:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_N1_SWITCH, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_N1_SWITCH, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 27:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_SPEED_SWITCH, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_SPEED_SWITCH, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 28:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_LNAV_SWITCH, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_LNAV_SWITCH, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 29:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_VNAV_SWITCH, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_VNAV_SWITCH, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 30:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_LVL_CHG_SWITCH, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_LVL_CHG_SWITCH, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 31:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_HDG_SEL_SWITCH, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_HDG_SEL_SWITCH, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 32:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_VS_SWITCH, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_VS_SWITCH, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 33:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_ALT_HOLD_SWITCH, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_ALT_HOLD_SWITCH, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 34:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_VOR_LOC_SWITCH, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_VOR_LOC_SWITCH, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 35:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_APP_SWITCH, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_MCP_APP_SWITCH, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 83:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_FPV, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_FPV, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 84:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_MTRS, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_MTRS, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 85:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_MINIMUMS_RST, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_MINIMUMS_RST, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 86:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_BARO_STD, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_BARO_STD, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 87:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_MODE_CTR, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_MODE_CTR, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 88:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_RANGE_TFC, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_RANGE_TFC, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 89:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_WXR, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_WXR, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 90:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_STA, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_STA, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 91:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_WPT, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_WPT, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 92:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_ARPT, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_ARPT, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 93:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_DATA, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_DATA, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 94:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_POS, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_POS, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             case 95:
-                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_TERR, ndirection, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_EFIS_CPT_TERR, direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
                 break;
 
             //-18 & -17
@@ -1040,6 +1038,5 @@ public class NG_MCP_777_USB : USB
             default:
                 break;
         }
-        return true;
     }
 }

@@ -1,8 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Windows;
 using System.Threading;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.FlightSimulator.SimConnect;
 using static Device_Interface_Manager.MSFSProfiles.PMDG.PMDG_NG3_SDK;
 using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
@@ -18,7 +18,7 @@ public class NG_CDU_R_USB : USB
         {
             if (_cDU_annunEXEC1 != value)
             {
-                _ = interfaceIT_LED_Set(Device.Session, 1, _cDU_annunEXEC1 = value);
+                interfaceIT_LED_Set(device.Session, 1, _cDU_annunEXEC1 = value);
             }
         }
     }
@@ -30,7 +30,7 @@ public class NG_CDU_R_USB : USB
         {
             if (_cDU_annunCALL1 != value)
             {
-                _ = interfaceIT_LED_Set(Device.Session, 2, _cDU_annunCALL1 = value);
+                interfaceIT_LED_Set(device.Session, 2, _cDU_annunCALL1 = value);
             }
         }
     }
@@ -42,7 +42,7 @@ public class NG_CDU_R_USB : USB
         {
             if (_cDU_annunMSG1 != value)
             {
-                _ = interfaceIT_LED_Set(Device.Session, 3, _cDU_annunMSG1 = value);
+                interfaceIT_LED_Set(device.Session, 3, _cDU_annunMSG1 = value);
             }
         }
     }
@@ -54,7 +54,7 @@ public class NG_CDU_R_USB : USB
         {
             if (_cDU_annunFAIL1 != value)
             {
-                _ = interfaceIT_LED_Set(Device.Session, 4, _cDU_annunFAIL1 = value);
+                interfaceIT_LED_Set(device.Session, 4, _cDU_annunFAIL1 = value);
             }
         }
     }
@@ -66,7 +66,7 @@ public class NG_CDU_R_USB : USB
         {
             if (_cDU_annunOFST1 != value)
             {
-                _ = interfaceIT_LED_Set(Device.Session, 5, _cDU_annunOFST1 = value);
+                interfaceIT_LED_Set(device.Session, 5, _cDU_annunOFST1 = value);
             }
         }
     }
@@ -79,7 +79,7 @@ public class NG_CDU_R_USB : USB
         {
             if (_lTS_PedPanelKnob != value && ELEC_BusPowered_3)
             {
-                _ = interfaceIT_Brightness_Set(Device.Session, (int)((_lTS_PedPanelKnob = value) * 1.5));
+                interfaceIT_Brightness_Set(device.Session, (int)((_lTS_PedPanelKnob = value) * 1.5));
             }
         }
     }
@@ -95,11 +95,11 @@ public class NG_CDU_R_USB : USB
                 _eLEC_BusPowered_3 = value;
                 if (value)
                 {
-                    _ = interfaceIT_Brightness_Set(Device.Session, (int)(LTS_PedPanelKnob * 1.5));
+                    interfaceIT_Brightness_Set(device.Session, (int)(LTS_PedPanelKnob * 1.5));
                 }
                 else if (!value)
                 {
-                    _ = interfaceIT_Brightness_Set(Device.Session, 0);
+                    interfaceIT_Brightness_Set(device.Session, 0);
                 }
             }
         }
@@ -111,25 +111,26 @@ public class NG_CDU_R_USB : USB
         pMDG737CDU?.Close();
     }
 
-    protected override void StartSimConnect()
+    protected override async Task StartSimConnect()
     {
-        base.StartSimConnect();
+        await base.StartSimConnect();
         PMDG737.RegisterPMDGDataEvents(simConnectClient.simConnect);
-        Application.Current.Dispatcher.Invoke((Action)delegate
+        Application.Current.Dispatcher.Invoke(delegate
         {
             pMDG737CDU = new();
         });
-        pMDG737CDU.EditormodeOff += PMDG737CDU_EditormodeOff;
+        pMDG737CDU.OnEditormodeOff += PMDG737CDU_EditormodeOff;
         pMDG737CDU.Closing += PMDG737CDU_Closing;
-        pMDG737CDU.Dispatcher.BeginInvoke(delegate ()
+        await pMDG737CDU.Dispatcher.BeginInvoke(delegate ()
         {
             GetPMDG737CDUSettings();
             Thread.Sleep(500);
-            simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_DOT, MOUSE_FLAG_LEFTSINGLE, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+            simConnectClient.TransmitEvent(MOUSE_FLAG_LEFTSINGLE, PMDGEvents.EVT_CDU_L_DOT);
             Thread.Sleep(500);
-            simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_CLR, MOUSE_FLAG_LEFTSINGLE, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+            simConnectClient.TransmitEvent(MOUSE_FLAG_LEFTSINGLE, PMDGEvents.EVT_CDU_L_CLR);
             pMDG737CDU.Show();
             pMDG737CDU.WindowState = (WindowState)pMDG_737_CDU_Screen.Fullscreen;
+            pMDG737CDU.CreatePMDGCDUCells();
         });
     }
 
@@ -168,12 +169,12 @@ public class NG_CDU_R_USB : USB
     }
 
     private const string settings = @"Profiles\PMDG 737\USB CDU Screen R.json";
-    PMDG_737_CDU_Screen pMDG_737_CDU_Screen = new();
+    NG_CDU_Base pMDG_737_CDU_Screen = new();
     private void GetPMDG737CDUSettings()
     {
         if (File.Exists(settings))
         {
-            pMDG_737_CDU_Screen = JsonSerializer.Deserialize<PMDG_737_CDU_Screen>(File.ReadAllText(settings), new JsonSerializerOptions { NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowNamedFloatingPointLiterals });
+            pMDG_737_CDU_Screen = JsonSerializer.Deserialize<NG_CDU_Base>(File.ReadAllText(settings), new JsonSerializerOptions { NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowNamedFloatingPointLiterals });
         }
         pMDG_737_CDU_Screen.Load(pMDG737CDU);
     }
@@ -199,304 +200,298 @@ public class NG_CDU_R_USB : USB
         File.WriteAllText(settings, json);
     }
 
-    protected override bool KeyPressedProc(int session, int key, int direction)
+    protected override void KeyPressedProc(uint session, int key, uint direction)
     {
-        uint Direction = (uint)direction;
-
-        if (Direction == 1 || key == 49)
+        if (direction == 1 || key == 49)
         {
-            if (Direction == 1)
+            if (direction == 1)
             {
-                Direction = MOUSE_FLAG_LEFTSINGLE;
+                direction = MOUSE_FLAG_LEFTSINGLE;
             }
 
-            else if (Direction == 0)
+            else if (direction == 0)
             {
-                Direction = MOUSE_FLAG_LEFTRELEASE;
+                direction = MOUSE_FLAG_LEFTRELEASE;
             }
 
             switch (key)
             {
                 case 1:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_EXEC, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_EXEC);
                     break;
 
                 case 2:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_PROG, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_PROG);
                     break;
 
                 case 3:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_HOLD, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_HOLD);
                     break;
 
                 case 4:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_CRZ, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_CRZ);
                     break;
 
                 case 5:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_DEP_ARR, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_DEP_ARR);
                     break;
 
                 case 6:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_LEGS, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_LEGS);
                     break;
 
                 case 7:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_MENU, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_MENU);
                     break;
 
                 case 8:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_CLB, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_CLB);
                     break;
 
                 case 9:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_E, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_E);
                     break;
 
                 case 10:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_D, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_D);
                     break;
 
                 case 11:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_C, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_C);
                     break;
 
                 case 12:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_B, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_B);
                     break;
 
                 case 13:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_A, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_A);
                     break;
 
                 case 14:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_FIX, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_FIX);
                     break;
 
                 case 15:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_N1_LIMIT, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_N1_LIMIT);
                     break;
 
                 case 16:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_RTE, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_RTE);
                     break;
 
                 case 17:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_J, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_J);
                     break;
 
                 case 18:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_I, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_I);
                     break;
 
                 case 19:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_H, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_H);
                     break;
 
                 case 20:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_G, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_G);
                     break;
 
                 case 21:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_F, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_F);
                     break;
 
                 case 22:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_NEXT_PAGE, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_NEXT_PAGE);
                     break;
 
                 case 23:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_PREV_PAGE, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_PREV_PAGE);
                     break;
 
                 case 25:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_O, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_O);
                     break;
 
                 case 26:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_N, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_N);
                     break;
 
                 case 27:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_M, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_M);
                     break;
 
                 case 28:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_L, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_L);
                     break;
 
                 case 29:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_K, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_K);
                     break;
 
                 case 30:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_3, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_3);
                     break;
 
                 case 31:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_2, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_2);
                     break;
 
                 case 32:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_1, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_1);
                     break;
 
                 case 33:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_T, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_T);
                     break;
 
                 case 34:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_S, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_S);
                     break;
 
                 case 35:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_R, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_R);
                     break;
 
                 case 36:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_Q, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_Q);
                     break;
 
                 case 37:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_P, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_P);
                     break;
 
                 case 38:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_6, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_6);
                     break;
 
                 case 39:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_5, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_5);
                     break;
 
                 case 40:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_4, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_4);
                     break;
 
                 case 41:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_Y, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_Y);
                     break;
 
                 case 42:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_X, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_X);
                     break;
 
                 case 43:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_W, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_W);
                     break;
 
                 case 44:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_V, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_V);
                     break;
 
                 case 45:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_U, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_U);
                     break;
 
                 case 46:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_9, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_9);
                     break;
 
                 case 47:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_8, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_8);
                     break;
 
                 case 48:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_7, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_7);
                     break;
 
                 case 49:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_CLR, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_CLR);
                     break;
 
                 case 50:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_SLASH, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_SLASH);
                     break;
 
                 case 51:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_DEL, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_DEL);
                     break;
 
                 case 52:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_SPACE, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_SPACE);
                     break;
 
                 case 53:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_Z, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_Z);
                     break;
 
                 case 54:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_PLUS_MINUS, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_PLUS_MINUS);
                     break;
 
                 case 55:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_0, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_0);
                     break;
 
                 case 56:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_DOT, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_DOT);
                     break;
 
                 case 57:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_L1, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_L1);
                     break;
 
                 case 58:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_L2, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_L2);
                     break;
 
                 case 59:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_L3, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_L3);
                     break;
 
                 case 60:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_L4, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_L4);
                     break;
 
                 case 61:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_L5, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_L5);
                     break;
 
                 case 62:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_L6, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_L6);
                     break;
 
                 case 63:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_INIT_REF, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_INIT_REF);
                     break;
 
                 case 64:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_R1, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_R1);
                     break;
 
                 case 65:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_R2, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_R2);
                     break;
 
                 case 66:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_R3, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_R3);
                     break;
 
                 case 67:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_R4, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_R4);
                     break;
 
                 case 68:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_R5, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_R5);
                     break;
 
                 case 69:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_R6, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_R6);
                     break;
 
                 case 70:
-                    simConnectClient.simConnect.TransmitClientEvent(0, PMDGEvents.EVT_CDU_R_DES, Direction, SIMCONNECT_GROUP_PRIORITY.HIGHEST, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
-                    break;
-
-                default:
+                    simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_DES);
                     break;
             }
         }
-        return true;
     }
 }

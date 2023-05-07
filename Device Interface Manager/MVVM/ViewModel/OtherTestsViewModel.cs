@@ -39,10 +39,10 @@ public partial class OtherTestsViewModel : ObservableObject
             if (value.Length > SevenSegmentCount - SevenSegmentSelectedPosition + 1)
             {
                 _sevenSegmentText = value.Remove(SevenSegmentCount - SevenSegmentSelectedPosition + 1);
-                _ = InterfaceITAPI_Data.interfaceIT_7Segment_Display(Session, _sevenSegmentText, SevenSegmentSelectedPosition);
+                InterfaceITAPI_Data.interfaceIT_7Segment_Display(Session, _sevenSegmentText, SevenSegmentSelectedPosition);
                 return;
             }
-            _ = InterfaceITAPI_Data.interfaceIT_7Segment_Display(Session, _sevenSegmentText = value, SevenSegmentSelectedPosition);
+            InterfaceITAPI_Data.interfaceIT_7Segment_Display(Session, _sevenSegmentText = value, SevenSegmentSelectedPosition);
         }
     }
 
@@ -53,7 +53,7 @@ public partial class OtherTestsViewModel : ObservableObject
     private int _brightnessValue;
     partial void OnBrightnessValueChanged(int value)
     {
-        _ = InterfaceITAPI_Data.interfaceIT_Brightness_Set(Session, value);
+        InterfaceITAPI_Data.interfaceIT_Brightness_Set(Session, value);
     }
 
     [ObservableProperty]
@@ -72,12 +72,13 @@ public partial class OtherTestsViewModel : ObservableObject
     private string _featureNotSupported;
 
 
-    public required int Session { get; init; }
+    public required uint Session { get; init; }
     public required int Features { get; init; }
     public required int DatalineFirst { get; init; }
     public required int SevenSegmentCount { get; init; }
     public required int SevenSegmentFirst { get; init; }
     public required int SevenSegmentLast { get; init; }
+
     public OtherTestsViewModel() { }
 
     [RelayCommand]
@@ -90,7 +91,7 @@ public partial class OtherTestsViewModel : ObservableObject
         }
         
         FeatureNotSupported = string.Empty;
-        _ = InterfaceITAPI_Data.interfaceIT_7Segment_Enable(Session, SevenSegmentEnabled = !SevenSegmentEnabled);
+        InterfaceITAPI_Data.interfaceIT_7Segment_Enable(Session, SevenSegmentEnabled = !SevenSegmentEnabled);
         if (SevenSegmentEnabled)
         {
             SevenSegmentPositions.Clear();
@@ -114,12 +115,12 @@ public partial class OtherTestsViewModel : ObservableObject
         FeatureNotSupported = string.Empty;
         if (!DatalineEnabled)
         {
-            _ = InterfaceITAPI_Data.interfaceIT_Dataline_Set(Session, DatalineFirst, DatalineEnabled);
-            _ = InterfaceITAPI_Data.interfaceIT_Dataline_Enable(Session, DatalineEnabled);
+            InterfaceITAPI_Data.interfaceIT_Dataline_Set(Session, DatalineFirst, DatalineEnabled);
+            InterfaceITAPI_Data.interfaceIT_Dataline_Enable(Session, DatalineEnabled);
             return;
         }
-        _ = InterfaceITAPI_Data.interfaceIT_Dataline_Enable(Session, DatalineEnabled);
-        _ = InterfaceITAPI_Data.interfaceIT_Dataline_Set(Session, DatalineFirst, DatalineEnabled);
+        InterfaceITAPI_Data.interfaceIT_Dataline_Enable(Session, DatalineEnabled);
+        InterfaceITAPI_Data.interfaceIT_Dataline_Set(Session, DatalineFirst, DatalineEnabled);
     }
 
     [RelayCommand]
@@ -132,7 +133,7 @@ public partial class OtherTestsViewModel : ObservableObject
             return;
         }
         FeatureNotSupported = string.Empty;
-        _ = InterfaceITAPI_Data.interfaceIT_Brightness_Enable(Session, BrightnessEnabled = !BrightnessEnabled);
+        InterfaceITAPI_Data.interfaceIT_Brightness_Enable(Session, BrightnessEnabled = !BrightnessEnabled);
     }
 
     [RelayCommand]
@@ -145,7 +146,7 @@ public partial class OtherTestsViewModel : ObservableObject
             return;
         }
         FeatureNotSupported = string.Empty;
-        _ = InterfaceITAPI_Data.interfaceIT_Analog_Enable(Session, AnalogEnabled = !AnalogEnabled);
+        InterfaceITAPI_Data.interfaceIT_Analog_Enable(Session, AnalogEnabled = !AnalogEnabled);
         if (!AnalogEnabled)
         {
             valuesCancellationTokenSource.Cancel();
@@ -157,7 +158,7 @@ public partial class OtherTestsViewModel : ObservableObject
     [RelayCommand]
     private void LoggingEnable()
     {
-        _ = InterfaceITAPI_Data.interfaceIT_EnableLogging(LoggingEnabled = !LoggingEnabled);
+        InterfaceITAPI_Data.interfaceIT_EnableLogging(LoggingEnabled = !LoggingEnabled);
         if (LoggingEnabled)
         {
             System.Diagnostics.Process.Start("explorer.exe", Environment.ExpandEnvironmentVariables(@"%appdata%\TEKWorx Limited\interfaceIT API"));
@@ -166,29 +167,25 @@ public partial class OtherTestsViewModel : ObservableObject
 
     public void Reset7SegmentDisplay()
     {
-        _ = InterfaceITAPI_Data.interfaceIT_7Segment_Display(Session, new string(' ', SevenSegmentCount), 1);
+        InterfaceITAPI_Data.interfaceIT_7Segment_Display(Session, new string(' ', SevenSegmentCount), 1);
     }
 
     public void GetValues(CancellationToken token)
     {
         int oldValue = 0;
         int noldValue = 0;
-        while (AnalogEnabled)
+        while (!token.IsCancellationRequested)
         {
-            _ = InterfaceITAPI_Data.interfaceIT_Analog_GetValue(Session, 0, out int value);
-            if (value - oldValue >= 50 | value - oldValue <= -50 | oldValue == 0)
+            InterfaceITAPI_Data.interfaceIT_Analog_GetValue(Session, 0, out int value);
+            if (Math.Abs(value - oldValue) >= 50 || oldValue == 0)
             {
                 oldValue = value;
             }
-            if (value - noldValue > 25 | value - noldValue < -25 | noldValue == 0)
+            if (Math.Abs(value - noldValue) > 25 || noldValue == 0)
             {
                 AnalogValue = noldValue = value;
             }
-            Thread.Sleep(200);
-            if (token.IsCancellationRequested)
-            {
-                return;
-            }
+            Thread.Sleep(50);
         }
     }
 }

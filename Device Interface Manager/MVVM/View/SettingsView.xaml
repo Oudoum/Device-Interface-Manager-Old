@@ -4,21 +4,21 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:viewModel="clr-namespace:Device_Interface_Manager.MVVM.ViewModel"
-             xmlns:local="clr-namespace:Device_Interface_Manager.MVVM.View"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type={x:Type viewModel:SettingsViewModel}}"
              mc:Ignorable="d" 
-             d:DesignHeight="450"
-             d:DesignWidth="800">
+             d:DesignWidth="1040"
+             d:DesignHeight="560">
 
     <Grid>
-        <StackPanel>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top">
             <Button
                 Margin="0,25,0,0"
                 Command="{Binding DiscordCommand}"
-                VerticalAlignment="Top"
                 HorizontalAlignment="Center"
                 Background="Transparent"
                 Cursor="Hand"
+                IsTabStop="False"
                 Height="50">
                 <Button.Resources>
                     <Style TargetType="Border">
@@ -41,39 +41,44 @@
                         Source="pack://application:,,,/Images/small_logo_white_RGB_Discord.png"/>
                 </StackPanel>
             </Button>
-            <Button
+            <TextBlock 
+                d:Text="WASM Mesage!"
+                FontSize="23"
+                HorizontalAlignment="Center"
                 Margin="0,50,0,0"
-                Height="30"
-                Command="{Binding InstallUpdateHubhopCommand}"
-                HorizontalAlignment="Center" 
-                BorderThickness="0"
+                Text="{Binding WasmModuleUpdaterMessage}">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding WasmModuleUpdaterMessage}" Value="DIM Event WASM module is up to date!">
+                                <Setter Property="Foreground" Value="Green"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding WasmModuleUpdaterMessage}" Value="DIM Event WASM module was successfully installed!">
+                                <Setter Property="Foreground" Value="Green"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding WasmModuleUpdaterMessage}" Value="Community folder could not be located!">
+                                <Setter Property="Foreground" Value="Red"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding WasmModuleUpdaterMessage}" Value="Folder: &quot;dim-event-module&quot; could not be loacted in the DIM directory!">
+                                <Setter Property="Foreground" Value="Red"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <Button
+                Margin="0,10,0,0"
+                Height="35"
+                Command="{Binding InstallUpdateDIMWASModuleCommand}"
+                HorizontalAlignment="Center"
+                Width="320"
                 Foreground="Black"
                 FontFamily="Impact"
                 Cursor="Hand"
-                FontSize="23">
-                <Button.Content>
-                    <Grid>
-                        <ProgressBar Minimum="0" Maximum="100" Value="{Binding HubHopUpdateProgress}" />
-                        <TextBlock HorizontalAlignment="Center" Text=" Install/Update MobiFlight Event Module "/>
-                    </Grid>
-                </Button.Content>
-                <Button.Template>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Grid>
-                            <Border Background="{TemplateBinding Background}"
-                         BorderBrush="{TemplateBinding BorderBrush}"
-                         BorderThickness="{TemplateBinding BorderThickness}">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                    </Grid.ColumnDefinitions>
-                                    <ContentPresenter HorizontalAlignment="Stretch"  Grid.Column="0"
-                                          VerticalAlignment="Stretch"/>
-                                </Grid>
-                            </Border>
-                        </Grid>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
+                IsTabStop="False"
+                BorderThickness="0"
+                Content="Install/Update DIM Event Module"
+                FontSize="23"/>
         </StackPanel>
 
         <Grid Margin="0,200,0,0">
@@ -85,16 +90,17 @@
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock 
-                    Text="Autohide to tray on startup" 
-                    Foreground="White" 
-                    Margin="0,0,0,0"/>
+                        Text="Autohide to tray on startup" 
+                        Foreground="White" 
+                        Margin="0,0,0,0"/>
                     <CheckBox
-                    Cursor="Hand"
-                    Margin="25,0,0,0"
-                    Width="15"
-                    Height="15"
-                    ToolTip="Software will start directly into the tray and all assigned profiles will start automatically"
-                    IsChecked="{Binding AutoHide}"/>
+                        Cursor="Hand"
+                        Margin="25,0,0,0"
+                        Width="15"
+                        Height="15"
+                        IsTabStop="False"
+                        ToolTip="Software will start directly into the tray and all assigned profiles will start automatically"
+                        IsChecked="{Binding AutoHide}"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock 
@@ -106,13 +112,20 @@
                         Margin="38.5,25,0,0"
                         Width="15"
                         Height="15"
+                        IsTabStop="False"
                         ToolTip="Software will minimize to tray"
                         IsChecked="{Binding MinimizedHide}"/>
                 </StackPanel>
                 <TextBlock
-                Text="{Binding InterfaceITAPIVersion}"
-                Foreground="White"
-                Margin="0,75,0,0"/>
+                    Text="{Binding InterfaceITAPIVersion}"
+                    Foreground="White"
+                    Margin="0,75,0,0"/>
+                <StackPanel.Resources>
+                    <Style TargetType="ToolTip">
+                        <Setter Property="Background" Value="Black"/>
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                </StackPanel.Resources>
             </StackPanel>
 
             <Border
@@ -161,12 +174,52 @@
                     <TextBox
                         Margin="0,20,0,0"
                         Text="{Binding IP}"
-                        Width="180"/>
+                        Width="180">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="GotFocus">
+                                <i:InvokeCommandAction Command="{Binding GotIPPortTextBoxFocusCommand}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBox>
 
                     <TextBox
-                       Margin="0,30,0,20"
+                       Margin="0,20,0,0"
                        Width="100"
-                       Text="{Binding Port}"/>
+                       Text="{Binding Port}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="GotFocus">
+                                <i:InvokeCommandAction Command="{Binding GotIPPortTextBoxFocusCommand}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBox>
+
+                    <Button
+                        Margin="0,20,0,20"
+                        Content="OK"
+                        FontWeight="Bold"
+                        FontSize="18"
+                        Height="30"
+                        Width="80"
+                        Command="{Binding CheckSimConnectConnectionCommand}">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Status}" Value="0">
+                                        <Setter Property="Background" Value="White"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Status}" Value="1">
+                                        <Setter Property="Background" Value="Red"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Status}" Value="2">
+                                        <Setter Property="Background" Value="Yellow"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Status}" Value="3">
+                                        <Setter Property="Background" Value="Green"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                 </StackPanel>
             </Border>
         </Grid>

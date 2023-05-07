@@ -106,35 +106,35 @@ public class MCDU_L_E : ENET
                 break;
 
             case "L:A32NX_MCDU_L_ANNUNC_FAIL":
-                InterfaceITEthernet.SendinterfaceITEthernetLED(2, simVar.BData());
+                interfaceITEthernet.SendinterfaceITEthernetLED(2, simVar.Data);
                 break;
 
             case "L:A32NX_MCDU_L_ANNUNC_FMGC":
-                InterfaceITEthernet.SendinterfaceITEthernetLED(3, simVar.BData());
+                interfaceITEthernet.SendinterfaceITEthernetLED(3, simVar.Data);
                 break;
 
             case "L:A32NX_MCDU_L_ANNUNC_FM":
-                InterfaceITEthernet.SendinterfaceITEthernetLED(4, simVar.BData());
+                interfaceITEthernet.SendinterfaceITEthernetLED(4, simVar.Data);
                 break;
 
             case "L:A32NX_MCDU_L_ANNUNC_MCDU_MENU":
-                InterfaceITEthernet.SendinterfaceITEthernetLED(5, simVar.BData());
+                interfaceITEthernet.SendinterfaceITEthernetLED(5, simVar.Data);
                 break;
 
             case "L:A32NX_MCDU_L_ANNUNC_FM1":
-                InterfaceITEthernet.SendinterfaceITEthernetLED(6, simVar.BData());
+                interfaceITEthernet.SendinterfaceITEthernetLED(6, simVar.Data);
                 break;
 
             case "L:A32NX_MCDU_L_ANNUNC_IND":
-                InterfaceITEthernet.SendinterfaceITEthernetLED(7, simVar.BData());
+                interfaceITEthernet.SendinterfaceITEthernetLED(7, simVar.Data);
                 break;
 
             case "L:A32NX_MCDU_L_ANNUNC_RDY":
-                InterfaceITEthernet.SendinterfaceITEthernetLED(8, simVar.BData());
+                interfaceITEthernet.SendinterfaceITEthernetLED(8, simVar.Data);
                 break;
 
             case "L:A32NX_MCDU_L_ANNUNC_FM2":
-                InterfaceITEthernet.SendinterfaceITEthernetLED(10, simVar.BData());
+                interfaceITEthernet.SendinterfaceITEthernetLED(10, simVar.Data);
                 break;
 
             default:
@@ -144,19 +144,19 @@ public class MCDU_L_E : ENET
 
     private void SetLEDLighttest(bool value)
     {
-        InterfaceITEthernet.SendinterfaceITEthernetLED(2, value);
-        InterfaceITEthernet.SendinterfaceITEthernetLED(3, value);
-        InterfaceITEthernet.SendinterfaceITEthernetLED(4, value);
-        InterfaceITEthernet.SendinterfaceITEthernetLED(5, value);
-        InterfaceITEthernet.SendinterfaceITEthernetLED(6, value);
-        InterfaceITEthernet.SendinterfaceITEthernetLED(7, value);
-        InterfaceITEthernet.SendinterfaceITEthernetLED(8, value);
-        InterfaceITEthernet.SendinterfaceITEthernetLED(10, value);
+        interfaceITEthernet.SendinterfaceITEthernetLED(2, value);
+        interfaceITEthernet.SendinterfaceITEthernetLED(3, value);
+        interfaceITEthernet.SendinterfaceITEthernetLED(4, value);
+        interfaceITEthernet.SendinterfaceITEthernetLED(5, value);
+        interfaceITEthernet.SendinterfaceITEthernetLED(6, value);
+        interfaceITEthernet.SendinterfaceITEthernetLED(7, value);
+        interfaceITEthernet.SendinterfaceITEthernetLED(8, value);
+        interfaceITEthernet.SendinterfaceITEthernetLED(10, value);
     }
 
-    protected override void KeyPressedProcEthernet(int key, string direction)
+    protected override void KeyPressedAction(int key, uint direction)
     {
-        if (direction == "OFF")
+        if (direction == 0)
         {
             return;
         }
@@ -164,167 +164,167 @@ public class MCDU_L_E : ENET
         switch (key)
         {
             case 1:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_DOT");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_DOT");
                 break;
 
             case 2:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_O");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_O");
                 break;
 
             case 3:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_PLUSMINUS");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_PLUSMINUS");
                 break;
 
             case 4:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_Z");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_Z");
                 break;
 
             case 5:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_DIV");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_DIV");
                 break;
 
             case 6:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_SP");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_SP");
                 break;
 
             case 7:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_OVFY");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_OVFY");
                 break;
 
             case 8:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_CLR");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_CLR");
                 break;
 
             case 9:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_7");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_7");
                 break;
 
             case 10:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_8");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_8");
                 break;
 
             case 11:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_9");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_9");
                 break;
 
             case 12:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_U");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_U");
                 break;
 
             case 13:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_V");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_V");
                 break;
 
             case 14:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_W");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_W");
                 break;
 
             case 15:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_X");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_X");
                 break;
 
             case 16:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_Y");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_Y");
                 break;
 
             case 17:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_4");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_4");
                 break;
 
             case 18:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_5");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_5");
                 break;
 
             case 19:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_6");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_6");
                 break;
 
             case 20:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_P");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_P");
                 break;
 
             case 21:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_Q");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_Q");
                 break;
 
             case 22:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_R");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_R");
                 break;
 
             case 23:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_S");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_S");
                 break;
 
             case 24:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_T");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_T");
                 break;
 
             case 25:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_1");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_1");
                 break;
 
             case 26:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_2");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_2");
                 break;
 
             case 27:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_3");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_3");
                 break;
 
             case 28:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_K");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_K");
                 break;
 
             case 29:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_L");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_L");
                 break;
 
             case 30:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_M");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_M");
                 break;
 
             case 31:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_N");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_N");
                 break;
 
             case 32:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_O");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_O");
                 break;
 
             case 33:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_PREVPAGE");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_PREVPAGE");
                 break;
 
             case 34:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_UP");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_UP");
                 break;
 
             case 35:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_L1");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_L1");
                 break;
 
             case 36:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_F");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_F");
                 break;
 
             case 37:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_G");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_G");
                 break;
 
             case 38:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_H");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_H");
                 break;
 
             case 39:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_I");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_I");
                 break;
 
             case 40:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_J");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_J");
                 break;
 
             case 41:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_AIRPORT");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_AIRPORT");
                 break;
 
             case 42:
@@ -332,83 +332,83 @@ public class MCDU_L_E : ENET
                 break;
 
             case 43:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_L2");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_L2");
                 break;
 
             case 44:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_A");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_A");
                 break;
 
             case 45:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_B");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_B");
                 break;
 
             case 46:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_C");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_C");
                 break;
 
             case 47:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_D");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_D");
                 break;
 
             case 48:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_E");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_E");
                 break;
 
             case 49:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_FPLN");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_FPLN");
                 break;
 
             case 50:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_RAD");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_RAD");
                 break;
 
             case 51:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_L3");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_L3");
                 break;
 
             case 52:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_FUEL");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_FUEL");
                 break;
 
             case 53:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_FPLN");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_FPLN");
                 break;
 
             case 54:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_ATC");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_ATC");
                 break;
 
             case 55:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_MENU");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_MENU");
                 break;
 
             case 56:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_L5");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_L5");
                 break;
 
             case 57:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_DIR");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_DIR");
                 break;
 
             case 58:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_PROG");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_PROG");
                 break;
 
             case 59:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_L4");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_L4");
                 break;
 
             case 60:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_PERF");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_PERF");
                 break;
 
             case 61:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_INIT");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_INIT");
                 break;
 
             case 62:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_DATA");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_DATA");
                 break;
 
             case 63:
@@ -420,31 +420,31 @@ public class MCDU_L_E : ENET
                 break;
 
             case 65:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_R1");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_R1");
                 break;
 
             case 66:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_R2");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_R2");
                 break;
 
             case 67:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_R3");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_R3");
                 break;
 
             case 68:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_R4");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_R4");
                 break;
 
             case 69:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_R5");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_R5");
                 break;
 
             case 70:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_R6");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_R6");
                 break;
 
             case 71:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_L6");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_L6");
                 break;
 
             case 72:
@@ -452,11 +452,11 @@ public class MCDU_L_E : ENET
                 break;
 
             case 73:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_NEXTPAGE");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_NEXTPAGE");
                 break;
 
             case 74:
-                simConnectClient.SetEventID("A320_Neo_CDU_1_BTN_DOWN");
+                simConnectClient.SendEvent("H:A320_Neo_CDU_1_BTN_DOWN");
                 break;
 
             default:

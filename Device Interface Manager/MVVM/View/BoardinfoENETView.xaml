@@ -4,61 +4,52 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:viewModel="clr-namespace:Device_Interface_Manager.MVVM.ViewModel"
-             xmlns:local="clr-namespace:Device_Interface_Manager.MVVM.View" 
              d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type={x:Type viewModel:BoardinfoENETViewModel}}"
              x:Class="Device_Interface_Manager.MVVM.View.BoardinfoENETView"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
+             d:DesignWidth="1040"
+             d:DesignHeight="560">
 
-             d:DesignHeight="450"
-             d:DesignWidth="800">
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
+        <TextBlock 
+            Margin="0,10,0,10"
+            Foreground="White"
+            FontSize="38"
+            d:Text="127.0.0.1"
+            TextAlignment="Center"
+            Text="{Binding InterfaceITEthernetInfoIP}">
+        </TextBlock>
 
-
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-
-        <ComboBox 
-            HorizontalAlignment="Right" 
-            VerticalAlignment="Center"
-            Width="100"
-            Cursor="Hand"
-            SelectedItem="{Binding InterfaceITEthernetInfoIP}"
-            ItemsSource="{Binding InterfaceITEthernetInfoIPCollection}">
-            <ComboBox.ItemContainerStyle>
-                <Style TargetType="ComboBoxItem">
-                    <Setter Property="Cursor" Value="Hand"/>
-                </Style>
-            </ComboBox.ItemContainerStyle>
-        </ComboBox>
-
-        <Border Grid.Column="1"
-                BorderBrush="DodgerBlue"
-                BorderThickness="3"
-                Width="350"
-                CornerRadius="10"
-                Background="Transparent" 
-                Height="400">
-            <StackPanel Margin="10,0,10,0">
+        <Border 
+            Grid.Row="1"
+            BorderBrush="DodgerBlue"
+            BorderThickness="3"
+            CornerRadius="10"
+            d:Visibility="Visible"
+            Background="Transparent">
+            <StackPanel>
                 <ListView
-                        Background="Transparent"
-                        Foreground="White"
-                        FontSize="15"
-                        BorderThickness="0"
-                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                        ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                        ItemsSource="{Binding InterfaceITEthernetInfoText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    Background="Transparent"
+                    Foreground="White"
+                    FontSize="20"
+                    BorderThickness="0"
+                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                    ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                    ItemsSource="{Binding InterfaceITEthernetInfoTextCollection}"
+                    d:ItemsSource="{d:SampleData ItemCount=5}">
                     <ListView.ItemContainerStyle>
-                        <Style TargetType="{x:Type ListViewItem}">
+                        <Style TargetType="ListViewItem">
                             <Setter Property="Focusable" Value="False"/>
                             <Setter Property="Background" Value="Transparent" />
                             <Setter Property="Template">
                                 <Setter.Value>
-                                    <ControlTemplate TargetType="{x:Type ListViewItem}">
-                                        <ContentPresenter HorizontalAlignment="Left"
-                                                              Margin="0,5,0,0"/>
+                                    <ControlTemplate TargetType="ListViewItem">
+                                        <ContentPresenter HorizontalAlignment="Left" Margin="10,0,10,5"/>
                                     </ControlTemplate>
                                 </Setter.Value>
                             </Setter>
@@ -66,6 +57,15 @@
                     </ListView.ItemContainerStyle>
                 </ListView>
             </StackPanel>
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding InterfaceITEthernetInfoIP}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Hidden"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
         </Border>
     </Grid>
 </UserControl>

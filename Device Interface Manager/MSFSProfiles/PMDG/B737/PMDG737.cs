@@ -1,12 +1,116 @@
 ﻿using System;
+using System.Reflection;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Microsoft.FlightSimulator.SimConnect;
 using static Device_Interface_Manager.MSFSProfiles.PMDG.PMDG_NG3_SDK;
 
 namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737;
 
-public class PMDG737
+public static class PMDG737
 {
+    private static PMDG_NG3_Data _previousData;
+    public static PMDG_NG3_Data PMDG_NG3_Data { get; set; }
+
+
+    public static event EventHandler<string> FieldChanged;
+
+    public static List<string> WatchedFields { get; set; } = new();
+    private static readonly Dictionary<string, FieldInfo> _fieldInfos = new();
+
+    public static void SetCurrentValues(PMDG_NG3_Data currentValues)
+    {
+        PMDG_NG3_Data = currentValues;
+        foreach (string field in WatchedFields)
+        {
+            GetFieldValue(field);
+        }
+    }
+
+    private static void GetFieldValue(string fieldName)
+    {
+        if (!_fieldInfos.TryGetValue(fieldName, out FieldInfo fieldInfo))
+        {
+            fieldInfo = typeof(PMDG_NG3_Data).GetField(fieldName);
+            _fieldInfos[fieldName] = fieldInfo;
+        }
+        object currentValue = fieldInfo.GetValue(PMDG_NG3_Data);
+        object previousValue = fieldInfo.GetValue(_previousData);
+        if (!Equals(currentValue, previousValue))
+        {
+            TypedReference reference = __makeref(_previousData);
+            fieldInfo.SetValueDirect(reference, currentValue);
+            Instance_FieldChanged(currentValue, fieldName);
+            FieldChanged?.Invoke(currentValue, fieldName);
+        }
+    }
+
+    private static void Instance_FieldChanged(object sender, string e)
+    {
+        switch (sender)
+        {
+            case bool[] boolArray:
+                Logic(Array.ConvertAll(boolArray, Convert.ToInt32), e);
+                break;
+
+            case byte[] byteArray:
+                Logic(Array.ConvertAll(byteArray, Convert.ToInt32), e);
+                break;
+
+            case ushort[] ushortArray:
+                Logic(Array.ConvertAll(ushortArray, Convert.ToInt32), e);
+                break;
+
+            case uint[] uintArray:
+                Logic(Array.ConvertAll(uintArray, Convert.ToInt32), e);
+                break;
+
+            case bool boolValue:
+                Logic(Convert.ToInt32(boolValue), e);
+                break;
+
+            case byte byteValue:
+                Logic(Convert.ToInt32(byteValue), e);
+                break;
+
+            case ushort ushortValue:
+                Logic(Convert.ToInt32(ushortValue), e);
+                break;
+
+            case short shortValue:
+                Logic(Convert.ToInt32(shortValue), e);
+                break;
+
+            case uint uintValue:
+                Logic(Convert.ToInt32(uintValue), e);
+                break;
+
+            case int intValue:
+                Logic(intValue, e);
+                break;
+
+            case string stringValue:
+                Logic(stringValue, e);
+                break;
+
+            case float floatValue:
+                Logic(Convert.ToSingle(floatValue), e);
+                break;
+
+            default:
+                throw new Exception(e);
+        }
+    }
+
+    private static void Logic<T>(T sender, string name)
+    {
+        int[] senderArray = null;
+        if (sender is Array)
+        {
+            senderArray = sender as int[];
+        }
+    }
+
     public static void RegisterPMDGDataEvents(SimConnect simConnect)
     {
         CreatePMDG737NG3Events(simConnect);
@@ -30,7 +134,7 @@ public class PMDG737
         simConnect.MapClientDataNameToID(PMDG_NG3_DATA_NAME, PMDG_NG3.DATA_ID);
         // Define the data area structure - this is a required step
         simConnect.AddToClientDataDefinition(PMDG_NG3.DATA_DEFINITION, 0, (uint)Marshal.SizeOf<PMDG_NG3_Data>(), 0, 0);
-        // Register the data are structure
+        // Register the data area structure
         simConnect.RegisterStruct<SIMCONNECT_RECV_CLIENT_DATA, PMDG_NG3_Data>(PMDG_NG3.DATA_DEFINITION);
         // Sign up for notification of data change
         simConnect.RequestClientData(

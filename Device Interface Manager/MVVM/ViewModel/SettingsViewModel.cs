@@ -1,15 +1,21 @@
-﻿using System.IO;
-using System.Text;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
+using System.Net.Sockets;
+using System.Net.NetworkInformation;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Device_Interface_Manager.MVVM.Model;
 
 namespace Device_Interface_Manager.MVVM.ViewModel;
 
 public partial class SettingsViewModel : ObservableObject
 {
     [ObservableProperty]
-    private int _hubHopUpdateProgress;
+    private string _wasmModuleUpdaterMessage;
+
+    [ObservableProperty]
+    private ConnectionStatus _Status;
 
     [ObservableProperty]
     private bool _minimizedHide = Properties.Settings.Default.MinimizedHide;
@@ -35,14 +41,25 @@ public partial class SettingsViewModel : ObservableObject
         get => _iP;
         set
         {
-            if (_iP is null) 
+            if (_iP != value)
             {
-                _iP = value;
-                return;
-            }
-            if (_iP != value && System.Net.IPAddress.TryParse(value, out System.Net.IPAddress adress))
-            {
-                File.WriteAllText("SimConnect.cfg", File.ReadAllText("SimConnect.cfg").Replace("Address=" + _iP, "Address=" + (_iP = adress.ToString())));
+                if (string.IsNullOrEmpty(_iP))
+                {
+                    _iP = value;
+                }
+                else if (System.Net.IPAddress.TryParse(value, out System.Net.IPAddress adress))
+                {
+                    if (System.Net.IPAddress.Any.Equals(adress))
+                    {
+                        adress = System.Net.IPAddress.Loopback;
+                        if (_iP == adress.ToString())
+                        {
+                            return;
+                        }
+                    }
+                    UpdateSimConnectConfigFile("Address", adress.ToString());
+                    _iP = adress.ToString();
+                }
             }
         }
     }
@@ -53,16 +70,25 @@ public partial class SettingsViewModel : ObservableObject
         get => _port;
         set
         {
-            if (_port is null)
+            if (_port != value)
             {
-                _port = value;
-                return;
-            }
-            if (_iP != value && ushort.TryParse(value, out ushort port) && value != "0")
-            {
-                File.WriteAllText("SimConnect.cfg", File.ReadAllText("SimConnect.cfg").Replace("Port=" + _port, "Port=" + (_port = port.ToString())));
+                if (string.IsNullOrEmpty(_port))
+                {
+                    _port = value;
+                }
+                else if (ushort.TryParse(value, out ushort port) && value != "0")
+                {
+                    UpdateSimConnectConfigFile("Port", port.ToString());
+                    _port = port.ToString();
+                }
             }
         }
+    }
+
+    private void UpdateSimConnectConfigFile(string key, string newValue)
+    {
+        string oldValue = key == "Address" ? _iP : _port;
+        File.WriteAllText("SimConnect.cfg", File.ReadAllText("SimConnect.cfg").Replace(key + "=" + oldValue, key + "=" + newValue));
     }
 
     public SettingsViewModel() 
@@ -78,35 +104,81 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async void InstallUpdateHubhop()
+    private async Task InstallUpdateDIMWASModule()
     {
-        SimConnectMSFS.WasmModuleUpdater wasmModuleUpdater = new();
-        wasmModuleUpdater.DownloadAndInstallProgress += WasmModuleUpdater_DownloadAndInstallProgress;
-        wasmModuleUpdater.AutoDetectCommunityFolder();
-        await Task.Run(() => wasmModuleUpdater.DownloadWasmEvents());
-        await Task.Run(() => wasmModuleUpdater.InstallWasmModule());
+        WasmModuleUpdater wasmModuleUpdater = new();
+        WasmModuleUpdaterMessage = await Task.Run(wasmModuleUpdater.InstallWasmModule);
         wasmModuleUpdater = null;
     }
 
-    private void WasmModuleUpdater_DownloadAndInstallProgress(object sender, SimConnectMSFS.ProgressUpdateEvent e)
+    [RelayCommand]
+    private async Task CheckSimConnectConnection()
     {
-        HubHopUpdateProgress = e.Current;
+        if (!await PingHostAsync())
+        {
+            Status = ConnectionStatus.NotConnected;
+            return;
+        }
+        if (!await ConnectToHostAsync())
+        {
+            Status = ConnectionStatus.PingSuccessful;
+            return;
+        }
+        Status = ConnectionStatus.Connected;
+    }
+
+    [RelayCommand]
+    private void GotIPPortTextBoxFocus()
+    {
+        Status = ConnectionStatus.Default;
+    }
+
+    private async Task<bool> PingHostAsync()
+    {
+        using Ping ping = new();
+        return (await ping.SendPingAsync(IP)).Status == IPStatus.Success;
+    }
+
+    private async Task<bool> ConnectToHostAsync()
+    {
+        try
+        {
+            using TcpClient tcpClient = new();
+            await tcpClient.ConnectAsync(IP, Convert.ToInt32(Port));
+            return true;
+        }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
+        catch (ArgumentNullException)
+        {
+            return false;
+        }
+        catch (SocketException)
+        {
+            return false;
+        }
+    }
+
+    public enum ConnectionStatus
+    {
+        Default,
+        NotConnected,
+        PingSuccessful,
+        Connected
     }
 
     private void GetInterfaceITAPIVersion()
     {
-        int intSize = 0;
-        _ = interfaceIT.USB.InterfaceITAPI_Data.interfaceIT_GetAPIVersion(null, ref intSize);
-        StringBuilder aPIVersion = new(intSize);
-        _ = interfaceIT.USB.InterfaceITAPI_Data.interfaceIT_GetAPIVersion(aPIVersion, ref intSize);
-        InterfaceITAPIVersion = "interfaceIT API version " + aPIVersion;
+        InterfaceITAPIVersion = "interfaceIT API version " + interfaceIT.USB.InterfaceITAPI_Data.interfaceIT_GetAPIVersion();
     }
 
     private void ReadSimConnectCfg()
     {
         if (File.Exists("SimConnect.cfg"))
         {
-            foreach (var line in File.ReadLines("SimConnect.cfg"))
+            foreach (string line in File.ReadLines("SimConnect.cfg"))
             {
                 if (line.StartsWith("Address="))
                 {

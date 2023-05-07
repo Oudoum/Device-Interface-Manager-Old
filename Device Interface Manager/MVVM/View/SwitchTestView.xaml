@@ -7,7 +7,7 @@
              xmlns:viewModel="clr-namespace:Device_Interface_Manager.MVVM.ViewModel"
              mc:Ignorable="d"
              d:DesignWidth="1040"
-             d:DesignHeight="560" >
+             d:DesignHeight="560">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
@@ -35,6 +35,10 @@
                     </Style>
                 </Style.Resources>
             </Style>
+            <Style TargetType="ToolTip">
+                <Setter Property="Background" Value="Black"/>
+                <Setter Property="Foreground" Value="White"/>
+            </Style>
         </Grid.Resources>
 
         <StackPanel
@@ -48,6 +52,7 @@
                 Command="{Binding CallbackModeCommand}"
                 Cursor="Hand"
                 Content="Callbackmode"
+                IsTabStop="False"
                 ToolTip="Every time a switch is pressed you will be notified (list on the right) with the switch number and the direction.">
                 <Button.Resources>
                     <Style TargetType="Button">
@@ -83,6 +88,7 @@
                     Command="{Binding PollModeCommand}"
                     Content="Pollmode"
                     Cursor="Hand"
+                    IsTabStop="False"
                     ToolTip="Every time a switch is pressed it is added to the receive queue until you click the Get Switch button which removes it from the queue.">
                     <Button.Resources>
                         <Style TargetType="Button">
@@ -129,6 +135,7 @@
                             <Setter Property="Foreground" Value="Black"/>
                             <Setter Property="Background" Value="DimGray"/>
                             <Setter Property="FontSize" Value="23"/>
+                            <Setter Property="IsTabStop" Value="False"/>
                             <Style.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="10"/>
@@ -151,6 +158,7 @@
             Height="40"
             Content="Clear"
             Cursor="Hand"
+            IsTabStop="False"
             ToolTip="Clear the switch list" Grid.Column="1"/>
 
         <ListView 
@@ -164,6 +172,7 @@
             Background="Transparent"
             ItemsSource="{Binding SwitchLog}"
             FontSize="22"
+            IsTabStop="False"
             d:ItemsSource="{d:SampleData ItemCount=14}">
             <ListView.Template>
                 <ControlTemplate>
@@ -177,6 +186,11 @@
                             <ItemsPresenter/>
                         </ScrollViewer>
                     </Border>
+                    <ControlTemplate.Resources>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="IsTabStop" Value="False"/>
+                        </Style>
+                    </ControlTemplate.Resources>
                 </ControlTemplate>
             </ListView.Template>
         </ListView>

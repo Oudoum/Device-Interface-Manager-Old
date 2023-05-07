@@ -26,41 +26,41 @@ public class MCDU_R_USB : USB
         switch (simVar.Name)
         {
             case "L:I_CDU2_FAIL":
-                _ = interfaceIT_LED_Set(Device.Session, 2, simVar.BData());
+                interfaceIT_LED_Set(device.Session, 2, simVar.BData());
                 break;
 
             case "L:I_CDU2_MCDU_MENU":
                 bool value = simVar.BData();
-                _ = interfaceIT_LED_Set(Device.Session, 3, value);
-                _ = interfaceIT_LED_Set(Device.Session, 5, value);
+                interfaceIT_LED_Set(device.Session, 3, value);
+                interfaceIT_LED_Set(device.Session, 5, value);
                 break;
 
             case "L:I_CDU2_FM":
-                _ = interfaceIT_LED_Set(Device.Session, 4, simVar.BData());
+                interfaceIT_LED_Set(device.Session, 4, simVar.BData());
                 break;
 
             case "L:I_CDU2_FM1":
-                _ = interfaceIT_LED_Set(Device.Session, 9, simVar.BData());
+                interfaceIT_LED_Set(device.Session, 9, simVar.BData());
                 break;
 
             case "L:I_CDU2_IND":
-                _ = interfaceIT_LED_Set(Device.Session, 10, simVar.BData());
+                interfaceIT_LED_Set(device.Session, 10, simVar.BData());
                 break;
 
             case "L:I_CDU2_RDY":
-                _ = interfaceIT_LED_Set(Device.Session, 11, simVar.BData());
+                interfaceIT_LED_Set(device.Session, 11, simVar.BData());
                 break;
 
             case "L:I_CDU2_DASH":
-                _ = interfaceIT_LED_Set(Device.Session, 12, simVar.BData());
+                interfaceIT_LED_Set(device.Session, 12, simVar.BData());
                 break;
 
             case "L:I_CDU2_FM2":
-                _ = interfaceIT_LED_Set(Device.Session, 13, simVar.BData());
+                interfaceIT_LED_Set(device.Session, 13, simVar.BData());
                 break;
 
             case "L:N_PED_LIGHTING_PEDESTAL":
-                _ = interfaceIT_Brightness_Set(Device.Session, (int)(simVar.Data * 50 * 2.55));
+                interfaceIT_Brightness_Set(device.Session, (int)(simVar.Data * 50 * 2.55));
                 break;
 
             default:
@@ -68,7 +68,7 @@ public class MCDU_R_USB : USB
         }
     }
 
-    protected override bool KeyPressedProc(int session, int key, int direction)
+    protected override void KeyPressedProc(uint session, int key, uint direction)
     {
         switch (key)
         {
@@ -363,6 +363,5 @@ public class MCDU_R_USB : USB
             default:
                 break;
         }
-        return true;
     }
 }

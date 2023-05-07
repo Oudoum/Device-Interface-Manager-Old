@@ -1,12 +1,11 @@
 ﻿using System.Windows.Controls;
 
-namespace Device_Interface_Manager.MVVM.View
+namespace Device_Interface_Manager.MVVM.View;
+
+public partial class TestENETView : UserControl
 {
-    public partial class TestENETView : UserControl
+    public TestENETView()
     {
-        public TestENETView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }
