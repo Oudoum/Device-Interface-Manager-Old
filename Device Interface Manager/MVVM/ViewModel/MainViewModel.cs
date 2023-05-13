@@ -19,7 +19,7 @@ namespace Device_Interface_Manager.MVVM.ViewModel;
 public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStausMessage>
 {
     private const string updateLink = "https://raw.githubusercontent.com/Oudoum/Device-Interface-Manager-Download/main/Updates/AutoUpdaterDIM.xml";
-    private const string version = "1.1.7";
+    private const string version = "1.1.7.2";
 
     public HomeUSBViewModel HomeUSBVM { get; set; }
 

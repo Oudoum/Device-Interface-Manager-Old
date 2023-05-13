@@ -1,13 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
+using Device_Interface_Manager.MSFSProfiles.PMDG;
+using System.Collections.Generic;
 
 namespace Device_Interface_Manager.MVVM.Model;
 public partial class TestCreator : ObservableObject
 {
-    [ObservableProperty]
     public string _profileName;
 
-    [ObservableProperty]
     public string _boardType;
 
     public ObservableCollection<InputCreator> InputCreator { get; set; }
@@ -20,10 +20,10 @@ public class InputCreator
     public ObservableCollection<Switch> Switches { get; set; }
     public EventType EventType { get; set; }
     public string Event { get; set; } // MSFS/SimConnect...
-    //PMDG Events (ENUM)
-    //PMDG Mouse Events (ENUM)
-    //PMDG Event Data if no Mouse Event
-    //Negated
+    public PMDG_NG3_SDK.PMDGEvents PMDGEvent { get; set; }
+    public KeyValuePair<string, uint>[] PMDGMouseEvent { get; set; }
+    public int PMDGEventData { get; set; }
+    public bool IsInverted { get; set; }
 }
 
 public class Switch
@@ -44,8 +44,8 @@ public class OutputCreator
     public ObservableCollection<LED> LEDs { get; set; }
     public DataType DataType { get; set; }
     public string Data { get; set; }
-    //PMDG Data struct
-    //PMDG Array
+    public string[] PMDGStructData { get; set; }
+    public int PMDGStructArrayNum { get; set; }
 }
 
 public class DataType

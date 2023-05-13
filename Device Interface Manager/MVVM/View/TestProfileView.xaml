@@ -8,21 +8,53 @@
         d:DataContext="{d:DesignInstance Type=viewmodel:TestProfileViewModel}"
         mc:Ignorable="d" 
         Background="Black"
-        d:DesignHeight="450" d:DesignWidth="800">
+        Height="900"
+        Width="1600"
+        d:DesignHeight="900"
+        d:DesignWidth="1600">
 
     <Window.DataContext>
         <viewmodel:TestProfileViewModel/>
     </Window.DataContext>
 
-    <Grid>
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <ComboBox 
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="500"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center" Orientation="Horizontal" Margin="0,20,0,50">
+            <DataGrid
+                CanUserAddRows="False"
+                CanUserDeleteRows="False"
+                ItemsSource="{Binding InputProfiles}">
+
+            </DataGrid>
+            <Button Content="Add" Foreground="White" Margin="0,0,50,0" Command="{Binding AddInputCommand}"/>
+
+            <DataGrid
+                CanUserAddRows="False"
+                CanUserDeleteRows="False"
+                ItemsSource="{Binding OutputProfiles}">
+
+            </DataGrid>
+            <Button Content="Add" Foreground="White" Command="{Binding AddOutputCommand}"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center">
+            <TextBlock Text="PMDG Events" Foreground="White"/>
+            <ComboBox
                 MinWidth="200"
                 IsEditable="True"
-                IsTextSearchEnabled="True"
-                Text="{Binding SearchPMDGEventsText, UpdateSourceTrigger=PropertyChanged}"
+                IsTextSearchEnabled="False"
+                Text="{Binding SearchPMDGEventsText}"
                 ItemsSource="{Binding PMDGEvents}"
                 VirtualizingStackPanel.IsVirtualizing="True">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="GotFocus">
+                        <i:InvokeCommandAction Command="{Binding ComboBoxGotFocusCommand}" PassEventArgsToCommand="True"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
                 <ComboBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <VirtualizingStackPanel/>
@@ -30,13 +62,40 @@
                 </ComboBox.ItemsPanel>
             </ComboBox>
 
+            <TextBlock Text="PMDG Mouse Events" Foreground="White"/>
             <ComboBox
                 MinWidth="200"
                 IsEditable="True"
-                IsTextSearchEnabled="True"
+                IsTextSearchEnabled="False"
+                DisplayMemberPath="Key"
+                Text="{Binding SearchPMDGMouseEventsText}"
+                ItemsSource="{Binding PMDGMouseEvents}"
+                VirtualizingStackPanel.IsVirtualizing="True">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="GotFocus">
+                        <i:InvokeCommandAction Command="{Binding ComboBoxGotFocusCommand}" PassEventArgsToCommand="True"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <ComboBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel/>
+                    </ItemsPanelTemplate>
+                </ComboBox.ItemsPanel>
+            </ComboBox>
+
+            <TextBlock Text="PMDG Data" Foreground="White"/>
+            <ComboBox
+                MinWidth="200"
+                IsEditable="True"
+                IsTextSearchEnabled="False"
                 Text="{Binding SearchPMDGDataText}"
                 ItemsSource="{Binding PMDGDataFieldNames}"
                 VirtualizingStackPanel.IsVirtualizing="True">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="GotFocus">
+                        <i:InvokeCommandAction Command="{Binding ComboBoxGotFocusCommand}" PassEventArgsToCommand="True"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
                 <ComboBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <VirtualizingStackPanel/>
@@ -44,5 +103,11 @@
                 </ComboBox.ItemsPanel>
             </ComboBox>
         </StackPanel>
+        <Grid.Resources>
+            <Style TargetType="ComboBox">
+                <Setter Property="Margin" Value="0,0,0,10"/>
+            </Style>
+        </Grid.Resources>
+
     </Grid>
 </Window>

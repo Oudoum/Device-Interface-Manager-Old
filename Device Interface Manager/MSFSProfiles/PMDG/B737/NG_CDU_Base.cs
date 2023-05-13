@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Windows;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using Device_Interface_Manager.MVVM.View;
 using static Device_Interface_Manager.MSFSProfiles.PMDG.PMDG_NG3_SDK;

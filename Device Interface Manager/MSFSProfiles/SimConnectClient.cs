@@ -93,8 +93,8 @@ public class SimConnectClient
             {
                 return;
             }
-            SimVars[(int)data.dwRequestID - 6].Data = (double)data.dwData[0];
-            OnSimVarChanged?.Invoke(SimVars[(int)data.dwRequestID - 6]);
+            SimVars[(int)data.dwRequestID - 1].Data = (double)data.dwData[0];
+            OnSimVarChanged?.Invoke(SimVars[(int)data.dwRequestID - 1]);
         }
     }
 
@@ -222,7 +222,7 @@ public class SimConnectClient
 
     private enum REQUEST_ID
     {
-        DATA_REQUEST_ID_COMMAND = 5
+        DATA_REQUEST_ID_COMMAND
     }
 
     private enum DEFINE_ID
