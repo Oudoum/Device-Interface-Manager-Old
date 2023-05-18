@@ -131,17 +131,6 @@ namespace Device_Interface_Manager.MVVM.View
             }
         }
 
-
-        //ProfileCreator
-        private void OpenProfileCreatorWindow()
-        {
-            if (Application.Current.Windows.OfType<ProfileCreator>().Any() == false)
-            {
-                ProfileCreator profileCreator = new();
-                profileCreator.Show();
-            }
-        }
-
         //Item Drag&Drop
         private void ListViewItem_MouseMove(object sender, MouseEventArgs e)
         {

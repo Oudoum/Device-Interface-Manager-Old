@@ -6,9 +6,9 @@ using Microsoft.FlightSimulator.SimConnect;
 using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
 using static Device_Interface_Manager.MSFSProfiles.PMDG.PMDG_NG3_SDK;
 
-namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737;
+namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737.USB;
 
-public class NG_MCP_777_USB : USB
+public class NG_MCP_777 : MSFSProfiles.USB
 {
     //MCP SETUP
     private CancellationTokenSource pmdg737MCPBlinkingCancellationTokenSource;
@@ -504,7 +504,7 @@ public class NG_MCP_777_USB : USB
 
     protected override void Simconnect_OnRecvClientData(SimConnect sender, SIMCONNECT_RECV_CLIENT_DATA data)
     {
-        if (((uint)DATA_REQUEST_ID.DATA_REQUEST) == data.dwRequestID)
+        if ((uint)DATA_REQUEST_ID.DATA_REQUEST == data.dwRequestID)
         {
             ELEC_BusPowered_2 = ((PMDG_NG3_Data)data.dwData[0]).ELEC_BusPowered[2];
             ELEC_BusPowered_7 = ((PMDG_NG3_Data)data.dwData[0]).ELEC_BusPowered[7];

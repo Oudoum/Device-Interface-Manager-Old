@@ -6,9 +6,9 @@ using Microsoft.FlightSimulator.SimConnect;
 using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
 using static Device_Interface_Manager.MSFSProfiles.PMDG.PMDG_NG3_SDK;
 
-namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737;
+namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737.USB;
 
-public class NG_MCP_USB : USB
+public class NG_MCP_3311 : MSFSProfiles.USB
 {
     //MCP SETUP
     private CancellationTokenSource pmdg737MCPBlinkingCancellationTokenSource;
@@ -33,17 +33,17 @@ public class NG_MCP_USB : USB
         {
             if (MCP_IASMach < 1)
             {
-                interfaceIT_7Segment_Display(device.Session, ' ' + flashingAB, MCP_IASMachStartPos -1);
+                interfaceIT_7Segment_Display(device.Session, ' ' + flashingAB, MCP_IASMachStartPos - 1);
                 interfaceIT_LED_Set(device.Session, MCPMachSevenSegmentDot, true);
                 await Task.Delay(500, token);
-                interfaceIT_7Segment_Display(device.Session, new string(' ', MCP_IASMachStartPos - 4), MCP_IASMachStartPos -1);
+                interfaceIT_7Segment_Display(device.Session, new string(' ', MCP_IASMachStartPos - 4), MCP_IASMachStartPos - 1);
                 interfaceIT_LED_Set(device.Session, MCPMachSevenSegmentDot, true);
             }
             else if (MCP_IASMach >= 100)
             {
-                interfaceIT_7Segment_Display(device.Session, flashingAB, MCP_IASMachStartPos -1);
+                interfaceIT_7Segment_Display(device.Session, flashingAB, MCP_IASMachStartPos - 1);
                 await Task.Delay(500, token);
-                interfaceIT_7Segment_Display(device.Session, " ", MCP_IASMachStartPos -1);
+                interfaceIT_7Segment_Display(device.Session, " ", MCP_IASMachStartPos - 1);
             }
             await Task.Delay(500, token);
         }
@@ -480,12 +480,12 @@ public class NG_MCP_USB : USB
         pmdg737MCPIASOverspeedUnderspeedFlashingCancellationTokenSource?.Cancel();
         if (MCP_IASMach < 1)
         {
-            interfaceIT_7Segment_Display(device.Session, new string(' ', 2), MCP_IASMachStartPos -1);
+            interfaceIT_7Segment_Display(device.Session, new string(' ', 2), MCP_IASMachStartPos - 1);
             interfaceIT_LED_Set(device.Session, MCPMachSevenSegmentDot, true);
         }
         else if (MCP_IASMach >= 100)
         {
-            interfaceIT_7Segment_Display(device.Session, " ", MCP_IASMachStartPos -1);
+            interfaceIT_7Segment_Display(device.Session, " ", MCP_IASMachStartPos - 1);
         }
     }
 
@@ -593,7 +593,7 @@ public class NG_MCP_USB : USB
         get => _eLEC_BusPowered;
         set
         {
-            if(!_eLEC_BusPowered.SequenceEqual(value)) 
+            if (!_eLEC_BusPowered.SequenceEqual(value))
             {
                 if (value[2] && value[3] && !value[7] && value[15] && !MCP_indication_powered)
                 {
@@ -619,7 +619,7 @@ public class NG_MCP_USB : USB
 
     protected override void Simconnect_OnRecvClientData(SimConnect sender, SIMCONNECT_RECV_CLIENT_DATA data)
     {
-        if (((uint)DATA_REQUEST_ID.DATA_REQUEST) == data.dwRequestID)
+        if ((uint)DATA_REQUEST_ID.DATA_REQUEST == data.dwRequestID)
         {
             ELEC_BusPowered = ((PMDG_NG3_Data)data.dwData[0]).ELEC_BusPowered;
 

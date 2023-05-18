@@ -2,8 +2,8 @@
 using Microsoft.FlightSimulator.SimConnect;
 using static Device_Interface_Manager.MSFSProfiles.PMDG.PMDG_NG3_SDK;
 
-namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737;
-public abstract class NG_CDU_Base_E : ENET
+namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737.E;
+public abstract class NG_CDU_Base : ENET
 {
     protected int CDU_annunEXECPos { get; set; } = 1;
     private bool _cDU_annunEXEC;
@@ -82,7 +82,7 @@ public abstract class NG_CDU_Base_E : ENET
 
     protected override void Simconnect_OnRecvClientData(SimConnect sender, SIMCONNECT_RECV_CLIENT_DATA data)
     {
-        if (((uint)DATA_REQUEST_ID.DATA_REQUEST) == data.dwRequestID)
+        if ((uint)DATA_REQUEST_ID.DATA_REQUEST == data.dwRequestID)
         {
             pMDG_NG3_Data = (PMDG_NG3_Data)data.dwData[0];
             RecvData();

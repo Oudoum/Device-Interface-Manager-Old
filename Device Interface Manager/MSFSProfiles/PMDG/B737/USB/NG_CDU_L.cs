@@ -1,10 +1,10 @@
 ﻿using static Device_Interface_Manager.MSFSProfiles.PMDG.PMDG_NG3_SDK;
 
-namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737;
+namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737.USB;
 
-public class NG_CDU_L_USB : NG_CDU_Base_USB
+public class NG_CDU_L : NG_CDU_Base
 {
-    public NG_CDU_L_USB()
+    public NG_CDU_L()
     {
         startupManager.Settings = @"Profiles\PMDG 737\USB CDU Screen L.json";
         CDU_ID = DATA_REQUEST_ID.CDU0_REQUEST;

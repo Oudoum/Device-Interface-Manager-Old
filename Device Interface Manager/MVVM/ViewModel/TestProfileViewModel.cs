@@ -1,23 +1,30 @@
 ﻿using System;
 using System.Windows;
 using System.Linq;
-using System.Dynamic;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Device_Interface_Manager.MSFSProfiles.PMDG;
 using Device_Interface_Manager.MVVM.Model;
+using Device_Interface_Manager.interfaceIT.USB;
 
 namespace Device_Interface_Manager.MVVM.ViewModel;
 public partial class TestProfileViewModel : ObservableObject
 {
+    public ObservableCollection<InterfaceIT_BoardInfo.Device> DeviceList { get; set; } = new();
 
-    public ObservableCollection<TestCreator> TestProfiles { get; set; } = new();
+    [ObservableProperty]
+    private TestCreator _testCreator;
 
-    public ObservableCollection<InputCreator> InputProfiles { get; set; } = new();
-    public ObservableCollection<OutputCreator> OutputProfiles { get; set; } = new();
+    public TestProfileViewModel()
+    {
+        TestCreator = new()
+        {
+            InputCreator = new(),
+            OutputCreator = new()
+        };
+    }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(PMDGEvents))]
@@ -71,13 +78,20 @@ public partial class TestProfileViewModel : ObservableObject
     [RelayCommand]
     private void AddInput()
     {
-        InputProfiles.Add(new InputCreator { Switches = new ObservableCollection<Switch>() { new Switch { Id = 0, Position = 1 }, new Switch { Id = 1, Position = 2 } }, Event = "TEST", EventType = new EventType(), PMDGEvent = PMDG_NG3_SDK.PMDGEvents.EVT_OH_ELEC_BATTERY_SWITCH, PMDGMouseEvent = PMDGMouseEvents });
+        List<string> switchItems = new(allswitchItems);
+        foreach (var item in removedItems)
+        {
+            switchItems.Remove(item);
+        }
+        TestCreator.InputCreator.Add(new InputCreator { Switches = new ObservableCollection<string>(switchItems), Event = "TEST", EventType = new EventType(), PMDGEvent = PMDG_NG3_SDK.PMDGEvents.EVT_OH_ELEC_BATTERY_SWITCH, PMDGMouseEvent = PMDGMouseEvents });
+        
+    
     }
 
     [RelayCommand]
     private void AddOutput()
     {
-        OutputProfiles.Add(new OutputCreator { LEDs = new ObservableCollection<LED>() { new LED { Id = 0, Position = 1 }, new LED { Id = 1, Position = 2 } }, Data = "TEST", DataType = new DataType(), PMDGStructArrayNum = 0, PMDGStructData = PMDGDataFieldNames });
+        TestCreator.OutputCreator.Add(new OutputCreator { LEDs = new ObservableCollection<string>() { "--None--", "1", "2" }, Data = "TEST", DataType = new DataType(), PMDGStructArrayNum = 0, PMDGStructData = PMDGDataFieldNames });
     }
 
 
@@ -93,109 +107,161 @@ public partial class TestProfileViewModel : ObservableObject
         }
     }
 
+    private readonly List<string> allswitchItems = new() { "--None--", "1", "2", "3" };
+    private readonly List<string> removedItems = new();
+
+    [RelayCommand]
+    private void SwitchComboBoxSlectionChanged(System.Windows.Controls.SelectionChangedEventArgs e)
+    {
+        if (e.AddedItems.Count == 0)
+        {
+            return;
+        }
+        string addedValue = (string)e.AddedItems[0];
+        
+        if (e.RemovedItems.Count == 0)
+        {
+            return;
+        }
+        string removedValue = (string)e.RemovedItems[0];
+
+        if (addedValue != "--None--" && !string.IsNullOrEmpty(addedValue))
+        {
+            foreach (var item in TestCreator.InputCreator)
+            {
+                if (item.SelectedSwitch != addedValue)
+                {
+                    item.Switches.Remove(addedValue);
+                }
+            }
+
+            if (!removedItems.Contains(addedValue))
+            {
+                removedItems.Add(addedValue);
+            }
+            return;
+        }
+
+        removedItems.Remove(removedValue);
+
+        TestCreator.InputCreator
+            .Where(item => !item.Switches.Contains(removedValue))
+            .ToList()
+            .ForEach(item =>
+            {
+                List<string> switches = new(item.Switches)
+                {
+                    removedValue
+                };
+                item.Switches = new(switches.OrderBy(i => i));
+            });
+    }
+
+
+    //PMDG profile stuff
 
     public event EventHandler<PMDGDataFieldChangedEventArgs> FieldChanged;
 
     public List<string> WatchedFields { get; set; } = new() { "ADF_StandbyFrequency", "IRS_annunALIGN_0" };
 
-    public TestProfileViewModel()
-    {
-        FieldChanged += Instance_FieldChanged;
-        //Initialize
-        PMDG_NG3_SDK.PMDG_NG3_Data data = new();
+    //public TestProfileViewModel()
+    //{
+    //    FieldChanged += Instance_FieldChanged;
+    //    //Initialize
+    //    PMDG_NG3_SDK.PMDG_NG3_Data data = new();
 
-        dynamic dynObject = new ExpandoObject();
-        IDictionary<string, object> dynDict = (IDictionary<string, object>)dynObject;
+    //    dynamic dynObject = new ExpandoObject();
+    //    IDictionary<string, object> dynDict = (IDictionary<string, object>)dynObject;
 
-        foreach (var field in typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetFields())
-        {
-            if (field.Name == "reserved")
-            {
-                continue;
-            }
+    //    foreach (var field in typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetFields())
+    //    {
+    //        if (field.Name == "reserved")
+    //        {
+    //            continue;
+    //        }
 
-            if (field.FieldType.IsArray)
-            {
-                Array array = (Array)field.GetValue(data);
-                if (array is null)
-                {
-                    if (field.GetCustomAttributes(typeof(MarshalAsAttribute), false).FirstOrDefault() is MarshalAsAttribute marshalAsAttribute)
-                    {
-                        array = Array.CreateInstance(field.FieldType.GetElementType(), marshalAsAttribute.SizeConst);
-                        field.SetValue(data, array);
-                    }
-                }
+    //        if (field.FieldType.IsArray)
+    //        {
+    //            Array array = (Array)field.GetValue(data);
+    //            if (array is null)
+    //            {
+    //                if (field.GetCustomAttributes(typeof(MarshalAsAttribute), false).FirstOrDefault() is MarshalAsAttribute marshalAsAttribute)
+    //                {
+    //                    array = Array.CreateInstance(field.FieldType.GetElementType(), marshalAsAttribute.SizeConst);
+    //                    field.SetValue(data, array);
+    //                }
+    //            }
 
-                if (array is not null)
-                {
-                    int i = 0;
-                    foreach (var item in array)
-                    {
-                        dynDict[field.Name + '_' + i] = item;
-                        i++;
-                    }
-                }
-            }
+    //            if (array is not null)
+    //            {
+    //                int i = 0;
+    //                foreach (var item in array)
+    //                {
+    //                    dynDict[field.Name + '_' + i] = item;
+    //                    i++;
+    //                }
+    //            }
+    //        }
 
-            dynDict[field.Name] = field.GetValue(data);
-        }
+    //        dynDict[field.Name] = field.GetValue(data);
+    //    }
 
 
-        //Update Data
-        PMDG_NG3_SDK.PMDG_NG3_Data newData = new()
-        {
-            ADF_StandbyFrequency = 20,
-            IRS_annunALIGN = new bool[2] { true, false}
-        };
+    //    //Update Data
+    //    PMDG_NG3_SDK.PMDG_NG3_Data newData = new()
+    //    {
+    //        ADF_StandbyFrequency = 20,
+    //        IRS_annunALIGN = new bool[2] { true, false}
+    //    };
 
-        foreach (var field in typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetFields())
-        {
-            if (field.Name == "reserved")
-            {
-                continue;
-            }
+    //    foreach (var field in typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetFields())
+    //    {
+    //        if (field.Name == "reserved")
+    //        {
+    //            continue;
+    //        }
 
-            string propertyName;
-            object oldValue;
-            object newValue;
-            if (field.FieldType.IsArray)
-            {
-                if (field.GetValue(newData) is Array array)
-                {
-                    for (int i = 0; i < array.Length; i++)
-                    {
-                        propertyName = field.Name + '_' + i;
-                        if (!dynDict.TryGetValue(propertyName, out oldValue))
-                        {
-                            oldValue = null;
-                        }
-                        newValue = array.GetValue(i);
-                        if (!Equals(oldValue, newValue) && WatchedFields.Contains(propertyName))
-                        {
-                            dynDict[propertyName] = newValue;
-                            // Value has changed, raise an event or call a method here
-                            FieldChanged?.Invoke(null, new PMDGDataFieldChangedEventArgs(propertyName, newValue));
-                        }
-                    }
-                }
-                continue;
-            }
+    //        string propertyName;
+    //        object oldValue;
+    //        object newValue;
+    //        if (field.FieldType.IsArray)
+    //        {
+    //            if (field.GetValue(newData) is Array array)
+    //            {
+    //                for (int i = 0; i < array.Length; i++)
+    //                {
+    //                    propertyName = field.Name + '_' + i;
+    //                    if (!dynDict.TryGetValue(propertyName, out oldValue))
+    //                    {
+    //                        oldValue = null;
+    //                    }
+    //                    newValue = array.GetValue(i);
+    //                    if (!Equals(oldValue, newValue) && WatchedFields.Contains(propertyName))
+    //                    {
+    //                        dynDict[propertyName] = newValue;
+    //                        // Value has changed, raise an event or call a method here
+    //                        FieldChanged?.Invoke(null, new PMDGDataFieldChangedEventArgs(propertyName, newValue));
+    //                    }
+    //                }
+    //            }
+    //            continue;
+    //        }
 
-            propertyName = field.Name;
-            if (!dynDict.TryGetValue(propertyName, out oldValue))
-            {
-                oldValue = null;
-            }
+    //        propertyName = field.Name;
+    //        if (!dynDict.TryGetValue(propertyName, out oldValue))
+    //        {
+    //            oldValue = null;
+    //        }
 
-            newValue = field.GetValue(newData);
-            if (!Equals(oldValue, newValue) && WatchedFields.Contains(propertyName))
-            {
-                dynDict[propertyName] = newValue;
-                // Value has changed, raise an event or call a method here
-                FieldChanged?.Invoke(null, new PMDGDataFieldChangedEventArgs(propertyName, newValue));
-            }
-        }
-    }
+    //        newValue = field.GetValue(newData);
+    //        if (!Equals(oldValue, newValue) && WatchedFields.Contains(propertyName))
+    //        {
+    //            dynDict[propertyName] = newValue;
+    //            // Value has changed, raise an event or call a method here
+    //            FieldChanged?.Invoke(null, new PMDGDataFieldChangedEventArgs(propertyName, newValue));
+    //        }
+    //    }
+    //}
 
     private void Instance_FieldChanged(object sender, PMDGDataFieldChangedEventArgs e)
     {

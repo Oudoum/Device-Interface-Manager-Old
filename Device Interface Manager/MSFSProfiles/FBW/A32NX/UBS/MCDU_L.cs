@@ -4,11 +4,11 @@ using System.Text.Json;
 using Microsoft.FlightSimulator.SimConnect;
 using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
 
-namespace Device_Interface_Manager.MSFSProfiles.FBW.A32NX;
+namespace Device_Interface_Manager.MSFSProfiles.FBW.A32NX.UBS;
 
-public class MCDU_L_USB : USB
+public class MCDU_L : USB
 {
-    public MCDU_L_USB()
+    public MCDU_L()
     {
         System.Windows.Application.Current.Dispatcher.Invoke(delegate
         {

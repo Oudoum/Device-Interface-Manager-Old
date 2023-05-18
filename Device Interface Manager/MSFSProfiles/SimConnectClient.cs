@@ -87,7 +87,7 @@ public class SimConnectClient
 
     private void Simconnect_OnRecvSimobjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
     {
-        if (data.dwRequestID >= 5)
+        if (data.dwRequestID != 0)
         {
             if (SimVars.Count < (int)data.dwRequestID)
             {

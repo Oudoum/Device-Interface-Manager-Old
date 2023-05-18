@@ -1,9 +1,9 @@
 ﻿using Microsoft.FlightSimulator.SimConnect;
 using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
 
-namespace Device_Interface_Manager.MSFSProfiles.FENIX.A320;
+namespace Device_Interface_Manager.MSFSProfiles.FENIX.A320.USB;
 
-public class MCDU_L_USB : USB
+public class MCDU_L : MSFSProfiles.USB
 {
     protected override void Simconnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
     {

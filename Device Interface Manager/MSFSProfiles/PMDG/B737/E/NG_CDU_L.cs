@@ -1,10 +1,10 @@
 ﻿using static Device_Interface_Manager.MSFSProfiles.PMDG.PMDG_NG3_SDK;
 
-namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737;
+namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737.E;
 
-public class NG_CDU_L_E : NG_CDU_Base_E
+public class NG_CDU_L : NG_CDU_Base
 {
-    public NG_CDU_L_E()
+    public NG_CDU_L()
     {
         startupManager.Settings = @"Profiles\PMDG 737\ENET CDU Screen L.json";
         CDU_ID = DATA_REQUEST_ID.CDU0_REQUEST;

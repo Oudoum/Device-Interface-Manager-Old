@@ -3,11 +3,11 @@ using System.IO;
 using System.Text.Json;
 using Microsoft.FlightSimulator.SimConnect;
 
-namespace Device_Interface_Manager.MSFSProfiles.FBW.A32NX;
+namespace Device_Interface_Manager.MSFSProfiles.FBW.A32NX.E;
 
-public class MCDU_L_E : ENET
+public class MCDU_L : ENET
 {
-    public MCDU_L_E()
+    public MCDU_L()
     {
         System.Windows.Application.Current.Dispatcher.Invoke(delegate
         {

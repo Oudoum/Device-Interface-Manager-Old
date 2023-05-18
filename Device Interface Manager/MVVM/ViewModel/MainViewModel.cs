@@ -10,16 +10,16 @@ using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.Messaging.Messages;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Device_Interface_Manager.interfaceIT.USB;
+using Device_Interface_Manager.MVVM.View;
+using Device_Interface_Manager.Core;
 using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
 using static Device_Interface_Manager.interfaceIT.USB.InterfaceIT_BoardInfo.BoardInformationStructure;
-using Device_Interface_Manager.MVVM.View;
 
 namespace Device_Interface_Manager.MVVM.ViewModel;
 
 public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStausMessage>
 {
     private const string updateLink = "https://raw.githubusercontent.com/Oudoum/Device-Interface-Manager-Download/main/Updates/AutoUpdaterDIM.xml";
-    private const string version = "1.1.7.2";
 
     public HomeUSBViewModel HomeUSBVM { get; set; }
 
@@ -102,12 +102,10 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
         }
     }
 
-    public string DIMVersion { get; } = "DIM Version " + version;
+    public string DIMVersion { get; } = "DIM Version " + Assembly.GetEntryAssembly().GetName().Version;
 
     public MainViewModel()
     {
-        AutoUpdater.InstalledVersion = new Version(version);
-
         HomeUSBVM = new HomeUSBViewModel();
         HomeENETVM = new HomeENETViewModel();
         BoardinfoENETVM = new BoardinfoENETViewModel();
@@ -120,8 +118,16 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
 
         SelectedController = 0;
 
-        AutoUpdater.Start(updateLink);
+        Update();
         StrongReferenceMessenger.Default.Register(this);
+    }
+
+    private static void Update()
+    {
+        AutoUpdater.ShowSkipButton = false;
+        AutoUpdater.ShowRemindLaterButton = false;
+        AutoUpdater.SetOwner(System.Windows.Application.Current.MainWindow);
+        AutoUpdater.Start(updateLink);
     }
 
     [RelayCommand]
@@ -129,8 +135,8 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
     {
         if (!System.Windows.Application.Current.Windows.OfType<TestProfileView>().Any())
         {
-            TestProfileView profileCreator = new();
-            profileCreator.Show();
+            NavigationService navigationService = new();
+            navigationService.NavigateTo<TestProfileView>(DeviceList);
         }
     }
 

@@ -1,8 +1,8 @@
 ﻿using Microsoft.FlightSimulator.SimConnect;
 
-namespace Device_Interface_Manager.MSFSProfiles.FENIX.A320;
+namespace Device_Interface_Manager.MSFSProfiles.FENIX.A320.E;
 
-public class MCDU_R_E : ENET
+public class MCDU_R : ENET
 {
     protected override void Simconnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
     {

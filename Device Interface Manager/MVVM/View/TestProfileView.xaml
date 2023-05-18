@@ -1,11 +1,12 @@
-﻿<Window x:Class="Device_Interface_Manager.MVVM.View.TestProfileView"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:viewmodel="clr-namespace:Device_Interface_Manager.MVVM.ViewModel"
-        d:DataContext="{d:DesignInstance Type=viewmodel:TestProfileViewModel}"
+        xmlns:local="clr-namespace:Device_Interface_Manager.MVVM.View" x:Class="Device_Interface_Manager.MVVM.View.TestProfileView"
+        d:DataContext="{d:DesignInstance Type={x:Type viewmodel:TestProfileViewModel}}"
         mc:Ignorable="d" 
         Background="Black"
         Height="900"
@@ -18,6 +19,12 @@
     </Window.DataContext>
 
     <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Grid.Resources>
+            <Style TargetType="{x:Type ComboBox}">
+                <Setter Property="Margin" Value="0,0,0,10"/>
+            </Style>
+        </Grid.Resources>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="500"/>
             <RowDefinition Height="*"/>
@@ -27,7 +34,27 @@
             <DataGrid
                 CanUserAddRows="False"
                 CanUserDeleteRows="False"
-                ItemsSource="{Binding InputProfiles}">
+                AutoGenerateColumns="False"
+                ItemsSource="{Binding TestCreator.InputCreator}">
+
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Switches">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ComboBox
+                                    ItemsSource="{Binding Switches}"
+                                    SelectedItem="{Binding SelectedSwitch, UpdateSourceTrigger=PropertyChanged}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="SelectionChanged">
+                                            <i:InvokeCommandAction Command="{Binding DataContext.SwitchComboBoxSlectionChangedCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:TestProfileView}}}" PassEventArgsToCommand="True"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </ComboBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Event" Binding="{Binding Event}"/>
+                </DataGrid.Columns>
 
             </DataGrid>
             <Button Content="Add" Foreground="White" Margin="0,0,50,0" Command="{Binding AddInputCommand}"/>
@@ -35,9 +62,7 @@
             <DataGrid
                 CanUserAddRows="False"
                 CanUserDeleteRows="False"
-                ItemsSource="{Binding OutputProfiles}">
-
-            </DataGrid>
+                ItemsSource="{Binding TestCreator.OutputCreator}"/>
             <Button Content="Add" Foreground="White" Command="{Binding AddOutputCommand}"/>
         </StackPanel>
 
@@ -49,7 +74,7 @@
                 IsTextSearchEnabled="False"
                 Text="{Binding SearchPMDGEventsText}"
                 ItemsSource="{Binding PMDGEvents}"
-                VirtualizingStackPanel.IsVirtualizing="True">
+                VirtualizingPanel.IsVirtualizing="True">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="GotFocus">
                         <i:InvokeCommandAction Command="{Binding ComboBoxGotFocusCommand}" PassEventArgsToCommand="True"/>
@@ -70,7 +95,7 @@
                 DisplayMemberPath="Key"
                 Text="{Binding SearchPMDGMouseEventsText}"
                 ItemsSource="{Binding PMDGMouseEvents}"
-                VirtualizingStackPanel.IsVirtualizing="True">
+                VirtualizingPanel.IsVirtualizing="True">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="GotFocus">
                         <i:InvokeCommandAction Command="{Binding ComboBoxGotFocusCommand}" PassEventArgsToCommand="True"/>
@@ -90,7 +115,7 @@
                 IsTextSearchEnabled="False"
                 Text="{Binding SearchPMDGDataText}"
                 ItemsSource="{Binding PMDGDataFieldNames}"
-                VirtualizingStackPanel.IsVirtualizing="True">
+                VirtualizingPanel.IsVirtualizing="True">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="GotFocus">
                         <i:InvokeCommandAction Command="{Binding ComboBoxGotFocusCommand}" PassEventArgsToCommand="True"/>
@@ -103,11 +128,6 @@
                 </ComboBox.ItemsPanel>
             </ComboBox>
         </StackPanel>
-        <Grid.Resources>
-            <Style TargetType="ComboBox">
-                <Setter Property="Margin" Value="0,0,0,10"/>
-            </Style>
-        </Grid.Resources>
 
     </Grid>
 </Window>

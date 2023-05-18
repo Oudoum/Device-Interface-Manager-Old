@@ -10,26 +10,28 @@ public partial class TestCreator : ObservableObject
 
     public string _boardType;
 
-    public ObservableCollection<InputCreator> InputCreator { get; set; }
+    [ObservableProperty]
+    private ObservableCollection<InputCreator> _inputCreator;
 
-    public ObservableCollection<OutputCreator> OutputCreator { get; set; }
+    [ObservableProperty]
+    private ObservableCollection<OutputCreator> _outputCreator;
 }
 
-public class InputCreator
+public partial class InputCreator : ObservableObject
 {
-    public ObservableCollection<Switch> Switches { get; set; }
+    [ObservableProperty]
+    private ObservableCollection<string> _switches;
+
+    [ObservableProperty]
+    private string _selectedSwitch = "--None--";
+
+
     public EventType EventType { get; set; }
     public string Event { get; set; } // MSFS/SimConnect...
     public PMDG_NG3_SDK.PMDGEvents PMDGEvent { get; set; }
     public KeyValuePair<string, uint>[] PMDGMouseEvent { get; set; }
     public int PMDGEventData { get; set; }
     public bool IsInverted { get; set; }
-}
-
-public class Switch
-{
-    public int Id { get; set; }
-    public int Position { get; set; }
 }
 
 public class EventType
@@ -41,7 +43,7 @@ public class EventType
 
 public class OutputCreator
 {
-    public ObservableCollection<LED> LEDs { get; set; }
+    public ObservableCollection<string> LEDs { get; set; }
     public DataType DataType { get; set; }
     public string Data { get; set; }
     public string[] PMDGStructData { get; set; }
@@ -52,12 +54,6 @@ public class DataType
 {
     public string Name1 { get; private set; } = "MSFS/SimConnect";
     public string Name2 { get; private set; } = "PMDG737";
-}
-
-public class LED
-{
-    public int Id { get; set; }
-    public int Position { get; set; }
 }
 
 //7Segement

@@ -118,35 +118,35 @@ public partial class HomeUSBViewModel : ObservableObject
         switch (connection.Profile.Id)
         {
             case 1:
-                await StartUSBProfile<MSFSProfiles.FENIX.A320.MCDU_L_USB>(connection);
+                await StartUSBProfile<MSFSProfiles.FENIX.A320.USB.MCDU_L>(connection);
                 break;
 
             case 2:
-                await StartUSBProfile<MSFSProfiles.FENIX.A320.MCDU_R_USB>(connection);
+                await StartUSBProfile<MSFSProfiles.FENIX.A320.USB.MCDU_R>(connection);
                 break;
 
             case 3:
-                await StartUSBProfile<MSFSProfiles.FBW.A32NX.MCDU_L_USB>(connection);
+                await StartUSBProfile<MSFSProfiles.FBW.A32NX.UBS.MCDU_L>(connection);
                 break;
 
             case 4:
-                await StartUSBProfile<MSFSProfiles.FBW.A32NX.MCDU_R_USB>(connection);
+                await StartUSBProfile<MSFSProfiles.FBW.A32NX.UBS.MCDU_R>(connection);
                 break;
 
             case 5:
-                await StartUSBProfile<MSFSProfiles.PMDG.B737.NG_CDU_L_USB>(connection);
+                await StartUSBProfile<MSFSProfiles.PMDG.B737.USB.NG_CDU_L>(connection);
                 break;
 
             case 6:
-                await StartUSBProfile<MSFSProfiles.PMDG.B737.NG_CDU_R_USB>(connection);
+                await StartUSBProfile<MSFSProfiles.PMDG.B737.USB.NG_CDU_R>(connection);
                 break;
 
             case 7:
-                await StartUSBProfile<MSFSProfiles.PMDG.B737.NG_MCP_USB>(connection);
+                await StartUSBProfile<MSFSProfiles.PMDG.B737.USB.NG_MCP_3311>(connection);
                 break;
 
             case 8:
-                await StartUSBProfile<MSFSProfiles.PMDG.B737.NG_MCP_777_USB>(connection);
+                await StartUSBProfile<MSFSProfiles.PMDG.B737.USB.NG_MCP_777>(connection);
                 break;
         }
     }
@@ -174,8 +174,14 @@ public partial class HomeUSBViewModel : ObservableObject
             "FBW A32NX Right MCDU",
             "PMDG 737NG Left CDU",
             "PMDG 737NG Right CDU",
-            "PMDG 737NG MCP",
-            "PMDG 737NG MCP (777)" 
+            "PMDG 737NG MCP (Board: 330A)",
+            "PMDG 737NG MCP (Board: 3311)",
+            "PMDG 737NG MCP (Board: 3327)",
+            "PMDG 737NG MCP (Board: 332C)",
+            "PMDG 737NG EFIS L (Board: 330B)",
+            "PMDG 737NG EFIS R (Board: 330C)",
+            "PMDG 737NG EFIS L (Board: 332D)",
+            "PMDG 737NG EFIS R (Board: 332E)",
         };
 
         //"PMDG 737MAX Left CDU"

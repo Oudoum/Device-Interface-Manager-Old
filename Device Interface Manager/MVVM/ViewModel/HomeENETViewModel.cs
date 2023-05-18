@@ -76,35 +76,35 @@ public partial class HomeENETViewModel : ObservableObject
         switch (connection.Profile.Id)
         {
             case 1:
-                await StartENETProfile<MSFSProfiles.FENIX.A320.MCDU_L_E>(connection);
+                await StartENETProfile<MSFSProfiles.FENIX.A320.E.MCDU_L>(connection);
                 break;
 
             case 2:
-                await StartENETProfile<MSFSProfiles.FENIX.A320.MCDU_R_E>(connection);
+                await StartENETProfile<MSFSProfiles.FENIX.A320.E.MCDU_R>(connection);
                 break;
 
             case 3:
-                await StartENETProfile<MSFSProfiles.FBW.A32NX.MCDU_L_E>(connection);
+                await StartENETProfile<MSFSProfiles.FBW.A32NX.E.MCDU_L>(connection);
                 break;
 
             case 4:
-                await StartENETProfile<MSFSProfiles.FBW.A32NX.MCDU_R_E>(connection);
+                await StartENETProfile< MSFSProfiles.FBW.A32NX.E.MCDU_R> (connection);
                 break;
 
             case 5:
-                await StartENETProfile<MSFSProfiles.PMDG.B737.NG_CDU_L_E>(connection);
+                await StartENETProfile<MSFSProfiles.PMDG.B737.E.NG_CDU_L>(connection);
                 break;
 
             case 6:
-                await StartENETProfile<MSFSProfiles.PMDG.B737.NG_CDU_R_E>(connection);
+                await StartENETProfile<MSFSProfiles.PMDG.B737.E.NG_CDU_R>(connection);
                 break;
 
             case 7:
-                await StartENETProfile<MSFSProfiles.PMDG.B737.NG_CDU_MAX_L_E>(connection);
+                await StartENETProfile<MSFSProfiles.PMDG.B737.E.NG_CDU_MAX_L>(connection);
                 break;
 
             case 8:
-                await StartENETProfile<MSFSProfiles.PMDG.B737.NG_CDU_MAX_R_E>(connection);
+                await StartENETProfile<MSFSProfiles.PMDG.B737.E.NG_CDU_MAX_R>(connection);
                 break;
 
             case 9:

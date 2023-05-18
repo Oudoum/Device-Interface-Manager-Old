@@ -1,6 +1,6 @@
-﻿namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737;
+﻿namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737.E;
 
-public class NG_CDU_MAX_R_E : NG_CDU_R_E
+public class NG_CDU_MAX_L : NG_CDU_L
 {
     protected override void KeyPressedAction(int key, uint direction)
     {
