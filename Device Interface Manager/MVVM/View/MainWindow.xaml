@@ -358,9 +358,9 @@
             <Button
                 Command="{Binding OpenProfileCreatorCommand}"
                 d:Visibility="Visible"
+                Visibility="Hidden"
                 Content="TestProfileCreator"
                 HorizontalAlignment="Center"
-                Visibility="Visible"
                 FontSize="16"
                 FontWeight="Bold"
                 Width="200"

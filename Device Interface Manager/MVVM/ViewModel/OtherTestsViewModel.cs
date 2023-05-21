@@ -73,7 +73,7 @@ public partial class OtherTestsViewModel : ObservableObject
 
 
     public required uint Session { get; init; }
-    public required int Features { get; init; }
+    public required uint Features { get; init; }
     public required int DatalineFirst { get; init; }
     public required int SevenSegmentCount { get; init; }
     public required int SevenSegmentFirst { get; init; }

@@ -10,44 +10,42 @@ public class InterfaceIT_BoardInfo
         public uint Session { get; init; }
         public string BoardType { get; init; }
         public string SerialNumber { get; init; }
-        public BoardInformationStructure.BOARDCAPS DeviceInfo { get; init; }
+        public BOARDCAPS DeviceInfo { get; init; }
     }
 
-    public class BoardInformationStructure
+
+    public struct BOARDCAPS
     {
-        public struct BOARDCAPS
-        {
-            public int nLEDCount;              // Total number of LED outputs
-            public int nLEDFirst;              // First LED output number
-            public int nLEDLast;               // Last LED output number
-            public int nSwitchCount;           // Total number of switches
-            public int nSwitchFirst;           // First switch input number
-            public int nSwitchLast;            // Last switch input number
-            public int n7SegmentCount;         // Total number of 7 Segment output (future)
-            public int n7SegmentFirst;         // First 7 Segment output number (future)
-            public int n7SegmentLast;          // Last 7 Segment output number (future)
-            public int nDatalineCount;         // Total datalines
-            public int nDatalineFirst;         // First dataline number
-            public int nDatalineLast;          // Last dataline number
-            public int nServoController;       // Total servo controllers
-            public int nServoControllerFirst;  // First servo controller
-            public int nServoControllerLast;   // Last servo controller
-            public int nReserved4;
-            public int nReserved5;
-            public int nReserved6;
-            public int nReserved7;
-            public int nReserved8;
-            public int nReserved9;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 5)]
-            public string szBoardType;         // Null-terminated string containing the board type identifier
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 9)]
-            public string szManufactureDate;   // Null-terminated string containing the manufacture date of the board
-            public int dwFeatures;             // Features that are currently enabled on the board
-            public int nUpdateLevel;           // Update level that is currently applied to this board
-        }
+        public int nLEDCount;              // Total number of LED outputs
+        public int nLEDFirst;              // First LED output number
+        public int nLEDLast;               // Last LED output number
+        public int nSwitchCount;           // Total number of switches
+        public int nSwitchFirst;           // First switch input number
+        public int nSwitchLast;            // Last switch input number
+        public int n7SegmentCount;         // Total number of 7 Segment output (future)
+        public int n7SegmentFirst;         // First 7 Segment output number (future)
+        public int n7SegmentLast;          // Last 7 Segment output number (future)
+        public int nDatalineCount;         // Total datalines
+        public int nDatalineFirst;         // First dataline number
+        public int nDatalineLast;          // Last dataline number
+        public int nServoController;       // Total servo controllers
+        public int nServoControllerFirst;  // First servo controller
+        public int nServoControllerLast;   // Last servo controller
+        public int nReserved4;
+        public int nReserved5;
+        public int nReserved6;
+        public int nReserved7;
+        public int nReserved8;
+        public int nReserved9;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 5)]
+        public string szBoardType;         // Null-terminated string containing the board type identifier
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 9)]
+        public string szManufactureDate;   // Null-terminated string containing the manufacture date of the board
+        public uint dwFeatures;             // Features that are currently enabled on the board
+        public int nUpdateLevel;           // Update level that is currently applied to this board
     }
 
-    public class Features
+    public struct Features
     {
         //Features
         public const int INTERFACEIT_FEATURE_NONE = 0x00000000;

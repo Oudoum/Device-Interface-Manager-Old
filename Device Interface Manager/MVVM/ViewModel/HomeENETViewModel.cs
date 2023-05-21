@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -25,8 +26,36 @@ public partial class HomeENETViewModel : ObservableObject
 
     private List<ENET> ENETList { get; set; } = new();
 
+    private readonly Dictionary<string, Func<Connection, Task>> profileActions;
+
     public HomeENETViewModel()
     {
+        profileActions = new()
+        {
+            { "-- None --", null },
+            { "Fenix A320 Left MCDU", StartENETProfile<MSFSProfiles.FENIX.A320.E.MCDU_L> },
+            { "Fenix A320 Right MCDU", StartENETProfile<MSFSProfiles.FENIX.A320.E.MCDU_R> },
+            { "FBW A32NX Left MCDU", StartENETProfile<MSFSProfiles.FBW.A32NX.E.MCDU_L> },
+            { "FBW A32NX Right MCDU", StartENETProfile<MSFSProfiles.FBW.A32NX.E.MCDU_R> },
+            { "PMDG 737NG Left CDU", StartENETProfile<MSFSProfiles.PMDG.B737.E.NG_CDU_L> },
+            { "PMDG 737NG Right CDU", StartENETProfile<MSFSProfiles.PMDG.B737.E.NG_CDU_R> },
+            { "PMDG 737NG Left CDU (MAX)", StartENETProfile<MSFSProfiles.PMDG.B737.E.NG_CDU_MAX_L> },
+            { "PMDG 737NG Right CDU (MAX)", StartENETProfile<MSFSProfiles.PMDG.B737.E.NG_CDU_MAX_R> },
+            { "CDU/MCDU Test", StartTest },
+
+        //"PMDG 737MAX Left CDU"
+        //"PMDG 737MAX Right CDU"
+
+        //"PMDG 777 Left CDU"
+        //"PMDG 777 Right CDU"
+        //"PMDG 777 Center CDU"
+
+        //"PMDG 747 Left CDU"
+        //"PMDG 747 Right CDU"
+        //"PMDG 747 Center CDU"
+
+        };
+
         CreateProfiles();
         Connections = MainViewModel.LoadConnectionsData<ObservableCollection<Connection>>(enet);
 
@@ -66,59 +95,30 @@ public partial class HomeENETViewModel : ObservableObject
     private async Task StartENETProfile<T>(Connection connection) where T : ENET, new()
     {
         T profile = new();
-        connection.Status = await Task.Run(() => profile.Start(connection.IPAddress));
         ENETList.Add(profile);
+        connection.Status = await Task.Run(() => profile.Start(connection.IPAddress));
     }
 
     private bool isActive;
     private async Task StartENETProfiles(Connection connection)
     {
-        switch (connection.Profile.Id)
+        if (profileActions.TryGetValue(connection.Profile.Name, out var action))
         {
-            case 1:
-                await StartENETProfile<MSFSProfiles.FENIX.A320.E.MCDU_L>(connection);
-                break;
+            if (action is not null)
+            {
+                await action(connection);
+            }
+        }
+    }
 
-            case 2:
-                await StartENETProfile<MSFSProfiles.FENIX.A320.E.MCDU_R>(connection);
-                break;
-
-            case 3:
-                await StartENETProfile<MSFSProfiles.FBW.A32NX.E.MCDU_L>(connection);
-                break;
-
-            case 4:
-                await StartENETProfile< MSFSProfiles.FBW.A32NX.E.MCDU_R> (connection);
-                break;
-
-            case 5:
-                await StartENETProfile<MSFSProfiles.PMDG.B737.E.NG_CDU_L>(connection);
-                break;
-
-            case 6:
-                await StartENETProfile<MSFSProfiles.PMDG.B737.E.NG_CDU_R>(connection);
-                break;
-
-            case 7:
-                await StartENETProfile<MSFSProfiles.PMDG.B737.E.NG_CDU_MAX_L>(connection);
-                break;
-
-            case 8:
-                await StartENETProfile<MSFSProfiles.PMDG.B737.E.NG_CDU_MAX_R>(connection);
-                break;
-
-            case 9:
-                if (!isActive)
-                {
-                    isActive = true;
-                    WeakReferenceMessenger.Default.Send(connection.IPAddress);
-                    await Task.Delay(10);
-                    connection.Status = await WeakReferenceMessenger.Default.Send<TestENETViewModel.StatusRequestMessage>();
-                }
-                break;
-
-            default:
-                break;
+    private async Task StartTest(Connection connection)
+    {
+        if (!isActive)
+        {
+            isActive = true;
+            WeakReferenceMessenger.Default.Send(connection.IPAddress);
+            await Task.Delay(10);
+            connection.Status = await WeakReferenceMessenger.Default.Send<TestENETViewModel.StatusRequestMessage>();
         }
     }
 
@@ -138,7 +138,7 @@ public partial class HomeENETViewModel : ObservableObject
     [RelayCommand]
     private void AddRow()
     {
-        Connections.Add(new Connection() { Id = 0, Name = "NAME", IPAddress = "192.168.1.200", Profile = Profiles[0] });
+        Connections.Add(new Connection() { Name = "NAME", IPAddress = "192.168.1.200", Profile = Profiles[0] });
     }
 
     [RelayCommand]
@@ -156,39 +156,14 @@ public partial class HomeENETViewModel : ObservableObject
                 return;
             }
         }
-        Connections.Add(new Connection() { Id = 0, Name = result[0], IPAddress = result[1], Profile = Profiles[0] });
+        Connections.Add(new Connection() { Name = result[0], IPAddress = result[1], Profile = Profiles[0] });
     }
 
     private void CreateProfiles()
     {
-        string[] profileNames = new string[]
-       {
-           "-- None --",
-           "Fenix A320 Left MCDU",
-           "Fenix A320 Right MCDU",
-           "FBW A32NX Left MCDU",
-           "FBW A32NX Right MCDU",
-           "PMDG 737NG Left CDU",
-           "PMDG 737NG Right CDU",
-           "PMDG 737NG Left CDU (MAX)",
-           "PMDG 737NG Right CDU (MAX)",
-           "CDU/MCDU Test"
-       };
-
-        //"PMDG 737MAX Left CDU"
-        //"PMDG 737MAX Right CDU
-
-        //"PMDG 777 Left CDU"
-        //"PMDG 777 Right CDU"
-        //"PMDG 777 Center CDU"
-
-        //"PMDG 747 Left CDU"
-        //"PMDG 747 Right CDU"
-        //"PMDG 747 Center CDU"
-
-        for (int i = 0; i < profileNames.Length; i++)
+        foreach (var item in profileActions.Keys)
         {
-            Profiles.Add(new Profile { Id = i, Name = profileNames[i] });
+            Profiles.Add(new Profile { Name = item });
         }
     }
 

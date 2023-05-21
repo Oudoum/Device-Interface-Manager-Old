@@ -256,10 +256,10 @@
                             <DataTemplate>
                                 <ComboBox
                                         ItemsSource="{Binding DataContext.Profiles, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:HomeENETView}}}"
-                                        SelectedValuePath="Id"
+                                        SelectedValuePath="Name"
                                         Cursor="Hand"
                                         Foreground="White"
-                                        SelectedValue="{Binding Profile.Id}"
+                                        SelectedValue="{Binding Profile.Name}"
                                         SelectedItem="{Binding Profile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
 
                                     <ComboBox.ItemTemplate>

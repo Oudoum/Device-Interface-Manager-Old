@@ -17,7 +17,7 @@ public abstract class NG_CDU_Base : MSFSProfiles.USB
         {
             if (_cDU_annunEXEC != value)
             {
-                interfaceIT_LED_Set(device.Session, CDU_annunEXECPos, _cDU_annunEXEC = value);
+                interfaceIT_LED_Set(Device.Session, CDU_annunEXECPos, _cDU_annunEXEC = value);
             }
         }
     }
@@ -30,7 +30,7 @@ public abstract class NG_CDU_Base : MSFSProfiles.USB
         {
             if (_cDU_annunCALL != value)
             {
-                interfaceIT_LED_Set(device.Session, CDU_annunCALLPos, _cDU_annunCALL = value);
+                interfaceIT_LED_Set(Device.Session, CDU_annunCALLPos, _cDU_annunCALL = value);
             }
         }
     }
@@ -43,7 +43,7 @@ public abstract class NG_CDU_Base : MSFSProfiles.USB
         {
             if (_cDU_annunMSG != value)
             {
-                interfaceIT_LED_Set(device.Session, CDU_annunMSGPos, _cDU_annunMSG = value);
+                interfaceIT_LED_Set(Device.Session, CDU_annunMSGPos, _cDU_annunMSG = value);
             }
         }
     }
@@ -56,7 +56,7 @@ public abstract class NG_CDU_Base : MSFSProfiles.USB
         {
             if (_cDU_annunFAIL != value)
             {
-                interfaceIT_LED_Set(device.Session, CDU_annunFAILPos, _cDU_annunFAIL = value);
+                interfaceIT_LED_Set(Device.Session, CDU_annunFAILPos, _cDU_annunFAIL = value);
             }
         }
     }
@@ -69,7 +69,7 @@ public abstract class NG_CDU_Base : MSFSProfiles.USB
         {
             if (_cDU_annunOFST != value)
             {
-                interfaceIT_LED_Set(device.Session, CDU_annunOFSTPos, _cDU_annunOFST = value);
+                interfaceIT_LED_Set(Device.Session, CDU_annunOFSTPos, _cDU_annunOFST = value);
             }
         }
     }
@@ -82,7 +82,7 @@ public abstract class NG_CDU_Base : MSFSProfiles.USB
         {
             if (_lTS_PedPanelKnob != value && ELEC_BusPowered_3)
             {
-                interfaceIT_Brightness_Set(device.Session, (int)((_lTS_PedPanelKnob = value) * 1.5));
+                interfaceIT_Brightness_Set(Device.Session, (int)((_lTS_PedPanelKnob = value) * 1.5));
             }
         }
     }
@@ -98,11 +98,11 @@ public abstract class NG_CDU_Base : MSFSProfiles.USB
                 _eLEC_BusPowered_3 = value;
                 if (value)
                 {
-                    interfaceIT_Brightness_Set(device.Session, (int)(LTS_PedPanelKnob * 1.5));
+                    interfaceIT_Brightness_Set(Device.Session, (int)(LTS_PedPanelKnob * 1.5));
                 }
                 else if (!value)
                 {
-                    interfaceIT_Brightness_Set(device.Session, 0);
+                    interfaceIT_Brightness_Set(Device.Session, 0);
                 }
             }
         }
@@ -147,11 +147,15 @@ public abstract class NG_CDU_Base : MSFSProfiles.USB
 
     protected PMDG_737_CDU_StartupManager startupManager = new();
 
-    protected async override Task StartSimConnect()
+    protected async override Task StartSimConnectAsync()
     {
-        await base.StartSimConnect();
-        await startupManager.PMDG737CDUStartup(simConnectClient);
-        _ = Task.Run(GetValues);
+        await base.StartSimConnectAsync();
+        if (simConnectClient.simConnect is not null)
+        {
+            await startupManager.PMDG737CDUStartup(simConnectClient);
+            _ = Task.Run(GetValues);
+            interfaceIT_Dataline_Set(Device.Session, Device.DeviceInfo.nDatalineFirst, true);
+        }
     }
 
     protected override void KeyPressedProc(uint session, int key, uint direction)
@@ -165,7 +169,7 @@ public abstract class NG_CDU_Base : MSFSProfiles.USB
         int noldValue = 0;
         while (simConnectClient.simConnect is not null)
         {
-            interfaceIT_Analog_GetValue(device.Session, 0, out int value);
+            interfaceIT_Analog_GetValue(Device.Session, 0, out int value);
             if (Math.Abs(value - oldValue) >= 50 || oldValue == 0)
             {
                 oldValue = value;

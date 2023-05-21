@@ -83,7 +83,7 @@ public class MCDU_R : ENET
         simConnectClient.RegisterSimVar("L:A32NX_MCDU_R_ANNUNC_FM2");
     }
 
-    private void SimConnectClient_OnSimVarChanged(SimConnectClient.SimVar simVar)
+    private void SimConnectClient_OnSimVarChanged(object sender, SimConnectClient.SimVar simVar)
     {
         switch (simVar.Name)
         {

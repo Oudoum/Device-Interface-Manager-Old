@@ -40,35 +40,35 @@ public class NG_MCP_777 : MSFSProfiles.USB
     {
         while (!token.IsCancellationRequested)
         {
-            interfaceIT_7Segment_Display(device.Session, "888-888088888880", 1);
+            interfaceIT_7Segment_Display(Device.Session, "888-888088888880", 1);
             Thread.Sleep(2000);
             if (token.IsCancellationRequested)
             {
                 return;
             }
-            interfaceIT_7Segment_Display(device.Session, new string(' ', 16), 1);
+            interfaceIT_7Segment_Display(Device.Session, new string(' ', 16), 1);
             Thread.Sleep(1000);
         }
     }
 
     private void BackgroundLED(bool status)
     {
-        interfaceIT_LED_Set(device.Session, 129, status);
-        interfaceIT_LED_Set(device.Session, 130, status);
-        interfaceIT_LED_Set(device.Session, 132, status);
-        interfaceIT_LED_Set(device.Session, 133, status);
-        interfaceIT_LED_Set(device.Session, 134, status);
-        interfaceIT_LED_Set(device.Session, 135, status);
-        interfaceIT_LED_Set(device.Session, 136, status);
-        interfaceIT_LED_Set(device.Session, 137, status);
-        interfaceIT_LED_Set(device.Session, 138, status);
-        interfaceIT_LED_Set(device.Session, 139, status);
-        interfaceIT_LED_Set(device.Session, 140, status);
-        interfaceIT_LED_Set(device.Session, 141, status);
-        interfaceIT_LED_Set(device.Session, 177, status);
-        interfaceIT_LED_Set(device.Session, 178, status);
-        interfaceIT_LED_Set(device.Session, 179, status);
-        interfaceIT_LED_Set(device.Session, 180, status);
+        interfaceIT_LED_Set(Device.Session, 129, status);
+        interfaceIT_LED_Set(Device.Session, 130, status);
+        interfaceIT_LED_Set(Device.Session, 132, status);
+        interfaceIT_LED_Set(Device.Session, 133, status);
+        interfaceIT_LED_Set(Device.Session, 134, status);
+        interfaceIT_LED_Set(Device.Session, 135, status);
+        interfaceIT_LED_Set(Device.Session, 136, status);
+        interfaceIT_LED_Set(Device.Session, 137, status);
+        interfaceIT_LED_Set(Device.Session, 138, status);
+        interfaceIT_LED_Set(Device.Session, 139, status);
+        interfaceIT_LED_Set(Device.Session, 140, status);
+        interfaceIT_LED_Set(Device.Session, 141, status);
+        interfaceIT_LED_Set(Device.Session, 177, status);
+        interfaceIT_LED_Set(Device.Session, 178, status);
+        interfaceIT_LED_Set(Device.Session, 179, status);
+        interfaceIT_LED_Set(Device.Session, 180, status);
     }
 
     private bool _eLEC_BusPowered_2;
@@ -157,7 +157,7 @@ public class NG_MCP_777 : MSFSProfiles.USB
         {
             if (_mCP_annunN1 != value)
             {
-                interfaceIT_LED_Set(device.Session, 193, _mCP_annunN1 = value);
+                interfaceIT_LED_Set(Device.Session, 193, _mCP_annunN1 = value);
             }
         }
     }
@@ -169,7 +169,7 @@ public class NG_MCP_777 : MSFSProfiles.USB
         {
             if (_mCP_annunSPEED != value)
             {
-                interfaceIT_LED_Set(device.Session, 146, _mCP_annunSPEED = value);
+                interfaceIT_LED_Set(Device.Session, 146, _mCP_annunSPEED = value);
             }
         }
     }
@@ -181,7 +181,7 @@ public class NG_MCP_777 : MSFSProfiles.USB
         {
             if (_mCP_annunVNAV != value)
             {
-                interfaceIT_LED_Set(device.Session, 148, _mCP_annunVNAV = value);
+                interfaceIT_LED_Set(Device.Session, 148, _mCP_annunVNAV = value);
             }
         }
     }
@@ -193,7 +193,7 @@ public class NG_MCP_777 : MSFSProfiles.USB
         {
             if (_mCP_annunLVL_CHG != value)
             {
-                interfaceIT_LED_Set(device.Session, 149, _mCP_annunLVL_CHG = value);
+                interfaceIT_LED_Set(Device.Session, 149, _mCP_annunLVL_CHG = value);
             }
         }
     }
@@ -205,7 +205,7 @@ public class NG_MCP_777 : MSFSProfiles.USB
         {
             if (_mCP_annunHDG_SEL != value)
             {
-                interfaceIT_LED_Set(device.Session, 150, _mCP_annunHDG_SEL = value);
+                interfaceIT_LED_Set(Device.Session, 150, _mCP_annunHDG_SEL = value);
             }
         }
     }
@@ -217,7 +217,7 @@ public class NG_MCP_777 : MSFSProfiles.USB
         {
             if (_mCP_annunLNAV != value)
             {
-                interfaceIT_LED_Set(device.Session, 147, _mCP_annunLNAV = value);
+                interfaceIT_LED_Set(Device.Session, 147, _mCP_annunLNAV = value);
             }
         }
     }
@@ -229,7 +229,7 @@ public class NG_MCP_777 : MSFSProfiles.USB
         {
             if (_mCP_annunVOR_LOC != value)
             {
-                interfaceIT_LED_Set(device.Session, 153, _mCP_annunVOR_LOC = value);
+                interfaceIT_LED_Set(Device.Session, 153, _mCP_annunVOR_LOC = value);
             }
         }
     }
@@ -241,7 +241,7 @@ public class NG_MCP_777 : MSFSProfiles.USB
         {
             if (_mCP_annunAPP != value)
             {
-                interfaceIT_LED_Set(device.Session, 154, _mCP_annunAPP = value);
+                interfaceIT_LED_Set(Device.Session, 154, _mCP_annunAPP = value);
             }
         }
     }
@@ -253,7 +253,7 @@ public class NG_MCP_777 : MSFSProfiles.USB
         {
             if (_mCP_annunALT_HOLD != value)
             {
-                interfaceIT_LED_Set(device.Session, 152, _mCP_annunALT_HOLD = value);
+                interfaceIT_LED_Set(Device.Session, 152, _mCP_annunALT_HOLD = value);
             }
         }
     }
@@ -265,7 +265,7 @@ public class NG_MCP_777 : MSFSProfiles.USB
         {
             if (_mCP_annunVS != value)
             {
-                interfaceIT_LED_Set(device.Session, 151, _mCP_annunVS = value);
+                interfaceIT_LED_Set(Device.Session, 151, _mCP_annunVS = value);
             }
         }
     }
@@ -277,7 +277,7 @@ public class NG_MCP_777 : MSFSProfiles.USB
         {
             if (_mCP_annunCMD_A != value)
             {
-                interfaceIT_LED_Set(device.Session, 145, _mCP_annunCMD_A = value);
+                interfaceIT_LED_Set(Device.Session, 145, _mCP_annunCMD_A = value);
             }
         }
     }
@@ -289,7 +289,7 @@ public class NG_MCP_777 : MSFSProfiles.USB
         {
             if (_mCP_annunCMD_B != value)
             {
-                interfaceIT_LED_Set(device.Session, 155, _mCP_annunCMD_B = value);
+                interfaceIT_LED_Set(Device.Session, 155, _mCP_annunCMD_B = value);
             }
         }
     }
@@ -314,7 +314,7 @@ public class NG_MCP_777 : MSFSProfiles.USB
                 _mCP_VertSpeed = null;
                 IAS = false;
                 MACH = false;
-                interfaceIT_7Segment_Display(device.Session, new string(' ', 16), 1);
+                interfaceIT_7Segment_Display(Device.Session, new string(' ', 16), 1);
             }
         }
     }
@@ -331,7 +331,7 @@ public class NG_MCP_777 : MSFSProfiles.USB
                 if (value == 1)
                 {
                     pmdg737MCPBlinkingCancellationTokenSource?.Cancel();
-                    interfaceIT_7Segment_Display(device.Session, new string(' ', 16), 1);
+                    interfaceIT_7Segment_Display(Device.Session, new string(' ', 16), 1);
                     _mCP_Altitude = null;
                     _mCP_Heading = null;
                     _mCP_IASMach = null;
@@ -341,7 +341,7 @@ public class NG_MCP_777 : MSFSProfiles.USB
                 }
                 if (value == 0)
                 {
-                    interfaceIT_7Segment_Display(device.Session, "888-888088888880", 1);
+                    interfaceIT_7Segment_Display(Device.Session, "888-888088888880", 1);
                     Task.Run(() => PMDG737MCPBlinking((pmdg737MCPBlinkingCancellationTokenSource = new()).Token));
                     IAS = true;
                     MACH = true;
@@ -360,15 +360,15 @@ public class NG_MCP_777 : MSFSProfiles.USB
                 _mCP_IASMach = value;
                 if (value < 1)
                 {
-                    interfaceIT_7Segment_Display(device.Session, string.Format("{0,3}", value?.ToString("#.00", System.Globalization.CultureInfo.InvariantCulture)).TrimStart('.'), 2);
-                    interfaceIT_7Segment_Display(device.Session, " ", 1);
-                    interfaceIT_LED_Set(device.Session, 8, true);
+                    interfaceIT_7Segment_Display(Device.Session, string.Format("{0,3}", value?.ToString("#.00", System.Globalization.CultureInfo.InvariantCulture)).TrimStart('.'), 2);
+                    interfaceIT_7Segment_Display(Device.Session, " ", 1);
+                    interfaceIT_LED_Set(Device.Session, 8, true);
                     IAS = false;
                     MACH = true;
                 }
                 if (value >= 100)
                 {
-                    interfaceIT_7Segment_Display(device.Session, string.Format("{0,3}", value?.ToString(System.Globalization.CultureInfo.InvariantCulture)), 1);
+                    interfaceIT_7Segment_Display(Device.Session, string.Format("{0,3}", value?.ToString(System.Globalization.CultureInfo.InvariantCulture)), 1);
                     MACH = false;
                     IAS = true;
                 }
@@ -383,7 +383,7 @@ public class NG_MCP_777 : MSFSProfiles.USB
         {
             if (_iAS != value)
             {
-                interfaceIT_LED_Set(device.Session, 185, _iAS = value);
+                interfaceIT_LED_Set(Device.Session, 185, _iAS = value);
             }
         }
     }
@@ -395,7 +395,7 @@ public class NG_MCP_777 : MSFSProfiles.USB
         {
             if (_mACH != value)
             {
-                interfaceIT_LED_Set(device.Session, 186, _mACH = value);
+                interfaceIT_LED_Set(Device.Session, 186, _mACH = value);
             }
         }
     }
@@ -407,7 +407,7 @@ public class NG_MCP_777 : MSFSProfiles.USB
         {
             if (_mCP_Heading != value && MAIN_LightsSelector != 0)
             {
-                interfaceIT_7Segment_Display(device.Session, (_mCP_Heading = value)?.ToString("D3"), 9);
+                interfaceIT_7Segment_Display(Device.Session, (_mCP_Heading = value)?.ToString("D3"), 9);
             }
         }
     }
@@ -422,7 +422,7 @@ public class NG_MCP_777 : MSFSProfiles.USB
                 _mCP_IASBlank = value;
                 if (value)
                 {
-                    interfaceIT_7Segment_Display(device.Session, "   ", 1);
+                    interfaceIT_7Segment_Display(Device.Session, "   ", 1);
                     IAS = false;
                     MACH = false;
                 }
@@ -440,10 +440,10 @@ public class NG_MCP_777 : MSFSProfiles.USB
                 _mCP_Altitude = value;
                 if (value == 0)
                 {
-                    interfaceIT_7Segment_Display(device.Session, "0000", 13);
+                    interfaceIT_7Segment_Display(Device.Session, "0000", 13);
                     return;
                 }
-                interfaceIT_7Segment_Display(device.Session, string.Format("{0,5}", value.ToString()), 12);
+                interfaceIT_7Segment_Display(Device.Session, string.Format("{0,5}", value.ToString()), 12);
             }
         }
     }
@@ -459,7 +459,7 @@ public class NG_MCP_777 : MSFSProfiles.USB
                 _mCP_VertSpeedBlank = value;
                 if (value)
                 {
-                    interfaceIT_7Segment_Display(device.Session, "     ", 4);
+                    interfaceIT_7Segment_Display(Device.Session, "     ", 4);
                 }
             }
         }
@@ -475,15 +475,15 @@ public class NG_MCP_777 : MSFSProfiles.USB
                 _mCP_VertSpeed = value;
                 if (value == 0)
                 {
-                    interfaceIT_7Segment_Display(device.Session, "     ", 4);
+                    interfaceIT_7Segment_Display(Device.Session, "     ", 4);
                 }
                 else if (value < 0)
                 {
-                    interfaceIT_7Segment_Display(device.Session, "-" + string.Format("{0,4}", value?.ToString("D3").TrimStart('-')), 4);
+                    interfaceIT_7Segment_Display(Device.Session, "-" + string.Format("{0,4}", value?.ToString("D3").TrimStart('-')), 4);
                 }
                 else if (value > 0)
                 {
-                    interfaceIT_7Segment_Display(device.Session, string.Format("{0,5}", value?.ToString("D3")), 4);
+                    interfaceIT_7Segment_Display(Device.Session, string.Format("{0,5}", value?.ToString("D3")), 4);
                 }
             }
         }
@@ -496,9 +496,9 @@ public class NG_MCP_777 : MSFSProfiles.USB
         pmdg737MCPLightCancellationTokenSource?.Cancel();
     }
 
-    protected override async Task StartSimConnect()
+    protected override async Task StartSimConnectAsync()
     {
-        await base.StartSimConnect();
+        await base.StartSimConnectAsync();
         PMDG737.RegisterPMDGDataEvents(simConnectClient.simConnect);
     }
 

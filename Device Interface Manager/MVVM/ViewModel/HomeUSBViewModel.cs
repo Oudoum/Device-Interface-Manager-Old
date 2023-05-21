@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -29,8 +30,38 @@ public partial class HomeUSBViewModel : ObservableObject
 
     private List<USB> USBList { get; set; } = new();
 
+    private readonly Dictionary<string, Func<Connection, Task>> profileActions;
+
     public HomeUSBViewModel()
     {
+        profileActions = new()
+        {
+            { "-- None --", null },
+            { "Fenix A320 Left MCDU", StartUSBProfile<MSFSProfiles.FENIX.A320.USB.MCDU_L> },
+            { "Fenix A320 Right MCDU", StartUSBProfile<MSFSProfiles.FENIX.A320.USB.MCDU_R> },
+            { "FBW A32NX Left MCDU", StartUSBProfile<MSFSProfiles.FBW.A32NX.USB.MCDU_L> },
+            { "FBW A32NX Right MCDU", StartUSBProfile<MSFSProfiles.FBW.A32NX.USB.MCDU_R> },
+            { "PMDG 737NG Left CDU", StartUSBProfile<MSFSProfiles.PMDG.B737.USB.NG_CDU_L> },
+            { "PMDG 737NG Right CDU", StartUSBProfile<MSFSProfiles.PMDG.B737.USB.NG_CDU_R> },
+            { "PMDG 737NG MCP (3311)", StartUSBProfile<MSFSProfiles.PMDG.B737.USB.NG_MCP_3311> },
+            { "PMDG 737NG MCP (3327)", StartUSBProfile<MSFSProfiles.PMDG.B737.USB.NG_MCP_777> },
+            { "PMDG 737NG MCP (330A | 332C)", StartUSBProfile<MSFSProfiles.PMDG.B737.USB.NG_MCP_330A_332C> },
+            { "PMDG 737NG EFIS L (330B | 332D)", StartUSBProfile<MSFSProfiles.PMDG.B737.USB.NG_EFIS_L_330B_332D> },
+            { "PMDG 737NG EFIS R (330C | 332E)", StartUSBProfile<MSFSProfiles.PMDG.B737.USB.NG_EFIS_R_330C_332E> },
+
+        //"PMDG 737MAX Left CDU"
+        //"PMDG 737MAX Right CDU"
+
+        //"PMDG 777 Left CDU"
+        //"PMDG 777 Right CDU"
+        //"PMDG 777 Center CDU"
+
+        //"PMDG 747 Left CDU"
+        //"PMDG 747 Right CDU"
+        //"PMDG 747 Center CDU"
+
+        };
+
         CreateProfiles();
         Connections = MainViewModel.LoadConnectionsData<ObservableCollection<Connection>>(usb);
         GetBoardInfo();
@@ -57,7 +88,7 @@ public partial class HomeUSBViewModel : ObservableObject
         BoardInfo.Add(hasFeature ? featureInfo : string.Empty);
     }
 
-    public void GetBoardInfo(InterfaceIT_BoardInfo.BoardInformationStructure.BOARDCAPS bOARDCAPS)
+    public void GetBoardInfo(InterfaceIT_BoardInfo.BOARDCAPS bOARDCAPS)
     {
         BoardInfo.Clear();
         BoardType.Clear();
@@ -109,45 +140,18 @@ public partial class HomeUSBViewModel : ObservableObject
     private async Task StartUSBProfile<T>(Connection connection) where T : USB, new()
     {
         T profile = new();
-        await Task.Run(() => profile.Start(Devices.FirstOrDefault(o => o.SerialNumber == connection.Serial)));
         USBList.Add(profile);
+        await Task.Run(() => profile.StartAsync(Devices.FirstOrDefault(o => o.SerialNumber == connection.Serial)));
     }
 
     private async Task StartUSBProfiles(Connection connection)
     {
-        switch (connection.Profile.Id)
+        if (profileActions.TryGetValue(connection.Profile.Name, out var action))
         {
-            case 1:
-                await StartUSBProfile<MSFSProfiles.FENIX.A320.USB.MCDU_L>(connection);
-                break;
-
-            case 2:
-                await StartUSBProfile<MSFSProfiles.FENIX.A320.USB.MCDU_R>(connection);
-                break;
-
-            case 3:
-                await StartUSBProfile<MSFSProfiles.FBW.A32NX.UBS.MCDU_L>(connection);
-                break;
-
-            case 4:
-                await StartUSBProfile<MSFSProfiles.FBW.A32NX.UBS.MCDU_R>(connection);
-                break;
-
-            case 5:
-                await StartUSBProfile<MSFSProfiles.PMDG.B737.USB.NG_CDU_L>(connection);
-                break;
-
-            case 6:
-                await StartUSBProfile<MSFSProfiles.PMDG.B737.USB.NG_CDU_R>(connection);
-                break;
-
-            case 7:
-                await StartUSBProfile<MSFSProfiles.PMDG.B737.USB.NG_MCP_3311>(connection);
-                break;
-
-            case 8:
-                await StartUSBProfile<MSFSProfiles.PMDG.B737.USB.NG_MCP_777>(connection);
-                break;
+            if (action is not null)
+            {
+                await action(connection);
+            }
         }
     }
 
@@ -160,44 +164,14 @@ public partial class HomeUSBViewModel : ObservableObject
     [RelayCommand]
     private void AddRow()
     {
-        Connections.Add(new Connection() { Id = 0, Name = "NAME", Serial = "SERIALNUMBER", Profile = Profiles[0] });
+        Connections.Add(new Connection() { Name = "NAME", Serial = "SERIALNUMBER", Profile = Profiles[0] });
     }
 
     private void CreateProfiles()
     {
-        var profileNames = new string[]
+        foreach (var item in profileActions.Keys)
         {
-            "-- None --",
-            "Fenix A320 Left MCDU",
-            "Fenix A320 Right MCDU",
-            "FBW A32NX Left MCDU",
-            "FBW A32NX Right MCDU",
-            "PMDG 737NG Left CDU",
-            "PMDG 737NG Right CDU",
-            "PMDG 737NG MCP (Board: 330A)",
-            "PMDG 737NG MCP (Board: 3311)",
-            "PMDG 737NG MCP (Board: 3327)",
-            "PMDG 737NG MCP (Board: 332C)",
-            "PMDG 737NG EFIS L (Board: 330B)",
-            "PMDG 737NG EFIS R (Board: 330C)",
-            "PMDG 737NG EFIS L (Board: 332D)",
-            "PMDG 737NG EFIS R (Board: 332E)",
-        };
-
-        //"PMDG 737MAX Left CDU"
-        //"PMDG 737MAX Right CDU"
-
-        //"PMDG 777 Left CDU"
-        //"PMDG 777 Right CDU"
-        //"PMDG 777 Center CDU"
-
-        //"PMDG 747 Left CDU"
-        //"PMDG 747 Right CDU"
-        //"PMDG 747 Center CDU"
-
-        for (int i = 0; i < profileNames.Length; i++)
-        {
-            Profiles.Add(new Profile { Id = i, Name = profileNames[i] });
+            Profiles.Add(new Profile { Name = item });
         }
     }
 

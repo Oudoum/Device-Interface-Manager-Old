@@ -13,7 +13,6 @@ using Device_Interface_Manager.interfaceIT.USB;
 using Device_Interface_Manager.MVVM.View;
 using Device_Interface_Manager.Core;
 using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
-using static Device_Interface_Manager.interfaceIT.USB.InterfaceIT_BoardInfo.BoardInformationStructure;
 
 namespace Device_Interface_Manager.MVVM.ViewModel;
 
@@ -272,7 +271,11 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
             if (!string.IsNullOrEmpty(device))
             {
                 interfaceIT_Bind(device, out uint session);
-                interfaceIT_GetBoardInfo(session, out BOARDCAPS bOARDCAPS);
+                interfaceIT_GetBoardInfo(session, out InterfaceIT_BoardInfo.BOARDCAPS bOARDCAPS);
+                if (bOARDCAPS.nSwitchCount < 128)
+                {
+                    interfaceIT_SetBoardOptions(session, BoardOptions.INTERFACEIT_BOARD_OPTION_FORCE64);
+                }
                 string boardType = string.Empty;
                 foreach (FieldInfo field in typeof(InterfaceIT_BoardIDs).GetFields())
                 {
@@ -340,64 +343,7 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
     {
         foreach (InterfaceIT_BoardInfo.Device device in DeviceList)
         {
-            if ((device.DeviceInfo.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_OUTPUT_LED) != 0)
-            {
-                for (int i = device.DeviceInfo.nSwitchFirst; i <= device.DeviceInfo.nLEDLast; i++)
-                {
-                    interfaceIT_LED_Set(device.Session, i, false);
-                }
-                interfaceIT_LED_Enable(device.Session, false);
-            }
-
-            if ((device.DeviceInfo.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_INPUT_SWITCHES) != 0)
-            {
-                interfaceIT_Switch_Enable_Poll(device.Session, false);
-            }
-
-
-            if ((device.DeviceInfo.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_OUTPUT_7SEGMENT) != 0)
-            {
-                for (int i = device.DeviceInfo.n7SegmentFirst; i <= device.DeviceInfo.n7SegmentLast; i++)
-                {
-                    interfaceIT_7Segment_Display(device.Session, null, i);
-                }
-                interfaceIT_7Segment_Enable(device.Session, false);
-            }
-
-
-            if ((device.DeviceInfo.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_OUTPUT_DATALINE) != 0)
-            {
-                for (int i = device.DeviceInfo.nDatalineFirst; i <= device.DeviceInfo.nDatalineLast; i++)
-                {
-                    interfaceIT_Dataline_Set(device.Session, i, false);
-                }
-                interfaceIT_Dataline_Enable(device.Session, false);
-            }
-
-
-            if ((device.DeviceInfo.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_OUTPUT_SERVO) != 0)
-            {
-                //Not available
-            }
-
-
-            if ((device.DeviceInfo.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_SPECIAL_BRIGHTNESS) != 0)
-            {
-                interfaceIT_Brightness_Set(device.Session, 0);
-                interfaceIT_Brightness_Enable(device.Session, false);
-            }
-
-
-            if ((device.DeviceInfo.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_SPECIAL_ANALOG_INPUT) != 0)
-            {
-                interfaceIT_Analog_Enable(device.Session, false);
-            }
-
-
-            if ((device.DeviceInfo.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_SPECIAL_ANALOG16_INPUT) != 0)
-            {
-                interfaceIT_Analog_Enable(device.Session, false);
-            }
+            InterfaceITDisable(device);
             interfaceIT_UnBind(device.Session);
         }
         interfaceIT_CloseControllers();

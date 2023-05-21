@@ -22,14 +22,14 @@ public abstract class ENET : ProfileBase
         ConnectionStatus = interfaceITEthernet.InterfaceITEthernetConnectionAsync(cancellationTokenSource.Token).Result;
         if (ConnectionStatus == InterfaceITEthernet.ConnectionStatus.Connected)
         {
-            await StartSimConnect();
+            await StartSimConnectAsync();
             receiveSimConnectDataTask = Task.Run(() => ReceiveSimConnectData(cancellationTokenSource.Token));
             receiveInterfaceITEthernetDataTask = Task.Run(async () => await interfaceITEthernet.GetInterfaceITEthernetDataAsync(interfacITKeyAction = KeyPressedAction, cancellationTokenSource.Token));
         }
         return ConnectionStatus;
     }
 
-    public virtual void Stop()
+    public override void Stop()
     {
         simConnectClient.SimConnect_Close();
         cancellationTokenSource.Cancel();

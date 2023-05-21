@@ -32,18 +32,25 @@ public class SimConnectClient
 
                 simConnect.OnRecvException += SimConnect_OnRecvException;
 
-                simConnect.RequestSystemState(DATA_REQUEST_ID.AIR_PATH_REQUEST, "AircraftLoaded");
-
                 simConnect.MapClientDataNameToID(CLIENT_DATA_NAME_COMMAND, CLIENT_DATA_ID.CLIENT_DATA_ID_COMMAND);
                 simConnect.CreateClientData(CLIENT_DATA_ID.CLIENT_DATA_ID_COMMAND, MESSAGE_SIZE, SIMCONNECT_CREATE_CLIENT_DATA_FLAG.DEFAULT);
                 simConnect.AddToClientDataDefinition(DEFINE_ID.DATA_DEFINITION_ID_COMMAND, 0, MESSAGE_SIZE, 0, 0);
 
+                RegisterSimVar("CAMERA STATE");
+
                 simConnect.OnRecvSimobjectData += Simconnect_OnRecvSimobjectData;
-                break;
+                return;
             }
             catch (COMException)
             {
-                await Task.Delay(1000, cancellationToken);
+                try
+                {
+                    await Task.Delay(1000, cancellationToken);
+                }
+                catch (TaskCanceledException)
+                {
+
+                }
             }
         }
     }
@@ -56,7 +63,7 @@ public class SimConnectClient
         }
         catch (Exception)
         {
-            StrongReferenceMessenger.Default.Send(new SimConnectStausMessage(false));
+
         }
     }
 
@@ -82,8 +89,8 @@ public class SimConnectClient
 
     }
 
-    public delegate void SimVarChanged(SimVar simVar);
-    public event SimVarChanged OnSimVarChanged;
+    public event EventHandler<SimVar> OnSimVarChanged;
+    public event EventHandler OnCockpitLoaded;
 
     private void Simconnect_OnRecvSimobjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
     {
@@ -94,7 +101,12 @@ public class SimConnectClient
                 return;
             }
             SimVars[(int)data.dwRequestID - 1].Data = (double)data.dwData[0];
-            OnSimVarChanged?.Invoke(SimVars[(int)data.dwRequestID - 1]);
+            if (data.dwRequestID == 1 && SimVars[0].Data == 2)
+            { 
+                OnCockpitLoaded?.Invoke(this, EventArgs.Empty);
+                return;
+            }
+            OnSimVarChanged?.Invoke(this, SimVars[(int)data.dwRequestID - 1]);
         }
     }
 

@@ -72,7 +72,7 @@ public partial class SwitchTestViewModel : ObservableObject, ISwitchLogChanged
     {
         System.Windows.Application.Current.Dispatcher.Invoke(() =>
         {
-            SwitchLog.Add($"Session {session}, Switch {key} is now {(direction == InterfaceITAPI_Data.Data.INTERFACEIT_SWITCH_DIR_DOWN ? "on" : "off")}");
+            SwitchLog.Add($"Session {session}, Switch {key} is now {(direction == InterfaceITAPI_Data.SwitchDirectionInfo.INTERFACEIT_SWITCH_DIR_DOWN ? "on" : "off")}");
         });
     }
 }

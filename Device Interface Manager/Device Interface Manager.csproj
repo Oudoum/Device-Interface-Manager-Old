@@ -9,8 +9,8 @@
     <UseWindowsForms>True</UseWindowsForms>
     <ApplicationIcon>DIM.ico</ApplicationIcon>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <AssemblyVersion>1.1.7.4</AssemblyVersion>
-    <FileVersion>1.1.7.4</FileVersion>
+    <AssemblyVersion>1.1.7.5</AssemblyVersion>
+    <FileVersion>1.1.7.5</FileVersion>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

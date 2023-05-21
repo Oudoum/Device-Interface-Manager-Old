@@ -7,6 +7,8 @@ public class MCDU_R : MSFSProfiles.USB
 {
     protected override void Simconnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
     {
+        interfaceIT_Dataline_Set(Device.Session, Device.DeviceInfo.nDatalineFirst, true);
+
         simConnectClient.OnSimVarChanged += SimConnectClient_OnSimVarChanged;
 
         simConnectClient.RegisterSimVar("L:I_CDU2_FAIL");
@@ -21,46 +23,46 @@ public class MCDU_R : MSFSProfiles.USB
         simConnectClient.RegisterSimVar("L:N_PED_LIGHTING_PEDESTAL");
     }
 
-    private void SimConnectClient_OnSimVarChanged(SimConnectClient.SimVar simVar)
+    private void SimConnectClient_OnSimVarChanged(object sender, SimConnectClient.SimVar simVar)
     {
         switch (simVar.Name)
         {
             case "L:I_CDU2_FAIL":
-                interfaceIT_LED_Set(device.Session, 2, simVar.BData());
+                interfaceIT_LED_Set(Device.Session, 2, simVar.BData());
                 break;
 
             case "L:I_CDU2_MCDU_MENU":
                 bool value = simVar.BData();
-                interfaceIT_LED_Set(device.Session, 3, value);
-                interfaceIT_LED_Set(device.Session, 5, value);
+                interfaceIT_LED_Set(Device.Session, 3, value);
+                interfaceIT_LED_Set(Device.Session, 5, value);
                 break;
 
             case "L:I_CDU2_FM":
-                interfaceIT_LED_Set(device.Session, 4, simVar.BData());
+                interfaceIT_LED_Set(Device.Session, 4, simVar.BData());
                 break;
 
             case "L:I_CDU2_FM1":
-                interfaceIT_LED_Set(device.Session, 9, simVar.BData());
+                interfaceIT_LED_Set(Device.Session, 9, simVar.BData());
                 break;
 
             case "L:I_CDU2_IND":
-                interfaceIT_LED_Set(device.Session, 10, simVar.BData());
+                interfaceIT_LED_Set(Device.Session, 10, simVar.BData());
                 break;
 
             case "L:I_CDU2_RDY":
-                interfaceIT_LED_Set(device.Session, 11, simVar.BData());
+                interfaceIT_LED_Set(Device.Session, 11, simVar.BData());
                 break;
 
             case "L:I_CDU2_DASH":
-                interfaceIT_LED_Set(device.Session, 12, simVar.BData());
+                interfaceIT_LED_Set(Device.Session, 12, simVar.BData());
                 break;
 
             case "L:I_CDU2_FM2":
-                interfaceIT_LED_Set(device.Session, 13, simVar.BData());
+                interfaceIT_LED_Set(Device.Session, 13, simVar.BData());
                 break;
 
             case "L:N_PED_LIGHTING_PEDESTAL":
-                interfaceIT_Brightness_Set(device.Session, (int)(simVar.Data * 50 * 2.55));
+                interfaceIT_Brightness_Set(Device.Session, (int)(simVar.Data * 50 * 2.55));
                 break;
 
             default:

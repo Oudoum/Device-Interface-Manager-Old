@@ -107,9 +107,9 @@ public abstract class NG_CDU_Base : ENET
 
     protected PMDG_737_CDU_StartupManager startupManager = new();
 
-    protected async override Task StartSimConnect()
+    protected async override Task StartSimConnectAsync()
     {
-        await base.StartSimConnect();
+        await base.StartSimConnectAsync();
         await startupManager.PMDG737CDUStartup(simConnectClient);
     }
 

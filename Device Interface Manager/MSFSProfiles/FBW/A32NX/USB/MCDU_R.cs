@@ -4,9 +4,9 @@ using System.Text.Json;
 using Microsoft.FlightSimulator.SimConnect;
 using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
 
-namespace Device_Interface_Manager.MSFSProfiles.FBW.A32NX.UBS;
+namespace Device_Interface_Manager.MSFSProfiles.FBW.A32NX.USB;
 
-public class MCDU_R : USB
+public class MCDU_R : MSFSProfiles.USB
 {
     public MCDU_R()
     {
@@ -69,6 +69,8 @@ public class MCDU_R : USB
 
     protected override void Simconnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
     {
+        interfaceIT_Dataline_Set(Device.Session, Device.DeviceInfo.nDatalineFirst, true);
+
         simConnectClient.OnSimVarChanged += SimConnectClient_OnSimVarChanged;
 
         simConnectClient.RegisterSimVar("L:A32NX_OVHD_INTLT_ANN");
@@ -86,7 +88,7 @@ public class MCDU_R : USB
         simConnectClient.RegisterSimVar("LIGHT POTENTIOMETER:85", "percent");
     }
 
-    private void SimConnectClient_OnSimVarChanged(SimConnectClient.SimVar simVar)
+    private void SimConnectClient_OnSimVarChanged(object sender, SimConnectClient.SimVar simVar)
     {
         switch (simVar.Name)
         {
@@ -109,39 +111,39 @@ public class MCDU_R : USB
                 break;
 
             case "L:A32NX_MCDU_R_ANNUNC_FAIL":
-                interfaceIT_LED_Set(device.Session, 2, simVar.BData());
+                interfaceIT_LED_Set(Device.Session, 2, simVar.BData());
                 break;
 
             case "L:A32NX_MCDU_R_ANNUNC_FMGC":
-                interfaceIT_LED_Set(device.Session, 3, simVar.BData());
+                interfaceIT_LED_Set(Device.Session, 3, simVar.BData());
                 break;
 
             case "L:A32NX_MCDU_R_ANNUNC_FM":
-                interfaceIT_LED_Set(device.Session, 4, simVar.BData());
+                interfaceIT_LED_Set(Device.Session, 4, simVar.BData());
                 break;
 
             case "L:A32NX_MCDU_R_ANNUNC_MCDU_MENU":
-                interfaceIT_LED_Set(device.Session, 5, simVar.BData());
+                interfaceIT_LED_Set(Device.Session, 5, simVar.BData());
                 break;
 
             case "L:A32NX_MCDU_R_ANNUNC_FM1":
-                interfaceIT_LED_Set(device.Session, 9, simVar.BData());
+                interfaceIT_LED_Set(Device.Session, 9, simVar.BData());
                 break;
 
             case "L:A32NX_MCDU_R_ANNUNC_IND":
-                interfaceIT_LED_Set(device.Session, 10, simVar.BData());
+                interfaceIT_LED_Set(Device.Session, 10, simVar.BData());
                 break;
 
             case "L:A32NX_MCDU_R_ANNUNC_RDY":
-                interfaceIT_LED_Set(device.Session, 11, simVar.BData());
+                interfaceIT_LED_Set(Device.Session, 11, simVar.BData());
                 break;
 
             case "L:A32NX_MCDU_R_ANNUNC_FM2":
-                interfaceIT_LED_Set(device.Session, 13, simVar.BData());
+                interfaceIT_LED_Set(Device.Session, 13, simVar.BData());
                 break;
 
             case "LIGHT POTENTIOMETER:85":
-                interfaceIT_Brightness_Set(device.Session, (int)(simVar.Data * 2.55));
+                interfaceIT_Brightness_Set(Device.Session, (int)(simVar.Data * 2.55));
                 break;
 
             default:
@@ -151,14 +153,14 @@ public class MCDU_R : USB
 
     private void SetLEDLighttest(bool value)
     {
-        interfaceIT_LED_Set(device.Session, 2, value);
-        interfaceIT_LED_Set(device.Session, 3, value);
-        interfaceIT_LED_Set(device.Session, 4, value);
-        interfaceIT_LED_Set(device.Session, 5, value);
-        interfaceIT_LED_Set(device.Session, 9, value);
-        interfaceIT_LED_Set(device.Session, 10, value);
-        interfaceIT_LED_Set(device.Session, 11, value);
-        interfaceIT_LED_Set(device.Session, 13, value);
+        interfaceIT_LED_Set(Device.Session, 2, value);
+        interfaceIT_LED_Set(Device.Session, 3, value);
+        interfaceIT_LED_Set(Device.Session, 4, value);
+        interfaceIT_LED_Set(Device.Session, 5, value);
+        interfaceIT_LED_Set(Device.Session, 9, value);
+        interfaceIT_LED_Set(Device.Session, 10, value);
+        interfaceIT_LED_Set(Device.Session, 11, value);
+        interfaceIT_LED_Set(Device.Session, 13, value);
     }
 
     protected override void KeyPressedProc(uint session, int key, uint direction)

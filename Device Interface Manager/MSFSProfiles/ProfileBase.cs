@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Device_Interface_Manager.MSFSProfiles;
 
-public class ProfileBase
+public abstract class ProfileBase
 {
     public MVVM.View.PMDG737CDU pMDG737CDU;
 
@@ -24,12 +24,28 @@ public class ProfileBase
         }
     }
 
-    protected async virtual Task StartSimConnect()
+    protected async virtual Task StartSimConnectAsync()
     {
         await simConnectClient.SimConnect_OpenAsync(cancellationTokenSource.Token);
-        simConnectClient.simConnect.OnRecvClientData += Simconnect_OnRecvClientData;
-        simConnectClient.simConnect.OnRecvOpen += Simconnect_OnRecvOpen;
+        if (simConnectClient.simConnect is not null)
+        {
+            simConnectClient.simConnect.OnRecvClientData += Simconnect_OnRecvClientData;
+            simConnectClient.simConnect.OnRecvOpen += Simconnect_OnRecvOpen;
+            simConnectClient.simConnect.OnRecvQuit += SimConnect_OnRecvQuit;
+        }
     }
+
+    public virtual void Stop()
+    {
+
+    }
+
+
+    protected virtual void SimConnect_OnRecvQuit(Microsoft.FlightSimulator.SimConnect.SimConnect sender, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_RECV data)
+    {
+        Stop();
+    }
+
 
     protected virtual void Simconnect_OnRecvClientData(Microsoft.FlightSimulator.SimConnect.SimConnect sender, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_RECV_CLIENT_DATA data)
     {

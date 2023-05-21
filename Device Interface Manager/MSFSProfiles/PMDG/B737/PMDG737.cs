@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Reflection;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Microsoft.FlightSimulator.SimConnect;
 using static Device_Interface_Manager.MSFSProfiles.PMDG.PMDG_NG3_SDK;
@@ -11,10 +9,13 @@ public static class PMDG737
 {
     public static void RegisterPMDGDataEvents(SimConnect simConnect)
     {
-        CreatePMDG737NG3Events(simConnect);
-        AssociatePMDG737NG3Data(simConnect);
-        AssociatePMDG737NG3CDU0Data(simConnect);
-        AssociatePMDG737NG3CDU1Data(simConnect);
+        if (simConnect is not null)
+        {
+            CreatePMDG737NG3Events(simConnect);
+            AssociatePMDG737NG3Data(simConnect);
+            AssociatePMDG737NG3CDU0Data(simConnect);
+            AssociatePMDG737NG3CDU1Data(simConnect);
+        }
     }
 
     private static void CreatePMDG737NG3Events(SimConnect simConnect)

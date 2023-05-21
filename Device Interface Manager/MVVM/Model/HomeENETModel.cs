@@ -4,7 +4,6 @@ public class HomeENETModel
 {
     public class Connection : CommunityToolkit.Mvvm.ComponentModel.ObservableObject
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         private string _iPAddress;
         public string IPAddress
@@ -37,7 +36,6 @@ public class HomeENETModel
 
     public class Profile
     {
-        public int Id { get; set; }
         public string Name { get; set; }
     }
 }
