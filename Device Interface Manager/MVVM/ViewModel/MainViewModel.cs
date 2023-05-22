@@ -272,7 +272,7 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
             {
                 interfaceIT_Bind(device, out uint session);
                 interfaceIT_GetBoardInfo(session, out InterfaceIT_BoardInfo.BOARDCAPS bOARDCAPS);
-                if (bOARDCAPS.nSwitchCount < 128)
+                if (bOARDCAPS.szBoardType == "330A" || bOARDCAPS.szBoardType == "332C")
                 {
                     interfaceIT_SetBoardOptions(session, BoardOptions.INTERFACEIT_BOARD_OPTION_FORCE64);
                 }

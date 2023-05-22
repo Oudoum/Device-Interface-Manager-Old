@@ -160,9 +160,9 @@ public partial class TestProfileViewModel : ObservableObject
 
     //PMDG profile stuff
 
-    public event EventHandler<PMDGDataFieldChangedEventArgs> FieldChanged;
+    //public event EventHandler<PMDGDataFieldChangedEventArgs> FieldChanged;
 
-    public List<string> WatchedFields { get; set; } = new() { "ADF_StandbyFrequency", "IRS_annunALIGN_0" };
+    //public List<string> WatchedFields { get; set; } = new() { "ADF_StandbyFrequency", "IRS_annunALIGN_0" };
 
     //public TestProfileViewModel()
     //{
