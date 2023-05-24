@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.FlightSimulator.SimConnect;
+using static Device_Interface_Manager.interfaceIT.USB.InterfaceIT_BoardInfo;
 using static Device_Interface_Manager.MSFSProfiles.PMDG.PMDG_NG3_SDK;
 
 namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737.E;
@@ -73,7 +74,7 @@ public abstract class NG_CDU_Base : ENET
     public override void Stop()
     {
         base.Stop();
-        startupManager.pMDG737CDU?.Close();
+        pMDG737CDU?.Close();
     }
 
     protected PMDG_NG3_Data pMDG_NG3_Data = new();
@@ -88,17 +89,17 @@ public abstract class NG_CDU_Base : ENET
             RecvData();
             if (!pMDG_NG3_Data.ELEC_BusPowered[3])
             {
-                startupManager.pMDG737CDU?.Dispatcher.BeginInvoke(delegate ()
+                pMDG737CDU?.Dispatcher.BeginInvoke(delegate ()
                 {
-                    startupManager.pMDG737CDU.ClearPMDGCDUCells();
+                    pMDG737CDU.ClearPMDGCDUCells();
                 });
             }
         }
         if ((uint)CDU_ID == data.dwRequestID)
         {
-            startupManager.pMDG737CDU.Dispatcher.BeginInvoke(delegate ()
+            pMDG737CDU.Dispatcher.BeginInvoke(delegate ()
             {
-                startupManager.pMDG737CDU.GetPMDGCDUCells((PMDG_NG3_CDU_Screen)data.dwData[0]);
+                pMDG737CDU.GetPMDGCDUCells((PMDG_NG3_CDU_Screen)data.dwData[0]);
             });
         }
     }
@@ -110,7 +111,22 @@ public abstract class NG_CDU_Base : ENET
     protected async override Task StartSimConnectAsync()
     {
         await base.StartSimConnectAsync();
-        await startupManager.PMDG737CDUStartup(simConnectClient);
+        if (simConnectClient.simConnect is not null)
+        {
+            pMDG737CDU = await startupManager.PMDG737CDUStartup(simConnectClient, pMDG737CDU);
+            pMDG737CDU.OnEditormodeOff += PMDG737CDU_EditormodeOff;
+            pMDG737CDU.Closing += PMDG737CDU_Closing;
+        }
+    }
+
+    private async void PMDG737CDU_EditormodeOff(object sender, System.EventArgs e)
+    {
+        await startupManager.SaveScreenPropertiesAsync(pMDG737CDU);
+    }
+
+    private async void PMDG737CDU_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+    {
+        await startupManager.SaveScreenPropertiesAsync(pMDG737CDU);
     }
 
     protected override void KeyPressedAction(int key, uint direction)

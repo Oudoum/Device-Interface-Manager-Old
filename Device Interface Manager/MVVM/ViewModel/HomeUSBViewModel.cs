@@ -178,7 +178,19 @@ public partial class HomeUSBViewModel : ObservableObject
     [RelayCommand]
     private void ResetUSBScreens()
     {
-        USBList.ForEach(o => { o.pMDG737CDU.Top = 0; o.pMDG737CDU.Left = 0; o.fBWA32NXMCDU.Top = 0; o.fBWA32NXMCDU.Left = 0; });
+        USBList.ForEach(o =>
+        {
+            if (o.pMDG737CDU is not null)
+            {
+                o.pMDG737CDU.Top = 0;
+                o.pMDG737CDU.Left = 0;
+            }
+            if (o.fBWA32NXMCDU is not null)
+            {
+                o.fBWA32NXMCDU.Top = 0;
+                o.fBWA32NXMCDU.Left = 0;
+            }
+        });
     }
 
     public void SaveUSBConnections()

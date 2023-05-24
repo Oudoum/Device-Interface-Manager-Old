@@ -111,7 +111,7 @@ public abstract class NG_CDU_Base : MSFSProfiles.USB
     public override void Stop()
     {
         base.Stop();
-        startupManager.pMDG737CDU?.Close();
+        pMDG737CDU?.Close();
     }
 
     protected PMDG_NG3_Data pMDG_NG3_Data = new();
@@ -128,17 +128,17 @@ public abstract class NG_CDU_Base : MSFSProfiles.USB
             RecvData();
             if (!pMDG_NG3_Data.ELEC_BusPowered[3])
             {
-                startupManager.pMDG737CDU?.Dispatcher.BeginInvoke(delegate ()
+                pMDG737CDU?.Dispatcher.BeginInvoke(delegate ()
                 {
-                    startupManager.pMDG737CDU.ClearPMDGCDUCells();
+                    pMDG737CDU.ClearPMDGCDUCells();
                 });
             }
         }
         if ((uint)CDU_ID == data.dwRequestID)
         {
-            startupManager.pMDG737CDU.Dispatcher.BeginInvoke(delegate ()
+            pMDG737CDU.Dispatcher.BeginInvoke(delegate ()
             {
-                startupManager.pMDG737CDU.GetPMDGCDUCells((PMDG_NG3_CDU_Screen)data.dwData[0]);
+                pMDG737CDU.GetPMDGCDUCells((PMDG_NG3_CDU_Screen)data.dwData[0]);
             });
         }
     }
@@ -152,10 +152,22 @@ public abstract class NG_CDU_Base : MSFSProfiles.USB
         await base.StartSimConnectAsync();
         if (simConnectClient.simConnect is not null)
         {
-            await startupManager.PMDG737CDUStartup(simConnectClient);
+            pMDG737CDU = await startupManager.PMDG737CDUStartup(simConnectClient, pMDG737CDU);
+            pMDG737CDU.OnEditormodeOff += PMDG737CDU_EditormodeOff;
+            pMDG737CDU.Closing += PMDG737CDU_Closing;
             _ = Task.Run(GetValues);
             interfaceIT_Dataline_Set(Device.Session, Device.DeviceInfo.nDatalineFirst, true);
         }
+    }
+
+    private async void PMDG737CDU_EditormodeOff(object sender, System.EventArgs e)
+    {
+        await startupManager.SaveScreenPropertiesAsync(pMDG737CDU);
+    }
+
+    private async void PMDG737CDU_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+    {
+        await startupManager.SaveScreenPropertiesAsync(pMDG737CDU);
     }
 
     protected override void KeyPressedProc(uint session, int key, uint direction)
@@ -176,7 +188,7 @@ public abstract class NG_CDU_Base : MSFSProfiles.USB
             }
             if (Math.Abs(value - noldValue) > 40 || noldValue == 0)
             {
-                startupManager.pMDG737CDU?.Dispatcher.BeginInvoke(() => startupManager.pMDG737CDU.Brightness = noldValue = value);
+                pMDG737CDU?.Dispatcher.BeginInvoke(() => pMDG737CDU.Brightness = noldValue = value);
             }
             Thread.Sleep(50);
         }

@@ -58,22 +58,19 @@ public class PMDG_737_CDU_StartupManager
 {
     public string Settings { get; set; }
 
-    public PMDG737CDU pMDG737CDU;
-
     private NG_CDU_Base pMDG_737_CDU_Screen = new();
 
-    public async Task PMDG737CDUStartup(SimConnectClient simConnectClient)
+    public async Task<PMDG737CDU> PMDG737CDUStartup(SimConnectClient simConnectClient, PMDG737CDU pMDG737CDU)
     {
         PMDG737.RegisterPMDGDataEvents(simConnectClient.simConnect);
         await Application.Current.Dispatcher.InvokeAsync(delegate
         {
+            
             pMDG737CDU = new();
         });
-        pMDG737CDU.OnEditormodeOff += PMDG737CDU_EditormodeOff;
-        pMDG737CDU.Closing += PMDG737CDU_Closing;
         await pMDG737CDU.Dispatcher.BeginInvoke(async delegate ()
         {
-            await GetPMDG737CDUSettingsAsync();
+            await GetPMDG737CDUSettingsAsync(pMDG737CDU);
             simConnectClient.TransmitEvent(2, PMDGEvents.EVT_CDU_L_BRITENESS);
             simConnectClient.TransmitEvent(1, PMDGEvents.EVT_CDU_L_BRITENESS);
             simConnectClient.TransmitEvent(0, PMDGEvents.EVT_CDU_L_BRITENESS);
@@ -86,9 +83,10 @@ public class PMDG_737_CDU_StartupManager
             pMDG737CDU.WindowState = (WindowState)pMDG_737_CDU_Screen.Fullscreen;
             pMDG737CDU.CreatePMDGCDUCells();
         });
+        return pMDG737CDU;
     }
 
-    private async Task GetPMDG737CDUSettingsAsync()
+    public async Task GetPMDG737CDUSettingsAsync(PMDG737CDU pMDG737CDU)
     {
         if (File.Exists(Settings))
         {
@@ -98,7 +96,7 @@ public class PMDG_737_CDU_StartupManager
         pMDG_737_CDU_Screen.Load(pMDG737CDU);
     }
 
-    private async Task SaveScreenPropertiesAsync()
+    public async Task SaveScreenPropertiesAsync(PMDG737CDU pMDG737CDU)
     {
         pMDG_737_CDU_Screen.Save(pMDG737CDU);
         using MemoryStream stream = new();
@@ -117,15 +115,5 @@ public class PMDG_737_CDU_StartupManager
             return;
         }
         await File.WriteAllTextAsync(Settings, json);
-    }
-
-    private async void PMDG737CDU_EditormodeOff(object sender, System.EventArgs e)
-    {
-        await SaveScreenPropertiesAsync();
-    }
-
-    private async void PMDG737CDU_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-    {
-        await SaveScreenPropertiesAsync();
     }
 }

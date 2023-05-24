@@ -170,7 +170,19 @@ public partial class HomeENETViewModel : ObservableObject
     [RelayCommand]
     private void ResetENETScreens()
     {
-        ENETList.ForEach(o => { o.pMDG737CDU.Top = 0; o.pMDG737CDU.Left = 0; o.fBWA32NXMCDU.Top = 0; o.fBWA32NXMCDU.Left = 0; });
+        ENETList.ForEach(o =>
+        {
+            if (o.pMDG737CDU is not null)
+            {
+                o.pMDG737CDU.Top = 0;
+                o.pMDG737CDU.Left = 0;
+            }
+            if (o.fBWA32NXMCDU is not null)
+            {
+                o.fBWA32NXMCDU.Top = 0;
+                o.fBWA32NXMCDU.Left = 0;
+            }
+        });
     }
 
     public void SaveENETConnections()
