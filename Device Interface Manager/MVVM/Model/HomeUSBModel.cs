@@ -1,24 +1,26 @@
 ﻿namespace Device_Interface_Manager.MVVM.Model;
 
-public class HomeUSBModel
+public partial class HomeUSBModel
 {
-    public class Connection : CommunityToolkit.Mvvm.ComponentModel.ObservableObject
+    public partial class Connection : CommunityToolkit.Mvvm.ComponentModel.ObservableObject
     {
         public string Name { get; set; }
-        private string _serial;
-        public string Serial
+
+        public string Serial { get; set; }
+
+        private string _selectedProfile;
+
+        public string SelectedProfile
         {
-            get => _serial;
+            get => _selectedProfile;
             set
             {
-                _serial = value;
+                if (_selectedProfile != value && value is not null)
+                { 
+                    _selectedProfile = value;
+                }
             }
         }
-        public Profile Profile { get; set; }
-    }
 
-    public class Profile
-    {
-        public string Name { get; set; }
     }
 }

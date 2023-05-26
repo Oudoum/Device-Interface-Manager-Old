@@ -9,33 +9,28 @@ public abstract class ProfileBase
 
     public MVVM.View.FBWA32NXMCDU fBWA32NXMCDU;
 
-    protected SimConnectClient simConnectClient = new();
+    protected SimConnectClient simConnectClient = SimConnectClient.Instance;
 
     protected CancellationTokenSource cancellationTokenSource = new();
 
-    protected Task receiveSimConnectDataTask;
-
-    protected void ReceiveSimConnectData(CancellationToken token)
-    {
-        while (!token.IsCancellationRequested)
-        {
-            simConnectClient?.ReceiveSimConnectMessage();
-            Thread.Sleep(10);
-        }
-    }
-
     protected async virtual Task StartSimConnectAsync()
     {
+        simConnectClient.OnSimVarChanged += SimConnectClient_OnSimVarChanged;
         await simConnectClient.SimConnect_OpenAsync(cancellationTokenSource.Token);
-        if (simConnectClient.simConnect is not null)
+        if (simConnectClient.SimConnect is not null)
         {
-            simConnectClient.simConnect.OnRecvClientData += Simconnect_OnRecvClientData;
-            simConnectClient.simConnect.OnRecvOpen += Simconnect_OnRecvOpen;
-            simConnectClient.simConnect.OnRecvQuit += SimConnect_OnRecvQuit;
+            simConnectClient.SimConnect.OnRecvOpen += SimConnect_OnRecvOpen;
+            simConnectClient.SimConnect.OnRecvQuit += SimConnect_OnRecvQuit;
+            simConnectClient.SimConnect.OnRecvClientData += SimConnect_OnRecvClientData;
         }
     }
 
     public virtual void Stop()
+    {
+
+    }
+
+    protected virtual void SimConnectClient_OnSimVarChanged(object sender, SimConnectClient.SimVar e)
     {
 
     }
@@ -46,13 +41,12 @@ public abstract class ProfileBase
         Stop();
     }
 
-
-    protected virtual void Simconnect_OnRecvClientData(Microsoft.FlightSimulator.SimConnect.SimConnect sender, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_RECV_CLIENT_DATA data)
+    protected virtual void SimConnect_OnRecvOpen(Microsoft.FlightSimulator.SimConnect.SimConnect sender, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_RECV_OPEN data)
     {
 
     }
 
-    protected virtual void Simconnect_OnRecvOpen(Microsoft.FlightSimulator.SimConnect.SimConnect sender, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_RECV_OPEN data)
+    protected virtual void SimConnect_OnRecvClientData(Microsoft.FlightSimulator.SimConnect.SimConnect sender, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_RECV_CLIENT_DATA data)
     {
 
     }

@@ -24,7 +24,7 @@ public partial class HomeUSBViewModel : ObservableObject
 
     public ObservableCollection<Connection> Connections { get; set; }
 
-    public ObservableCollection<Profile> Profiles { get; set; } = new();
+    public ObservableCollection<string> Profiles { get; set; } = new();
 
     public List<InterfaceIT_BoardInfo.Device> Devices { get; set; } = new();
 
@@ -43,7 +43,7 @@ public partial class HomeUSBViewModel : ObservableObject
             { "FBW A32NX Right MCDU", StartUSBProfile<MSFSProfiles.FBW.A32NX.USB.MCDU_R> },
             { "PMDG 737NG Left CDU", StartUSBProfile<MSFSProfiles.PMDG.B737.USB.NG_CDU_L> },
             { "PMDG 737NG Right CDU", StartUSBProfile<MSFSProfiles.PMDG.B737.USB.NG_CDU_R> },
-            { "PMDG 737NG MCP (3311)", StartUSBProfile<MSFSProfiles.PMDG.B737.USB.NG_MCP_3311> },
+            { "PMDG 737NG MCP (330F | 3311)", StartUSBProfile<MSFSProfiles.PMDG.B737.USB.NG_MCP_3311> },
             { "PMDG 737NG MCP (3327)", StartUSBProfile<MSFSProfiles.PMDG.B737.USB.NG_MCP_777> },
             { "PMDG 737NG MCP (330A | 332C)", StartUSBProfile<MSFSProfiles.PMDG.B737.USB.NG_MCP_330A_332C> },
             { "PMDG 737NG EFIS L (330B | 332D)", StartUSBProfile<MSFSProfiles.PMDG.B737.USB.NG_EFIS_L_330B_332D> },
@@ -146,7 +146,7 @@ public partial class HomeUSBViewModel : ObservableObject
 
     private async Task StartUSBProfiles(Connection connection)
     {
-        if (profileActions.TryGetValue(connection.Profile.Name, out var action))
+        if (profileActions.TryGetValue(connection.SelectedProfile, out var action))
         {
             if (action is not null)
             {
@@ -164,14 +164,14 @@ public partial class HomeUSBViewModel : ObservableObject
     [RelayCommand]
     private void AddRow()
     {
-        Connections.Add(new Connection() { Name = "NAME", Serial = "SERIALNUMBER", Profile = Profiles[0] });
+        Connections.Add(new Connection() { Name = "NAME", Serial = "SERIALNUMBER", SelectedProfile = Profiles[0] });
     }
 
     private void CreateProfiles()
     {
         foreach (var item in profileActions.Keys)
         {
-            Profiles.Add(new Profile { Name = item });
+            Profiles.Add(item);
         }
     }
 

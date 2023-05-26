@@ -2,43 +2,81 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Interop;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.FlightSimulator.SimConnect;
 using Device_Interface_Manager.MVVM.ViewModel;
+using Device_Interface_Manager.MVVM.View;
 using static Device_Interface_Manager.MSFSProfiles.PMDG.PMDG_NG3_SDK;
 
 namespace Device_Interface_Manager.MSFSProfiles;
 
-public class SimConnectClient
+public sealed class SimConnectClient
 {
-    public SimConnect simConnect;
-    private readonly IntPtr handle = new(0);
-    private const int wM_USER_SIMCONNECT = 0x0402;
+    private static readonly SimConnectClient _instance = new();
+
+    public static SimConnectClient Instance { get =>  _instance; }
+
+    public SimConnect SimConnect { get; set; }
+
+    private IntPtr handle;
+    private HwndSource handleSource;
+    private const int WM_USER_SIMCONNECT = 0x0402;
     private const int MESSAGE_SIZE = 1024;
     private const string CLIENT_DATA_NAME_COMMAND = "DIM.Command";
 
+
+    private IntPtr HandleSimConnectEvents(IntPtr hWnd, int message, IntPtr wParam, IntPtr lParam, ref bool isHandled)
+    {
+        isHandled = false;
+
+        switch (message)
+        {
+            case WM_USER_SIMCONNECT:
+                {
+                    SimConnect?.ReceiveMessage();
+                    isHandled = true;
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        return IntPtr.Zero;
+    }
+
     public async Task SimConnect_OpenAsync(CancellationToken cancellationToken)
     {
+        if (SimConnect is not null)
+        {
+            return;
+        }
+
+        handle = MainWindow.handle;
+        handleSource = HwndSource.FromHwnd(handle);
+        handleSource.AddHook(HandleSimConnectEvents);
+
         while (!cancellationToken.IsCancellationRequested)
         {
             try
             {
-                simConnect = new SimConnect("Device-Interface-Manager", handle, wM_USER_SIMCONNECT, null, 0);
+                SimConnect = new SimConnect("Device-Interface-Manager", handle, WM_USER_SIMCONNECT, null, 0);
 
-                simConnect.OnRecvOpen += SimConnect_OnRecvOpen;
-                simConnect.OnRecvQuit += SimConnect_OnRecvQuit;
+                SimConnect.OnRecvOpen += SimConnect_OnRecvOpen;
+                SimConnect.OnRecvQuit += SimConnect_OnRecvQuit;
 
-                simConnect.OnRecvException += SimConnect_OnRecvException;
+                SimConnect.OnRecvException += SimConnect_OnRecvException;
 
-                simConnect.MapClientDataNameToID(CLIENT_DATA_NAME_COMMAND, CLIENT_DATA_ID.CLIENT_DATA_ID_COMMAND);
-                simConnect.CreateClientData(CLIENT_DATA_ID.CLIENT_DATA_ID_COMMAND, MESSAGE_SIZE, SIMCONNECT_CREATE_CLIENT_DATA_FLAG.DEFAULT);
-                simConnect.AddToClientDataDefinition(DEFINE_ID.DATA_DEFINITION_ID_COMMAND, 0, MESSAGE_SIZE, 0, 0);
+                SimConnect.MapClientDataNameToID(CLIENT_DATA_NAME_COMMAND, CLIENT_DATA_ID.CLIENT_DATA_ID_COMMAND);
+                SimConnect.CreateClientData(CLIENT_DATA_ID.CLIENT_DATA_ID_COMMAND, MESSAGE_SIZE, SIMCONNECT_CREATE_CLIENT_DATA_FLAG.DEFAULT);
+                SimConnect.AddToClientDataDefinition(DEFINE_ID.DATA_DEFINITION_ID_COMMAND, 0, MESSAGE_SIZE, 0, 0);
 
                 RegisterSimVar("CAMERA STATE");
 
-                simConnect.OnRecvSimobjectData += Simconnect_OnRecvSimobjectData;
+                SimConnect.OnRecvSimobjectData += Simconnect_OnRecvSimobjectData;
                 return;
             }
             catch (COMException)
@@ -55,22 +93,11 @@ public class SimConnectClient
         }
     }
 
-    public void ReceiveSimConnectMessage()
-    {
-        try
-        {
-            simConnect?.ReceiveMessage();
-        }
-        catch (Exception)
-        {
-
-        }
-    }
-
     public void SimConnect_Close()
     {
-        simConnect?.Dispose();
-        simConnect = null;
+        handleSource?.RemoveHook(HandleSimConnectEvents);
+        SimConnect?.Dispose();
+        SimConnect = null;
         StrongReferenceMessenger.Default.Send(new SimConnectStausMessage(false));
     }
 
@@ -90,7 +117,6 @@ public class SimConnectClient
     }
 
     public event EventHandler<SimVar> OnSimVarChanged;
-    public event EventHandler OnCockpitLoaded;
 
     private void Simconnect_OnRecvSimobjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
     {
@@ -101,11 +127,6 @@ public class SimConnectClient
                 return;
             }
             SimVars[(int)data.dwRequestID - 1].Data = (double)data.dwData[0];
-            if (data.dwRequestID == 1 && SimVars[0].Data == 2)
-            { 
-                OnCockpitLoaded?.Invoke(this, EventArgs.Empty);
-                return;
-            }
             OnSimVarChanged?.Invoke(this, SimVars[(int)data.dwRequestID - 1]);
         }
     }
@@ -115,7 +136,7 @@ public class SimConnectClient
 
     public void TransmitEvent(uint data, Enum eventID)
     {
-        simConnect.TransmitClientEvent(
+        SimConnect?.TransmitClientEvent(
             0,
             eventID,
             data,
@@ -125,7 +146,7 @@ public class SimConnectClient
 
     public void SendEvent(string eventID)
     {
-        simConnect.SetClientData(
+        SimConnect?.SetClientData(
             CLIENT_DATA_ID.CLIENT_DATA_ID_COMMAND,
             DEFINE_ID.DATA_DEFINITION_ID_COMMAND,
             SIMCONNECT_CLIENT_DATA_SET_FLAG.DEFAULT,
@@ -155,7 +176,7 @@ public class SimConnectClient
             RegisterSimVars(simVarName, simVarUnit, false);
         }
 
-        simConnect?.SetDataOnSimObject(
+        SimConnect?.SetDataOnSimObject(
             (DEFINE_ID)SimVars.Find(lvar => lvar.Name == simVarName).ID,
             SimConnect.SIMCONNECT_OBJECT_ID_USER,
             SIMCONNECT_DATA_SET_FLAG.DEFAULT,
@@ -191,7 +212,7 @@ public class SimConnectClient
 
             maxClientDataDefinition = newSimVar.ID;
 
-            simConnect?.AddToDataDefinition(
+            SimConnect?.AddToDataDefinition(
                 (DEFINE_ID)newSimVar.ID,
                 simVarName,
                 simVarUnit,
@@ -199,11 +220,11 @@ public class SimConnectClient
                 0,
                 0);
 
-            simConnect?.RegisterDataDefineStruct<double>((DEFINE_ID)newSimVar.ID);
+            SimConnect?.RegisterDataDefineStruct<double>((DEFINE_ID)newSimVar.ID);
 
             if (request)
             {
-                simConnect?.RequestDataOnSimObject(
+                SimConnect?.RequestDataOnSimObject(
                     (REQUEST_ID)newSimVar.ID,
                     (DEFINE_ID)newSimVar.ID,
                     SimConnect.SIMCONNECT_OBJECT_ID_USER,

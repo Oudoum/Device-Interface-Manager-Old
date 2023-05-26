@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Microsoft.FlightSimulator.SimConnect;
+using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Interop;
 using Forms = System.Windows.Forms;
 
 namespace Device_Interface_Manager.MVVM.View
@@ -10,6 +13,8 @@ namespace Device_Interface_Manager.MVVM.View
 
     public partial class MainWindow : Window
     {
+        public static nint handle;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -26,6 +31,8 @@ namespace Device_Interface_Manager.MVVM.View
                 notifyIcon.Visible = true;
                 ShowInTaskbar = false;
             }
+
+            handle = new WindowInteropHelper(this).Handle;
         }
 
         //Move Window

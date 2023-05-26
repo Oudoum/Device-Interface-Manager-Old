@@ -4,7 +4,7 @@ namespace Device_Interface_Manager.MSFSProfiles.FENIX.A320.E;
 
 public class MCDU_L : ENET
 {
-    protected override void Simconnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
+    protected override void SimConnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
     {
         simConnectClient.OnSimVarChanged += SimConnectClient_OnSimVarChanged;
 

@@ -23,7 +23,6 @@ public abstract class ENET : ProfileBase
         if (ConnectionStatus == InterfaceITEthernet.ConnectionStatus.Connected)
         {
             await StartSimConnectAsync();
-            receiveSimConnectDataTask = Task.Run(() => ReceiveSimConnectData(cancellationTokenSource.Token));
             receiveInterfaceITEthernetDataTask = Task.Run(async () => await interfaceITEthernet.GetInterfaceITEthernetDataAsync(interfacITKeyAction = KeyPressedAction, cancellationTokenSource.Token));
         }
         return ConnectionStatus;

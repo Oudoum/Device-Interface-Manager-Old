@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.FlightSimulator.SimConnect;
-using static Device_Interface_Manager.interfaceIT.USB.InterfaceIT_BoardInfo;
 using static Device_Interface_Manager.MSFSProfiles.PMDG.PMDG_NG3_SDK;
 
 namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737.E;
@@ -81,7 +80,7 @@ public abstract class NG_CDU_Base : ENET
 
     protected DATA_REQUEST_ID CDU_ID { get; set; }
 
-    protected override void Simconnect_OnRecvClientData(SimConnect sender, SIMCONNECT_RECV_CLIENT_DATA data)
+    protected override void SimConnect_OnRecvClientData(SimConnect sender, SIMCONNECT_RECV_CLIENT_DATA data)
     {
         if ((uint)DATA_REQUEST_ID.DATA_REQUEST == data.dwRequestID)
         {
@@ -111,7 +110,7 @@ public abstract class NG_CDU_Base : ENET
     protected async override Task StartSimConnectAsync()
     {
         await base.StartSimConnectAsync();
-        if (simConnectClient.simConnect is not null)
+        if (simConnectClient.SimConnect is not null)
         {
             pMDG737CDU = await startupManager.PMDG737CDUStartup(simConnectClient, pMDG737CDU);
             pMDG737CDU.OnEditormodeOff += PMDG737CDU_EditormodeOff;

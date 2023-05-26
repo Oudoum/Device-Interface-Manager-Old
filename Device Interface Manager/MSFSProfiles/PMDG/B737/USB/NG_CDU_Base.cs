@@ -118,7 +118,7 @@ public abstract class NG_CDU_Base : MSFSProfiles.USB
 
     protected DATA_REQUEST_ID CDU_ID { get; set; }
 
-    protected override void Simconnect_OnRecvClientData(SimConnect sender, SIMCONNECT_RECV_CLIENT_DATA data)
+    protected override void SimConnect_OnRecvClientData(SimConnect sender, SIMCONNECT_RECV_CLIENT_DATA data)
     {
         if ((uint)DATA_REQUEST_ID.DATA_REQUEST == data.dwRequestID)
         {
@@ -150,7 +150,7 @@ public abstract class NG_CDU_Base : MSFSProfiles.USB
     protected async override Task StartSimConnectAsync()
     {
         await base.StartSimConnectAsync();
-        if (simConnectClient.simConnect is not null)
+        if (simConnectClient.SimConnect is not null)
         {
             pMDG737CDU = await startupManager.PMDG737CDUStartup(simConnectClient, pMDG737CDU);
             pMDG737CDU.OnEditormodeOff += PMDG737CDU_EditormodeOff;
@@ -160,7 +160,7 @@ public abstract class NG_CDU_Base : MSFSProfiles.USB
         }
     }
 
-    private async void PMDG737CDU_EditormodeOff(object sender, System.EventArgs e)
+    private async void PMDG737CDU_EditormodeOff(object sender, EventArgs e)
     {
         await startupManager.SaveScreenPropertiesAsync(pMDG737CDU);
     }
@@ -179,7 +179,7 @@ public abstract class NG_CDU_Base : MSFSProfiles.USB
     {
         int oldValue = 0;
         int noldValue = 0;
-        while (simConnectClient.simConnect is not null)
+        while (simConnectClient.SimConnect is not null)
         {
             interfaceIT_Analog_GetValue(Device.Session, 0, out int value);
             if (Math.Abs(value - oldValue) >= 50 || oldValue == 0)

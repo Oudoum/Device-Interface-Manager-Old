@@ -9,7 +9,7 @@ public class NG_EFIS_R_330C_332E : MSFSProfiles.USB
     protected override async Task StartSimConnectAsync()
     {
         await base.StartSimConnectAsync();
-        PMDG737.RegisterPMDGDataEvents(simConnectClient.simConnect);
+        PMDG737.RegisterPMDGDataEvents(simConnectClient.SimConnect);
         NG_MCP_3311.OnBackgroundLEDChanged += NG_MCP_3311_OnBackgroundLEDChanged;
     }
 

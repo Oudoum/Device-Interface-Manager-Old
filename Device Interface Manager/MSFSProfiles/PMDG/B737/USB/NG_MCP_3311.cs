@@ -592,7 +592,7 @@ public class NG_MCP_3311 : MSFSProfiles.USB
     protected override async Task StartSimConnectAsync()
     {
         await base.StartSimConnectAsync();
-        PMDG737.RegisterPMDGDataEvents(simConnectClient.simConnect);
+        PMDG737.RegisterPMDGDataEvents(simConnectClient.SimConnect);
     }
 
     private bool[] _eLEC_BusPowered = new bool[16];
@@ -630,7 +630,7 @@ public class NG_MCP_3311 : MSFSProfiles.USB
         }
     }
 
-    protected override void Simconnect_OnRecvClientData(SimConnect sender, SIMCONNECT_RECV_CLIENT_DATA data)
+    protected override void SimConnect_OnRecvClientData(SimConnect sender, SIMCONNECT_RECV_CLIENT_DATA data)
     {
         if ((uint)DATA_REQUEST_ID.DATA_REQUEST == data.dwRequestID)
         {

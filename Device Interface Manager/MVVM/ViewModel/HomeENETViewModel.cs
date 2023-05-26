@@ -20,7 +20,7 @@ public partial class HomeENETViewModel : ObservableObject
 
     public ObservableCollection<Connection> Connections { get; set; } = new();
 
-    public ObservableCollection<Profile> Profiles { get; set; } = new();
+    public ObservableCollection<string> Profiles { get; set; } = new();
 
     public InterfaceITEthernet interfaceITEthernet;
 
@@ -102,7 +102,7 @@ public partial class HomeENETViewModel : ObservableObject
     private bool isActive;
     private async Task StartENETProfiles(Connection connection)
     {
-        if (profileActions.TryGetValue(connection.Profile.Name, out var action))
+        if (profileActions.TryGetValue(connection.SelectedProfile, out var action))
         {
             if (action is not null)
             {
@@ -138,7 +138,7 @@ public partial class HomeENETViewModel : ObservableObject
     [RelayCommand]
     private void AddRow()
     {
-        Connections.Add(new Connection() { Name = "NAME", IPAddress = "192.168.1.200", Profile = Profiles[0] });
+        Connections.Add(new Connection() { Name = "NAME", IPAddress = "192.168.1.200", SelectedProfile = Profiles[0] });
     }
 
     [RelayCommand]
@@ -156,14 +156,14 @@ public partial class HomeENETViewModel : ObservableObject
                 return;
             }
         }
-        Connections.Add(new Connection() { Name = result[0], IPAddress = result[1], Profile = Profiles[0] });
+        Connections.Add(new Connection() { Name = result[0], IPAddress = result[1], SelectedProfile = Profiles[0] });
     }
 
     private void CreateProfiles()
     {
         foreach (var item in profileActions.Keys)
         {
-            Profiles.Add(new Profile { Name = item });
+            Profiles.Add(item);
         }
     }
 

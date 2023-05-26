@@ -67,7 +67,7 @@ public class MCDU_L : MSFSProfiles.USB
         File.WriteAllText(settings, json);
     }
 
-    protected override void Simconnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
+    protected override void SimConnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
     {
         interfaceIT_Dataline_Set(Device.Session, Device.DeviceInfo.nDatalineFirst, true);
 

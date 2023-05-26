@@ -31,11 +31,17 @@ public class HomeENETModel
                 }
             }
         }
-        public Profile Profile { get; set; }
-    }
-
-    public class Profile
-    {
-        public string Name { get; set; }
+        private string _selectedProfile;
+        public string SelectedProfile
+        {
+            get => _selectedProfile;
+            set
+            {
+                if (_selectedProfile != value && value is not null)
+                {
+                    _selectedProfile = value;
+                }
+            }
+        }
     }
 }
