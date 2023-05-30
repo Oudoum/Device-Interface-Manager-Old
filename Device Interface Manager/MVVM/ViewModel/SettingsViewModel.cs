@@ -144,7 +144,7 @@ public partial class SettingsViewModel : ObservableObject
         try
         {
             using TcpClient tcpClient = new();
-            await tcpClient.ConnectAsync(IP, Convert.ToInt32(Port));
+            await tcpClient.ConnectAsync(IP, Convert.ToInt32(Port)).WaitAsync(TimeSpan.FromSeconds(1));
             return true;
         }
         catch (OperationCanceledException)
@@ -156,6 +156,10 @@ public partial class SettingsViewModel : ObservableObject
             return false;
         }
         catch (SocketException)
+        {
+            return false;
+        }
+        catch (TimeoutException)
         {
             return false;
         }

@@ -90,6 +90,7 @@ public partial class HomeENETViewModel : ObservableObject
         {
             connection.Status = 0;
         }
+        IsENETEnabled = true;
     }
 
     private async Task StartENETProfile<T>(Connection connection) where T : ENET, new()
@@ -102,6 +103,13 @@ public partial class HomeENETViewModel : ObservableObject
     private bool isActive;
     private async Task StartENETProfiles(Connection connection)
     {
+        if (connection.SelectedProfile is null)
+        {
+            System.Windows.MessageBox.Show("Please reselect the profile for: " + connection.Name);
+            StopENET();
+            return;
+        }
+
         if (profileActions.TryGetValue(connection.SelectedProfile, out var action))
         {
             if (action is not null)
@@ -172,15 +180,15 @@ public partial class HomeENETViewModel : ObservableObject
     {
         ENETList.ForEach(o =>
         {
-            if (o.pMDG737CDU is not null)
+            if (o.PMDG737CDU is not null)
             {
-                o.pMDG737CDU.Top = 0;
-                o.pMDG737CDU.Left = 0;
+                o.PMDG737CDU.Top = 0;
+                o.PMDG737CDU.Left = 0;
             }
-            if (o.fBWA32NXMCDU is not null)
+            if (o.FBWA32NXMCDU is not null)
             {
-                o.fBWA32NXMCDU.Top = 0;
-                o.fBWA32NXMCDU.Left = 0;
+                o.FBWA32NXMCDU.Top = 0;
+                o.FBWA32NXMCDU.Left = 0;
             }
         });
     }

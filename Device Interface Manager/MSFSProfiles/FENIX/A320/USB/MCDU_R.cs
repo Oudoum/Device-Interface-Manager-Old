@@ -9,8 +9,6 @@ public class MCDU_R : MSFSProfiles.USB
     {
         interfaceIT_Dataline_Set(Device.Session, Device.DeviceInfo.nDatalineFirst, true);
 
-        simConnectClient.OnSimVarChanged += SimConnectClient_OnSimVarChanged;
-
         simConnectClient.RegisterSimVar("L:I_CDU2_FAIL");
         simConnectClient.RegisterSimVar("L:I_CDU2_MCDU_MENU");
         simConnectClient.RegisterSimVar("L:I_CDU2_FM");
@@ -23,7 +21,7 @@ public class MCDU_R : MSFSProfiles.USB
         simConnectClient.RegisterSimVar("L:N_PED_LIGHTING_PEDESTAL");
     }
 
-    private void SimConnectClient_OnSimVarChanged(object sender, SimConnectClient.SimVar simVar)
+    protected override void SimConnectClient_OnSimVarChanged(object sender, SimConnectClient.SimVar simVar)
     {
         switch (simVar.Name)
         {

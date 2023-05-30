@@ -5,9 +5,9 @@ namespace Device_Interface_Manager.MSFSProfiles;
 
 public abstract class ProfileBase
 {
-    public MVVM.View.PMDG737CDU pMDG737CDU;
+    public MVVM.View.PMDG737CDU PMDG737CDU { get; set; }
 
-    public MVVM.View.FBWA32NXMCDU fBWA32NXMCDU;
+    public MVVM.View.FBWA32NXMCDU FBWA32NXMCDU { get; set; }
 
     protected SimConnectClient simConnectClient = SimConnectClient.Instance;
 

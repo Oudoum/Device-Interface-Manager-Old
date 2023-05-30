@@ -6,8 +6,6 @@ public class MCDU_L : ENET
 {
     protected override void SimConnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
     {
-        simConnectClient.OnSimVarChanged += SimConnectClient_OnSimVarChanged;
-
         simConnectClient.RegisterSimVar("L:I_CDU1_FAIL");
         simConnectClient.RegisterSimVar("L:I_CDU1_MCDU_MENU");
         simConnectClient.RegisterSimVar("L:I_CDU1_FM");
@@ -18,7 +16,7 @@ public class MCDU_L : ENET
         simConnectClient.RegisterSimVar("L:I_CDU1_FM2");
     }
 
-    private void SimConnectClient_OnSimVarChanged(object sender, SimConnectClient.SimVar simVar)
+    protected override void SimConnectClient_OnSimVarChanged(object sender, SimConnectClient.SimVar simVar)
     {
         switch (simVar.Name)
         {

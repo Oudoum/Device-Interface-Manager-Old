@@ -11,22 +11,22 @@ public class MCDU_R : ENET
     {
         System.Windows.Application.Current.Dispatcher.Invoke(delegate
         {
-            fBWA32NXMCDU = new();
+            FBWA32NXMCDU = new();
         });
-        fBWA32NXMCDU.EditormodeOff += FBWA32NXMCDU_EditormodeOff; ;
-        fBWA32NXMCDU.Closing += FBWA32NXMCDU_Closing; ;
-        fBWA32NXMCDU.Dispatcher.BeginInvoke(delegate ()
+        FBWA32NXMCDU.EditormodeOff += FBWA32NXMCDU_EditormodeOff; ;
+        FBWA32NXMCDU.Closing += FBWA32NXMCDU_Closing; ;
+        FBWA32NXMCDU.Dispatcher.BeginInvoke(delegate ()
         {
             GetPMDG737CDUSettings();
-            fBWA32NXMCDU.Show();
-            fBWA32NXMCDU.WindowState = (System.Windows.WindowState)fBW_A32NX_MCDU_Screen.Fullscreen;
+            FBWA32NXMCDU.Show();
+            FBWA32NXMCDU.WindowState = (System.Windows.WindowState)fBW_A32NX_MCDU_Screen.Fullscreen;
         });
     }
 
     public override void Stop()
     {
         base.Stop();
-        fBWA32NXMCDU?.Close();
+        FBWA32NXMCDU?.Close();
     }
 
     private void FBWA32NXMCDU_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -47,12 +47,12 @@ public class MCDU_R : ENET
         {
             fBW_A32NX_MCDU_Screen = JsonSerializer.Deserialize<FBW_A32NX_MCDU_Screen>(File.ReadAllText(settings), new JsonSerializerOptions { NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowNamedFloatingPointLiterals });
         }
-        fBW_A32NX_MCDU_Screen.Load(fBWA32NXMCDU);
+        fBW_A32NX_MCDU_Screen.Load(FBWA32NXMCDU);
     }
 
     private void SaveScreenProperties()
     {
-        fBW_A32NX_MCDU_Screen.Save(fBWA32NXMCDU);
+        fBW_A32NX_MCDU_Screen.Save(FBWA32NXMCDU);
         string json = JsonSerializer.Serialize(fBW_A32NX_MCDU_Screen, new JsonSerializerOptions { WriteIndented = true, NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowNamedFloatingPointLiterals });
         Directory.CreateDirectory(settings.Remove(18));
         if (File.Exists(settings))
@@ -83,7 +83,7 @@ public class MCDU_R : ENET
         simConnectClient.RegisterSimVar("L:A32NX_MCDU_R_ANNUNC_FM2");
     }
 
-    private void SimConnectClient_OnSimVarChanged(object sender, SimConnectClient.SimVar simVar)
+    protected override void SimConnectClient_OnSimVarChanged(object sender, SimConnectClient.SimVar simVar)
     {
         switch (simVar.Name)
         {

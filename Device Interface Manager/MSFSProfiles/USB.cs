@@ -9,7 +9,7 @@ public abstract class USB : ProfileBase
 {
     protected Device Device;
 
-    protected INTERFACEIT_KEY_NOTIFY_PROC_UINT iNTERFACEIT_KEY_NOTIFY_PROC;
+    protected INTERFACEIT_KEY_NOTIFY_PROC_UINT interfaceItKeyNotifyProc;
 
     protected abstract void KeyPressedProc(uint session, int key, uint direction);
 
@@ -20,9 +20,10 @@ public abstract class USB : ProfileBase
             Device = device;
             InterfaceITEnable(Device);
             await StartSimConnectAsync();
+            interfaceItKeyNotifyProc = KeyPressedProc;
             if ((oldCameraState = simConnectClient.GetSimVar("CAMERA STATE")) == 2)
             {
-                interfaceIT_Switch_Enable_Callback(Device.Session, true, iNTERFACEIT_KEY_NOTIFY_PROC = new(KeyPressedProc));
+                interfaceIT_Switch_Enable_Callback(Device.Session, true, interfaceItKeyNotifyProc);
             }
         }
     }
@@ -38,11 +39,11 @@ public abstract class USB : ProfileBase
                 {
                     await Task.Delay(TimeSpan.FromSeconds(15));
                 }
-                interfaceIT_Switch_Enable_Callback(Device.Session, true, iNTERFACEIT_KEY_NOTIFY_PROC = new(KeyPressedProc));
+                interfaceIT_Switch_Enable_Callback(Device.Session, true, interfaceItKeyNotifyProc);
             }
             if (simVar.Data == 15 && oldCameraState != 15)
             {
-                interfaceIT_Switch_Enable_Callback(Device.Session, false, iNTERFACEIT_KEY_NOTIFY_PROC = new(KeyPressedProc));
+                interfaceIT_Switch_Enable_Callback(Device.Session, false, interfaceItKeyNotifyProc);
             }
             oldCameraState = simVar.Data;
         }
@@ -53,7 +54,7 @@ public abstract class USB : ProfileBase
         cancellationTokenSource.Cancel();
         if (Device is not null)
         {
-            interfaceIT_Switch_Enable_Callback(Device.Session, false, iNTERFACEIT_KEY_NOTIFY_PROC);
+            interfaceIT_Switch_Enable_Callback(Device.Session, false, interfaceItKeyNotifyProc);
             InterfaceITDisable(Device);
         }
         simConnectClient.SimConnect_Close();

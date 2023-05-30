@@ -13,6 +13,7 @@
     WindowStyle="None"
     MinHeight="635"
     MinWidth="1240"
+    MaxHeight="{x:Static SystemParameters.MaximizedPrimaryScreenHeight}"
     Background="Transparent"
     AllowsTransparency="True"
     Closing="OnWindowClosing"
@@ -356,8 +357,7 @@
 
             <Button
                 Command="{Binding OpenProfileCreatorCommand}"
-                d:Visibility="Visible"
-                Visibility="Hidden"
+                Visibility="Visible"
                 Content="TestProfileCreator"
                 HorizontalAlignment="Center"
                 FontSize="16"

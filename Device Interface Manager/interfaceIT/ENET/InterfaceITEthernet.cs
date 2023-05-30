@@ -9,6 +9,7 @@ using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using System.Net.Http;
 
 namespace Device_Interface_Manager.interfaceIT.ENET;
 
@@ -117,7 +118,7 @@ public class InterfaceITEthernet : ObservableObject
                 }
                 catch (IOException)
                 {
-
+                    return;
                 }
                 catch (OperationCanceledException)
                 {
@@ -343,16 +344,45 @@ public class InterfaceITEthernet : ObservableObject
             throw new ArgumentException("bOn must be of type bool, int, or double.");
         }
 
+        Reconnect();
+
         try
         {
             stream?.Write(Encoding.ASCII.GetBytes("B1:LED:" + nLED + ":" + Convert.ToUInt16(bOn) + "\r\n"));
         }
         catch (Exception e)
         {
+            Reconnect();
             if (!hasErrorBeenShown)
             {
-                MessageBox.Show(e.Message);
                 hasErrorBeenShown = true;
+                MessageBox.Show(e.Message);
+            }
+        }
+    }
+
+    private void Reconnect()
+    {
+        if (hasErrorBeenShown)
+        {
+            try
+            {
+                client = new();
+                client.Connect(HostIPAddress, TCPPort);
+                stream = client.GetStream();
+                hasErrorBeenShown = false;
+
+            }
+            catch (OperationCanceledException)
+            {
+
+            }
+            catch (ArgumentNullException)
+            {
+
+            }
+            catch (SocketException)
+            {
             }
         }
     }

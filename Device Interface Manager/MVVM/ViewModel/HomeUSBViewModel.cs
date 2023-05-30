@@ -68,7 +68,7 @@ public partial class HomeUSBViewModel : ObservableObject
 
         if (Properties.Settings.Default.AutoHide && Connections.Count > 0)
         {
-            StartUSB();
+            _ = StartUSB();
         }
     }
 
@@ -122,7 +122,7 @@ public partial class HomeUSBViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async void StartUSB()
+    private async Task StartUSB()
     {
         if (!(IsUSBEnabled = !IsUSBEnabled))
         {
@@ -133,8 +133,14 @@ public partial class HomeUSBViewModel : ObservableObject
             }
             return;
         }
+        StopUSB();
+    }
+
+    private void StopUSB()
+    {
         USBList.ForEach(o => o.Stop());
         USBList.Clear();
+        IsUSBEnabled = true;
     }
 
     private async Task StartUSBProfile<T>(Connection connection) where T : USB, new()
@@ -146,7 +152,21 @@ public partial class HomeUSBViewModel : ObservableObject
 
     private async Task StartUSBProfiles(Connection connection)
     {
-        if (profileActions.TryGetValue(connection.SelectedProfile, out var action))
+        if (connection.SelectedProfile is null)
+        {
+            System.Windows.MessageBox.Show("Please reselect the profile for: " + connection.Name);
+            StopUSB();
+            return;
+        }
+
+        else if (connection.Serial.Length != 12 || connection.Serial == "SERIALNUMBER")
+        {
+            System.Windows.MessageBox.Show("Please Drag & Drop or enter the serial number for: " + connection.Name);
+            StopUSB();
+            return;
+        }
+
+        else if (profileActions.TryGetValue(connection.SelectedProfile, out var action))
         {
             if (action is not null)
             {
@@ -180,15 +200,15 @@ public partial class HomeUSBViewModel : ObservableObject
     {
         USBList.ForEach(o =>
         {
-            if (o.pMDG737CDU is not null)
+            if (o.PMDG737CDU is not null)
             {
-                o.pMDG737CDU.Top = 0;
-                o.pMDG737CDU.Left = 0;
+                o.PMDG737CDU.Top = 0;
+                o.PMDG737CDU.Left = 0;
             }
-            if (o.fBWA32NXMCDU is not null)
+            if (o.FBWA32NXMCDU is not null)
             {
-                o.fBWA32NXMCDU.Top = 0;
-                o.fBWA32NXMCDU.Left = 0;
+                o.FBWA32NXMCDU.Top = 0;
+                o.FBWA32NXMCDU.Left = 0;
             }
         });
     }

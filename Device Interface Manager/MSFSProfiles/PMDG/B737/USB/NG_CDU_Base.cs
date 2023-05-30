@@ -108,38 +108,48 @@ public abstract class NG_CDU_Base : MSFSProfiles.USB
         }
     }
 
+    private bool _eLEC_BusPowered_15;
+    private void SetELEC_BusPowered_15(bool value)
+    {
+        if (_eLEC_BusPowered_15 != value)
+        {
+            _eLEC_BusPowered_15 = value;
+            if (!value)
+            {
+                PMDG737CDU.ClearPMDGCDUCells();
+            }
+        }
+    }
+
     public override void Stop()
     {
         base.Stop();
-        pMDG737CDU?.Close();
+        startupManager.PMDG737CDU?.Close();
     }
 
     protected PMDG_NG3_Data pMDG_NG3_Data = new();
 
     protected DATA_REQUEST_ID CDU_ID { get; set; }
 
-    protected override void SimConnect_OnRecvClientData(SimConnect sender, SIMCONNECT_RECV_CLIENT_DATA data)
+    protected override async void SimConnect_OnRecvClientData(SimConnect sender, SIMCONNECT_RECV_CLIENT_DATA data)
     {
         if ((uint)DATA_REQUEST_ID.DATA_REQUEST == data.dwRequestID)
         {
             pMDG_NG3_Data = (PMDG_NG3_Data)data.dwData[0];
+            SetELEC_BusPowered_15(pMDG_NG3_Data.ELEC_BusPowered[15]);
             ELEC_BusPowered_3 = pMDG_NG3_Data.ELEC_BusPowered[3];
             LTS_PedPanelKnob = pMDG_NG3_Data.LTS_PedPanelKnob;
             RecvData();
-            if (!pMDG_NG3_Data.ELEC_BusPowered[3])
-            {
-                pMDG737CDU?.Dispatcher.BeginInvoke(delegate ()
-                {
-                    pMDG737CDU.ClearPMDGCDUCells();
-                });
-            }
         }
         if ((uint)CDU_ID == data.dwRequestID)
         {
-            pMDG737CDU.Dispatcher.BeginInvoke(delegate ()
+            if (!((PMDG_NG3_CDU_Screen)data.dwData[0]).Powered)
             {
-                pMDG737CDU.GetPMDGCDUCells((PMDG_NG3_CDU_Screen)data.dwData[0]);
-            });
+                await Task.Delay(500);
+                startupManager.PMDG737CDU.ClearPMDGCDUCells();
+                return;
+            }
+            startupManager.PMDG737CDU.GetPMDGCDUCells((PMDG_NG3_CDU_Screen)data.dwData[0]);
         }
     }
 
@@ -152,22 +162,11 @@ public abstract class NG_CDU_Base : MSFSProfiles.USB
         await base.StartSimConnectAsync();
         if (simConnectClient.SimConnect is not null)
         {
-            pMDG737CDU = await startupManager.PMDG737CDUStartup(simConnectClient, pMDG737CDU);
-            pMDG737CDU.OnEditormodeOff += PMDG737CDU_EditormodeOff;
-            pMDG737CDU.Closing += PMDG737CDU_Closing;
+            await startupManager.PMDG737CDUStartup(simConnectClient);
+            PMDG737CDU = startupManager.PMDG737CDU;
             _ = Task.Run(GetValues);
             interfaceIT_Dataline_Set(Device.Session, Device.DeviceInfo.nDatalineFirst, true);
         }
-    }
-
-    private async void PMDG737CDU_EditormodeOff(object sender, EventArgs e)
-    {
-        await startupManager.SaveScreenPropertiesAsync(pMDG737CDU);
-    }
-
-    private async void PMDG737CDU_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-    {
-        await startupManager.SaveScreenPropertiesAsync(pMDG737CDU);
     }
 
     protected override void KeyPressedProc(uint session, int key, uint direction)
@@ -188,7 +187,7 @@ public abstract class NG_CDU_Base : MSFSProfiles.USB
             }
             if (Math.Abs(value - noldValue) > 40 || noldValue == 0)
             {
-                pMDG737CDU?.Dispatcher.BeginInvoke(() => pMDG737CDU.Brightness = noldValue = value);
+                PMDG737CDU?.Dispatcher.BeginInvoke(() => PMDG737CDU.Brightness = noldValue = value);
             }
             Thread.Sleep(50);
         }
