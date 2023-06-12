@@ -36,7 +36,7 @@ namespace Device_Interface_Manager.MVVM.View
         }
 
         //Move Window
-        private void Border_MouseDown(object sender, MouseButtonEventArgs e)
+        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {

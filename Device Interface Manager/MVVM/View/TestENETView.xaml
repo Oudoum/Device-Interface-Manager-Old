@@ -26,15 +26,6 @@
                 <TextBlock Text="Inputs Received" Foreground="White" FontFamily="SergoUi" FontSize="22"/>
             </StackPanel>
             <Button Content="Reset" Command="{Binding ResetLabelsCommand}" Width="144" FontFamily="SergoUi" FontSize="12" Cursor="Hand" FontWeight="Bold" Margin="0,50,0,0" Height="30">
-                <Button.Resources>
-                    <Style TargetType="Button">
-                        <Style.Resources>
-                            <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="10"/>
-                            </Style>
-                        </Style.Resources>
-                    </Style>
-                </Button.Resources>
             </Button>
             <StackPanel Margin="40,150,0,0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <TextBlock Text="Airbus" VerticalAlignment="Center" Margin="0,0,10,0" FontSize="24" FontFamily="Helvetica Neue" FontWeight="Medium">
@@ -114,10 +105,10 @@
                                     </Style.Triggers>
                                 </Style>
                             </StackPanel.Style>
-                            <ToggleButton IsChecked="{Binding IsChecked[5]}" Content="6"   Width="30"/>
-                            <ToggleButton IsChecked="{Binding IsChecked[6]}"  Content="7"   Width="30" Margin="5,0,0,0"/>
-                            <ToggleButton IsChecked="{Binding IsChecked[7]}" Content="8"   Width="30" Margin="5,0,0,0"/>
-                            <ToggleButton IsChecked="{Binding IsChecked[8]}" Content="9"   Width="30" Margin="5,0,0,0"/>
+                            <ToggleButton IsChecked="{Binding IsChecked[5]}" Content="6"  Width="30"/>
+                            <ToggleButton IsChecked="{Binding IsChecked[6]}" Content="7"  Width="30" Margin="5,0,0,0"/>
+                            <ToggleButton IsChecked="{Binding IsChecked[7]}" Content="8"  Width="30" Margin="5,0,0,0"/>
+                            <ToggleButton IsChecked="{Binding IsChecked[8]}" Content="9"  Width="30" Margin="5,0,0,0"/>
                             <ToggleButton IsChecked="{Binding IsChecked[9]}" Content="10" Width="30" Margin="5,0,0,0"/>
                         </StackPanel>
                     </DockPanel>

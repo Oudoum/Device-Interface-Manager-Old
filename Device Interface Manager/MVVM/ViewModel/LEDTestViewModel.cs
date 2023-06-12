@@ -22,7 +22,8 @@ public partial class LEDTestViewModel : ObservableObject
     [RelayCommand]
     private void LEDEnable()
     {
-        interfaceIT.USB.InterfaceITAPI_Data.interfaceIT_LED_Enable(Session, this.IsEnabled = !this.IsEnabled);
+        interfaceIT.USB.InterfaceITAPI_Data.interfaceIT_LED_Enable(Session, IsEnabled = !IsEnabled);
+        LEDs.Clear();
         for (int i = LEDFirst; i <= LEDLast; i++)
         {
             LEDs.Add(new Model.LEDTestModel.DeviceLED

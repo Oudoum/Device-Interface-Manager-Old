@@ -11,6 +11,11 @@ public class HomeENETModel
             get => _iPAddress;
             set
             {
+                if (string.IsNullOrEmpty(value))
+                { 
+                    _iPAddress = value;
+                }
+
                 if (System.Net.IPAddress.TryParse(value, out System.Net.IPAddress ipAddress))
                 {
                     _iPAddress = ipAddress.ToString();

@@ -21,34 +21,30 @@
         </Grid.ColumnDefinitions>
 
         <Grid.Resources>
-            <Style x:Key="MyButton" TargetType="Button">
-                <Setter Property="Height" Value="Auto"/>
+            <Style TargetType="Button" BasedOn="{StaticResource MahApps.Styles.Button}" x:Key="ButtonStyle">
+                <Setter Property="Margin" Value="0,20,0,0"/>
                 <Setter Property="Width" Value="250"/>
                 <Setter Property="VerticalAlignment" Value="Top"/>
-                <Setter Property="BorderThickness" Value="0"/>
-                <Setter Property="Foreground" Value="Black"/>
-                <Setter Property="Background" Value="DimGray"/>
                 <Setter Property="FontSize" Value="23"/>
+                <Setter Property="Cursor" Value="Hand"/>
                 <Setter Property="IsTabStop" Value="False"/>
-                <Style.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="10"/>
-                    </Style>
-                </Style.Resources>
+            </Style>
+            <Style TargetType="ToolTip">
+                <Setter Property="Background" Value="Black"/>
+                <Setter Property="Foreground" Value="White"/>
             </Style>
         </Grid.Resources>
         <StackPanel>
 
             <Button 
+                Command="{Binding DatalineEnableCommand}"
                 Margin="0,50,0,0"
-                Cursor="Hand"
-                Command="{Binding DatalineEnableCommand}">
-                Dataline
+                Content="Dataline">
                 <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource ResourceKey=MyButton}">
+                    <Style TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding DatalineEnabled}" Value="True">
-                                <Setter Property="Background" Value="LimeGreen"/>
+                                <Setter Property="Background" Value="Green"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -56,76 +52,76 @@
             </Button>
 
             <Button
-                Margin="0,50,0,0"
-                Cursor="Hand"
                 Command="{Binding BrightnessEnableCommand}"
+                Margin="0,50,0,0"
                 Content="Brightness">
                 <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource ResourceKey=MyButton}">
+                    <Style TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding BrightnessEnabled}" Value="True">
-                                <Setter Property="Background" Value="LimeGreen"/>
+                                <Setter Property="Background" Value="Green"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
             </Button>
 
+            <TextBlock 
+                Text="{Binding BrightnessValue}"
+                Visibility="{Binding BrightnessEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                d:Visibility="Visible"
+                Margin="0,30,0,0"
+                Foreground="White" 
+                HorizontalAlignment="Center"/>
+
             <Slider
+                Value="{Binding BrightnessValue}"
+                Visibility="{Binding BrightnessEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                d:Visibility="Visible"
                 Minimum="0"
                 Maximum="255"
                 Width="250"
-                Margin="0,30,0,0"
                 Cursor="Hand"
-                d:Visibility="Visible"
-                AutoToolTipPlacement="TopLeft"
-                IsTabStop="False"
-                ToolTip="{Binding BrightnessValue}"
-                Visibility="{Binding BrightnessEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
-                Value="{Binding BrightnessValue}">
+                IsTabStop="False">
             </Slider>
 
             <Button
-                Margin="0,50,0,0"
-                Cursor="Hand"
                 Command="{Binding AnalogEnableCommand}"
+                Margin="0,50,0,0"
+                Content="Analog Input"
                 ToolTip="The returned value is 12 bit value indicating the input in relation to GND and board +5v.">
-                Analog Input
                 <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource ResourceKey=MyButton}">
+                    <Style TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding AnalogEnabled}" Value="True">
-                                <Setter Property="Background" Value="LimeGreen"/>
+                                <Setter Property="Background" Value="Green"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
             </Button>
 
-            <Label 
+            <TextBlock 
+                Text="{Binding AnalogValue}"
+                Visibility="{Binding AnalogEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                d:Visibility="Visible"
                 Margin="0,20,0,0"
-                Content="{Binding AnalogValue}"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top"
                 FontSize="22"
                 FontWeight="Bold"
-                Foreground="White"
-                Width="Auto"
-                d:Visibility="Visible"
-                Visibility="{Binding AnalogEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                Foreground="White"/>
 
             <Button
-                Margin="0,130,0,0"
-                Cursor="Hand"
                 Command="{Binding LoggingEnableCommand}"
-                ToolTip="External logging"
-                Width="150">
-                Logging
+                Margin="0,50,0,0"
+                Content="Logging"
+                ToolTip="External logging">
                 <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource ResourceKey=MyButton}">
+                    <Style TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding LoggingEnabled}" Value="True">
-                                <Setter Property="Background" Value="LimeGreen"/>
+                                <Setter Property="Background" Value="Green"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -135,16 +131,15 @@
 
         <StackPanel
             Grid.Column="1">
-            <Button 
+            <Button
+                Command="{Binding SevenSegmentEnableCommand}"
                 Margin="0,50,0,0"
-                Cursor="Hand"
-                Command="{Binding SevenSegmentEnableCommand}">
-                7 Segment
+                Content="7 Segment">
                 <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource ResourceKey=MyButton}">
+                    <Style TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding SevenSegmentEnabled}" Value="True">
-                                <Setter Property="Background" Value="LimeGreen"/>
+                                <Setter Property="Background" Value="Green"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>

@@ -49,6 +49,7 @@ public class InterfaceITEthernet : ObservableObject
 
     public enum ConnectionStatus
     {
+        Default,
         NotConnected,
         PingSuccessful,
         Connected

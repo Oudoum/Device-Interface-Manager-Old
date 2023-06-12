@@ -20,20 +20,13 @@
         </Grid.ColumnDefinitions>
 
         <Grid.Resources>
-            <Style TargetType="Button">
-                <Setter Property="Height" Value="Auto"/>
+            <Style TargetType="Button" BasedOn="{StaticResource MahApps.Styles.Button}" x:Key="ButtonStyle">
+                <Setter Property="Margin" Value="0,20,0,0"/>
                 <Setter Property="Width" Value="250"/>
                 <Setter Property="VerticalAlignment" Value="Top"/>
-                <Setter Property="BorderThickness" Value="0"/>
-                <Setter Property="Foreground" Value="Black"/>
-                <Setter Property="Background" Value="DimGray"/>
-
                 <Setter Property="FontSize" Value="23"/>
-                <Style.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="10"/>
-                    </Style>
-                </Style.Resources>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="IsTabStop" Value="False"/>
             </Style>
             <Style TargetType="ToolTip">
                 <Setter Property="Background" Value="Black"/>
@@ -46,33 +39,18 @@
             VerticalAlignment="Top">
 
             <Button
-                HorizontalAlignment="Center"
-                VerticalAlignment="Top"
-                Margin="0,150,0,0"
                 Command="{Binding CallbackModeCommand}"
-                Cursor="Hand"
+                Margin="0,150,0,0"
                 Content="Callbackmode"
-                IsTabStop="False"
                 ToolTip="Every time a switch is pressed you will be notified (list on the right) with the switch number and the direction.">
                 <Button.Resources>
-                    <Style TargetType="Button">
-                        <Style.Resources>
-                            <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="10"/>
-                            </Style>
-                        </Style.Resources>
-                        <Setter Property="Height" Value="40"/>
-                        <Setter Property="Width" Value="250"/>
-                        <Setter Property="FontSize" Value="22"/>
-                        <Setter Property="BorderThickness" Value="0"/>
-                        <Setter Property="Foreground" Value="Black"/>
+                    <Style TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding CallbackModeEnabled}" Value="True">
                                 <Setter Property="Background" Value="Green"/>
                                 <Setter Property="Content" Value="Enabled"/>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding CallbackModeEnabled}" Value="False">
-                                <Setter Property="Background" Value="DimGray"/>
                                 <Setter Property="Content" Value="Disabled"/>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding PollModeEnabled}" Value="True">
@@ -84,31 +62,18 @@
             </Button>
             <StackPanel>
                 <Button 
-                    Margin="0,100,0,0"
                     Command="{Binding PollModeCommand}"
+                    Margin="0,100,0,0"
                     Content="Pollmode"
-                    Cursor="Hand"
-                    IsTabStop="False"
                     ToolTip="Every time a switch is pressed it is added to the receive queue until you click the Get Switch button which removes it from the queue.">
                     <Button.Resources>
-                        <Style TargetType="Button">
-                            <Style.Resources>
-                                <Style TargetType="Border">
-                                    <Setter Property="CornerRadius" Value="10"/>
-                                </Style>
-                            </Style.Resources>
-                            <Setter Property="Height" Value="40"/>
-                            <Setter Property="Width" Value="250"/>
-                            <Setter Property="FontSize" Value="22"/>
-                            <Setter Property="BorderThickness" Value="0"/>
-                            <Setter Property="Foreground" Value="Black"/>
+                        <Style TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding PollModeEnabled}" Value="True">
                                     <Setter Property="Background" Value="Green"/>
                                     <Setter Property="Content" Value="Enabled"/>
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding PollModeEnabled}" Value="False">
-                                    <Setter Property="Background" Value="DimGray"/>
                                     <Setter Property="Content" Value="Disabled"/>
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding CallbackModeEnabled}" Value="True">
@@ -120,79 +85,38 @@
                 </Button>
 
                 <Button
-                    Margin="0,20,0,0"
-                    Height="40"
                     Command="{Binding GetSwitchCommand}"
-                    Cursor="Hand"
+                    Content="Get Switch"
                     ToolTip="As switch notification are received they are added to the queue until this button is pressed to retrieve the oldes item (list on the right) and then remove it.">
-                    <Button.Resources>
-                        <Style TargetType="Button">
-                            <Setter Property="Content" Value="Get Switch"/>
-                            <Setter Property="Height" Value="Auto"/>
-                            <Setter Property="Width" Value="250"/>
-                            <Setter Property="VerticalAlignment" Value="Top"/>
-                            <Setter Property="BorderThickness" Value="0"/>
-                            <Setter Property="Foreground" Value="Black"/>
-                            <Setter Property="Background" Value="DimGray"/>
-                            <Setter Property="FontSize" Value="23"/>
-                            <Setter Property="IsTabStop" Value="False"/>
-                            <Style.Resources>
-                                <Style TargetType="Border">
-                                    <Setter Property="CornerRadius" Value="10"/>
-                                </Style>
-                            </Style.Resources>
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding CallbackModeEnabled}" Value="True">
                                     <Setter Property="Visibility" Value="Hidden"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </Button.Resources>
+                    </Button.Style>
                 </Button>
             </StackPanel>
         </StackPanel>
 
-        <Button 
-            Margin="100,20,100,0"
+        <Button
             Command="{Binding ClearSwitchListCommand}"
-            Height="40"
+            Style="{StaticResource ButtonStyle}"
+            Grid.Column="1"
             Content="Clear"
-            Cursor="Hand"
-            IsTabStop="False"
-            ToolTip="Clear the switch list" Grid.Column="1"/>
+            ToolTip="Clear the switch list."/>
 
         <ListView 
             x:Name="SwitchLog"
+            ItemsSource="{Binding SwitchLog}"
+            d:ItemsSource="{d:SampleData ItemCount=14}"
             Grid.Column="1"
             Margin="0,80,0,10"
-            MinHeight="450"
-            Width="400"
-            HorizontalAlignment="Center"
-            Foreground="LightGray"
             Background="Transparent"
-            ItemsSource="{Binding SwitchLog}"
             FontSize="22"
-            IsTabStop="False"
-            d:ItemsSource="{d:SampleData ItemCount=14}">
-            <ListView.Template>
-                <ControlTemplate>
-                    <Border 
-                        CornerRadius="10"
-                        BorderThickness="5"
-                        BorderBrush="LightGray">
-                        <ScrollViewer
-                            HorizontalScrollBarVisibility="Hidden"
-                            VerticalScrollBarVisibility="Hidden">
-                            <ItemsPresenter/>
-                        </ScrollViewer>
-                    </Border>
-                    <ControlTemplate.Resources>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="IsTabStop" Value="False"/>
-                        </Style>
-                    </ControlTemplate.Resources>
-                </ControlTemplate>
-            </ListView.Template>
+            IsTabStop="False">
         </ListView>
 
     </Grid>

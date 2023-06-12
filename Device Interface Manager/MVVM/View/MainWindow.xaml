@@ -4,6 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModel="clr-namespace:Device_Interface_Manager.MVVM.ViewModel"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     x:Class="Device_Interface_Manager.MVVM.View.MainWindow"
     mc:Ignorable="d"
@@ -65,8 +66,7 @@
 
     <Border
         Background="#FF151515"
-        CornerRadius="10"
-        MouseDown="Border_MouseDown">
+        CornerRadius="10">
         <Grid>
 
             <Grid.ColumnDefinitions>
@@ -80,9 +80,10 @@
             </Grid.RowDefinitions>
 
             <Border Background="#121212" Grid.RowSpan="2" CornerRadius="10,0,0,10"/>
-            <Border Background="#121212" Grid.Column="1" CornerRadius="0,10,0,0"/>
+            <Border Background="#121212" CornerRadius="10,10,0,0" MouseDown="Grid_MouseDown" Grid.ColumnSpan="2"/>
 
             <TextBlock
+                MouseDown="Grid_MouseDown"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
                 Background="Transparent"
@@ -213,7 +214,6 @@
                     VerticalAlignment="Top"
                     Background="Transparent"
                     Foreground="White"
-                    IsTabStop="False"
                     ItemsSource="{Binding DeviceList}"
                     SelectedValuePath="Id"
                     SelectedValue="{Binding SelectedController}"
@@ -234,6 +234,7 @@
                     </ListView.Template>
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
+                            <Setter Property="IsTabStop" Value="False"/>
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="ListViewItem">
@@ -278,7 +279,9 @@
                 HorizontalAlignment="Right"
                 Cursor="Hand"
                 IsTabStop="False"
-                Click="ButtonMinimize_Click"/>
+                Click="ButtonMinimize_Click"
+                mah:ControlsHelper.CornerRadius="0"
+                mah:ControlsHelper.FocusBorderBrush="Transparent"/>
 
             <Button
                 Grid.Column="1"
@@ -292,7 +295,10 @@
                 HorizontalAlignment="Right"
                 Cursor="Hand"
                 IsTabStop="False"
-                Click="ButtonMaximized_Click"/>
+                Click="ButtonMaximized_Click"
+                mah:ControlsHelper.CornerRadius="0"
+                mah:ControlsHelper.FocusBorderBrush="Transparent">
+            </Button>
 
             <Button
                 Grid.Column="1"
@@ -306,97 +312,89 @@
                 Click="ButtonClose_Click"
                 Cursor="Hand"
                 IsTabStop="False"
-                Style="{StaticResource ButtonCloseTheme}"/>
+                Style="{StaticResource ButtonCloseTheme}"
+                mah:ControlsHelper.FocusBorderBrush="Transparent"/>
 
             <ContentControl
-                x:Name="test"
+                Content="{Binding CurrentView}"
                 Grid.Row="1"
                 Grid.Column="1"
-                IsTabStop="False"
-                Content="{Binding CurrentView}"/>
+                IsTabStop="False"/>
 
-            <Button
+            <Grid Grid.Column="1" MouseDown="Grid_MouseDown">
+                <Button
                 Content="{Binding TotalControllers, NotifyOnTargetUpdated=True}"
+                Command="{Binding RefreshDeviceListCommand}"
+                IsEnabled="{Binding HomeUSBVM.IsUSBEnabled}"
                 FontSize="18"
-                Height="50"
-                BorderThickness="0"
-                Foreground="White"
-                Margin="10,0,0,0"
-                Grid.Column="1"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Cursor="Hand"
-                IsTabStop="False"
-                Command="{Binding RefreshDeviceListCommand}"
-                IsEnabled="{Binding HomeUSBVM.IsUSBEnabled}">
-                <Button.Resources>
-                    <Style TargetType="Button">
-                        <Setter Property="Background" Value="Transparent"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="Button">
-                                    <Border
+                IsTabStop="False">
+                    <Button.Resources>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border
                                         Background="{TemplateBinding Background}">
-                                        <ContentPresenter 
+                                            <ContentPresenter 
                                           Content="{TemplateBinding Content}"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="CadetBlue"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Resources>
-                <Button.Visibility>
-                    <Binding Converter="{StaticResource BooleanToVisibilityConverter}" Path="Enet"/>
-                </Button.Visibility>
-            </Button>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="CadetBlue"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Resources>
+                    <Button.Visibility>
+                        <Binding Converter="{StaticResource BooleanToVisibilityConverter}" Path="Enet"/>
+                    </Button.Visibility>
+                </Button>
 
-            <Button
+                <Button
                 Command="{Binding OpenProfileCreatorCommand}"
+                mah:ControlsHelper.ContentCharacterCasing="Normal"
+                Cursor="Hand"
                 Visibility="Visible"
                 Content="TestProfileCreator"
                 HorizontalAlignment="Center"
-                FontSize="16"
-                FontWeight="Bold"
-                Width="200"
-                Margin="420,20,420,20"
-                FontFamily="Arial Black"
-                IsTabStop="False"
-                Grid.Column="1"/>
+                VerticalAlignment="Center"
+                FontSize="18"
+                IsTabStop="False"/>
 
-            <Label
-                Content="{Binding DIMVersion}"
+                <TextBlock
+                Text="{Binding DIMVersion}"
                 FontSize="18"
                 Foreground="White"
                 HorizontalAlignment="Right"
-                VerticalContentAlignment="Center"
-                Grid.Column="1"
-                IsTabStop="False"
+                VerticalAlignment="Center"
                 Margin="0,0,200,0"/>
 
-            <Ellipse 
+                <Ellipse 
                 HorizontalAlignment="Center"
-                Grid.Column="1" 
                 Height="40" 
                 Margin="0,0,330,0"
                 StrokeThickness="4"
                 Stroke="Gray"  
                 Width="40">
-                <Ellipse.Style>
-                    <Style TargetType="Ellipse">
-                        <Setter Property="Fill" Value="Red"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsSimConnectOpen}" Value="True">
-                                <Setter Property="Fill" Value="LimeGreen"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Ellipse.Style>
-            </Ellipse>
+                    <Ellipse.Style>
+                        <Style TargetType="Ellipse">
+                            <Setter Property="Fill" Value="Red"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsSimConnectOpen}" Value="True">
+                                    <Setter Property="Fill" Value="Green"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Ellipse.Style>
+                </Ellipse>
+            </Grid>
 
             <Grid
                 Grid.Row="1"

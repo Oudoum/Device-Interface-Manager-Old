@@ -1,99 +1,177 @@
 ﻿using System;
-using System.Windows;
 using System.Linq;
+using System.Windows;
+using System.Text.Json;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Device_Interface_Manager.MSFSProfiles.PMDG;
 using Device_Interface_Manager.MVVM.Model;
 using Device_Interface_Manager.interfaceIT.USB;
+using Device_Interface_Manager.MSFSProfiles.PMDG;
 
 namespace Device_Interface_Manager.MVVM.ViewModel;
 public partial class TestProfileViewModel : ObservableObject
 {
-    public ObservableCollection<InterfaceIT_BoardInfo.Device> DeviceList { get; set; } = new();
+    [ObservableProperty]
+    private TestCreator _TestCreator;
 
     [ObservableProperty]
-    private TestCreator _testCreator;
+    private ObservableCollection<TestCreator> _testCreatorCollection = new();
 
-    public TestProfileViewModel()
+    [ObservableProperty]
+    private string _boardType;
+
+    partial void OnBoardTypeChanged(string value)
     {
-        TestCreator = new()
-        {
-            InputCreator = new(),
-            OutputCreator = new()
-        };
+        TestCreator = TestCreatorCollection.FirstOrDefault(item => item.BoardType == value);
     }
 
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(PMDGEvents))]
-    private string _searchPMDGEventsText;
+    public ObservableCollection<string> BoardTypeCollection { get; set; } = new();
 
-    public PMDG_NG3_SDK.PMDGEvents[] PMDGEvents => string.IsNullOrEmpty(SearchPMDGEventsText)
-        ? (PMDG_NG3_SDK.PMDGEvents[])Enum.GetValues(typeof(PMDG_NG3_SDK.PMDGEvents))
-        : ((PMDG_NG3_SDK.PMDGEvents[])Enum.GetValues(typeof(PMDG_NG3_SDK.PMDGEvents))).Where(name => name.ToString().Contains(SearchPMDGEventsText, StringComparison.OrdinalIgnoreCase)).ToArray();
-
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(PMDGMouseEvents))]
-    private string _searchPMDGMouseEventsText;
-
-    public static Dictionary<string, uint> PMDGMouseFlags => new()
+    private ObservableCollection<InterfaceIT_BoardInfo.Device> _deviceList = new();
+    public ObservableCollection<InterfaceIT_BoardInfo.Device> DeviceList
+    {
+        get => _deviceList;
+        set
         {
-        { nameof(PMDG_NG3_SDK.MOUSE_FLAG_RIGHTSINGLE), PMDG_NG3_SDK.MOUSE_FLAG_RIGHTSINGLE },
-        { nameof(PMDG_NG3_SDK.MOUSE_FLAG_MIDDLESINGLE), PMDG_NG3_SDK.MOUSE_FLAG_MIDDLESINGLE },
-        { nameof(PMDG_NG3_SDK.MOUSE_FLAG_LEFTSINGLE), PMDG_NG3_SDK.MOUSE_FLAG_LEFTSINGLE },
-        { nameof(PMDG_NG3_SDK.MOUSE_FLAG_RIGHTDOUBLE), PMDG_NG3_SDK.MOUSE_FLAG_RIGHTDOUBLE },
-        { nameof(PMDG_NG3_SDK.MOUSE_FLAG_MIDDLEDOUBLE), PMDG_NG3_SDK.MOUSE_FLAG_MIDDLEDOUBLE },
-        { nameof(PMDG_NG3_SDK.MOUSE_FLAG_LEFTDOUBLE), PMDG_NG3_SDK.MOUSE_FLAG_LEFTDOUBLE },
-        { nameof(PMDG_NG3_SDK.MOUSE_FLAG_RIGHTDRAG), PMDG_NG3_SDK.MOUSE_FLAG_RIGHTDRAG },
-        { nameof(PMDG_NG3_SDK.MOUSE_FLAG_MIDDLEDRAG), PMDG_NG3_SDK.MOUSE_FLAG_MIDDLEDRAG },
-        { nameof(PMDG_NG3_SDK.MOUSE_FLAG_LEFTDRAG), PMDG_NG3_SDK.MOUSE_FLAG_LEFTDRAG },
-        { nameof(PMDG_NG3_SDK.MOUSE_FLAG_MOVE), PMDG_NG3_SDK.MOUSE_FLAG_MOVE },
-        { nameof(PMDG_NG3_SDK.MOUSE_FLAG_DOWN_REPEAT), PMDG_NG3_SDK.MOUSE_FLAG_DOWN_REPEAT },
-        { nameof(PMDG_NG3_SDK.MOUSE_FLAG_RIGHTRELEASE), PMDG_NG3_SDK.MOUSE_FLAG_RIGHTRELEASE },
-        { nameof(PMDG_NG3_SDK.MOUSE_FLAG_MIDDLERELEASE), PMDG_NG3_SDK.MOUSE_FLAG_MIDDLERELEASE },
-        { nameof(PMDG_NG3_SDK.MOUSE_FLAG_LEFTRELEASE), PMDG_NG3_SDK.MOUSE_FLAG_LEFTRELEASE },
-        { nameof(PMDG_NG3_SDK.MOUSE_FLAG_WHEEL_FLIP), PMDG_NG3_SDK.MOUSE_FLAG_WHEEL_FLIP },
-        { nameof(PMDG_NG3_SDK.MOUSE_FLAG_WHEEL_SKIP), PMDG_NG3_SDK.MOUSE_FLAG_WHEEL_SKIP },
-        { nameof(PMDG_NG3_SDK.MOUSE_FLAG_WHEEL_UP), PMDG_NG3_SDK.MOUSE_FLAG_WHEEL_UP },
-        { nameof(PMDG_NG3_SDK.MOUSE_FLAG_WHEEL_DOWN), PMDG_NG3_SDK.MOUSE_FLAG_WHEEL_DOWN }
-        };
+            _deviceList = value;
+            foreach (var device in value)
+            {
+                TestCreator testCreator = new();
+                for (int i = device.DeviceInfo.nSwitchFirst; i <= device.DeviceInfo.nSwitchLast; i++)
+                {
+                    testCreator.AllSwitchItems.Add(i);
+                }
+                for (int i = device.DeviceInfo.nLEDFirst; i <= device.DeviceInfo.nLEDLast; i++)
+                {
+                    testCreator.AllLEDItems.Add(i);
+                }
+                BoardTypeCollection.Add(testCreator.BoardType = device.BoardType);
+                TestCreatorCollection.Add(testCreator);
+            }
+        }
+    }
 
-    public KeyValuePair<string, uint>[] PMDGMouseEvents => string.IsNullOrEmpty(SearchPMDGMouseEventsText)
-    ? PMDGMouseFlags.ToArray()
-    : PMDGMouseFlags.Where(pair => pair.Key.Contains(SearchPMDGMouseEventsText, StringComparison.OrdinalIgnoreCase)).ToArray();
+    private List<string> test = new();
+    [RelayCommand]
+    private void SaveProfiles()
+    {
+        test?.Clear();
+        foreach (var profile in TestCreatorCollection)
+        {
+            test.Add(JsonSerializer.Serialize(profile, new JsonSerializerOptions { WriteIndented = true }));
+        }
+    }
 
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(PMDGDataFieldNames))]
-    private string _searchPMDGDataText;
-
-    public string[] PMDGDataFieldNames => string.IsNullOrEmpty(SearchPMDGDataText)
-    ? typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetFields().Select(field => field.Name).Take(typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetFields().Length - 1).ToArray()
-    : typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetFields().Select(field => field.Name).Where(name => name.Contains(SearchPMDGDataText, StringComparison.OrdinalIgnoreCase)).Take(typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetFields().Length - 1).ToArray();
-
+    [RelayCommand]
+    private void LoadProfiles()
+    {
+        TestCreatorCollection.Clear();
+        if (test is null)
+        {
+            return;
+        }
+        foreach (var item in test)
+        {
+            TestCreatorCollection.Add(JsonSerializer.Deserialize<TestCreator>(item));
+        }
+        TestCreator = TestCreatorCollection.FirstOrDefault(item => item.BoardType == BoardType);
+    }
 
     [RelayCommand]
     private void AddInput()
     {
-        List<string> switchItems = new(allswitchItems);
-        foreach (var item in removedItems)
+        if (TestCreator is null)
+        {
+            return;
+        }
+
+        List<int?> switchItems = new(TestCreator.AllSwitchItems);
+        foreach (var item in TestCreator.RemovedSwitchItems)
         {
             switchItems.Remove(item);
         }
-        TestCreator.InputCreator.Add(new InputCreator { Switches = new ObservableCollection<string>(switchItems), Event = "TEST", EventType = new EventType(), PMDGEvent = PMDG_NG3_SDK.PMDGEvents.EVT_OH_ELEC_BATTERY_SWITCH, PMDGMouseEvent = PMDGMouseEvents });
-        
-    
+        TestCreator.InputCreator.Add(new InputCreator { Switches = new ObservableCollection<int?>(switchItems) });
     }
 
     [RelayCommand]
     private void AddOutput()
     {
-        TestCreator.OutputCreator.Add(new OutputCreator { LEDs = new ObservableCollection<string>() { "--None--", "1", "2" }, Data = "TEST", DataType = new DataType(), PMDGStructArrayNum = 0, PMDGStructData = PMDGDataFieldNames });
+        if (TestCreator is null)
+        {
+            return;
+        }
+
+        List<int?> lEDsItems = new(TestCreator.AllLEDItems);
+        foreach (var item in TestCreator.RemovedLEDsItems)
+        {
+            lEDsItems.Remove(item);
+        }
+        TestCreator.OutputCreator.Add(new OutputCreator { LEDs = new ObservableCollection<int?>(lEDsItems) });
     }
 
+    [RelayCommand]
+    private void DeleteRow(object creator)
+    {
+        if (creator is InputCreator)
+        {
+            foreach (var input in TestCreator.InputCreator)
+            {
+                if (input == creator)
+                {
+                    TestCreator.InputCreator.Remove(input);
+                    if (input.SelectedSwitch is not null)
+                    {
+                        TestCreator.RemovedSwitchItems.Remove(input.SelectedSwitch);
+                        TestCreator.InputCreator
+                            .ToList()
+                            .ForEach(item =>
+                            {
+                                List<int?> switches = new(item.Switches)
+                                {
+                                input.SelectedSwitch
+                                };
+                                item.Switches = new(switches.OrderBy(i => i));
+                            });
+                    }
+                    return;
+                }
+            }
+        }
+        else if (creator is OutputCreator)
+        {
+            foreach (var output in TestCreator.OutputCreator)
+            {
+                if (output == creator)
+                {
+                    TestCreator.OutputCreator.Remove(output);
+                    if (output.SelectedLED is not null)
+                    {
+                        TestCreator.RemovedLEDsItems.Remove(output.SelectedLED);
+                        TestCreator.OutputCreator
+                            .ToList()
+                            .ForEach(item =>
+                            {
+                                List<int?> switches = new(item.LEDs)
+                                {
+                                output.SelectedLED
+                                };
+                                item.LEDs = new(switches.OrderBy(i => i));
+                            });
+                    }
+                    return;
+                }
+            }
+        }
+
+    }
+
+    [RelayCommand]
+    private void StartProfiles()
+    {
+        PMDGProfile pMDGProfile = new(TestCreatorCollection.ToArray(), DeviceList.ToArray());
+    }
 
     [RelayCommand]
     private void ComboBoxGotFocus(RoutedEventArgs e)
@@ -107,25 +185,22 @@ public partial class TestProfileViewModel : ObservableObject
         }
     }
 
-    private readonly List<string> allswitchItems = new() { "--None--", "1", "2", "3" };
-    private readonly List<string> removedItems = new();
-
     [RelayCommand]
     private void SwitchComboBoxSlectionChanged(System.Windows.Controls.SelectionChangedEventArgs e)
     {
-        if (e.AddedItems.Count == 0)
+        int? addedValue = null;
+        if (e.AddedItems.Count > 0)
         {
-            return;
+            addedValue = (int?)e.AddedItems[0];
         }
-        string addedValue = (string)e.AddedItems[0];
-        
-        if (e.RemovedItems.Count == 0)
-        {
-            return;
-        }
-        string removedValue = (string)e.RemovedItems[0];
 
-        if (addedValue != "--None--" && !string.IsNullOrEmpty(addedValue))
+        int? removedValue = null;
+        if (e.RemovedItems.Count > 0)
+        {
+            removedValue = (int?)e.RemovedItems[0];
+        }
+
+        if (addedValue is not null)
         {
             foreach (var item in TestCreator.InputCreator)
             {
@@ -135,21 +210,21 @@ public partial class TestProfileViewModel : ObservableObject
                 }
             }
 
-            if (!removedItems.Contains(addedValue))
+            if (!TestCreator.RemovedSwitchItems.Contains(addedValue))
             {
-                removedItems.Add(addedValue);
+                TestCreator.RemovedSwitchItems.Add(addedValue);
             }
             return;
         }
 
-        removedItems.Remove(removedValue);
+        TestCreator.RemovedSwitchItems.Remove(removedValue);
 
         TestCreator.InputCreator
             .Where(item => !item.Switches.Contains(removedValue))
             .ToList()
             .ForEach(item =>
             {
-                List<string> switches = new(item.Switches)
+                List<int?> switches = new(item.Switches)
                 {
                     removedValue
                 };
@@ -157,167 +232,51 @@ public partial class TestProfileViewModel : ObservableObject
             });
     }
 
-
-    //PMDG profile stuff
-
-    //public event EventHandler<PMDGDataFieldChangedEventArgs> FieldChanged;
-
-    //public List<string> WatchedFields { get; set; } = new() { "ADF_StandbyFrequency", "IRS_annunALIGN_0" };
-
-    //public TestProfileViewModel()
-    //{
-    //    FieldChanged += Instance_FieldChanged;
-    //    //Initialize
-    //    PMDG_NG3_SDK.PMDG_NG3_Data data = new();
-
-    //    dynamic dynObject = new ExpandoObject();
-    //    IDictionary<string, object> dynDict = (IDictionary<string, object>)dynObject;
-
-    //    foreach (var field in typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetFields())
-    //    {
-    //        if (field.Name == "reserved")
-    //        {
-    //            continue;
-    //        }
-
-    //        if (field.FieldType.IsArray)
-    //        {
-    //            Array array = (Array)field.GetValue(data);
-    //            if (array is null)
-    //            {
-    //                if (field.GetCustomAttributes(typeof(MarshalAsAttribute), false).FirstOrDefault() is MarshalAsAttribute marshalAsAttribute)
-    //                {
-    //                    array = Array.CreateInstance(field.FieldType.GetElementType(), marshalAsAttribute.SizeConst);
-    //                    field.SetValue(data, array);
-    //                }
-    //            }
-
-    //            if (array is not null)
-    //            {
-    //                int i = 0;
-    //                foreach (var item in array)
-    //                {
-    //                    dynDict[field.Name + '_' + i] = item;
-    //                    i++;
-    //                }
-    //            }
-    //        }
-
-    //        dynDict[field.Name] = field.GetValue(data);
-    //    }
-
-
-    //    //Update Data
-    //    PMDG_NG3_SDK.PMDG_NG3_Data newData = new()
-    //    {
-    //        ADF_StandbyFrequency = 20,
-    //        IRS_annunALIGN = new bool[2] { true, false}
-    //    };
-
-    //    foreach (var field in typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetFields())
-    //    {
-    //        if (field.Name == "reserved")
-    //        {
-    //            continue;
-    //        }
-
-    //        string propertyName;
-    //        object oldValue;
-    //        object newValue;
-    //        if (field.FieldType.IsArray)
-    //        {
-    //            if (field.GetValue(newData) is Array array)
-    //            {
-    //                for (int i = 0; i < array.Length; i++)
-    //                {
-    //                    propertyName = field.Name + '_' + i;
-    //                    if (!dynDict.TryGetValue(propertyName, out oldValue))
-    //                    {
-    //                        oldValue = null;
-    //                    }
-    //                    newValue = array.GetValue(i);
-    //                    if (!Equals(oldValue, newValue) && WatchedFields.Contains(propertyName))
-    //                    {
-    //                        dynDict[propertyName] = newValue;
-    //                        // Value has changed, raise an event or call a method here
-    //                        FieldChanged?.Invoke(null, new PMDGDataFieldChangedEventArgs(propertyName, newValue));
-    //                    }
-    //                }
-    //            }
-    //            continue;
-    //        }
-
-    //        propertyName = field.Name;
-    //        if (!dynDict.TryGetValue(propertyName, out oldValue))
-    //        {
-    //            oldValue = null;
-    //        }
-
-    //        newValue = field.GetValue(newData);
-    //        if (!Equals(oldValue, newValue) && WatchedFields.Contains(propertyName))
-    //        {
-    //            dynDict[propertyName] = newValue;
-    //            // Value has changed, raise an event or call a method here
-    //            FieldChanged?.Invoke(null, new PMDGDataFieldChangedEventArgs(propertyName, newValue));
-    //        }
-    //    }
-    //}
-
-    private void Instance_FieldChanged(object sender, PMDGDataFieldChangedEventArgs e)
+    [RelayCommand]
+    private void LEDComboBoxSlectionChanged(System.Windows.Controls.SelectionChangedEventArgs e)
     {
-        switch (e.Value)
+        int? addedValue = null;
+        if (e.AddedItems.Count > 0)
         {
-            case bool boolValue:
-                Logic(Convert.ToInt32(boolValue), e.PMDGDataName);
-                break;
-
-            case byte byteValue:
-                Logic(Convert.ToInt32(byteValue), e.PMDGDataName);
-                break;
-
-            case ushort ushortValue:
-                Logic(Convert.ToInt32(ushortValue), e.PMDGDataName);
-                break;
-
-            case short shortValue:
-                Logic(Convert.ToInt32(shortValue), e.PMDGDataName);
-                break;
-
-            case uint uintValue:
-                Logic(Convert.ToInt32(uintValue), e.PMDGDataName);
-                break;
-
-            case int intValue:
-                Logic(intValue, e.PMDGDataName);
-                break;
-
-            case string stringValue:
-                Logic(stringValue, e.PMDGDataName);
-                break;
-
-            case float floatValue:
-                Logic(Convert.ToSingle(floatValue), e.PMDGDataName);
-                break;
-
-            default:
-                throw new Exception(e.PMDGDataName);
+            addedValue = (int?)e.AddedItems[0];
         }
+
+        int? removedValue = null;
+        if (e.RemovedItems.Count > 0)
+        {
+            removedValue = (int?)e.RemovedItems[0];
+        }
+
+        if (addedValue is not null)
+        {
+            foreach (var item in TestCreator.OutputCreator)
+            {
+                if (item.SelectedLED != addedValue)
+                {
+                    item.LEDs.Remove(addedValue);
+                }
+            }
+
+            if (!TestCreator.RemovedLEDsItems.Contains(addedValue))
+            {
+                TestCreator.RemovedLEDsItems.Add(addedValue);
+            }
+            return;
+        }
+
+        TestCreator.RemovedLEDsItems.Remove(removedValue);
+
+        TestCreator.OutputCreator
+            .Where(item => !item.LEDs.Contains(removedValue))
+            .ToList()
+            .ForEach(item =>
+            {
+                List<int?> leds = new(item.LEDs)
+                {
+                    removedValue
+                };
+                item.LEDs = new(leds.OrderBy(i => i));
+            });
     }
 
-    private void Logic<T>(T value, string pMDGDataName)
-    {
-
-    }
-}
-
-public class PMDGDataFieldChangedEventArgs : EventArgs
-{
-    public string PMDGDataName { get; }
-    public object Value { get; }
-
-    public PMDGDataFieldChangedEventArgs(string propertyName, object newValue)
-    {
-        PMDGDataName = propertyName;
-        Value = newValue;
-    }
 }
