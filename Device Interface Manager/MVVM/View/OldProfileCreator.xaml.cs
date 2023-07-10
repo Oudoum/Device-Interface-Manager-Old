@@ -14,7 +14,7 @@ namespace Device_Interface_Manager.MVVM.View
         Input
     } 
 
-    public partial class ProfileCreator : Window
+    public partial class OldProfileCreator : Window
     {
         private readonly HubHopPanelMode Mode = HubHopPanelMode.Output;
 
@@ -31,7 +31,7 @@ namespace Device_Interface_Manager.MVVM.View
 
         public static InterfaceITEthernet Test { get; set; } = new();
 
-        public ProfileCreator()
+        public OldProfileCreator()
         {
             InitializeComponent();
 

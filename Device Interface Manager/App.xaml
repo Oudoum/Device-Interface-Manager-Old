@@ -40,7 +40,6 @@
             
             <DataTemplate DataType="{x:Type viewModel:TestENETViewModel}">
                 <view:TestENETView/>
-                
             </DataTemplate>
             
             <DataTemplate DataType="{x:Type viewModel:SettingsViewModel}">

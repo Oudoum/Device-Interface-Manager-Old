@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,7 +9,9 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Device_Interface_Manager.interfaceIT.USB;
 using Device_Interface_Manager.MSFSProfiles;
+using Device_Interface_Manager.MVVM.Model;
 using static Device_Interface_Manager.MVVM.Model.HomeUSBModel;
+using Device_Interface_Manager.MSFSProfiles.PMDG;
 
 namespace Device_Interface_Manager.MVVM.ViewModel;
 
@@ -32,8 +36,27 @@ public partial class HomeUSBViewModel : ObservableObject
 
     private readonly Dictionary<string, Func<Connection, Task>> profileActions;
 
+    private List<ProfileCreatorModel> profileCreatorModels;
+
     public HomeUSBViewModel()
     {
+        string folderPath = Path.Combine("Profiles", "Creator");
+        if (Directory.Exists(folderPath))
+        {
+            profileCreatorModels ??= new();
+            foreach (string filePath in Directory.GetFiles(folderPath))
+            {
+                try
+                {
+                    profileCreatorModels.Add(JsonSerializer.Deserialize<ProfileCreatorModel>(File.ReadAllText(filePath)));
+                }
+                catch (Exception)
+                {
+
+                }
+            }
+        }
+
         profileActions = new()
         {
             { "-- None --", null },
@@ -61,6 +84,14 @@ public partial class HomeUSBViewModel : ObservableObject
         //"PMDG 747 Center CDU"
 
         };
+
+        foreach (var item in profileCreatorModels)
+        {
+            if (!profileActions.ContainsKey('#' + item.ProfileName) && item.SelectedDriver == ProfileCreatorModel.FDSUSB)
+            {
+                profileActions.Add('#' + item.ProfileName, StartUSBCustomProfile);
+            }
+        }
 
         CreateProfiles();
         Connections = MainViewModel.LoadConnectionsData<ObservableCollection<Connection>>(usb);
@@ -129,7 +160,12 @@ public partial class HomeUSBViewModel : ObservableObject
             SaveUSBConnections();
             foreach (var connection in Connections)
             {
-                await StartUSBProfiles(connection);
+                if (!connection.SelectedProfile.Contains('#'))
+                {
+                    await StartUSBProfiles(connection);
+                    continue;
+                }
+                await StartUSBCustomProfile(connection);
             }
             return;
         }
@@ -140,6 +176,7 @@ public partial class HomeUSBViewModel : ObservableObject
     {
         USBList.ForEach(o => o.Stop());
         USBList.Clear();
+        PMDGProfile.Instance.Stop();
         IsUSBEnabled = true;
     }
 
@@ -148,6 +185,11 @@ public partial class HomeUSBViewModel : ObservableObject
         T profile = new();
         USBList.Add(profile);
         await Task.Run(() => profile.StartAsync(Devices.FirstOrDefault(o => o.SerialNumber == connection.Serial)));
+    }
+
+    private async Task StartUSBCustomProfile(Connection connection)
+    {
+        await PMDGProfile.Instance.StartAsync(profileCreatorModels.FirstOrDefault(s => '#' + s.ProfileName == connection.SelectedProfile), Devices.FirstOrDefault(o => o.SerialNumber == connection.Serial));
     }
 
     private async Task StartUSBProfiles(Connection connection)

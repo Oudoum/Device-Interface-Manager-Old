@@ -1,0 +1,636 @@
+﻿<mah:MetroWindow
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:viewmodel="clr-namespace:Device_Interface_Manager.MVVM.ViewModel"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+    xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
+    x:Class="Device_Interface_Manager.MVVM.View.ProfileCreatorView"
+    Dialog:DialogParticipation.Register="{Binding}"
+    d:DataContext="{d:DesignInstance Type={x:Type viewmodel:ProfileCreatorViewModel}}"
+    Title="ProfileCreator"
+    mc:Ignorable="d"
+    Background="#1B1A24"
+    MinHeight="600"
+    Height="900"
+    MinWidth="1800"
+    Width="1800">
+
+    <Grid VerticalAlignment="Top" HorizontalAlignment="Center">
+
+        <Grid.Resources>
+            <Style TargetType="DataGrid" BasedOn="{StaticResource MahApps.Styles.DataGrid}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsStarted}" Value="True">
+                        <Setter Property="IsEnabled" Value="False"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Resources>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid HorizontalAlignment="Center" Margin="0,10,0,0" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock d:Text="Test" Text="{Binding ErrorText}" Foreground="White" FontSize="18" HorizontalAlignment="Center"/>
+
+            <StackPanel Grid.Row="1" Margin="0" Orientation="Horizontal">
+                <StackPanel.Resources>
+                    <Style x:Key="ButtonIcon" TargetType="Button" BasedOn="{StaticResource MahApps.Styles.Button}">
+                        <Setter Property="Margin" Value="10,0,0,0"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Focusable" Value="False"/>
+                        <Setter Property="Padding" Value="0"/>
+                    </Style>
+                </StackPanel.Resources>
+                <Button Margin="0" Command="{Binding LoadProfileCommand}" Style="{StaticResource ButtonIcon}">
+                    <Viewbox Width="48" Height="48">
+                        <Canvas Height="24" Width="24">
+                            <Path  Fill="White" Data="M6.1,10L4,18V8H21A2,2 0 0,0 19,6H12L10,4H4A2,2 0 0,0 2,6V18A2,2 0 0,0 4,20H19C19.9,20 20.7,19.4 20.9,18.5L23.2,10H6.1M19,18H6L7.6,12H20.6L19,18Z"/>
+                        </Canvas>
+                    </Viewbox>
+                </Button>
+                <Button Command="{Binding SaveProfileCommand}">
+                    <Viewbox Width="48" Height="48">
+                        <Canvas Height="24" Width="24">
+                            <Path Fill="White" Data="M17 3H5C3.89 3 3 3.9 3 5V19C3 20.1 3.89 21 5 21H19C20.1 21 21 20.1 21 19V7L17 3M19 19H5V5H16.17L19 7.83V19M12 12C10.34 12 9 13.34 9 15S10.34 18 12 18 15 16.66 15 15 13.66 12 12 12M6 6H15V10H6V6Z"/>
+                        </Canvas>
+                    </Viewbox>
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ButtonIcon}">
+                            <Setter Property="IsEnabled" Value="True"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ProfileNameButtonContent}" Value="Ok">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding DeviceName}" Value="{x:Null}">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Command="{Binding SaveProfileAsCommand}">
+                    <Viewbox Width="48" Height="48">
+                        <Canvas Height="24" Width="24">
+                            <Path  Fill="White" Data="M4 19H10V21H4C2.89 21 2 20.1 2 19V5C2 3.9 2.89 3 4 3H16L20 7V9.12L18 11.12V7.83L15.17 5H4V19M14 10V6H5V10H14M20.42 12.3C20.31 12.19 20.18 12.13 20.04 12.13C19.9 12.13 19.76 12.19 19.65 12.3L18.65 13.3L20.7 15.35L21.7 14.35C21.92 14.14 21.92 13.79 21.7 13.58L20.42 12.3M12 19.94V22H14.06L20.12 15.93L18.07 13.88L12 19.94M14 15C14 13.34 12.66 12 11 12S8 13.34 8 15 9.34 18 11 18C11.04 18 11.08 18 11.13 18L14 15.13C14 15.09 14 15.05 14 15"/>
+                        </Canvas>
+                    </Viewbox>
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ButtonIcon}">
+                            <Setter Property="IsEnabled" Value="True"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding DeviceName}" Value="{x:Null}">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Command="{Binding SortInputOutputCommand}">
+                    <Viewbox Width="48" Height="48">
+                        <Canvas Height="24" Width="24">
+                            <Path  Fill="White">
+                                <Path.Style>
+                                    <Style TargetType="Path">
+                                        <Setter Property="Data" Value="M7.78,7C9.08,7.04 10,7.53 10.57,8.46C11.13,9.4 11.41,10.56 11.39,11.95C11.4,13.5 11.09,14.73 10.5,15.62C9.88,16.5 8.95,16.97 7.71,17C6.45,16.96 5.54,16.5 4.96,15.56C4.38,14.63 4.09,13.45 4.09,12C4.09,10.55 4.39,9.36 5,8.44C5.59,7.5 6.5,7.04 7.78,7M7.75,8.63C7.31,8.63 6.96,8.9 6.7,9.46C6.44,10 6.32,10.87 6.32,12C6.31,13.15 6.44,14 6.69,14.54C6.95,15.1 7.31,15.37 7.77,15.37C8.69,15.37 9.16,14.24 9.17,12C9.17,9.77 8.7,8.65 7.75,8.63M13.33,17V15.22L13.76,15.24L14.3,15.22L15.34,15.03C15.68,14.92 16,14.78 16.26,14.58C16.59,14.35 16.86,14.08 17.07,13.76C17.29,13.45 17.44,13.12 17.53,12.78L17.5,12.77C17.05,13.19 16.38,13.4 15.47,13.41C14.62,13.4 13.91,13.15 13.34,12.65C12.77,12.15 12.5,11.43 12.46,10.5C12.47,9.5 12.81,8.69 13.47,8.03C14.14,7.37 15,7.03 16.12,7C17.37,7.04 18.29,7.45 18.88,8.24C19.47,9 19.76,10 19.76,11.19C19.75,12.15 19.61,13 19.32,13.76C19.03,14.5 18.64,15.13 18.12,15.64C17.66,16.06 17.11,16.38 16.47,16.61C15.83,16.83 15.12,16.96 14.34,17H13.33M16.06,8.63C15.65,8.64 15.32,8.8 15.06,9.11C14.81,9.42 14.68,9.84 14.68,10.36C14.68,10.8 14.8,11.16 15.03,11.46C15.27,11.77 15.63,11.92 16.11,11.93C16.43,11.93 16.7,11.86 16.92,11.74C17.14,11.61 17.3,11.46 17.41,11.28C17.5,11.17 17.53,10.97 17.53,10.71C17.54,10.16 17.43,9.69 17.2,9.28C16.97,8.87 16.59,8.65 16.06,8.63M9.25,5L12.5,1.75L15.75,5H9.25M15.75,19L12.5,22.25L9.25,19H15.75Z"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsSortedAscending}" Value="True">
+                                                <Setter Property="Data" Value="M7.78 7C9.08 7.04 10 7.53 10.57 8.46C11.13 9.4 11.41 10.56 11.39 11.95C11.4 13.5 11.09 14.73 10.5 15.62C9.88 16.5 8.95 16.97 7.71 17C6.45 16.96 5.54 16.5 4.96 15.56C4.38 14.63 4.09 13.45 4.09 12S4.39 9.36 5 8.44C5.59 7.5 6.5 7.04 7.78 7M7.75 8.63C7.31 8.63 6.96 8.9 6.7 9.46C6.44 10 6.32 10.87 6.32 12C6.31 13.15 6.44 14 6.69 14.54C6.95 15.1 7.31 15.37 7.77 15.37C8.69 15.37 9.16 14.24 9.17 12C9.17 9.77 8.7 8.65 7.75 8.63M13.33 17V15.22L13.76 15.24L14.3 15.22L15.34 15.03C15.68 14.92 16 14.78 16.26 14.58C16.59 14.35 16.86 14.08 17.07 13.76C17.29 13.45 17.44 13.12 17.53 12.78L17.5 12.77C17.05 13.19 16.38 13.4 15.47 13.41C14.62 13.4 13.91 13.15 13.34 12.65S12.5 11.43 12.46 10.5C12.47 9.5 12.81 8.69 13.47 8.03C14.14 7.37 15 7.03 16.12 7C17.37 7.04 18.29 7.45 18.88 8.24C19.47 9 19.76 10 19.76 11.19C19.75 12.15 19.61 13 19.32 13.76C19.03 14.5 18.64 15.13 18.12 15.64C17.66 16.06 17.11 16.38 16.47 16.61C15.83 16.83 15.12 16.96 14.34 17H13.33M16.06 8.63C15.65 8.64 15.32 8.8 15.06 9.11C14.81 9.42 14.68 9.84 14.68 10.36C14.68 10.8 14.8 11.16 15.03 11.46C15.27 11.77 15.63 11.92 16.11 11.93C16.43 11.93 16.7 11.86 16.92 11.74C17.14 11.61 17.3 11.46 17.41 11.28C17.5 11.17 17.53 10.97 17.53 10.71C17.54 10.16 17.43 9.69 17.2 9.28C16.97 8.87 16.59 8.65 16.06 8.63M9.25 5L12.5 1.75L15.75 5H9.25"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsSortedAscending}" Value="False">
+                                                <Setter Property="Data" Value="M7.78 7C9.08 7.04 10 7.53 10.57 8.46C11.13 9.4 11.41 10.56 11.39 11.95C11.4 13.5 11.09 14.73 10.5 15.62C9.88 16.5 8.95 16.97 7.71 17C6.45 16.96 5.54 16.5 4.96 15.56C4.38 14.63 4.09 13.45 4.09 12S4.39 9.36 5 8.44C5.59 7.5 6.5 7.04 7.78 7M7.75 8.63C7.31 8.63 6.96 8.9 6.7 9.46C6.44 10 6.32 10.87 6.32 12C6.31 13.15 6.44 14 6.69 14.54C6.95 15.1 7.31 15.37 7.77 15.37C8.69 15.37 9.16 14.24 9.17 12C9.17 9.77 8.7 8.65 7.75 8.63M13.33 17V15.22L13.76 15.24L14.3 15.22L15.34 15.03C15.68 14.92 16 14.78 16.26 14.58C16.59 14.35 16.86 14.08 17.07 13.76C17.29 13.45 17.44 13.12 17.53 12.78L17.5 12.77C17.05 13.19 16.38 13.4 15.47 13.41C14.62 13.4 13.91 13.15 13.34 12.65S12.5 11.43 12.46 10.5C12.47 9.5 12.81 8.69 13.47 8.03C14.14 7.37 15 7.03 16.12 7C17.37 7.04 18.29 7.45 18.88 8.24C19.47 9 19.76 10 19.76 11.19C19.75 12.15 19.61 13 19.32 13.76C19.03 14.5 18.64 15.13 18.12 15.64C17.66 16.06 17.11 16.38 16.47 16.61C15.83 16.83 15.12 16.96 14.34 17H13.33M16.06 8.63C15.65 8.64 15.32 8.8 15.06 9.11C14.81 9.42 14.68 9.84 14.68 10.36C14.68 10.8 14.8 11.16 15.03 11.46C15.27 11.77 15.63 11.92 16.11 11.93C16.43 11.93 16.7 11.86 16.92 11.74C17.14 11.61 17.3 11.46 17.41 11.28C17.5 11.17 17.53 10.97 17.53 10.71C17.54 10.16 17.43 9.69 17.2 9.28C16.97 8.87 16.59 8.65 16.06 8.63M15.75 19L12.5 22.25L9.25 19H15.75Z"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Path.Style>
+                            </Path>
+                        </Canvas>
+                    </Viewbox>
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ButtonIcon}">
+                            <Setter Property="IsEnabled" Value="False"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ProfileCreatorModel.InputCreator.Count}" Value="2">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ProfileCreatorModel.OutputCreator.Count}" Value="2">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Command="{Binding ClearProfileCommand}">
+                    <Viewbox Width="48" Height="48">
+                        <Canvas Height="24" Width="24">
+                            <Path  Fill="White" Data="M19.36,2.72L20.78,4.14L15.06,9.85C16.13,11.39 16.28,13.24 15.38,14.44L9.06,8.12C10.26,7.22 12.11,7.37 13.65,8.44L19.36,2.72M5.93,17.57C3.92,15.56 2.69,13.16 2.35,10.92L7.23,8.83L14.67,16.27L12.58,21.15C10.34,20.81 7.94,19.58 5.93,17.57Z"/>
+                        </Canvas>
+                    </Viewbox>
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ButtonIcon}">
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding ProfileCreatorModel.InputCreator.Count}" Value="0"/>
+                                        <Condition Binding="{Binding ProfileCreatorModel.OutputCreator.Count}" Value="0"/>
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button d:Visibility="Visible" Command="{Binding StartProfilesCommand}">
+                    <Viewbox Width="48" Height="48">
+                        <Canvas Height="24" Width="24">
+                            <Path>
+                                <Path.Style>
+                                    <Style TargetType="Path">
+                                        <Setter Property="Data" Value="M8,5.14V19.14L19,12.14L8,5.14Z"/>
+                                        <Setter Property="Fill" Value="LightGreen"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsStarted}" Value="True">
+                                                <Setter Property="Data" Value="M18,18H6V6H18V18Z"/>
+                                                <Setter Property="Fill" Value="IndianRed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Path.Style>
+                            </Path>
+                        </Canvas>
+                    </Viewbox>
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ButtonIcon}">
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding ProfileCreatorModel.InputCreator.Count}" Value="0"/>
+                                        <Condition Binding="{Binding ProfileCreatorModel.OutputCreator.Count}" Value="0"/>
+                                    </MultiDataTrigger.Conditions>
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+            <StackPanel Grid.Row="2" Margin="0,10,0,0" Orientation="Horizontal">
+                <StackPanel>
+                    <TextBlock Text="Profile name" Foreground="White"/>
+                    <TextBox Text="{Binding ProfileName}" Width="200" mah:TextBoxHelper.Watermark="Enter profile name...">
+                        <TextBox.Style>
+                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MahApps.Styles.TextBox}">
+                                <Setter Property="IsEnabled" Value="True"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ProfileNameButtonContent}" Value="Edit">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+                </StackPanel>
+                <Button Margin="5,0,0,0" d:Content="Ok" Content="{Binding ProfileNameButtonContent}" Command="{Binding ProfileNameSaveCommand}" Height="26" VerticalAlignment="Bottom"/>
+                <StackPanel Margin="20,0,0,0" VerticalAlignment="Bottom">
+                    <TextBlock Text="Driver" Foreground="White"/>
+                    <ComboBox mah:TextBoxHelper.Watermark="Select driver..." ItemsSource="{Binding Drivers}" SelectedItem="{Binding Driver}" Width="200"/>
+                </StackPanel>
+                <StackPanel Margin="20,0,0,0" VerticalAlignment="Bottom">
+                    <TextBlock Text="Device" Foreground="White"/>
+                    <ComboBox mah:TextBoxHelper.Watermark="Select device..." ItemsSource="{Binding DeviceNameCollection}" SelectedItem="{Binding DeviceName}" Width="200">
+                        <ComboBox.Style>
+                            <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MahApps.Styles.ComboBox}">
+                                <Setter Property="IsEnabled" Value="True"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Driver}" Value="{x:Null}">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ComboBox.Style>
+                    </ComboBox>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1" d:Visibility="Visible">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid.Style>
+                <Style TargetType="{x:Type Grid}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding DeviceName}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Hidden"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+
+            <StackPanel Orientation="Horizontal" Margin="0,20,0,25">
+
+                <DataGrid
+                    CanUserDeleteRows="False"
+                    CanUserAddRows="False"
+                    CanUserResizeColumns="False"
+                    CanUserResizeRows="False"
+                    AutoGenerateColumns="False"
+                    BorderThickness="5"
+                    GridLinesVisibility="All"
+                    d:ItemsSource="{d:SampleData}"
+                    dd:DragDrop.IsDragSource="True"
+                    dd:DragDrop.IsDropTarget="True"
+                    dd:DragDrop.DropHandler="{Binding}"
+                    ItemsSource="{Binding ProfileCreatorModel.InputCreator}"
+                    ContextMenu="{DynamicResource DataGridContextMenu}">
+
+                    <DataGrid.Columns>
+
+                        <DataGridTextColumn
+                            Header="Switch"
+                            Binding="{Binding SelectedSwitch}"
+                            SortMemberPath="SelectedSwitch"
+                            IsReadOnly="True"
+                            Width="80"/>
+
+                        <DataGridTextColumn
+                            Header="EventType"
+                            Binding="{Binding SelectedEventType}"
+                            SortMemberPath="SelectedEventType"
+                            IsReadOnly="True"
+                            Width="180"/>
+
+                        <DataGridTextColumn
+                            Header="PMDGEvent"
+                            Binding="{Binding PMDGEvent}"
+                            SortMemberPath="PMDGEvent"
+                            IsReadOnly="True"
+                            Width="280"/>
+
+                        <DataGridTextColumn
+                            Header="Event"
+                            Binding="{Binding Event}"
+                            SortMemberPath="Event"
+                            IsReadOnly="True"
+                            Width="280"/>
+
+                        <DataGridTextColumn
+                            Header="MouseEvent Press"
+                            Binding="{Binding PMDGMouseEventPress.Key}"
+                            SortMemberPath="PMDGMouseEventPress"
+                            IsReadOnly="True"
+                            Width="160"/>
+
+                        <DataGridTextColumn
+                            Header="MouseEvent Release"
+                            Binding="{Binding PMDGMouseEventRelease.Key}"
+                            SortMemberPath="PMDGMouseEventRelease"
+                            IsReadOnly="True"
+                            Width="160"/>
+
+                        <DataGridTextColumn
+                            Header="Data Press"
+                            Binding="{Binding EventDataPress}"
+                            SortMemberPath="EventDataPress"
+                            IsReadOnly="True"
+                            Width="100"/>
+
+                        <DataGridTextColumn
+                            Header="Data Release"
+                            Binding="{Binding EventDataRelease}"
+                            SortMemberPath="EventDataRelease"
+                            IsReadOnly="True"
+                            Width="100"/>
+
+                        <DataGridTemplateColumn Header="Edit" Width="55" IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button
+                                        Command="{Binding DataContext.EditInputOutputCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}, Mode=FindAncestor}}" 
+                                        CommandParameter="{Binding}">
+                                        <Viewbox Width="24" Height="24">
+                                            <Canvas Height="24" Width="24">
+                                                <Path  Fill="White" Data="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"/>
+                                            </Canvas>
+                                        </Viewbox>
+                                        <Button.Resources>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Background" Value="Transparent"/>
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border
+                                                                Background="{TemplateBinding Background}">
+                                                                <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="SteelBlue"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                            <DataGridTemplateColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="IsTabStop" Value="False"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                </Style>
+                            </DataGridTemplateColumn.CellStyle>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Header="Delete" Width="55" IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button
+                                        Command="{Binding DataContext.DeleteInputOutputCreatorRowCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}, Mode=FindAncestor}}" 
+                                        CommandParameter="{Binding}">
+                                        <Viewbox Width="24" Height="24">
+                                            <Canvas Height="24" Width="24">
+                                                <Path  Fill="White" Data="M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19M8.46,11.88L9.87,10.47L12,12.59L14.12,10.47L15.53,11.88L13.41,14L15.53,16.12L14.12,17.53L12,15.41L9.88,17.53L8.47,16.12L10.59,14L8.46,11.88M15.5,4L14.5,3H9.5L8.5,4H5V6H19V4H15.5Z"/>
+                                            </Canvas>
+                                        </Viewbox>
+                                        <Button.Resources>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Background" Value="Transparent"/>
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="{x:Type Button}">
+                                                            <Border
+                                                                Background="{TemplateBinding Background}">
+                                                                <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="Red"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                            <DataGridTemplateColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="IsTabStop" Value="False"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                </Style>
+                            </DataGridTemplateColumn.CellStyle>
+                        </DataGridTemplateColumn>
+
+                    </DataGrid.Columns>
+
+                </DataGrid>
+
+                <Button Content="Add" Foreground="White" Command="{Binding AddInputCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource MahApps.Styles.Button}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsStarted}" Value="True">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+            </StackPanel>
+
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,25">
+
+                <DataGrid
+                    CanUserDeleteRows="False"
+                    CanUserAddRows="False"
+                    CanUserResizeColumns="False"
+                    CanUserResizeRows="False"
+                    AutoGenerateColumns="False"
+                    BorderThickness="5"
+                    GridLinesVisibility="All"
+                    dd:DragDrop.IsDragSource="True"
+                    dd:DragDrop.IsDropTarget="True"
+                    dd:DragDrop.DropHandler="{Binding}"
+                    d:ItemsSource="{d:SampleData}"
+                    ItemsSource="{Binding ProfileCreatorModel.OutputCreator}"
+                    ContextMenu="{DynamicResource DataGridContextMenu}">
+
+                    <DataGrid.Columns>
+
+                        <DataGridTextColumn
+                            Header="LEDs"
+                            Binding="{Binding SelectedLED}"
+                            SortMemberPath="SelectedSwitch"
+                            IsReadOnly="True"
+                            Width="80"/>
+
+                        <DataGridTextColumn
+                            Header="DataType"
+                            Binding="{Binding SelectedDataType}"
+                            SortMemberPath="SelectedDataType"
+                            IsReadOnly="True"
+                            Width="160"/>
+
+                        <DataGridTextColumn
+                            Header="PMDG Data"
+                            Binding="{Binding PMDGDataFieldName}"
+                            SortMemberPath="PMDGDataFieldName"
+                            IsReadOnly="True"
+                            Width="280"/>
+
+                        <DataGridTextColumn
+                            Header="Data"
+                            Binding="{Binding Data}"
+                            SortMemberPath="Data"
+                            IsReadOnly="True"
+                            Width="280"/>
+                        
+                        <DataGridTextColumn
+                            Header="Array index"
+                            Binding="{Binding PMDGStructArrayNum}"
+                            SortMemberPath="PMDGStructArrayNum"
+                            IsReadOnly="True"
+                            Width="110"/>
+
+                        <DataGridTextColumn
+                            Header="Value"
+                            Binding="{Binding ComparisonValue}"
+                            SortMemberPath="Value"
+                            IsReadOnly="True"
+                            Width="60"/>
+
+                        <DataGridCheckBoxColumn
+                            Header="Inverted"
+                            Binding="{Binding IsInverted}"
+                            SortMemberPath="IsInverted"
+                            IsReadOnly="True"
+                            Width="70">
+                            <DataGridCheckBoxColumn.ElementStyle>
+                                <Style TargetType="CheckBox" BasedOn="{StaticResource MahApps.Styles.CheckBox.DataGrid}">
+                                    <Setter Property="mah:CheckBoxHelper.CheckGlyphForegroundChecked" Value="White"/>
+                                </Style>
+                            </DataGridCheckBoxColumn.ElementStyle>
+
+                        </DataGridCheckBoxColumn>
+
+                        <DataGridTemplateColumn Header="Edit" Width="55" IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button
+                                        Command="{Binding DataContext.EditInputOutputCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}, Mode=FindAncestor}}" 
+                                        CommandParameter="{Binding}">
+                                        <Viewbox Width="24" Height="24">
+                                            <Canvas Height="24" Width="24">
+                                                <Path  Fill="White" Data="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"/>
+                                            </Canvas>
+                                        </Viewbox>
+                                        <Button.Resources>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Background" Value="Transparent"/>
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border
+                                                                Background="{TemplateBinding Background}">
+                                                                <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="SteelBlue"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                            <DataGridTemplateColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="IsTabStop" Value="False"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                </Style>
+                            </DataGridTemplateColumn.CellStyle>
+                        </DataGridTemplateColumn>
+                        
+                        <DataGridTemplateColumn Header="Delete" Width="55" IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button
+                                        Command="{Binding DataContext.DeleteInputOutputCreatorRowCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}, Mode=FindAncestor}}" 
+                                        CommandParameter="{Binding}">
+                                        <Viewbox Width="24" Height="24">
+                                            <Canvas Height="24" Width="24">
+                                                <Path  Fill="White" Data="M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19M8.46,11.88L9.87,10.47L12,12.59L14.12,10.47L15.53,11.88L13.41,14L15.53,16.12L14.12,17.53L12,15.41L9.88,17.53L8.47,16.12L10.59,14L8.46,11.88M15.5,4L14.5,3H9.5L8.5,4H5V6H19V4H15.5Z"/>
+                                            </Canvas>
+                                        </Viewbox>
+                                        <Button.Resources>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Background" Value="Transparent"/>
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border
+                                                                Background="{TemplateBinding Background}">
+                                                                <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="Red"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                            <DataGridTemplateColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="IsTabStop" Value="False"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                </Style>
+                            </DataGridTemplateColumn.CellStyle>
+                        </DataGridTemplateColumn>
+
+                    </DataGrid.Columns>
+
+                </DataGrid>
+
+                <Button Content="Add" Foreground="White" Command="{Binding AddOutputCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource MahApps.Styles.Button}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsStarted}" Value="True">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+            </StackPanel>
+
+            <Grid.Resources>
+                <ContextMenu x:Key="DataGridContextMenu">
+                    <MenuItem Command="{Binding DuplicateInputOutputCreatorRowCommand}"
+                              CommandParameter="{Binding Path=PlacementTarget.SelectedItems, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                        <MenuItem.Style>
+                            <Style TargetType="MenuItem" BasedOn="{StaticResource MahApps.Styles.MenuItem}">
+                                <Setter Property="Header" Value="Duplicate rows" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=PlacementTarget.SelectedItems.Count, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="1">
+                                        <Setter Property="Header" Value="Duplicate row" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </MenuItem.Style>
+                    </MenuItem>
+                    <MenuItem Command="{Binding DeleteInputOutputCreatorRowCommand}"
+                              CommandParameter="{Binding Path=PlacementTarget.SelectedItems, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                        <MenuItem.Style>
+                            <Style TargetType="MenuItem" BasedOn="{StaticResource MahApps.Styles.MenuItem}">
+                                <Setter Property="Header" Value="Delete rows" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=PlacementTarget.SelectedItems.Count, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="1">
+                                        <Setter Property="Header" Value="Delete row" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </MenuItem.Style>
+                    </MenuItem>
+                </ContextMenu>
+            </Grid.Resources>
+        </Grid>
+
+    </Grid>
+</mah:MetroWindow>

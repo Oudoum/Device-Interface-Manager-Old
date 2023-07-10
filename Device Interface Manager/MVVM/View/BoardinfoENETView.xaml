@@ -1,14 +1,14 @@
 ﻿<UserControl
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:viewModel="clr-namespace:Device_Interface_Manager.MVVM.ViewModel"
-             d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type={x:Type viewModel:BoardinfoENETViewModel}}"
-             x:Class="Device_Interface_Manager.MVVM.View.BoardinfoENETView"
-             mc:Ignorable="d"
-             d:DesignWidth="1040"
-             d:DesignHeight="560">
+    x:Class="Device_Interface_Manager.MVVM.View.BoardinfoENETView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:viewModel="clr-namespace:Device_Interface_Manager.MVVM.ViewModel"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance Type=viewModel:BoardinfoENETViewModel, IsDesignTimeCreatable=True}"
+    d:DesignWidth="1040"
+    d:DesignHeight="560">
 
     <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
         <Grid.RowDefinitions>

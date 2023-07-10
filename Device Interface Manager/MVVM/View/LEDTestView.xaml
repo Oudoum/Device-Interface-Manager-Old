@@ -4,9 +4,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:viewModel="clr-namespace:Device_Interface_Manager.MVVM.ViewModel"
-    xmlns:local="clr-namespace:Device_Interface_Manager.MVVM.View" 
     x:Class="Device_Interface_Manager.MVVM.View.LEDTestView"
-    d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type={x:Type viewModel:LEDTestViewModel}}"
+    d:DataContext="{d:DesignInstance Type=viewModel:LEDTestViewModel, IsDesignTimeCreatable=True}"
     mc:Ignorable="d" 
     d:DesignWidth="1040"
     d:DesignHeight="560">
@@ -132,7 +131,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <CheckBox
-                                    Command="{Binding DataContext.IsCheckedCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LEDTestView}}}"
+                                    Command="{Binding DataContext.IsCheckedCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=DataGrid}}"
                                     CommandParameter="{Binding Position}"
                                     IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                     Cursor="Hand"

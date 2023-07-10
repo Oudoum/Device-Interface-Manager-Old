@@ -101,7 +101,10 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
         }
     }
 
-    public string DIMVersion { get; } = "DIM Version " + Assembly.GetEntryAssembly().GetName().Version;
+
+    public string DIMVersionText { get; set; } = "DIM Dev Version: ";
+    public string DIMVersionDate { get; set; } = "2023-07-10";
+    //public string DIMVersion { get; } = "DIM Dev Version " + Assembly.GetEntryAssembly().GetName().Version;
 
     public MainViewModel()
     {
@@ -132,10 +135,10 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
     [RelayCommand]
     private void OpenProfileCreator()
     {
-        if (!System.Windows.Application.Current.Windows.OfType<TestProfileView>().Any())
+        if (!System.Windows.Application.Current.Windows.OfType<ProfileCreatorView>().Any())
         {
             NavigationService navigationService = new();
-            navigationService.NavigateTo<TestProfileView>(DeviceList);
+            navigationService.NavigateTo<ProfileCreatorView>(DeviceList.ToArray());
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Windows;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Interop;
@@ -8,7 +9,7 @@ using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.FlightSimulator.SimConnect;
 using Device_Interface_Manager.MVVM.ViewModel;
-using Device_Interface_Manager.MVVM.View;
+using MahApps.Metro.Controls;
 using static Device_Interface_Manager.MSFSProfiles.PMDG.PMDG_NG3_SDK;
 
 namespace Device_Interface_Manager.MSFSProfiles;
@@ -19,7 +20,7 @@ public sealed class SimConnectClient
 
     public static SimConnectClient Instance { get =>  _instance; }
 
-    public SimConnect SimConnect { get; set; }
+    public SimConnect SimConnect { get; set; } = null;
 
     private IntPtr handle;
     private HwndSource handleSource;
@@ -55,14 +56,14 @@ public sealed class SimConnectClient
             return;
         }
 
-        handle = MainWindow.handle;
-        handleSource = HwndSource.FromHwnd(handle);
-        handleSource.AddHook(HandleSimConnectEvents);
-
         while (!cancellationToken.IsCancellationRequested)
         {
             try
             {
+                Application.Current.Invoke(() => handle = new WindowInteropHelper(Application.Current.MainWindow).Handle);
+                handleSource = HwndSource.FromHwnd(handle);
+                handleSource.AddHook(HandleSimConnectEvents);
+
                 SimConnect = new SimConnect("Device-Interface-Manager", handle, WM_USER_SIMCONNECT, null, 0);
 
                 SimConnect.OnRecvOpen += SimConnect_OnRecvOpen;
@@ -98,6 +99,7 @@ public sealed class SimConnectClient
         handleSource?.RemoveHook(HandleSimConnectEvents);
         SimConnect?.Dispose();
         SimConnect = null;
+        SimVars.Clear();
         StrongReferenceMessenger.Default.Send(new SimConnectStausMessage(false));
     }
 
@@ -118,20 +120,21 @@ public sealed class SimConnectClient
 
     public event EventHandler<SimVar> OnSimVarChanged;
 
+    private const int offset = 4;
+
     private void Simconnect_OnRecvSimobjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
     {
         if (data.dwRequestID != 0)
         {
-            if (SimVars.Count < (int)data.dwRequestID)
+            if (SimVars.Count < (int)data.dwRequestID - offset)
             {
                 return;
             }
-            SimVars[(int)data.dwRequestID - 1].Data = (double)data.dwData[0];
-            OnSimVarChanged?.Invoke(this, SimVars[(int)data.dwRequestID - 1]);
+            SimVars[(int)data.dwRequestID - offset - 1].Data = (double)data.dwData[0];
+            OnSimVarChanged?.Invoke(this, SimVars[(int)data.dwRequestID - offset - 1]);
         }
     }
 
-    private uint maxClientDataDefinition;
     private readonly List<SimVar> SimVars = new();
 
     public void TransmitEvent(uint data, Enum eventID)
@@ -152,6 +155,16 @@ public sealed class SimConnectClient
             SIMCONNECT_CLIENT_DATA_SET_FLAG.DEFAULT,
             0,
             new CommandStruct() { command = "(>" + eventID + ')' });
+    }
+
+    public void SendWASMEvent(string eventID)
+    {
+        SimConnect?.SetClientData(
+            CLIENT_DATA_ID.CLIENT_DATA_ID_COMMAND,
+            DEFINE_ID.DATA_DEFINITION_ID_COMMAND,
+            SIMCONNECT_CLIENT_DATA_SET_FLAG.DEFAULT,
+            0,
+            new CommandStruct() { command = eventID });
     }
 
     public void SetSimVar(int simVarValue, string simVarName)
@@ -202,15 +215,8 @@ public sealed class SimConnectClient
     {
         if (!SimVars.Exists(lvar => lvar.Name == simVarName))
         {
-            SimVar newSimVar = new() { Name = simVarName, ID = (uint)SimVars.Count + 1 };
+            SimVar newSimVar = new() { Name = simVarName, ID = (uint)SimVars.Count + offset + 1 };
             SimVars.Add(newSimVar);
-
-            if (maxClientDataDefinition >= newSimVar.ID)
-            {
-                return;
-            }
-
-            maxClientDataDefinition = newSimVar.ID;
 
             SimConnect?.AddToDataDefinition(
                 (DEFINE_ID)newSimVar.ID,

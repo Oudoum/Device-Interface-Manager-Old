@@ -1,13 +1,14 @@
-﻿<UserControl x:Class="Device_Interface_Manager.MVVM.View.TestView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             d:DataContext="{d:DesignInstance Type=viewModel:OtherTestsViewModel, IsDesignTimeCreatable=True}"
-             xmlns:viewModel="clr-namespace:Device_Interface_Manager.MVVM.ViewModel"
-             mc:Ignorable="d" 
-             d:DesignWidth="1040"
-             d:DesignHeight="560">
+﻿<UserControl
+    x:Class="Device_Interface_Manager.MVVM.View.TestView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:viewModel="clr-namespace:Device_Interface_Manager.MVVM.ViewModel"
+    mc:Ignorable="d" 
+    d:DataContext="{d:DesignInstance Type=viewModel:OtherTestsViewModel, IsDesignTimeCreatable=True}"
+    d:DesignWidth="1040"
+    d:DesignHeight="560">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
@@ -148,14 +149,14 @@
             <StackPanel
                 d:Visibility="Visible"
                 Visibility="{Binding SevenSegmentEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <Label
-                FontSize="20"
+                <TextBlock
+                FontSize="22"
                 FontWeight="SemiBold"
                 Margin="0,50,0,0"
                 Foreground="White"
                 HorizontalAlignment="Center">
-                Select 7 segment digit:
-            </Label>
+                    Select 7 segment digit:
+                </TextBlock>
                 <ComboBox
                     Margin="0,10,0,0"
                     Cursor="Hand"
@@ -171,14 +172,14 @@
                         </Style>
                     </ComboBox.ItemContainerStyle>
                 </ComboBox>
-            <Label
-                FontSize="20"
+                <TextBlock
+                FontSize="22"
                 FontWeight="SemiBold"
                 Margin="0,50,0,0"
                 Foreground="White"
                 HorizontalAlignment="Center">
                 Type in 7 segment data:
-            </Label>
+                </TextBlock>
                 <TextBox
                     Margin="0,10,0,0"
                     d:Text="123"
@@ -189,12 +190,12 @@
                     FontWeight="Bold"
                     Text="{Binding SevenSegmentText, UpdateSourceTrigger=PropertyChanged}"/>
             </StackPanel>
-            <Label
-                d:Content="TEST!"
-                FontSize="32"
+            <TextBlock
+                d:Text="TEST!"
+                FontSize="34"
                 Foreground="White"
                 HorizontalAlignment="Center"
-                Content="{Binding FeatureNotSupported}"
+                Text="{Binding FeatureNotSupported}"
                 Margin="0,90,0,0"/>
         </StackPanel>
     </Grid>

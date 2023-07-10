@@ -23,6 +23,8 @@ public class MCDU_L : MSFSProfiles.USB
 
     protected override void SimConnectClient_OnSimVarChanged(object sender, SimConnectClient.SimVar simVar)
     {
+        base.SimConnectClient_OnSimVarChanged(sender, simVar);
+
         switch (simVar.Name)
         {
             case "L:I_CDU1_FAIL":
