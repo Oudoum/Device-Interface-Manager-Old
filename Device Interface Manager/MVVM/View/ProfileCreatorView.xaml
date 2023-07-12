@@ -121,14 +121,35 @@
                     </Viewbox>
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource ButtonIcon}">
-                            <Setter Property="IsEnabled" Value="False"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ProfileCreatorModel.InputCreator.Count}" Value="2">
-                                    <Setter Property="IsEnabled" Value="True"/>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding ProfileCreatorModel.OutputCreator.Count}" Value="2">
-                                    <Setter Property="IsEnabled" Value="True"/>
-                                </DataTrigger>
+                                <MultiDataTrigger>
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding ProfileCreatorModel.InputCreator.Count}" Value="0"/>
+                                        <Condition Binding="{Binding ProfileCreatorModel.OutputCreator.Count}" Value="0"/>
+                                    </MultiDataTrigger.Conditions>
+                                </MultiDataTrigger>
+                                <MultiDataTrigger>
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding ProfileCreatorModel.InputCreator.Count}" Value="0"/>
+                                        <Condition Binding="{Binding ProfileCreatorModel.OutputCreator.Count}" Value="1"/>
+                                    </MultiDataTrigger.Conditions>
+                                </MultiDataTrigger>
+                                <MultiDataTrigger>
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding ProfileCreatorModel.InputCreator.Count}" Value="1"/>
+                                        <Condition Binding="{Binding ProfileCreatorModel.OutputCreator.Count}" Value="0"/>
+                                    </MultiDataTrigger.Conditions>
+                                </MultiDataTrigger>
+                                <MultiDataTrigger>
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding ProfileCreatorModel.InputCreator.Count}" Value="1"/>
+                                        <Condition Binding="{Binding ProfileCreatorModel.OutputCreator.Count}" Value="1"/>
+                                    </MultiDataTrigger.Conditions>
+                                </MultiDataTrigger>
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
@@ -143,11 +164,11 @@
                         <Style TargetType="Button" BasedOn="{StaticResource ButtonIcon}">
                             <Style.Triggers>
                                 <MultiDataTrigger>
+                                    <Setter Property="IsEnabled" Value="False"/>
                                     <MultiDataTrigger.Conditions>
                                         <Condition Binding="{Binding ProfileCreatorModel.InputCreator.Count}" Value="0"/>
                                         <Condition Binding="{Binding ProfileCreatorModel.OutputCreator.Count}" Value="0"/>
                                     </MultiDataTrigger.Conditions>
-                                    <Setter Property="IsEnabled" Value="False"/>
                                 </MultiDataTrigger>
                             </Style.Triggers>
                         </Style>

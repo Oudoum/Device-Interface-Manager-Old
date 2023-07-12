@@ -132,7 +132,8 @@
                 <TextBox 
                     Grid.Column="1"
                     Text="{Binding Event, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}"
-                    mah:TextBoxHelper.Watermark="MSFS/SimConnect/LVar">
+                    mah:TextBoxHelper.Watermark="MSFS/SimConnect/LVar"
+                    mah:TextBoxHelper.ClearTextButton="True">
                 </TextBox>
                 <Grid.Style>
                     <Style TargetType="Grid">
@@ -190,9 +191,15 @@
                     <Style TargetType="Grid">
                         <Setter Property="Visibility" Value="Collapsed"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding SelectedEventType}" Value="PMDG737">
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </DataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding SelectedEventType}" Value="PMDG737"/>
+                                    <Condition Binding="{Binding EventDataPress}" Value="{x:Null}"/>
+                                </MultiDataTrigger.Conditions>
+                                <MultiDataTrigger.Setters>
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </MultiDataTrigger.Setters>
+                            </MultiDataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Grid.Style>
@@ -207,7 +214,8 @@
                 <TextBox 
                     Grid.Column="1"
                     Text="{Binding EventDataPress, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}"
-                    mah:TextBoxHelper.Watermark="Number...">
+                    mah:TextBoxHelper.Watermark="Number..."
+                    mah:TextBoxHelper.ClearTextButton="True">
                 </TextBox>
                 <Grid.Style>
                     <Style TargetType="Grid">
@@ -265,9 +273,15 @@
                     <Style TargetType="Grid">
                         <Setter Property="Visibility" Value="Collapsed"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding SelectedEventType}" Value="PMDG737">
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </DataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding SelectedEventType}" Value="PMDG737"/>
+                                    <Condition Binding="{Binding EventDataRelease}" Value="{x:Null}"/>
+                                </MultiDataTrigger.Conditions>
+                                <MultiDataTrigger.Setters>
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </MultiDataTrigger.Setters>
+                            </MultiDataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Grid.Style>
@@ -282,7 +296,8 @@
                 <TextBox
                     Grid.Column="1"
                     Text="{Binding EventDataRelease, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}"
-                    mah:TextBoxHelper.Watermark="Number...">
+                    mah:TextBoxHelper.Watermark="Number..."
+                    mah:TextBoxHelper.ClearTextButton="True">
                 </TextBox>
                 <Grid.Style>
                     <Style TargetType="Grid">

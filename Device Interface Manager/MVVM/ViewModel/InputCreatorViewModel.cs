@@ -147,10 +147,13 @@ public partial class InputCreatorViewModel : ObservableObject, ICloseWindows
     [RelayCommand]
     private void GetSwitch()
     {
-        int key;
-        while (InterfaceITAPI_Data.interfaceIT_Switch_Get_Item(1, out key, out _) == 0) ;
-        //ErrorText = $"{ProfileCreatorModel.DeviceName} | Session: {Devices.FirstOrDefault(k => k.BoardType == ProfileCreatorModel.DeviceName).Session} | Switch: {key} => {direction}";
-        SelectedSwitch = key;
+        while (InterfaceITAPI_Data.interfaceIT_Switch_Get_Item(Device.Session, out int key, out int direction) == 0)
+        {
+            if (direction == 1)
+            {
+                SelectedSwitch = key;
+            }
+        }
     }
 
     [RelayCommand]

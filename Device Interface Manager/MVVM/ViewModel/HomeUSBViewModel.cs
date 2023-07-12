@@ -11,7 +11,6 @@ using Device_Interface_Manager.interfaceIT.USB;
 using Device_Interface_Manager.MSFSProfiles;
 using Device_Interface_Manager.MVVM.Model;
 using static Device_Interface_Manager.MVVM.Model.HomeUSBModel;
-using Device_Interface_Manager.MSFSProfiles.PMDG;
 
 namespace Device_Interface_Manager.MVVM.ViewModel;
 
@@ -40,23 +39,6 @@ public partial class HomeUSBViewModel : ObservableObject
 
     public HomeUSBViewModel()
     {
-        string folderPath = Path.Combine("Profiles", "Creator");
-        if (Directory.Exists(folderPath))
-        {
-            profileCreatorModels ??= new();
-            foreach (string filePath in Directory.GetFiles(folderPath))
-            {
-                try
-                {
-                    profileCreatorModels.Add(JsonSerializer.Deserialize<ProfileCreatorModel>(File.ReadAllText(filePath)));
-                }
-                catch (Exception)
-                {
-
-                }
-            }
-        }
-
         profileActions = new()
         {
             { "-- None --", null },
@@ -85,21 +67,69 @@ public partial class HomeUSBViewModel : ObservableObject
 
         };
 
-        foreach (var item in profileCreatorModels)
+
+        foreach (var item in profileActions.Keys)
         {
-            if (!profileActions.ContainsKey('#' + item.ProfileName) && item.SelectedDriver == ProfileCreatorModel.FDSUSB)
-            {
-                profileActions.Add('#' + item.ProfileName, StartUSBCustomProfile);
-            }
+            Profiles.Add(item);
         }
 
-        CreateProfiles();
+        AddProfiles();
+
         Connections = MainViewModel.LoadConnectionsData<ObservableCollection<Connection>>(usb);
         GetBoardInfo();
 
         if (Properties.Settings.Default.AutoHide && Connections.Count > 0)
         {
             _ = StartUSB();
+        }
+    }
+
+    public void AddProfiles()
+    {
+        profileCreatorModels = new();
+        string folderPath = Path.Combine("Profiles", "Creator");
+        if (Directory.Exists(folderPath))
+        {
+            foreach (string filePath in Directory.GetFiles(folderPath))
+            {
+                try
+                {
+                    profileCreatorModels.Add(JsonSerializer.Deserialize<ProfileCreatorModel>(File.ReadAllText(filePath)));
+                }
+                catch (Exception)
+                {
+
+                }
+            }
+        }
+
+        List<string> profileKeys = new();
+
+        foreach (var item in profileCreatorModels)
+        {
+            if (item.SelectedDriver == ProfileCreatorModel.FDSUSB)
+            {
+                string profileKey = '#' + item.ProfileName;
+                profileKeys.Add(profileKey);
+                if (profileActions.ContainsKey(profileKey))
+                {
+                    continue;
+                }
+                profileActions.Add(profileKey, StartUSBCustomProfile);
+                Profiles.Add(profileKey);
+            }
+        }
+
+        List<string> keys = profileActions.Keys.Where(key => key.StartsWith("#")).ToList();
+
+        foreach (var item in profileKeys)
+        {
+            if (keys.Contains(item))
+            {
+                continue;
+            }
+            profileActions.Remove(item);
+            Profiles.Remove(item);
         }
     }
 
@@ -160,12 +190,7 @@ public partial class HomeUSBViewModel : ObservableObject
             SaveUSBConnections();
             foreach (var connection in Connections)
             {
-                if (!connection.SelectedProfile.Contains('#'))
-                {
-                    await StartUSBProfiles(connection);
-                    continue;
-                }
-                await StartUSBCustomProfile(connection);
+                await StartUSBProfiles(connection);
             }
             return;
         }
@@ -176,7 +201,7 @@ public partial class HomeUSBViewModel : ObservableObject
     {
         USBList.ForEach(o => o.Stop());
         USBList.Clear();
-        PMDGProfile.Instance.Stop();
+        MSFSProfiles.Profiles.Instance.Stop();
         IsUSBEnabled = true;
     }
 
@@ -189,7 +214,7 @@ public partial class HomeUSBViewModel : ObservableObject
 
     private async Task StartUSBCustomProfile(Connection connection)
     {
-        await PMDGProfile.Instance.StartAsync(profileCreatorModels.FirstOrDefault(s => '#' + s.ProfileName == connection.SelectedProfile), Devices.FirstOrDefault(o => o.SerialNumber == connection.Serial));
+        await MSFSProfiles.Profiles.Instance.StartAsync(profileCreatorModels.FirstOrDefault(s => '#' + s.ProfileName == connection.SelectedProfile), Devices.FirstOrDefault(o => o.SerialNumber == connection.Serial));
     }
 
     private async Task StartUSBProfiles(Connection connection)
@@ -227,14 +252,6 @@ public partial class HomeUSBViewModel : ObservableObject
     private void AddRow()
     {
         Connections.Add(new Connection() { Name = "NAME", Serial = "SERIALNUMBER", SelectedProfile = Profiles[0] });
-    }
-
-    private void CreateProfiles()
-    {
-        foreach (var item in profileActions.Keys)
-        {
-            Profiles.Add(item);
-        }
     }
 
     [RelayCommand]

@@ -4,7 +4,7 @@ using Device_Interface_Manager.interfaceIT.ENET;
 
 namespace Device_Interface_Manager.MSFSProfiles;
 
-public abstract class ENET : ProfileBase
+public abstract class ENET : IITProfileBase
 {
     public InterfaceITEthernet.ConnectionStatus ConnectionStatus { get; set; }
 

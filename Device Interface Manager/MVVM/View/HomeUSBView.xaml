@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:viewModel="clr-namespace:Device_Interface_Manager.MVVM.ViewModel"
     xmlns:local="clr-namespace:Device_Interface_Manager.MVVM.View"
-    d:DataContext="{d:DesignInstance Type=viewModel:HomeUSBViewModel, IsDesignTimeCreatable=True}"
+    d:DataContext="{d:DesignInstance Type=viewModel:HomeUSBViewModel}"
     mc:Ignorable="d"
     d:DesignWidth="1040"
     d:DesignHeight="560">

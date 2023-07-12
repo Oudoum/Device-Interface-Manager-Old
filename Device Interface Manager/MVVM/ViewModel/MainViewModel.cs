@@ -103,7 +103,7 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
 
 
     public string DIMVersionText { get; set; } = "DIM Dev Version: ";
-    public string DIMVersionDate { get; set; } = "2023-07-10";
+    public string DIMVersionDate { get; set; } = "2023-07-12";
     //public string DIMVersion { get; } = "DIM Dev Version " + Assembly.GetEntryAssembly().GetName().Version;
 
     public MainViewModel()
@@ -139,7 +139,16 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
         {
             NavigationService navigationService = new();
             navigationService.NavigateTo<ProfileCreatorView>(DeviceList.ToArray());
+
+            //Dirty
+            System.Windows.Application.Current.Windows.OfType<ProfileCreatorView>().First().Closed += ProfileCreatorView_Closed;
         }
+    }
+
+    //Dirty
+    private void ProfileCreatorView_Closed(object sender, EventArgs e)
+    {
+        HomeUSBVM.AddProfiles();
     }
 
     [RelayCommand]

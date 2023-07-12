@@ -7,22 +7,24 @@ using System.Runtime.InteropServices;
 using Device_Interface_Manager.MVVM.Model;
 using Device_Interface_Manager.interfaceIT.USB;
 using Device_Interface_Manager.MSFSProfiles.PMDG.B737;
+using Device_Interface_Manager.MSFSProfiles.PMDG;
+using System.Reflection;
 
-namespace Device_Interface_Manager.MSFSProfiles.PMDG;
-public class PMDGProfile
+namespace Device_Interface_Manager.MSFSProfiles;
+public class Profiles
 {
-    private static PMDGProfile instance;
+    private static Profiles instance;
 
-    public static PMDGProfile Instance
+    public static Profiles Instance
     {
         get
         {
-            instance ??= new PMDGProfile();
+            instance ??= new Profiles();
             return instance;
         }
     }
 
-    public static event EventHandler<PMDGDataFieldChangedEventArgs> FieldChanged;
+    public event EventHandler<PMDGDataFieldChangedEventArgs> FieldChanged;
 
     private PMDG_NG3_SDK.PMDG_NG3_Data data = new();
 
@@ -34,10 +36,17 @@ public class PMDGProfile
 
     private bool simConnectStarted;
 
+    private bool initialized;
+
     private void SimConnect_OnRecvClientData(Microsoft.FlightSimulator.SimConnect.SimConnect sender, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_RECV_CLIENT_DATA data)
     {
         if ((uint)PMDG_NG3_SDK.DATA_REQUEST_ID.DATA_REQUEST == data.dwRequestID)
         {
+            if (!simConnectStarted)
+            {
+                watchedFields.ForEach(x => FieldChanged?.Invoke(null, new PMDGDataFieldChangedEventArgs(x, dynDict[x])));
+                simConnectStarted = true;
+            }
             Iteration((PMDG_NG3_SDK.PMDG_NG3_Data)data.dwData[0]);
         }
     }
@@ -45,8 +54,12 @@ public class PMDGProfile
     public void Stop()
     {
         fDS_USB_Drivers.ForEach(d => d.Stop());
+        fDS_USB_Drivers.Clear();
         pMDG737Registered = false;
         simConnectStarted = false;
+        initialized = false;
+        watchedFields.Clear();
+        dynDict.Clear();
     }
 
     private List<FDS_USB_Driver> fDS_USB_Drivers;
@@ -65,7 +78,7 @@ public class PMDGProfile
             fDS_USB_Drivers ??= new();
             FDS_USB_Driver fDS_USB_Driver = new()
             {
-                TestCreator = profileCreatorModel
+                ProfileCreatorModel = profileCreatorModel
             };
             await fDS_USB_Driver.StartAsync(device);
             fDS_USB_Drivers.Add(fDS_USB_Driver);
@@ -104,21 +117,21 @@ public class PMDGProfile
                 {
                     pMDG737Registered = true;
                     PMDG737.RegisterPMDGDataEvents(SimConnectClient.Instance.SimConnect);
+                }
+                if (!initialized)
+                {
+                    initialized = true;
                     Initialize();
                 }
             }
         }
 
-        if (!simConnectStarted)
-        {
-            SimConnectClient.Instance.SimConnect.OnRecvClientData += SimConnect_OnRecvClientData;
-            simConnectStarted = true;
-        }
+        SimConnectClient.Instance.SimConnect.OnRecvClientData += SimConnect_OnRecvClientData;
     }
 
     private void Initialize()
     {
-        foreach (var field in typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetFields())
+        foreach (FieldInfo field in typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetFields())
         {
             if (field.Name == "reserved")
             {
@@ -128,78 +141,59 @@ public class PMDGProfile
             if (field.FieldType.IsArray)
             {
                 Array array = (Array)field.GetValue(data);
-                if (array is null)
+                if (field.GetCustomAttributes(typeof(MarshalAsAttribute), false).FirstOrDefault() is MarshalAsAttribute marshalAsAttribute)
                 {
-                    if (field.GetCustomAttributes(typeof(MarshalAsAttribute), false).FirstOrDefault() is MarshalAsAttribute marshalAsAttribute)
-                    {
-                        array = Array.CreateInstance(field.FieldType.GetElementType(), marshalAsAttribute.SizeConst);
-                        field.SetValue(data, array);
-                    }
+                    array = Array.CreateInstance(field.FieldType.GetElementType(), marshalAsAttribute.SizeConst);
+                    field.SetValue(data, array);
                 }
-
-                if (array is not null)
+                int i = 0;
+                foreach (object item in array)
                 {
-                    int i = 0;
-                    foreach (var item in array)
-                    {
-                        dynDict[field.Name + '_' + i] = item;
-                        i++;
-                    }
+                    dynDict[field.Name + '_' + i] = item;
+                    i++;
                 }
             }
-
             dynDict[field.Name] = field.GetValue(data);
         }
     }
 
     private void Iteration(PMDG_NG3_SDK.PMDG_NG3_Data newData)
     {
-        foreach (var field in typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetFields())
+        foreach (FieldInfo field in typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetFields())
         {
             if (field.Name == "reserved")
             {
                 continue;
             }
 
-            string propertyName;
-            object oldValue;
-            object newValue;
             if (field.FieldType.IsArray)
             {
                 if (field.GetValue(newData) is Array array)
                 {
                     for (int i = 0; i < array.Length; i++)
                     {
-                        propertyName = field.Name + '_' + i;
-                        if (!dynDict.TryGetValue(propertyName, out oldValue))
-                        {
-                            oldValue = null;
-                        }
-                        newValue = array.GetValue(i);
-                        if (!Equals(oldValue, newValue) && watchedFields.Contains(propertyName))
-                        {
-                            dynDict[propertyName] = newValue;
-
-                            FieldChanged?.Invoke(null, new PMDGDataFieldChangedEventArgs(propertyName, newValue));
-                        }
+                        CheckOldNewValue(field.Name + '_' + i, array.GetValue(i));
                     }
                 }
                 continue;
             }
 
-            propertyName = field.Name;
-            if (!dynDict.TryGetValue(propertyName, out oldValue))
-            {
-                oldValue = null;
-            }
+            CheckOldNewValue(field.Name, field.GetValue(newData));
+        }
+    }
 
-            newValue = field.GetValue(newData);
-            if (!Equals(oldValue, newValue) && watchedFields.Contains(propertyName))
-            {
-                dynDict[propertyName] = newValue;
+    private void CheckOldNewValue(string propertyName, object newValue)
+    {
+        if (!dynDict.TryGetValue(propertyName, out object oldValue))
+        {
+            oldValue = null;
+        }
 
-                FieldChanged?.Invoke(null, new PMDGDataFieldChangedEventArgs(propertyName, newValue));
-            }
+        if (!Equals(oldValue, newValue) && watchedFields.Contains(propertyName))
+        {
+            dynDict[propertyName] = newValue;
+
+            FieldChanged?.Invoke(null, new PMDGDataFieldChangedEventArgs(propertyName, newValue));
         }
     }
 }

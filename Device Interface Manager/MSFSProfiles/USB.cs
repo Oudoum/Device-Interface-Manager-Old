@@ -5,7 +5,7 @@ using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
 
 namespace Device_Interface_Manager.MSFSProfiles;
 
-public abstract class USB : ProfileBase
+public abstract class USB : IITProfileBase
 {
     protected Device Device;
 

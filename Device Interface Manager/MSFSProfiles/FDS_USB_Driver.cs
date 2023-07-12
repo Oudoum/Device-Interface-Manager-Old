@@ -1,20 +1,19 @@
 ﻿using System.Linq;
 using Microsoft.FlightSimulator.SimConnect;
-using Device_Interface_Manager.MSFSProfiles.PMDG;
 using Device_Interface_Manager.MVVM.Model;
 
 namespace Device_Interface_Manager.MSFSProfiles;
 public class FDS_USB_Driver : USB
 {
-    public required ProfileCreatorModel TestCreator { get; init; }
+    public required ProfileCreatorModel ProfileCreatorModel { get; init; }
 
     protected override void SimConnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
     {
+        Profiles.Instance.FieldChanged += PMDGProfile_FieldChanged;
+
         interfaceIT.USB.InterfaceITAPI_Data.interfaceIT_Dataline_Set(Device.Session, Device.DeviceInfo.nDatalineFirst, true);
 
-        PMDGProfile.FieldChanged += PMDGProfile_FieldChanged;
-
-        foreach (var item in TestCreator.OutputCreator)
+        foreach (var item in ProfileCreatorModel.OutputCreator)
         {
             if (item.SelectedDataType == ProfileCreatorModel.MSFSSimConnect && !string.IsNullOrEmpty(item.Data))
             {
@@ -27,7 +26,7 @@ public class FDS_USB_Driver : USB
     {
         base.SimConnectClient_OnSimVarChanged(sender, simVar);
 
-        foreach (var item in TestCreator.OutputCreator.Where(k => k.Data == simVar.Name))
+        foreach (var item in ProfileCreatorModel.OutputCreator.Where(k => k.Data == simVar.Name))
         {
             if (item.SelectedLED is not null)
             {
@@ -43,7 +42,7 @@ public class FDS_USB_Driver : USB
 
     private void PMDGProfile_FieldChanged(object sender, PMDGDataFieldChangedEventArgs e)
     {
-        foreach (var item in TestCreator.OutputCreator.Where(k => k.SelectedDataType == ProfileCreatorModel.PMDG737))
+        foreach (var item in ProfileCreatorModel.OutputCreator.Where(k => k.SelectedDataType == ProfileCreatorModel.PMDG737))
         {
             if ((item.PMDGStructArrayNum is not null && item.PMDGDataFieldName + '_' + item.PMDGStructArrayNum == e.PMDGDataName) || item.PMDGDataFieldName == e.PMDGDataName)
             {
@@ -71,7 +70,7 @@ public class FDS_USB_Driver : USB
 
     protected override void KeyPressedProc(uint session, int key, uint direction)
     {
-        foreach (var item in TestCreator.InputCreator.Where(k => k.SelectedSwitch == key))
+        foreach (var item in ProfileCreatorModel.InputCreator.Where(k => k.SelectedSwitch == key))
         {
             //RPN
             if (item.SelectedEventType == ProfileCreatorModel.RPN && direction == 1)

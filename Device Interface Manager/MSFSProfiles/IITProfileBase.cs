@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Device_Interface_Manager.MSFSProfiles;
 
-public abstract class ProfileBase
+public abstract class IITProfileBase
 {
     public MVVM.View.PMDG737CDU PMDG737CDU { get; set; }
 

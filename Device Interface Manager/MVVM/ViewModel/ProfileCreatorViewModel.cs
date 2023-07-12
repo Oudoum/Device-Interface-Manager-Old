@@ -10,11 +10,10 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Device_Interface_Manager.MVVM.Model;
+using Device_Interface_Manager.MSFSProfiles;
 using Device_Interface_Manager.interfaceIT.USB;
-using Device_Interface_Manager.MSFSProfiles.PMDG;
 using MahApps.Metro.Controls.Dialogs;
 using GongSolutions.Wpf.DragDrop;
-using MahApps.Metro.Controls;
 
 namespace Device_Interface_Manager.MVVM.ViewModel;
 public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget
@@ -191,21 +190,6 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget
     }
 
     [RelayCommand]
-    private void SaveProfile()
-    {
-        try
-        {
-            Directory.CreateDirectory(Path.GetDirectoryName(NewFilePath));
-            File.WriteAllText(NewFilePath, JsonSerializer.Serialize(ProfileCreatorModel, new JsonSerializerOptions { WriteIndented = true }));
-            ErrorText = ProfileName + " successfully saved";
-        }
-        catch (Exception e)
-        {
-            ErrorText = e.Message;
-        }
-    }
-
-    [RelayCommand]
     private void ProfileNameSave()
     {
         if (ProfileNameButtonContent == "Ok" && !string.IsNullOrEmpty(ProfileName))
@@ -230,6 +214,21 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget
         else if (ProfileNameButtonContent == "Edit")
         {
             ProfileNameButtonContent = "Ok";
+        }
+    }
+
+    [RelayCommand]
+    private void SaveProfile()
+    {
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(NewFilePath));
+            File.WriteAllText(NewFilePath, JsonSerializer.Serialize(ProfileCreatorModel, new JsonSerializerOptions { WriteIndented = true }));
+            ErrorText = ProfileName + " successfully saved";
+        }
+        catch (Exception e)
+        {
+            ErrorText = e.Message;
         }
     }
 
@@ -434,7 +433,7 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget
         IsStarted = !IsStarted;
         if (!IsStarted)
         {
-            PMDGProfile.Instance.Stop();
+            Profiles.Instance.Stop();
             ErrorText = "Profiles stopped";
         }
         foreach (var device in Devices)
@@ -444,7 +443,7 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget
         }
         if (IsStarted)
         {
-            await PMDGProfile.Instance.StartAsync(ProfileCreatorModels.ToArray(), Devices.ToArray());
+            await Profiles.Instance.StartAsync(ProfileCreatorModels.ToArray(), Devices.ToArray());
             ErrorText = "Profiles started";
         }
     }
