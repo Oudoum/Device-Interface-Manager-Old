@@ -9,5 +9,21 @@ public partial class ProfileCreatorView : MetroWindow
     {
         InitializeComponent();
         DataContext = new ViewModel.ProfileCreatorViewModel(DialogCoordinator.Instance);
+        Loaded += ProfileCreatorView_Loaded;
+    }
+
+    private void ProfileCreatorView_Loaded(object sender, System.Windows.RoutedEventArgs e)
+    {
+        if (DataContext is Core.ICloseWindowsCheck vm)
+        {
+            vm.Close += Close;
+            Closing += (s, e) =>
+            {
+                if (vm.CanClose() == MessageDialogResult.Negative)
+                {
+                    e.Cancel = true;
+                }
+            };
+        }
     }
 }

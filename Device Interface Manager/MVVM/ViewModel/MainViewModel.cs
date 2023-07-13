@@ -103,7 +103,7 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
 
 
     public string DIMVersionText { get; set; } = "DIM Dev Version: ";
-    public string DIMVersionDate { get; set; } = "2023-07-12";
+    public string DIMVersionDate { get; set; } = "2023-07-13";
     //public string DIMVersion { get; } = "DIM Dev Version " + Assembly.GetEntryAssembly().GetName().Version;
 
     public MainViewModel()

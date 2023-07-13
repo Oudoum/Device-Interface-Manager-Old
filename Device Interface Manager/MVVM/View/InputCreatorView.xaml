@@ -10,6 +10,7 @@
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     d:DataContext="{d:DesignInstance Type=viewmodel:InputCreatorViewModel}"
+    WindowStartupLocation="CenterOwner"
     mc:Ignorable="d"
     Background="#1B1A24"
     Title="InputCreator"
@@ -189,7 +190,7 @@
                 </ComboBox>
                 <Grid.Style>
                     <Style TargetType="Grid">
-                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Setter Property="Visibility" Value="Hidden"/>
                         <Style.Triggers>
                             <MultiDataTrigger>
                                 <MultiDataTrigger.Conditions>
@@ -219,7 +220,7 @@
                 </TextBox>
                 <Grid.Style>
                     <Style TargetType="Grid">
-                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Setter Property="Visibility" Value="Hidden"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding PMDGMouseEventPress}" Value="{x:Null}">
                                 <Setter Property="Visibility" Value="Visible"/>
@@ -271,7 +272,7 @@
                 </ComboBox>
                 <Grid.Style>
                     <Style TargetType="Grid">
-                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Setter Property="Visibility" Value="Hidden"/>
                         <Style.Triggers>
                             <MultiDataTrigger>
                                 <MultiDataTrigger.Conditions>
@@ -301,7 +302,7 @@
                 </TextBox>
                 <Grid.Style>
                     <Style TargetType="Grid">
-                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Setter Property="Visibility" Value="Hidden"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding PMDGMouseEventRelease}" Value="{x:Null}">
                                 <Setter Property="Visibility" Value="Visible"/>

@@ -277,7 +277,6 @@
                     Command="{Binding AddRowCommand}"
                     Visibility="{Binding IsUSBEnabled,Converter={StaticResource BooleanToVisibilityConverter}}"
                     Margin="0,-40,0,0"
-                    Grid.Row="1"
                     VerticalAlignment="Top"
                     Cursor="Hand"
                     FontSize="16"

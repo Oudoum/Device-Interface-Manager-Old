@@ -14,11 +14,34 @@ using Device_Interface_Manager.MSFSProfiles;
 using Device_Interface_Manager.interfaceIT.USB;
 using MahApps.Metro.Controls.Dialogs;
 using GongSolutions.Wpf.DragDrop;
+using Device_Interface_Manager.Core;
 
 namespace Device_Interface_Manager.MVVM.ViewModel;
-public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget
+public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, ICloseWindowsCheck
 {
     private readonly IDialogCoordinator dialogCoordinator;
+
+    public Action Close { get; set; }
+
+    public MessageDialogResult CanClose()
+    {
+        MessageDialogResult dialogResult = dialogCoordinator.ShowModalMessageExternal(this, "Close", "Are you sure you want to close the ProfileCreator? All unsaved changes will be lost!",
+           MessageDialogStyle.AffirmativeAndNegative, new MetroDialogSettings
+           {
+               AnimateHide = false,
+               AnimateShow = false,
+               AffirmativeButtonText = "Yes",
+               NegativeButtonText = "No"
+           });
+        if (dialogResult == MessageDialogResult.Affirmative)
+        {
+            foreach (var item in Devices)
+            {
+                InterfaceITAPI_Data.InterfaceITDisable(item);
+            }
+        }
+        return dialogResult;
+    }
 
     public ProfileCreatorViewModel(IDialogCoordinator dialogCoordinator)
     {
@@ -169,22 +192,40 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget
     bool? result = false;
 
     [RelayCommand]
-    private void LoadProfile()
+    private async Task LoadProfileAsync()
     {
         Microsoft.Win32.OpenFileDialog dialog = new()
         {
-            InitialDirectory = Environment.CurrentDirectory + Path.GetDirectoryName(NewFilePath),
-            DefaultExt = ".json"
+            InitialDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(NewFilePath)),
+            Filter = "Json files (*.json)|*.json",
+            DefaultExt = ".json",
         };
         result = dialog.ShowDialog();
 
         if (result == true)
         {
-            ProfileCreatorModel = JsonSerializer.Deserialize<ProfileCreatorModel>(File.ReadAllText(dialog.FileName));
-            PreviousProfileName = ProfileName;
-            DeviceName = ProfileCreatorModel.DeviceName;
-            ProfileNameButtonContent = "Edit";
-            ErrorText = ProfileName + " successfully loaded";
+            try
+            {
+                using (FileStream stream = File.OpenRead(dialog.FileName))
+                {
+                    ProfileCreatorModel profileCreatorModel = await JsonSerializer.DeserializeAsync<ProfileCreatorModel>(stream);
+                    if (Devices.Any(s => s.BoardType == profileCreatorModel.DeviceName))
+                    {
+                        ProfileCreatorModel = profileCreatorModel;
+                        PreviousProfileName = ProfileName;
+                        DeviceName = ProfileCreatorModel.DeviceName;
+                        ProfileNameButtonContent = "Edit";
+                        ErrorText = ProfileName + " successfully loaded";
+                        result = false;
+                        return;
+                    }
+                }
+                ErrorText = "could not be loaded, because no controller for this profile was found";
+            }
+            catch (Exception ex)
+            {
+                ErrorText = ex.Message;
+            }
         }
         result = false;
     }

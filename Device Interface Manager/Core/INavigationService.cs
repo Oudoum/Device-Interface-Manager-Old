@@ -53,7 +53,6 @@ public class NavigationService : INavigationService
         {
             DataContext = viewModel,
             Owner = Application.Current.Windows.OfType<ProfileCreatorView>().FirstOrDefault(),
-            WindowStartupLocation = WindowStartupLocation.CenterOwner
         };
         view.ShowDialog();
         if (viewModel.Save == true)
@@ -94,7 +93,6 @@ public class NavigationService : INavigationService
         {
             DataContext = viewModel,
             Owner = Application.Current.Windows.OfType<ProfileCreatorView>().FirstOrDefault(),
-            WindowStartupLocation = WindowStartupLocation.CenterOwner
         };
         view.ShowDialog();
         if (viewModel.Save == true)
