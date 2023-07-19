@@ -10,9 +10,9 @@ interface INavigationService
 {
     void NavigateTo<TView>(object parameter) where TView : Window, new();
 
-    void NavigateToInputCreator(InputCreator inputCreator, int?[] inputs, object device);
+    void NavigateToInputCreator(InputCreator inputCreator, int?[] switches, object device);
 
-    void NavigateToOutputCreator(OutputCreator outputCreator, int?[] outputs, object device);
+    void NavigateToOutputCreator(OutputCreator outputCreator, int?[] lEDs, int?[] sevenSegments, object device);
 }
 
 public class NavigationService : INavigationService
@@ -27,21 +27,22 @@ public class NavigationService : INavigationService
         view.Show();
     }
 
-    public void NavigateToInputCreator(InputCreator inputCreator, int?[] inputs, object device)
+    public void NavigateToInputCreator(InputCreator inputCreator, int?[] switches, object device)
     {
         InputCreatorViewModel viewModel = new()
         {
             InputCreatorModel = new()
             {
-                Switches = inputs,
-                SelectedSwitch = inputCreator.SelectedSwitch,
-                SelectedEventType = inputCreator.SelectedEventType,
+                Switches = switches,
+                InputType = inputCreator.InputType,
+                Input = inputCreator.Input,
+                EventType = inputCreator.EventType,
                 PMDGEvent = inputCreator.PMDGEvent,
-                PMDGMouseEventPress = inputCreator.PMDGMouseEventPress,
-                PMDGMouseEventRelease = inputCreator.PMDGMouseEventRelease,
+                PMDGMousePress = inputCreator.PMDGMousePress,
+                PMDGMouseRelease = inputCreator.PMDGMouseRelease,
                 Event = inputCreator.Event,
-                EventDataPress = inputCreator.EventDataPress,
-                EventDataRelease = inputCreator.EventDataRelease
+                DataPress = inputCreator.DataPress,
+                DataRelease = inputCreator.DataRelease
             }
         };
         if (device is InterfaceIT_BoardInfo.Device)
@@ -57,31 +58,42 @@ public class NavigationService : INavigationService
         view.ShowDialog();
         if (viewModel.Save == true)
         {
-            inputCreator.SelectedSwitch = viewModel.SelectedSwitch;
-            inputCreator.SelectedEventType = viewModel.SelectedEventType;
+            inputCreator.InputType = viewModel.InputType;
+            inputCreator.Input = viewModel.Input;
+            inputCreator.EventType = viewModel.EventType;
             inputCreator.PMDGEvent = viewModel.PMDGEvent;
-            inputCreator.PMDGMouseEventPress = viewModel.PMDGMouseEventPress;
-            inputCreator.PMDGMouseEventRelease = viewModel.PMDGMouseEventRelease;
+            inputCreator.PMDGMousePress = viewModel.PMDGMousePress;
+            inputCreator.PMDGMouseRelease = viewModel.PMDGMouseRelease;
             inputCreator.Event = viewModel.Event;
-            inputCreator.EventDataPress = viewModel.EventDataPress;
-            inputCreator.EventDataRelease = viewModel.EventDataRelease;
+            inputCreator.DataPress = viewModel.DataPress;
+            inputCreator.DataRelease = viewModel.DataRelease;
         }
     }
 
-    public void NavigateToOutputCreator(OutputCreator outputCreator, int?[] outputs, object device)
+    public void NavigateToOutputCreator(OutputCreator outputCreator, int?[] lEDs, int?[] sevenSegments, object device)
     {
         OutputCreatorViewModel viewModel = new()
         {
             OutputCreatorModel = new()
             {
-                LEDs = outputs,
-                SelectedLED = outputCreator.SelectedLED,
-                SelectedDataType = outputCreator.SelectedDataType,
-                PMDGDataFieldName = outputCreator.PMDGDataFieldName,
-                PMDGStructArrayNum = outputCreator.PMDGStructArrayNum,
+                LEDs = lEDs,
+                SevenSegments = sevenSegments,
+                OutputType = outputCreator.OutputType,
+                Output = outputCreator.Output,
+                DataType = outputCreator.DataType,
+                PMDGData = outputCreator.PMDGData,
+                PMDGDataArrayIndex = outputCreator.PMDGDataArrayIndex,
                 ComparisonValue = outputCreator.ComparisonValue,
                 Data = outputCreator.Data,
-                IsInverted = outputCreator.IsInverted
+                Unit = outputCreator.Unit,
+                IsInverted = outputCreator.IsInverted,
+                IsPadded = outputCreator.IsPadded,
+                PaddingCharacter = outputCreator.PaddingCharacter,
+                DigitCount = outputCreator.DigitCount,
+                DigitCheckedSum = outputCreator.DigitCheckedSum,
+                DecimalPointCheckedSum = outputCreator.DecimalPointCheckedSum,
+                SubstringStart = outputCreator.SubstringStart,
+                SubstringEnd = outputCreator.SubstringEnd,
             }
         };
         if (device is InterfaceIT_BoardInfo.Device)
@@ -97,13 +109,22 @@ public class NavigationService : INavigationService
         view.ShowDialog();
         if (viewModel.Save == true)
         {
-            outputCreator.SelectedLED = viewModel.SelectedLED;
-            outputCreator.SelectedDataType = viewModel.SelectedDataType;
-            outputCreator.PMDGDataFieldName = viewModel.PMDGDataFieldName;
-            outputCreator.PMDGStructArrayNum = viewModel.PMDGStructArrayNum;
+            outputCreator.OutputType = viewModel.OutputType;
+            outputCreator.Output = viewModel.Output;
+            outputCreator.DataType = viewModel.DataType;
+            outputCreator.PMDGData = viewModel.PMDGData;
+            outputCreator.PMDGDataArrayIndex = viewModel.PMDGDataArrayIndex;
             outputCreator.ComparisonValue = viewModel.ComparisonValue;
             outputCreator.Data = viewModel.Data;
+            outputCreator.Unit = viewModel.Unit;
             outputCreator.IsInverted = viewModel.IsInverted;
+            outputCreator.IsPadded = viewModel.IsPadded;
+            outputCreator.PaddingCharacter = viewModel.PaddingCharacter;
+            outputCreator.DigitCount = viewModel.DigitCount;
+            outputCreator.DigitCheckedSum = viewModel.DigitCheckedSum;
+            outputCreator.DecimalPointCheckedSum = viewModel.DecimalPointCheckedSum;
+            outputCreator.SubstringStart = viewModel.SubstringStart;
+            outputCreator.SubstringEnd = viewModel.SubstringEnd;
         }
     }
 }

@@ -8,5 +8,5 @@ interface ICloseWindowsCheck
 {
     Action Close { get; set; }
 
-    MessageDialogResult CanClose();
+    MessageDialogResult CanCloseAsync();
 }

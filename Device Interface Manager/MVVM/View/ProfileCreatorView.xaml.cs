@@ -19,7 +19,7 @@ public partial class ProfileCreatorView : MetroWindow
             vm.Close += Close;
             Closing += (s, e) =>
             {
-                if (vm.CanClose() == MessageDialogResult.Negative)
+                if (vm.CanCloseAsync() == MessageDialogResult.Negative)
                 {
                     e.Cancel = true;
                 }

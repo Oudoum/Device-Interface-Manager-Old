@@ -75,7 +75,7 @@ public sealed class SimConnectClient
                 SimConnect.CreateClientData(CLIENT_DATA_ID.CLIENT_DATA_ID_COMMAND, MESSAGE_SIZE, SIMCONNECT_CREATE_CLIENT_DATA_FLAG.DEFAULT);
                 SimConnect.AddToClientDataDefinition(DEFINE_ID.DATA_DEFINITION_ID_COMMAND, 0, MESSAGE_SIZE, 0, 0);
 
-                RegisterSimVar("CAMERA STATE");
+                RegisterSimVar("CAMERA STATE", "Enum");
 
                 SimConnect.OnRecvSimobjectData += Simconnect_OnRecvSimobjectData;
                 return;
@@ -96,6 +96,10 @@ public sealed class SimConnectClient
 
     public void SimConnect_Close()
     {
+        SimConnect.OnRecvSimobjectData -= Simconnect_OnRecvSimobjectData;
+        SimConnect.OnRecvException -= SimConnect_OnRecvException;
+        SimConnect.OnRecvQuit -= SimConnect_OnRecvQuit;
+        SimConnect.OnRecvOpen -= SimConnect_OnRecvOpen;
         handleSource?.RemoveHook(HandleSimConnectEvents);
         SimConnect?.Dispose();
         SimConnect = null;
@@ -215,7 +219,7 @@ public sealed class SimConnectClient
     {
         if (!SimVars.Exists(lvar => lvar.Name == simVarName))
         {
-            SimVar newSimVar = new() { Name = simVarName, ID = (uint)SimVars.Count + offset + 1 };
+            SimVar newSimVar = new() { Name = simVarName, Unit = simVarUnit, ID = (uint)SimVars.Count + offset + 1 };
             SimVars.Add(newSimVar);
 
             SimConnect?.AddToDataDefinition(
@@ -247,6 +251,9 @@ public sealed class SimConnectClient
     {
         public uint ID { get; set; }
         public string Name { get; set; }
+
+        public string Unit { get; set; }
+
         public double Data { get; set; }
         public bool BData()
         {

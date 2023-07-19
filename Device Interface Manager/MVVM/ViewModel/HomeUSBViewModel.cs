@@ -107,7 +107,7 @@ public partial class HomeUSBViewModel : ObservableObject
 
         foreach (var item in profileCreatorModels)
         {
-            if (item.SelectedDriver == ProfileCreatorModel.FDSUSB)
+            if (item.Driver == ProfileCreatorModel.FDSUSB)
             {
                 string profileKey = '#' + item.ProfileName;
                 profileKeys.Add(profileKey);

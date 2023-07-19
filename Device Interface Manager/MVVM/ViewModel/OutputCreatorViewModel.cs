@@ -1,14 +1,20 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Device_Interface_Manager.Core;
 using Device_Interface_Manager.interfaceIT.USB;
 using Device_Interface_Manager.MVVM.Model;
+using Device_Interface_Manager.MSFSProfiles.PMDG;
+using MahApps.Metro.Controls.Dialogs;
+using static Device_Interface_Manager.MVVM.Model.OutputCreatorModel;
 
 namespace Device_Interface_Manager.MVVM.ViewModel;
-public partial class OutputCreatorViewModel : ObservableObject, ICloseWindows
+public partial class OutputCreatorViewModel : ObservableObject, ICloseWindowsCheck
 {
     public OutputCreatorModel OutputCreatorModel { get; set; }
 
@@ -16,75 +22,142 @@ public partial class OutputCreatorViewModel : ObservableObject, ICloseWindows
 
     public InterfaceIT_BoardInfo.Device Device { get; set; }
 
-    public int? SelectedLED
+    public string OutputType
     {
-        get => OutputCreatorModel.SelectedLED;
+        get
+        {
+            Digits ??= CreateDigits();
+            return OutputCreatorModel.OutputType;
+        }
         set
         {
-            OutputCreatorModel.SelectedLED = value;
-            OnPropertyChanged(nameof(SelectedLED));
+            if (OutputCreatorModel.OutputType != value)
+            {
+                OutputCreatorModel.OutputType = value;
+                OnPropertyChanged(nameof(OutputType));
+                if (value != ProfileCreatorModel.SEVENSEGMENT)
+                {
+                    IsPadded = null;
+                    PaddingCharacterPair = null;
+                    DigitCount = null;
+                    SubstringStart = null;
+                    SubstringEnd = null;
+                    OnPropertyChanged(nameof(SubstringStart));
+                    OnPropertyChanged(nameof(SubstringEnd));
+                }
+                else if (value == ProfileCreatorModel.SEVENSEGMENT)
+                {
+                    IsPadded = false;
+                    ComparisonValue = null;
+                    IsInverted = false;
+                    OnPropertyChanged(nameof(ComparisonValue));
+                    OnPropertyChanged(nameof(IsInverted));
+                }
+            }
+        }
+    }
+
+    public string[] OutputTypes => OutputCreatorModel.OutputTypes;
+
+    public int? Output
+    {
+        get => OutputCreatorModel.Output;
+        set
+        {
+            if (OutputCreatorModel.Output != value)
+            {
+                OutputCreatorModel.Output = value;
+                OnPropertyChanged(nameof(Output));
+            }
         }
     }
 
     public int?[] LEDs => OutputCreatorModel.LEDs;
 
-    public string SelectedDataType
+    public int?[] SevenSegments => OutputCreatorModel.SevenSegments;
+
+    public string DataType
     {
-        get => OutputCreatorModel.SelectedDataType;
+        get => OutputCreatorModel.DataType;
         set
         {
-            OutputCreatorModel.SelectedDataType = value;
-            OnPropertyChanged(nameof(SelectedDataType));
-            OnPropertyChanged(nameof(PMDGDataFieldName));
-            OnPropertyChanged(nameof(PMDGStructArrayNums));
-            OnPropertyChanged(nameof(PMDGStructArrayNum));
-            OnPropertyChanged(nameof(IsComparisonValueEnabled));
-            OnPropertyChanged(nameof(ComparisonValue));
+            if (OutputCreatorModel.DataType != value)
+            {
+                OutputCreatorModel.DataType = value;
+                if (value is not null)
+                {
+                    if (value == ProfileCreatorModel.MSFSSimConnect)
+                    {
+                        PMDGData = null;
+                    }
+                    else if (value == ProfileCreatorModel.PMDG737)
+                    {
+                        Data = null;
+                        Unit = null;
+                    }
+                }
+                OnPropertyChanged(nameof(DataType));
+                OnPropertyChanged(nameof(PMDGDataArrayIndices));
+                OnPropertyChanged(nameof(PMDGDataArrayIndex));
+                OnPropertyChanged(nameof(IsComparisonValueEnabled));
+                OnPropertyChanged(nameof(ComparisonValue));
+            }
         }
     }
 
-    public string[] DataType => OutputCreatorModel.DataType;
+    public string[] DataTypes => OutputCreatorModel.DataTypes;
 
-    public string PMDGDataFieldName
+    public string PMDGData
     {
-        get => OutputCreatorModel.PMDGDataFieldName;
+        get => OutputCreatorModel.PMDGData;
         set
         {
-            OutputCreatorModel.PMDGDataFieldName = value;
-            OnPropertyChanged(nameof(PMDGDataFieldName));
-            OnPropertyChanged(nameof(PMDGStructArrayNums));
-            OnPropertyChanged(nameof(PMDGStructArrayNum));
-            OnPropertyChanged(nameof(IsComparisonValueEnabled));
-            OnPropertyChanged(nameof(ComparisonValue));
+            if (OutputCreatorModel.PMDGData != value)
+            {
+                OutputCreatorModel.PMDGData = value;
+                OnPropertyChanged(nameof(PMDGData));
+                OnPropertyChanged(nameof(PMDGDataArrayIndices));
+                OnPropertyChanged(nameof(PMDGDataArrayIndex));
+                OnPropertyChanged(nameof(IsComparisonValueEnabled));
+                OnPropertyChanged(nameof(ComparisonValue));
+            }
         }
     }
 
-    public string SearchPMDGDataText
+    public string SearchPMDGData
     {
-        get => OutputCreatorModel.SearchPMDGDataText;
+        get => OutputCreatorModel.SearchPMDGData;
         set
         {
-            OutputCreatorModel.SearchPMDGDataText = value;
-            OnPropertyChanged(nameof(PMDGDataFieldNames));
-            OnPropertyChanged(nameof(PMDGDataFieldName));
+            if (OutputCreatorModel.SearchPMDGData != value)
+            {
+                OutputCreatorModel.SearchPMDGData = value;
+                OnPropertyChanged(nameof(PMDGDataArray));
+                OnPropertyChanged(nameof(PMDGData));
+            }
         }
     }
 
-    public string[] PMDGDataFieldNames => OutputCreatorModel.PMDGDataFieldNames;
+    public string[] PMDGDataArray => OutputCreatorModel.PMDGDataArray;
 
-    public int? PMDGStructArrayNum
+    public int? PMDGDataArrayIndex
     {
-        get => OutputCreatorModel.PMDGStructArrayNum;
+        get => OutputCreatorModel.PMDGDataArrayIndex;
         set
         {
-            OutputCreatorModel.PMDGStructArrayNum = value;
-            OnPropertyChanged(nameof(PMDGStructArrayNum));
+            if (OutputCreatorModel.PMDGDataArrayIndex != value)
+            {
+                OutputCreatorModel.PMDGDataArrayIndex = value;
+                OnPropertyChanged(nameof(PMDGDataArrayIndex));
+            }
         }
     }
 
-    public int?[] PMDGStructArrayNums => OutputCreatorModel.PMDGStructArrayNums;
+    public int?[] PMDGDataArrayIndices => OutputCreatorModel.PMDGDataArrayIndices;
 
-    public bool IsComparisonValueEnabled => OutputCreatorModel.IsComparisonValueEnabled;
+    public bool IsComparisonValueEnabled => !string.IsNullOrEmpty(PMDGData)
+    && typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetField(PMDGData)?.FieldType != typeof(bool)
+    && typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetField(PMDGData)?.FieldType != typeof(bool[]);
 
     public int? ComparisonValue
     {
@@ -97,8 +170,24 @@ public partial class OutputCreatorViewModel : ObservableObject, ICloseWindows
         get => OutputCreatorModel.Data;
         set
         {
-            OutputCreatorModel.Data = value;
-            OnPropertyChanged(nameof(Data));
+            if (OutputCreatorModel.Data != value)
+            {
+                OutputCreatorModel.Data = value;
+                OnPropertyChanged(nameof(Data));
+            }
+        }
+    }
+
+    public string Unit
+    {
+        get => OutputCreatorModel.Unit;
+        set
+        {
+            if (OutputCreatorModel.Unit != value)
+            {
+                OutputCreatorModel.Unit = value;
+                OnPropertyChanged(nameof(Unit));
+            }
         }
     }
 
@@ -109,32 +198,174 @@ public partial class OutputCreatorViewModel : ObservableObject, ICloseWindows
     }
 
 
-
-
-    private int? lEDPosition;
-
-    private void SetLEDPosition(int? value)
+    public bool? IsPadded
     {
-        //DISABLE FOR DEBUG
-        if (lEDPosition != value)
+        get => OutputCreatorModel.IsPadded;
+        set
         {
-            if (lEDPosition is not null)
+            if (OutputCreatorModel.IsPadded != value)
             {
-                InterfaceITAPI_Data.interfaceIT_LED_Set(Device.Session, lEDPosition.Value, false);
-                //ErrorText = $"{ProfileCreatorModel.DeviceName} | Session: {Devices.FirstOrDefault(k => k.BoardType == ProfileCreatorModel.DeviceName).Session} | LED: {_lEDPosition.Value} => false";
+                OutputCreatorModel.IsPadded = value;
+                OnPropertyChanged(nameof(IsPadded));
+            }
+        }
+    }
+
+    public static Dictionary<string, char?> PaddingCharacters => OutputCreatorModel.PaddingCharacters;
+
+    public KeyValuePair<string, char?>? PaddingCharacterPair
+    {
+        get
+        {
+            if (PaddingCharacter is null)
+            {
+                return null;
+            }
+            return PaddingCharacters.First(s => s.Value == PaddingCharacter);
+        }
+        set
+        {
+            if (value is null)
+            {
+                OutputCreatorModel.PaddingCharacter = null;
             }
             if (value is not null)
             {
-                InterfaceITAPI_Data.interfaceIT_LED_Set(Device.Session, value.Value, true);
-                //ErrorText = $"{ProfileCreatorModel.DeviceName} | Session: {Devices.FirstOrDefault(k => k.BoardType == ProfileCreatorModel.DeviceName).Session} | LED: {value.Value} => true";
+                OutputCreatorModel.PaddingCharacter = value.Value.Value;
             }
-            lEDPosition = value;
+            OnPropertyChanged(nameof(PaddingCharacterPair));
+        }
+    }
+
+
+    public char? PaddingCharacter
+    {
+        get => OutputCreatorModel.PaddingCharacter;
+        set => OutputCreatorModel.PaddingCharacter = value;
+    }
+
+    public byte[] DigitCounts { get; set; } = { 1, 2, 3, 4, 5, 6, 7, 8 };
+
+    public byte? DigitCount
+    {
+        get => OutputCreatorModel.DigitCount;
+        set
+        {
+            if (OutputCreatorModel.DigitCount != value)
+            {
+                OutputCreatorModel.DigitCount = value;
+                OnPropertyChanged(nameof(DigitCount));
+                if (value is null)
+                {
+                    Digits.Clear();
+                    DigitFormatting.DigitCheckedSum = null;
+                    DigitFormatting.DecimalPointCheckedSum = null;
+                    return;
+                }
+                else if (Digits.Count > value)
+                {
+                    for (int i = Digits.Count - 1; i >= value; i--)
+                    {
+                        Digits[i].IsDigitChecked = false;
+                        Digits[i].IsDecimalPointChecked = false;
+                        Digits.RemoveAt(i);
+                    }
+                    return;
+                }
+                for (int i = Digits.Count; i < value; i++)
+                {
+                    Digits.Add(new DigitFormatting { Digit = (byte)(i + 1) });
+                }
+            }
+        }
+    }
+
+    public byte? DigitCheckedSum => OutputCreatorModel.DigitCheckedSum;
+
+    public byte? DecimalPointCheckedSum => OutputCreatorModel.DecimalPointCheckedSum;
+
+    public ObservableCollection<DigitFormatting> Digits { get; set; }
+
+    private ObservableCollection<DigitFormatting> CreateDigits()
+    {
+        ObservableCollection<DigitFormatting> digits = new();
+        DigitFormatting.DigitCheckedSum = OutputCreatorModel.DigitCheckedSum;
+        DigitFormatting.DecimalPointCheckedSum = OutputCreatorModel.DecimalPointCheckedSum;
+        for (int i = 0; i < DigitCount; i++)
+        {
+            DigitFormatting digitFormatting = new()
+            {
+                Digit = (byte)(i + 1),
+                IsDigitChecked = (DigitCheckedSum & (1 << i)) != 0,
+                IsDecimalPointChecked = (DecimalPointCheckedSum & (1 << i)) != 0
+            };
+            digits.Add(digitFormatting);
+        }
+        DigitFormatting.SumDigitCheckedChanged += DigitFormatting_SumDigitCheckedChanged;
+        DigitFormatting.SumDecimalPointCheckedChanged += DigitFormatting_SumDecimalPointCheckedChanged;
+        return digits;
+    }
+
+    private void DigitFormatting_SumDigitCheckedChanged(object sender, EventArgs e)
+    {
+        OutputCreatorModel.DigitCheckedSum = DigitFormatting.DigitCheckedSum;
+    }
+
+    private void DigitFormatting_SumDecimalPointCheckedChanged(object sender, EventArgs e)
+    {
+        OutputCreatorModel.DecimalPointCheckedSum = DigitFormatting.DecimalPointCheckedSum;
+    }
+
+    public byte? SubstringStart
+    {
+        get => OutputCreatorModel.SubstringStart;
+        set => OutputCreatorModel.SubstringStart = value;
+    }
+
+    public byte? SubstringEnd
+    {
+        get => OutputCreatorModel.SubstringEnd;
+        set => OutputCreatorModel.SubstringEnd = value;
+    }
+
+
+
+    private int? outputPosition;
+
+    private void SetOutputPosition(int? value)
+    {
+        //DISABLE FOR DEBUG
+        if (outputPosition != value)
+        {
+            if (outputPosition is not null)
+            {
+                if (OutputType == ProfileCreatorModel.LED)
+                {
+                    InterfaceITAPI_Data.interfaceIT_LED_Set(Device.Session, outputPosition.Value, false);
+                }
+                else if (OutputType == ProfileCreatorModel.SEVENSEGMENT)
+                {
+                    InterfaceITAPI_Data.interfaceIT_7Segment_Display(Device.Session, " ", outputPosition.Value);
+                }
+            }
+            if (value is not null)
+            {
+                if (OutputType == ProfileCreatorModel.LED)
+                {
+                    InterfaceITAPI_Data.interfaceIT_LED_Set(Device.Session, value.Value, true);
+                }
+                else if (OutputType == ProfileCreatorModel.SEVENSEGMENT)
+                {
+                    InterfaceITAPI_Data.interfaceIT_7Segment_Display(Device.Session, "8", value.Value);
+                }
+            }
+            outputPosition = value;
         }
         //DISABLE FOR DEBUG
     }
 
     [RelayCommand]
-    private void MouseMoveLEDComboBox(System.Windows.Input.MouseEventArgs e)
+    private void MouseMoveComboBox(System.Windows.Input.MouseEventArgs e)
     {
         if (e.OriginalSource is TextBlock textBlock)
         {
@@ -143,28 +374,28 @@ public partial class OutputCreatorViewModel : ObservableObject, ICloseWindows
             {
                 return;
             }
-            SetLEDPosition(int.Parse(text));
+            SetOutputPosition(int.Parse(text));
             return;
         }
         else if (e.OriginalSource is Grid grid)
         {
-            SetLEDPosition(((OutputCreatorViewModel)grid.DataContext).SelectedLED);
+            SetOutputPosition(((OutputCreatorViewModel)grid.DataContext).Output);
             return;
         }
-        SetLEDPosition(null);
+        SetOutputPosition(null);
     }
 
     [RelayCommand]
-    private void MouseLeaveLEDComboBox(System.Windows.Input.MouseEventArgs e)
+    private void MouseLeaveComboBox(System.Windows.Input.MouseEventArgs e)
     {
         if (e.OriginalSource is ComboBox)
         {
-            SetLEDPosition(null);
+            SetOutputPosition(null);
         }
     }
 
     [RelayCommand]
-    private void LEDComboBoxSlectionChanged(SelectionChangedEventArgs e)
+    private void ComboBoxSlectionChanged(SelectionChangedEventArgs e)
     {
         //int? addedValue = null;
         //if (e.AddedItems.Count > 0)
@@ -219,6 +450,13 @@ public partial class OutputCreatorViewModel : ObservableObject, ICloseWindows
         Close?.Invoke();
     }
 
+    public MessageDialogResult CanCloseAsync()
+    {
+        DigitFormatting.SumDecimalPointCheckedChanged -= DigitFormatting_SumDecimalPointCheckedChanged;
+        DigitFormatting.SumDigitCheckedChanged -= DigitFormatting_SumDigitCheckedChanged;
+        return MessageDialogResult.Affirmative;
+    }
+
     [RelayCommand]
     private static void ComboboxMouseEnterLeave(RoutedEventArgs e)
     {
@@ -231,5 +469,4 @@ public partial class OutputCreatorViewModel : ObservableObject, ICloseWindows
             ((ComboBox)e.Source).IsDropDownOpen = false;
         }
     }
-
 }

@@ -1,99 +1,86 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Device_Interface_Manager.MSFSProfiles.PMDG;
+using CommunityToolkit.Mvvm.ComponentModel;
+using System.Collections.ObjectModel;
 
 namespace Device_Interface_Manager.MVVM.Model;
 public class OutputCreatorModel
 {
-    public int? SelectedLED { get; set; }
+    public string OutputType { get; set; }
+
+    public string[] OutputTypes { get; set; } = { ProfileCreatorModel.LED, ProfileCreatorModel.SEVENSEGMENT };
+
+    public int? Output { get; set; }
 
     public int?[] LEDs { get; set; }
 
-    private string _selectedDataType = ProfileCreatorModel.PMDG737;
-    public string SelectedDataType
+    public int?[] SevenSegments { get; set; }
+
+    public string DataType { get; set; } = ProfileCreatorModel.PMDG737;
+
+    public string[] DataTypes { get; set; } = { ProfileCreatorModel.MSFSSimConnect, ProfileCreatorModel.PMDG737 };
+
+    public string PMDGData { get; set; }
+
+    private string _searchPMDGData;
+    public string SearchPMDGData
     {
-        get => _selectedDataType;
+        get => _searchPMDGData;
         set
         {
-            if (_selectedDataType != value && value is not null)
+            if (_searchPMDGData != value)
             {
-                _selectedDataType = value;
-
-                if (value == ProfileCreatorModel.MSFSSimConnect)
-                {
-                    PMDGDataFieldName = null;
-                }
-            }
-        }
-    }
-
-    public string[] DataType { get; set; } = new string[] { ProfileCreatorModel.MSFSSimConnect, ProfileCreatorModel.PMDG737 };
-
-    public string PMDGDataFieldName { get; set; }
-
-    private string _searchPMDGDataText;
-    public string SearchPMDGDataText
-    {
-        get => _searchPMDGDataText;
-        set
-        {
-            if (_searchPMDGDataText != value)
-            {
-                _searchPMDGDataText = value;
-
-                string matchingData = PMDGDataFieldNames.FirstOrDefault(s => s.Equals(value, StringComparison.OrdinalIgnoreCase));
+                _searchPMDGData = value;
+                string matchingData = PMDGDataArray.FirstOrDefault(s => s.Equals(value, StringComparison.OrdinalIgnoreCase));
                 if (matchingData is not null)
                 {
-                    PMDGDataFieldName = matchingData;
+                    PMDGData = matchingData;
                 }
             }
         }
     }
 
-    public string[] PMDGDataFieldNames => string.IsNullOrEmpty(SearchPMDGDataText)
+    public string[] PMDGDataArray => string.IsNullOrEmpty(SearchPMDGData)
         ? typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetFields().Select(field => field.Name).Take(typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetFields().Length - 1).ToArray()
-        : typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetFields().Select(field => field.Name).Where(name => name.Contains(SearchPMDGDataText, StringComparison.OrdinalIgnoreCase)).Take(typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetFields().Length - 1).ToArray();
+        : typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetFields().Select(field => field.Name).Where(name => name.Contains(SearchPMDGData, StringComparison.OrdinalIgnoreCase)).Take(typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetFields().Length - 1).ToArray();
 
-    private int? _pMDGStructArrayNum;
-    public int? PMDGStructArrayNum
+    private int? _pMDGDataArrayIndex;
+    public int? PMDGDataArrayIndex
     {
         get
         {
-            if (_pMDGStructArrayNum is null)
+            if (_pMDGDataArrayIndex is null)
             {
-                return _pMDGStructArrayNum = PMDGStructArrayNums?.FirstOrDefault();
+                return _pMDGDataArrayIndex = PMDGDataArrayIndices?.FirstOrDefault();
 
             }
-            return _pMDGStructArrayNum;
+            return _pMDGDataArrayIndex;
         }
         set
         {
-            if (value != _pMDGStructArrayNum)
+            if (value != _pMDGDataArrayIndex)
             {
-                _pMDGStructArrayNum = value;
+                _pMDGDataArrayIndex = value;
             }
         }
     }
 
-    public int?[] PMDGStructArrayNums => string.IsNullOrEmpty(PMDGDataFieldName)
+    public int?[] PMDGDataArrayIndices => string.IsNullOrEmpty(PMDGData)
         ? Array.Empty<int?>()
-        : typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetField(PMDGDataFieldName).GetCustomAttribute<MarshalAsAttribute>()?.SizeConst is int size
+        : typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetField(PMDGData).GetCustomAttribute<MarshalAsAttribute>() is MarshalAsAttribute attribute && attribute.Value != UnmanagedType.ByValTStr && attribute.SizeConst is int size
         ? new int?[size].Select((_, i) => i).Cast<int?>().ToArray()
         : null;
-
-    public bool IsComparisonValueEnabled => !string.IsNullOrEmpty(PMDGDataFieldName)
-        && typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetField(PMDGDataFieldName)?.FieldType != typeof(bool)
-        && typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetField(PMDGDataFieldName)?.FieldType != typeof(bool[]);
-
 
     private int? _comparisonValue;
     public int? ComparisonValue
     {
-        get => string.IsNullOrEmpty(PMDGDataFieldName)
-            || typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetField(PMDGDataFieldName)?.FieldType == typeof(bool)
-            || typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetField(PMDGDataFieldName)?.FieldType == typeof(bool[])
+        get => string.IsNullOrEmpty(PMDGData)
+            || typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetField(PMDGData)?.FieldType == typeof(bool)
+            || typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetField(PMDGData)?.FieldType == typeof(bool[])
             ? null
             : _comparisonValue;
         set => _comparisonValue = value;
@@ -101,5 +88,99 @@ public class OutputCreatorModel
 
     public string Data { get; set; }
 
+    public string Unit { get; set; }
+
     public bool IsInverted { get; set; }
+
+    public bool? IsPadded { get; set; }
+
+    public static Dictionary<string, char?> PaddingCharacters => new() { [""] = null, ["Zero"] = '0', ["Space"] = ' ' };
+
+    public char? PaddingCharacter { get; set; }
+
+    public byte? DigitCount { get; set; }
+
+    public byte? DigitCheckedSum { get; set; }
+
+    public byte? DecimalPointCheckedSum { get; set; }
+
+    public byte? SubstringStart { get; set; }
+
+    public byte? SubstringEnd { get; set; }
+
+    public class DigitFormatting
+    {
+        public byte Digit { get; init; }
+
+        private bool _isDigitChecked;
+        public bool IsDigitChecked
+        {
+            get => _isDigitChecked;
+            set
+            {
+                if (_isDigitChecked != value)
+                {
+                    _isDigitChecked = value;
+                    if (value)
+                    {
+                        DigitCheckedSum = (byte)((DigitCheckedSum ?? 0) | (1 << (Digit - 1)));
+                        return;
+                    }
+                    DigitCheckedSum = (byte)((DigitCheckedSum ?? 0) & ~(1 << (Digit - 1)));
+                }
+            }
+        }
+
+        private bool _isDecimalPointChecked;
+        public bool IsDecimalPointChecked
+        {
+            get => _isDecimalPointChecked;
+            set
+            {
+                if (_isDecimalPointChecked != value)
+                {
+                    _isDecimalPointChecked = value;
+                    if (value)
+                    {
+
+                        DecimalPointCheckedSum = (byte)((DecimalPointCheckedSum ?? 0) | (1 << (Digit - 1)));
+                        return;
+                    }
+                    DecimalPointCheckedSum = (byte)((DecimalPointCheckedSum ?? 0) & ~(1 << (Digit - 1)));;
+                }
+            }
+        }
+
+        private static byte? _digitCheckedSum;
+        public static byte? DigitCheckedSum
+        {
+            get => _digitCheckedSum;
+            set
+            {
+                if (_digitCheckedSum != value)
+                {
+                    _digitCheckedSum = value;
+                    SumDigitCheckedChanged?.Invoke(null, EventArgs.Empty);
+                }
+            }
+        }
+
+        private static byte? _decimalPointCheckedSum;
+        public static byte? DecimalPointCheckedSum
+        {
+            get => _decimalPointCheckedSum;
+            set
+            {
+                if (_decimalPointCheckedSum != value)
+                {
+                    _decimalPointCheckedSum = value;
+                    SumDecimalPointCheckedChanged?.Invoke(null, EventArgs.Empty);
+                }
+            }
+        }
+
+        public static event EventHandler SumDigitCheckedChanged;
+
+        public static event EventHandler SumDecimalPointCheckedChanged;
+    }
 }

@@ -17,9 +17,16 @@ public partial class ProfileCreatorModel : ObservableObject
     public const string MSFSSimConnect = "MSFS/SimConnect/LVar";
     public const string RPN = "RPN/H-Events";
 
+    //Inputs
+    public const string SWITCH = "Switch";
+
+    //Outputs
+    public const string LED = "LED";
+    public const string SEVENSEGMENT = "7 Segment";
+
     public string ProfileName { get; set; }
 
-    public string SelectedDriver { get; set; }
+    public string Driver { get; set; }
 
     public string DeviceName { get; set; }
 
@@ -40,15 +47,24 @@ public partial class ProfileCreatorModel : ObservableObject
 
     [JsonIgnore]
     public List<int?> UsedLEDs { get; set; } = new();
+
+    [JsonIgnore]
+    public List<int?> SevenSegments { get; set; } = new();
+
+    [JsonIgnore]
+    public List<int?> UsedSevenSegments { get; set; } = new();
 }
 
 public partial class InputCreator : ObservableObject
 {
     [ObservableProperty]
-    public int? _selectedSwitch;
+    private string _inputType;
 
     [ObservableProperty]
-    private string _selectedEventType;
+    public int? _input;
+
+    [ObservableProperty]
+    private string _eventType;
 
     [ObservableProperty]
     private PMDG_NG3_SDK.PMDGEvents? _pMDGEvent;
@@ -57,16 +73,16 @@ public partial class InputCreator : ObservableObject
     private string _event;
 
     [ObservableProperty]
-    private KeyValuePair<string, uint>? _pMDGMouseEventPress;
+    private KeyValuePair<string, uint>? _pMDGMousePress;
 
     [ObservableProperty]
-    private KeyValuePair<string, uint>? _pMDGMouseEventRelease;
+    private KeyValuePair<string, uint>? _pMDGMouseRelease;
 
     [ObservableProperty]
-    private uint? _EventDataPress;
+    private uint? _dataPress;
 
     [ObservableProperty]
-    private uint? _EventDataRelease;
+    private uint? _dataRelease;
 
     public InputCreator Clone()
     {
@@ -77,25 +93,52 @@ public partial class InputCreator : ObservableObject
 public partial class OutputCreator : ObservableObject
 {
     [ObservableProperty]
-    private int? _selectedLED;
+    private string _outputType;
 
     [ObservableProperty]
-    private string _selectedDataType;
+    private int? _output;
 
     [ObservableProperty]
-    public string _pMDGDataFieldName;
+    private string _dataType;
+
+    [ObservableProperty]
+    private string _pMDGData;
 
     [ObservableProperty]
     private string _data;
 
     [ObservableProperty]
-    private int? _pMDGStructArrayNum;
+    private string _unit;
+
+    [ObservableProperty]
+    private int? _pMDGDataArrayIndex;
 
     [ObservableProperty]
     private int? _comparisonValue;
 
     [ObservableProperty]
     private bool _isInverted;
+
+    [ObservableProperty]
+    private bool? _isPadded;
+
+    [ObservableProperty]
+    private char? _paddingCharacter;
+
+    [ObservableProperty]
+    private byte? _digitCount;
+
+    [ObservableProperty]
+    private byte? _digitCheckedSum;
+
+    [ObservableProperty]
+    private byte? _decimalPointCheckedSum;
+
+    [ObservableProperty]
+    private byte? _substringStart;
+
+    [ObservableProperty]
+    private byte? _substringEnd;
 
     public OutputCreator Clone()
     {

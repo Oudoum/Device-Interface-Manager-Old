@@ -6,43 +6,29 @@ using Device_Interface_Manager.MSFSProfiles.PMDG;
 namespace Device_Interface_Manager.MVVM.Model;
 public class InputCreatorModel
 {
-    public int? SelectedSwitch { get; set; }
+    public string InputType { get; set; }
+
+    public string[] InputTypes { get; set; } = { ProfileCreatorModel.SWITCH};
+
+    public int? Input { get; set; }
 
     public int?[] Switches { get; set; }
 
-    private string _selectedEventType = ProfileCreatorModel.PMDG737;
-    public string SelectedEventType
-    {
-        get => _selectedEventType;
-        set
-        {
-            if (_selectedEventType != value && value is not null)
-            {
-                _selectedEventType = value;
+    public string EventType { get; set; }
 
-                if (value == ProfileCreatorModel.MSFSSimConnect || value == ProfileCreatorModel.RPN)
-                {
-                    PMDGEvent = null;
-                    PMDGMouseEventPress = null;
-                    PMDGMouseEventRelease = null;
-                }
-            }
-        }
-    }
-
-    public string[] EventType { get; set; } = new string[] { ProfileCreatorModel.MSFSSimConnect, ProfileCreatorModel.RPN, ProfileCreatorModel.PMDG737 };
+    public string[] EventTypes { get; set; } = { ProfileCreatorModel.MSFSSimConnect, ProfileCreatorModel.RPN, ProfileCreatorModel.PMDG737 };
 
     public PMDG_NG3_SDK.PMDGEvents? PMDGEvent { get; set; }
 
-    private string _searchPMDGEventsText;
-    public string SearchPMDGEventsText
+    private string _searchPMDGEvent;
+    public string SearchPMDGEvent
     {
-        get => _searchPMDGEventsText;
+        get => _searchPMDGEvent;
         set
         {
-            if (_searchPMDGEventsText != value)
+            if (_searchPMDGEvent != value)
             {
-                _searchPMDGEventsText = value;
+                _searchPMDGEvent = value;
 
                 if (Enum.TryParse<PMDG_NG3_SDK.PMDGEvents>(value, true, out var result))
                 {
@@ -52,85 +38,85 @@ public class InputCreatorModel
         }
     }
 
-    public PMDG_NG3_SDK.PMDGEvents[] PMDGEvents => string.IsNullOrEmpty(SearchPMDGEventsText)
+    public PMDG_NG3_SDK.PMDGEvents[] PMDGEvents => string.IsNullOrEmpty(SearchPMDGEvent)
         ? (PMDG_NG3_SDK.PMDGEvents[])Enum.GetValues(typeof(PMDG_NG3_SDK.PMDGEvents))
-        : ((PMDG_NG3_SDK.PMDGEvents[])Enum.GetValues(typeof(PMDG_NG3_SDK.PMDGEvents))).Where(name => name.ToString().Contains(SearchPMDGEventsText, StringComparison.OrdinalIgnoreCase)).ToArray();
+        : ((PMDG_NG3_SDK.PMDGEvents[])Enum.GetValues(typeof(PMDG_NG3_SDK.PMDGEvents))).Where(name => name.ToString().Contains(SearchPMDGEvent, StringComparison.OrdinalIgnoreCase)).ToArray();
 
-    public KeyValuePair<string, uint>? PMDGMouseEventPress { get; set; }
+    public KeyValuePair<string, uint>? PMDGMousePress { get; set; }
 
-    private string _searchPMDGMouseEventsTextPress;
-    public string SearchPMDGMouseEventsTextPress
+    private string _searchPMDGMousePress;
+    public string SearchPMDGMousePress
     {
-        get => _searchPMDGMouseEventsTextPress;
+        get => _searchPMDGMousePress;
         set
         {
-            if (_searchPMDGMouseEventsTextPress != value)
+            if (_searchPMDGMousePress != value)
             {
-                _searchPMDGMouseEventsTextPress = value;
+                _searchPMDGMousePress = value;
 
                 KeyValuePair<string, uint> matchingEvent = PMDGMouseFlags.FirstOrDefault(pair => pair.Key.Equals(value, StringComparison.OrdinalIgnoreCase));
                 if (matchingEvent.Key is not null)
                 {
-                    PMDGMouseEventPress = matchingEvent;
+                    PMDGMousePress = matchingEvent;
                 }
             }
         }
     }
 
-    public KeyValuePair<string, uint>[] PMDGMouseEventsPress => string.IsNullOrEmpty(SearchPMDGMouseEventsTextPress)
+    public KeyValuePair<string, uint>[] PMDGMousePressArray => string.IsNullOrEmpty(SearchPMDGMousePress)
     ? PMDGMouseFlags.ToArray()
-    : PMDGMouseFlags.Where(pair => pair.Key.Contains(SearchPMDGMouseEventsTextPress, StringComparison.OrdinalIgnoreCase)).ToArray();
+    : PMDGMouseFlags.Where(pair => pair.Key.Contains(SearchPMDGMousePress, StringComparison.OrdinalIgnoreCase)).ToArray();
 
-    public KeyValuePair<string, uint>? PMDGMouseEventRelease { get; set; }
+    public KeyValuePair<string, uint>? PMDGMouseRelease { get; set; }
 
-    private string _searchPMDGMouseEventsTextRelease;
-    public string SearchPMDGMouseEventsTextRelease
+    private string _searchPMDGMouseRelease;
+    public string SearchPMDGMouseRelease
     {
-        get => _searchPMDGMouseEventsTextRelease;
+        get => _searchPMDGMouseRelease;
         set
         {
-            if (_searchPMDGMouseEventsTextRelease != value)
+            if (_searchPMDGMouseRelease != value)
             {
-                _searchPMDGMouseEventsTextRelease = value;
+                _searchPMDGMouseRelease = value;
 
                 KeyValuePair<string, uint> matchingEvent = PMDGMouseFlags.FirstOrDefault(pair => pair.Key.Equals(value, StringComparison.OrdinalIgnoreCase));
                 if (matchingEvent.Key is not null)
                 {
-                    PMDGMouseEventRelease = matchingEvent;
+                    PMDGMouseRelease = matchingEvent;
                 }
             }
         }
     }
 
-    public KeyValuePair<string, uint>[] PMDGMouseEventsRelease => string.IsNullOrEmpty(SearchPMDGMouseEventsTextRelease)
+    public KeyValuePair<string, uint>[] PMDGMouseReleaseArray => string.IsNullOrEmpty(SearchPMDGMouseRelease)
     ? PMDGMouseFlags.ToArray()
-    : PMDGMouseFlags.Where(pair => pair.Key.Contains(SearchPMDGMouseEventsTextRelease, StringComparison.OrdinalIgnoreCase)).ToArray();
+    : PMDGMouseFlags.Where(pair => pair.Key.Contains(SearchPMDGMouseRelease, StringComparison.OrdinalIgnoreCase)).ToArray();
 
     public string Event { get; set; }
 
-    public uint? EventDataPress { get; set; }
+    public uint? DataPress { get; set; }
 
-    public uint? EventDataRelease { get; set; }
+    public uint? DataRelease { get; set; }
 
     private static Dictionary<string, uint> PMDGMouseFlags => new()
     {
-        { "RightSingle", PMDG_NG3_SDK.MOUSE_FLAG_RIGHTSINGLE },
-        { "MiddleSingle", PMDG_NG3_SDK.MOUSE_FLAG_MIDDLESINGLE },
         { "LeftSingle", PMDG_NG3_SDK.MOUSE_FLAG_LEFTSINGLE },
-        { "RightDouble", PMDG_NG3_SDK.MOUSE_FLAG_RIGHTDOUBLE },
-        { "MiddleDouble", PMDG_NG3_SDK.MOUSE_FLAG_MIDDLEDOUBLE },
-        { "LeftDouble", PMDG_NG3_SDK.MOUSE_FLAG_LEFTDOUBLE },
-        { "RightDrag", PMDG_NG3_SDK.MOUSE_FLAG_RIGHTDRAG },
-        { "MiddleDrag", PMDG_NG3_SDK.MOUSE_FLAG_MIDDLEDRAG },
-        { "LeftDrag", PMDG_NG3_SDK.MOUSE_FLAG_LEFTDRAG },
-        { "Move", PMDG_NG3_SDK.MOUSE_FLAG_MOVE },
-        { "DownRepeat", PMDG_NG3_SDK.MOUSE_FLAG_DOWN_REPEAT },
-        { "RightRelease", PMDG_NG3_SDK.MOUSE_FLAG_RIGHTRELEASE },
-        { "MiddleRelease", PMDG_NG3_SDK.MOUSE_FLAG_MIDDLERELEASE },
         { "LeftRelease", PMDG_NG3_SDK.MOUSE_FLAG_LEFTRELEASE },
-        { "WheelFlip", PMDG_NG3_SDK.MOUSE_FLAG_WHEEL_FLIP },
-        { "WheelSkip", PMDG_NG3_SDK.MOUSE_FLAG_WHEEL_SKIP },
+        { "RightSingle", PMDG_NG3_SDK.MOUSE_FLAG_RIGHTSINGLE },
+        { "RightRelease", PMDG_NG3_SDK.MOUSE_FLAG_RIGHTRELEASE },
         { "WheelUp", PMDG_NG3_SDK.MOUSE_FLAG_WHEEL_UP },
         { "WheelDown", PMDG_NG3_SDK.MOUSE_FLAG_WHEEL_DOWN }
+        //{ "MiddleSingle", PMDG_NG3_SDK.MOUSE_FLAG_MIDDLESINGLE },
+        //{ "RightDouble", PMDG_NG3_SDK.MOUSE_FLAG_RIGHTDOUBLE },
+        //{ "MiddleDouble", PMDG_NG3_SDK.MOUSE_FLAG_MIDDLEDOUBLE },
+        //{ "LeftDouble", PMDG_NG3_SDK.MOUSE_FLAG_LEFTDOUBLE },
+        //{ "RightDrag", PMDG_NG3_SDK.MOUSE_FLAG_RIGHTDRAG },
+        //{ "MiddleDrag", PMDG_NG3_SDK.MOUSE_FLAG_MIDDLEDRAG },
+        //{ "LeftDrag", PMDG_NG3_SDK.MOUSE_FLAG_LEFTDRAG },
+        //{ "Move", PMDG_NG3_SDK.MOUSE_FLAG_MOVE },
+        //{ "DownRepeat", PMDG_NG3_SDK.MOUSE_FLAG_DOWN_REPEAT },
+        //{ "MiddleRelease", PMDG_NG3_SDK.MOUSE_FLAG_MIDDLERELEASE },
+        //{ "WheelFlip", PMDG_NG3_SDK.MOUSE_FLAG_WHEEL_FLIP },
+        //{ "WheelSkip", PMDG_NG3_SDK.MOUSE_FLAG_WHEEL_SKIP },
     };
 }

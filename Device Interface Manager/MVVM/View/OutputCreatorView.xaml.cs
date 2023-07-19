@@ -1,4 +1,5 @@
 ﻿using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace Device_Interface_Manager.MVVM.View;
 
@@ -12,9 +13,16 @@ public partial class OutputCreatorView : MetroWindow
 
     private void InputCreatorView_Loaded(object sender, System.Windows.RoutedEventArgs e)
     {
-        if (DataContext is Core.ICloseWindows vm)
+        if (DataContext is Core.ICloseWindowsCheck vm)
         {
             vm.Close += Close;
+            Closing += (s, e) =>
+            {
+                if (vm.CanCloseAsync() == MessageDialogResult.Negative)
+                {
+                    e.Cancel = true;
+                }
+            };
         }
     }
 }

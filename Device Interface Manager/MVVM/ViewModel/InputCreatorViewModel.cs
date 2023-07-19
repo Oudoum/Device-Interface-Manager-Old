@@ -18,129 +18,193 @@ public partial class InputCreatorViewModel : ObservableObject, ICloseWindows
 
     public InterfaceIT_BoardInfo.Device Device { get; set; }
 
-    public int? SelectedSwitch
+    public string InputType
     {
-        get => InputCreatorModel.SelectedSwitch;
+        get => InputCreatorModel.InputType;
         set
-        { 
-            InputCreatorModel.SelectedSwitch = value;
-            OnPropertyChanged(nameof(SelectedSwitch));
+        {
+            if (InputCreatorModel.InputType != value)
+            {
+                InputCreatorModel.InputType = value;
+                OnPropertyChanged(nameof(InputType));
+            }
+        }
+    }
+
+    public string[] InputTypes => InputCreatorModel.InputTypes;
+
+    public int? Input
+    {
+        get => InputCreatorModel.Input;
+        set
+        {
+            if (InputCreatorModel.Input != value)
+            {
+                InputCreatorModel.Input = value;
+                OnPropertyChanged(nameof(Input));
+            }
         }
     }
 
     public int?[] Switches => InputCreatorModel.Switches;
 
-    public string SelectedEventType
+    public string EventType
     {
-        get => InputCreatorModel.SelectedEventType;
+        get => InputCreatorModel.EventType;
         set
         {
-            InputCreatorModel.SelectedEventType = value;
-            OnPropertyChanged(nameof(SelectedEventType));
-            OnPropertyChanged(nameof(PMDGEvent));
-            OnPropertyChanged(nameof(PMDGMouseEventPress));
-            OnPropertyChanged(nameof(PMDGMouseEventRelease));
+            if (InputCreatorModel.EventType != value)
+            {
+                InputCreatorModel.EventType = value;
+                if (value is not null)
+                {
+                    if (value == ProfileCreatorModel.MSFSSimConnect || value == ProfileCreatorModel.RPN)
+                    {
+                        PMDGEvent = null;
+                        PMDGMousePress = null;
+                        PMDGMouseRelease = null;
+                    }
+                    if (value == ProfileCreatorModel.RPN)
+                    {
+                        DataPress = null;
+                        DataRelease = null;
+                    }
+                    else if (value == ProfileCreatorModel.PMDG737)
+                    {
+                        Event = null;
+                    }
+                }
+                OnPropertyChanged(nameof(EventType));
+            }
         }
     }
 
-    public string[] EventType => InputCreatorModel.EventType;
+    public string[] EventTypes => InputCreatorModel.EventTypes;
 
     public PMDG_NG3_SDK.PMDGEvents? PMDGEvent
     {
         get => InputCreatorModel.PMDGEvent;
         set
         {
-            InputCreatorModel.PMDGEvent = value;
-            OnPropertyChanged(nameof(PMDGEvent));
+            if (InputCreatorModel.PMDGEvent != value)
+            {
+                InputCreatorModel.PMDGEvent = value;
+                OnPropertyChanged(nameof(PMDGEvent));
+            }
         }
     }
 
-    public string SearchPMDGEventsText
+    public string SearchPMDGEvent
     {
-        get => InputCreatorModel.SearchPMDGEventsText;
+        get => InputCreatorModel.SearchPMDGEvent;
         set
         {
-            InputCreatorModel.SearchPMDGEventsText = value;
-            OnPropertyChanged(nameof(PMDGEvents));
-            OnPropertyChanged(nameof(PMDGEvent));
+            if (InputCreatorModel.SearchPMDGEvent != value)
+            {
+                InputCreatorModel.SearchPMDGEvent = value;
+                OnPropertyChanged(nameof(PMDGEvents));
+                OnPropertyChanged(nameof(PMDGEvent));
+            }
         }
     }
 
     public PMDG_NG3_SDK.PMDGEvents[] PMDGEvents => InputCreatorModel.PMDGEvents;
 
-    public KeyValuePair<string, uint>? PMDGMouseEventPress
+    public KeyValuePair<string, uint>? PMDGMousePress
     {
-        get => InputCreatorModel.PMDGMouseEventPress;
+        get => InputCreatorModel.PMDGMousePress;
         set
         {
-            InputCreatorModel.PMDGMouseEventPress = value;
-            OnPropertyChanged(nameof(PMDGMouseEventPress));
+            if (!InputCreatorModel.PMDGMousePress.Equals(value))
+            {
+                InputCreatorModel.PMDGMousePress = value;
+                OnPropertyChanged(nameof(PMDGMousePress));
+
+            }
         }
     }
 
-    public string SearchPMDGMouseEventsTextPress
+    public string SearchPMDGMousePress
     {
-        get => InputCreatorModel.SearchPMDGMouseEventsTextPress;
+        get => InputCreatorModel.SearchPMDGMousePress;
         set
         {
-            InputCreatorModel.SearchPMDGMouseEventsTextPress = value;
-            OnPropertyChanged(nameof(PMDGMouseEventsPress));
-            OnPropertyChanged(nameof(PMDGMouseEventPress));
+            if (InputCreatorModel.SearchPMDGMousePress != value)
+            {
+                InputCreatorModel.SearchPMDGMousePress = value;
+                OnPropertyChanged(nameof(PMDGMousePressArray));
+                OnPropertyChanged(nameof(PMDGMousePress));
+            }
         }
     }
 
-    public KeyValuePair<string, uint>[] PMDGMouseEventsPress => InputCreatorModel.PMDGMouseEventsPress;
+    public KeyValuePair<string, uint>[] PMDGMousePressArray => InputCreatorModel.PMDGMousePressArray;
 
-    public KeyValuePair<string, uint>? PMDGMouseEventRelease
+    public KeyValuePair<string, uint>? PMDGMouseRelease
     {
-        get => InputCreatorModel.PMDGMouseEventRelease;
+        get => InputCreatorModel.PMDGMouseRelease;
         set
         {
-            InputCreatorModel.PMDGMouseEventRelease = value;
-            OnPropertyChanged(nameof(PMDGMouseEventRelease));
+            if (!InputCreatorModel.PMDGMouseRelease.Equals(value))
+            {
+                InputCreatorModel.PMDGMouseRelease = value;
+                OnPropertyChanged(nameof(PMDGMouseRelease));
+            }
         }
     }
 
-    public string SearchPMDGMouseEventsTextRelease
+    public string SearchPMDGMouseRelease
     {
-        get => InputCreatorModel.SearchPMDGMouseEventsTextRelease;
+        get => InputCreatorModel.SearchPMDGMouseRelease;
         set
         {
-            InputCreatorModel.SearchPMDGMouseEventsTextRelease = value;
-            OnPropertyChanged(nameof(PMDGMouseEventsRelease));
-            OnPropertyChanged(nameof(PMDGMouseEventRelease));
+            if (InputCreatorModel.SearchPMDGMouseRelease != value)
+            {
+                InputCreatorModel.SearchPMDGMouseRelease = value;
+                OnPropertyChanged(nameof(PMDGMouseReleaseArray));
+                OnPropertyChanged(nameof(PMDGMouseRelease));
+            }
         }
     }
 
-    public KeyValuePair<string, uint>[] PMDGMouseEventsRelease => InputCreatorModel.PMDGMouseEventsRelease;
+    public KeyValuePair<string, uint>[] PMDGMouseReleaseArray => InputCreatorModel.PMDGMouseReleaseArray;
 
     public string Event
     {
         get => InputCreatorModel.Event;
         set
         {
-            InputCreatorModel.Event = value;
-            OnPropertyChanged(nameof(Event));
+            if (InputCreatorModel.Event != value)
+            {
+                InputCreatorModel.Event = value;
+                OnPropertyChanged(nameof(Event));
+            }
         }
     }
 
-    public uint? EventDataPress
+    public uint? DataPress
     {
-        get => InputCreatorModel.EventDataPress;
+        get => InputCreatorModel.DataPress;
         set
         {
-            InputCreatorModel.EventDataPress = value;
-            OnPropertyChanged(nameof(EventDataPress));
+            if (InputCreatorModel.DataPress != value)
+            {
+                InputCreatorModel.DataPress = value;
+                OnPropertyChanged(nameof(DataPress));
+            }
         }
     }
 
-    public uint? EventDataRelease
+    public uint? DataRelease
     {
-        get => InputCreatorModel.EventDataRelease;
+        get => InputCreatorModel.DataRelease;
         set
         {
-            InputCreatorModel.EventDataRelease = value;
-            OnPropertyChanged(nameof(EventDataRelease));
+            if (InputCreatorModel.DataRelease != value)
+            {
+                InputCreatorModel.DataRelease = value;
+                OnPropertyChanged(nameof(DataRelease));
+            }
         }
     }
 
@@ -151,7 +215,7 @@ public partial class InputCreatorViewModel : ObservableObject, ICloseWindows
         {
             if (direction == 1)
             {
-                SelectedSwitch = key;
+                Input = key;
             }
         }
     }

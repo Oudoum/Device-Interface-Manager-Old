@@ -396,7 +396,7 @@ public class NG_MCP_3311 : MSFSProfiles.USB
             if (_mCP_IASMach != value && MAIN_LightsSelector != 0)
             {
                 _mCP_IASMach = value;
-                if (value < 1)
+                if (value < 10.0)
                 {
                     interfaceIT_7Segment_Display(Device.Session, string.Format("{0,3}", value?.ToString("#.00", System.Globalization.CultureInfo.InvariantCulture)).TrimStart('.'), MCP_IASMachStartPos + 1);
                     interfaceIT_7Segment_Display(Device.Session, " ", MCP_IASMachStartPos);

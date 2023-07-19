@@ -27,7 +27,10 @@ public abstract class IITProfileBase
 
     public virtual void Stop()
     {
-
+        simConnectClient.SimConnect.OnRecvClientData -= SimConnect_OnRecvClientData;
+        simConnectClient.SimConnect.OnRecvQuit -= SimConnect_OnRecvQuit;
+        simConnectClient.SimConnect.OnRecvOpen -= SimConnect_OnRecvOpen;
+        simConnectClient.OnSimVarChanged -= SimConnectClient_OnSimVarChanged;
     }
 
     protected virtual void SimConnectClient_OnSimVarChanged(object sender, SimConnectClient.SimVar e)

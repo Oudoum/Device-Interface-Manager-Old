@@ -51,6 +51,7 @@ public abstract class USB : IITProfileBase
 
     public override void Stop()
     {
+        base.Stop();
         cancellationTokenSource.Cancel();
         if (Device is not null)
         {

@@ -10,13 +10,14 @@
     x:Class="Device_Interface_Manager.MVVM.View.ProfileCreatorView"
     Dialog:DialogParticipation.Register="{Binding}"
     d:DataContext="{d:DesignInstance Type={x:Type viewmodel:ProfileCreatorViewModel}}"
-    Title="ProfileCreator"
+    Title="Profile Creator"
+    TitleCharacterCasing="Normal"
     SaveWindowPosition="True"
     mc:Ignorable="d"
     Background="#1B1A24"
     Height="900"
     MinHeight="400"
-    Width="1580"
+    Width="1660"
     MinWidth="800">
 
     <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch">
@@ -55,12 +56,21 @@
                         <Setter Property="Padding" Value="0"/>
                     </Style>
                 </StackPanel.Resources>
-                <Button Margin="0" Command="{Binding LoadProfileCommand}" Style="{StaticResource ButtonIcon}">
+                <Button Margin="0" Command="{Binding LoadProfileCommand}">
                     <Viewbox Width="48" Height="48">
                         <Canvas Height="24" Width="24">
                             <Path  Fill="White" Data="M6.1,10L4,18V8H21A2,2 0 0,0 19,6H12L10,4H4A2,2 0 0,0 2,6V18A2,2 0 0,0 4,20H19C19.9,20 20.7,19.4 20.9,18.5L23.2,10H6.1M19,18H6L7.6,12H20.6L19,18Z"/>
                         </Canvas>
                     </Viewbox>
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ButtonIcon}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsStarted}" Value="True">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
                 </Button>
                 <Button Command="{Binding SaveProfileCommand}">
                     <Viewbox Width="48" Height="48">
@@ -150,6 +160,9 @@
                                         <Condition Binding="{Binding ProfileCreatorModel.OutputCreator.Count}" Value="1"/>
                                     </MultiDataTrigger.Conditions>
                                 </MultiDataTrigger>
+                                <DataTrigger Binding="{Binding IsStarted}" Value="True">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
@@ -170,6 +183,9 @@
                                         <Condition Binding="{Binding ProfileCreatorModel.OutputCreator.Count}" Value="0"/>
                                     </MultiDataTrigger.Conditions>
                                 </MultiDataTrigger>
+                                <DataTrigger Binding="{Binding IsStarted}" Value="True">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
@@ -227,22 +243,38 @@
                 <Button Margin="5,0,0,0" d:Content="Ok" Content="{Binding ProfileNameButtonContent}" Command="{Binding ProfileNameSaveCommand}" Height="26" VerticalAlignment="Bottom"/>
                 <StackPanel Margin="20,0,0,0" VerticalAlignment="Bottom">
                     <TextBlock Text="Driver" Foreground="White"/>
-                    <ComboBox mah:TextBoxHelper.Watermark="Select driver..." ItemsSource="{Binding Drivers}" SelectedItem="{Binding Driver}" Width="200"/>
-                </StackPanel>
-                <StackPanel Margin="20,0,0,0" VerticalAlignment="Bottom">
-                    <TextBlock Text="Device" Foreground="White"/>
-                    <ComboBox mah:TextBoxHelper.Watermark="Select device..." ItemsSource="{Binding DeviceNameCollection}" SelectedItem="{Binding DeviceName}" Width="200">
+                    <ComboBox mah:TextBoxHelper.Watermark="Select driver..." ItemsSource="{Binding Drivers}" SelectedItem="{Binding Driver}" Width="200">
                         <ComboBox.Style>
-                            <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MahApps.Styles.ComboBox}">
-                                <Setter Property="IsEnabled" Value="True"/>
+                            <Style TargetType="ComboBox" BasedOn="{StaticResource MahApps.Styles.ComboBox}">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Driver}" Value="{x:Null}">
+                                    <DataTrigger Binding="{Binding IsStarted}" Value="True">
                                         <Setter Property="IsEnabled" Value="False"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </ComboBox.Style>
                     </ComboBox>
+                </StackPanel>
+                <StackPanel Margin="20,0,0,0" VerticalAlignment="Bottom">
+                    <TextBlock Text="Device" Foreground="White"/>
+                    <ComboBox mah:TextBoxHelper.Watermark="Select device..." ItemsSource="{Binding DeviceNameCollection}" SelectedItem="{Binding DeviceName}" Width="200">
+                        <ComboBox.Style>
+                            <Style TargetType="ComboBox" BasedOn="{StaticResource MahApps.Styles.ComboBox}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Driver}" Value="{x:Null}">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsStarted}" Value="True">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ComboBox.Style>
+                    </ComboBox>
+                </StackPanel>
+                <StackPanel Margin="20,0,0,0" VerticalAlignment="Bottom">
+                    <TextBlock Text="Event / Data Preselection" Foreground="White"/>
+                    <ComboBox mah:TextBoxHelper.Watermark="Preselection..." ItemsSource="{Binding EventDataTypePreSelections}" SelectedItem="{Binding EventDataTypePreSelection}" Width="200"/>
                 </StackPanel>
             </StackPanel>
         </Grid>
@@ -272,21 +304,28 @@
                         <DataGrid.Columns>
 
                             <DataGridTextColumn
-                            Header="Switch"
-                            Binding="{Binding SelectedSwitch}"
-                            SortMemberPath="SelectedSwitch"
+                            Header="Input Type"
+                            Binding="{Binding InputType}"
+                            SortMemberPath="InputType"
                             IsReadOnly="True"
-                            Width="80"/>
+                            Width="90"/>
+                            
+                            <DataGridTextColumn
+                            Header="Input"
+                            Binding="{Binding Input}"
+                            SortMemberPath="Input"
+                            IsReadOnly="True"
+                            Width="60"/>
 
                             <DataGridTextColumn
-                            Header="EventType"
-                            Binding="{Binding SelectedEventType}"
-                            SortMemberPath="SelectedEventType"
+                            Header="Event Type"
+                            Binding="{Binding EventType}"
+                            SortMemberPath="EventType"
                             IsReadOnly="True"
                             Width="180"/>
 
                             <DataGridTextColumn
-                            Header="PMDGEvent"
+                            Header="PMDG Event"
                             Binding="{Binding PMDGEvent}"
                             SortMemberPath="PMDGEvent"
                             IsReadOnly="True"
@@ -300,30 +339,30 @@
                             Width="280"/>
 
                             <DataGridTextColumn
-                            Header="MouseEvent Press"
-                            Binding="{Binding PMDGMouseEventPress.Key}"
-                            SortMemberPath="PMDGMouseEventPress"
+                            Header="Mouse Press"
+                            Binding="{Binding PMDGMousePress.Key}"
+                            SortMemberPath="PMDGMousePress"
                             IsReadOnly="True"
                             Width="160"/>
 
                             <DataGridTextColumn
-                            Header="MouseEvent Release"
-                            Binding="{Binding PMDGMouseEventRelease.Key}"
-                            SortMemberPath="PMDGMouseEventRelease"
+                            Header="Mouse Release"
+                            Binding="{Binding PMDGMouseRelease.Key}"
+                            SortMemberPath="PMDGMouseRelease"
                             IsReadOnly="True"
                             Width="160"/>
 
                             <DataGridTextColumn
                             Header="Data Press"
-                            Binding="{Binding EventDataPress}"
-                            SortMemberPath="EventDataPress"
+                            Binding="{Binding DataPress}"
+                            SortMemberPath="DataPress"
                             IsReadOnly="True"
                             Width="100"/>
 
                             <DataGridTextColumn
                             Header="Data Release"
-                            Binding="{Binding EventDataRelease}"
-                            SortMemberPath="EventDataRelease"
+                            Binding="{Binding DataRelease}"
+                            SortMemberPath="DataRelease"
                             IsReadOnly="True"
                             Width="100"/>
 
@@ -457,37 +496,49 @@
                         <DataGrid.Columns>
 
                             <DataGridTextColumn
-                            Header="LEDs"
-                            Binding="{Binding SelectedLED}"
-                            SortMemberPath="SelectedSwitch"
+                            Header="Output Type"
+                            Binding="{Binding OutputType}"
+                            SortMemberPath="OutputType"
                             IsReadOnly="True"
-                            Width="80"/>
+                            Width="90"/>
 
                             <DataGridTextColumn
-                            Header="DataType"
-                            Binding="{Binding SelectedDataType}"
-                            SortMemberPath="SelectedDataType"
+                            Header="Output"
+                            Binding="{Binding Output}"
+                            SortMemberPath="Output"
+                            IsReadOnly="True"
+                            Width="60"/>
+
+                            <DataGridTextColumn
+                            Header="Data Type"
+                            Binding="{Binding DataType}"
+                            SortMemberPath="DataType"
                             IsReadOnly="True"
                             Width="180"/>
 
                             <DataGridTextColumn
                             Header="PMDG Data"
-                            Binding="{Binding PMDGDataFieldName}"
-                            SortMemberPath="PMDGDataFieldName"
+                            Binding="{Binding PMDGData}"
+                            SortMemberPath="PMDGData"
                             IsReadOnly="True"
                             Width="280"/>
 
-                            <DataGridTextColumn
-                            Header="Data"
-                            Binding="{Binding Data}"
-                            SortMemberPath="Data"
-                            IsReadOnly="True"
-                            Width="560"/>
+                            <DataGridTemplateColumn Header="Data" IsReadOnly="True" Width="560">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Style="{StaticResource MahApps.Styles.TextBlock.DataGrid}">
+                                            <Run Text="{Binding Data}"/>
+                                            <Run Text=" "/>
+                                            <Run Text="{Binding Unit}"/>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
 
                             <DataGridTextColumn
                             Header="Array index"
-                            Binding="{Binding PMDGStructArrayNum}"
-                            SortMemberPath="PMDGStructArrayNum"
+                            Binding="{Binding PMDGDataArrayIndex}"
+                            SortMemberPath="PMDGDataArrayIndex"
                             IsReadOnly="True"
                             Width="110"/>
 

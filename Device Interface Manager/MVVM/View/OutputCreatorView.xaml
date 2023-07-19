@@ -13,28 +13,28 @@
     WindowStartupLocation="CenterOwner"
     mc:Ignorable="d"
     Background="#1B1A24"
-    Title="OutputCreator"
-    Height="600"
-    Width="800">
+    Title="Output Creator"
+    TitleAlignment="Center"
+    TitleCharacterCasing="Normal"
+    SizeToContent="WidthAndHeight"
+    ResizeMode="NoResize">
 
     <mah:MetroWindow.Resources>
         <core:StringToBooleanConverter x:Key="StringToBooleanConverter"/>
     </mah:MetroWindow.Resources>
 
-    <Grid>
+    <Grid Margin="50">
 
         <StackPanel HorizontalAlignment="Center" Width="400">
 
-            <StackPanel  Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,25,0,0">
+            <StackPanel  Orientation="Horizontal" HorizontalAlignment="Center">
                 <RadioButton Content="MSFS/SimConnect/LVar"
                              Background="Transparent"
-                             Cursor="Hand"
-                             IsChecked="{Binding Path=SelectedDataType, Mode=TwoWay, Converter={StaticResource StringToBooleanConverter}, ConverterParameter={x:Static model:ProfileCreatorModel.MSFSSimConnect}}"/>
+                             IsChecked="{Binding Path=DataType, Mode=TwoWay, Converter={StaticResource StringToBooleanConverter}, ConverterParameter={x:Static model:ProfileCreatorModel.MSFSSimConnect}}"/>
                 <RadioButton Content="PMDG737"
                              Background="Transparent"
                              Margin="25,0,0,0"
-                             Cursor="Hand"
-                             IsChecked="{Binding Path=SelectedDataType, Mode=TwoWay, Converter={StaticResource StringToBooleanConverter}, ConverterParameter={x:Static model:ProfileCreatorModel.PMDG737}}"/>
+                             IsChecked="{Binding Path=DataType, Mode=TwoWay, Converter={StaticResource StringToBooleanConverter}, ConverterParameter={x:Static model:ProfileCreatorModel.PMDG737}}"/>
             </StackPanel>
 
             <Grid Margin="0,25,0,0">
@@ -46,23 +46,46 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="1" Text="LEDs" Foreground="White" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="1" d:Text="TEST" Foreground="White" Margin="0,0,0,5" Text="{Binding SelectedLED}" HorizontalAlignment="Center"/>
+                <TextBlock Grid.Row="1" Text="Output Type" Foreground="White" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" d:Text="TEST" Foreground="White" Margin="0,0,0,5" Text="{Binding OutputType}" HorizontalAlignment="Center"/>
+                <ComboBox
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    ItemsSource="{Binding OutputTypes}"
+                    SelectedItem="{Binding OutputType, UpdateSourceTrigger=PropertyChanged}">
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
+                </ComboBox>
+            </Grid>
+
+            <Grid Margin="0,25,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="1" Text="Output" Foreground="White" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" d:Text="TEST" Foreground="White" Margin="0,0,0,5" Text="{Binding Output}" HorizontalAlignment="Center"/>
                 <ComboBox
                     Grid.Row="1"
                     Grid.Column="1"
                     mah:TextBoxHelper.ClearTextButton="True"
-                    ItemsSource="{Binding LEDs}"
-                    SelectedItem="{Binding SelectedLED, UpdateSourceTrigger=PropertyChanged}">
+                    SelectedItem="{Binding Output, UpdateSourceTrigger=PropertyChanged}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="SelectionChanged">
-                            <i:InvokeCommandAction Command="{Binding LEDComboBoxSlectionChangedCommand}" PassEventArgsToCommand="True"/>
+                            <i:InvokeCommandAction Command="{Binding ComboBoxSlectionChangedCommand}" PassEventArgsToCommand="True"/>
                         </i:EventTrigger>
                         <i:EventTrigger EventName="MouseMove">
-                            <i:InvokeCommandAction Command="{Binding MouseMoveLEDComboBoxCommand}" PassEventArgsToCommand="True"/>
+                            <i:InvokeCommandAction Command="{Binding MouseMoveComboBoxCommand}" PassEventArgsToCommand="True"/>
                         </i:EventTrigger>
                         <i:EventTrigger EventName="MouseLeave">
-                            <i:InvokeCommandAction Command="{Binding MouseLeaveLEDComboBoxCommand}" PassEventArgsToCommand="True"/>
+                            <i:InvokeCommandAction Command="{Binding MouseLeaveComboBoxCommand}" PassEventArgsToCommand="True"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                     <ComboBox.ItemContainerStyle>
@@ -70,6 +93,18 @@
                             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                         </Style>
                     </ComboBox.ItemContainerStyle>
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox" BasedOn="{StaticResource MahApps.Styles.ComboBox}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding OutputType}" Value="LED">
+                                    <Setter Property="ItemsSource" Value="{Binding LEDs}"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding OutputType}" Value="7 Segment">
+                                    <Setter Property="ItemsSource" Value="{Binding SevenSegments}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
                 </ComboBox>
             </Grid>
 
@@ -83,7 +118,7 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="1" Text="PMDG Data" Foreground="White" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="1" d:Text="TEST" Foreground="White" Margin="0,0,0,5" Text="{Binding PMDGDataFieldName}" HorizontalAlignment="Center"/>
+                <TextBlock Grid.Column="1" d:Text="TEST" Foreground="White" Margin="0,0,0,5" Text="{Binding PMDGData}" HorizontalAlignment="Center"/>
                 <ComboBox
                     Grid.Row="1"
                     Grid.Column="1"
@@ -91,9 +126,9 @@
                     IsTextSearchEnabled="False"
                     mah:TextBoxHelper.ClearTextButton="True"
                     mah:TextBoxHelper.Watermark="Search..."
-                    Text="{Binding SearchPMDGDataText, UpdateSourceTrigger=PropertyChanged}"
-                    SelectedItem="{Binding PMDGDataFieldName, UpdateSourceTrigger=PropertyChanged}"
-                    ItemsSource="{Binding PMDGDataFieldNames}"
+                    Text="{Binding SearchPMDGData, UpdateSourceTrigger=PropertyChanged}"
+                    SelectedItem="{Binding PMDGData, UpdateSourceTrigger=PropertyChanged}"
+                    ItemsSource="{Binding PMDGDataArray}"
                     VirtualizingPanel.IsVirtualizing="True">
                     <ComboBox.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -113,7 +148,7 @@
                     <Style TargetType="Grid">
                         <Setter Property="Visibility" Value="Collapsed"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding SelectedDataType}" Value="PMDG737">
+                            <DataTrigger Binding="{Binding DataType}" Value="PMDG737">
                                 <Setter Property="Visibility" Value="Visible"/>
                             </DataTrigger>
                         </Style.Triggers>
@@ -131,22 +166,22 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="1" Text="PMDG Array Index" Foreground="White" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="1" d:Text="TEST" Foreground="White" Margin="0,0,0,5" Text="{Binding PMDGStructArrayNum}" HorizontalAlignment="Center"/>
+                <TextBlock Grid.Column="1" d:Text="TEST" Foreground="White" Margin="0,0,0,5" Text="{Binding PMDGDataArrayIndex}" HorizontalAlignment="Center"/>
                 <ComboBox
                     Grid.Row="1"
                     Grid.Column="1"
-                    SelectedItem="{Binding PMDGStructArrayNum, UpdateSourceTrigger=PropertyChanged}"
-                    ItemsSource="{Binding PMDGStructArrayNums}">
+                    SelectedItem="{Binding PMDGDataArrayIndex, UpdateSourceTrigger=PropertyChanged}"
+                    ItemsSource="{Binding PMDGDataArrayIndices}">
                 </ComboBox>
                 <Grid.Style>
                     <Style TargetType="Grid">
                         <Setter Property="Visibility" Value="Collapsed"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding SelectedDataType}" Value="PMDG737">
+                            <DataTrigger Binding="{Binding DataType}" Value="PMDG737">
                                 <Setter Property="Visibility" Value="Visible"/>
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding PMDGStructArrayNum}" Value="{x:Null}">
-                                <Setter Property="Visibility" Value="Hidden"/>
+                            <DataTrigger Binding="{Binding PMDGDataArrayIndex}" Value="{x:Null}">
+                                <Setter Property="IsEnabled" Value="False"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -158,31 +193,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Row="1" Text="Value" Foreground="White" VerticalAlignment="Center"/>
-                <TextBox
-                    Grid.Column="1"
-                    Text="{Binding ComparisonValue, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}"
-                    mah:TextBoxHelper.Watermark="Value to check"
-                    mah:TextBoxHelper.ClearTextButton="True">
-                </TextBox>
-                <Grid.Style>
-                    <Style TargetType="Grid">
-                        <Setter Property="Visibility" Value="Hidden"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsComparisonValueEnabled}" Value="True">
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
-            </Grid>
-
-            <Grid d:Visibility="Visible" Margin="0,20,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="2*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Row="1" Text="Data" Foreground="White" VerticalAlignment="Center"/>
+                <TextBlock Text="Data" Foreground="White" VerticalAlignment="Center"/>
                 <TextBox 
                     Grid.Column="1"
                     Text="{Binding Data, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}"
@@ -193,9 +204,61 @@
                     <Style TargetType="Grid">
                         <Setter Property="Visibility" Value="Collapsed"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding SelectedDataType}" Value="MSFS/SimConnect/LVar">
+                            <DataTrigger Binding="{Binding DataType}" Value="MSFS/SimConnect/LVar">
                                 <Setter Property="Visibility" Value="Visible"/>
                             </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+            </Grid>
+
+            <Grid d:Visibility="Visible" Margin="0,20,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Unit" Foreground="White" VerticalAlignment="Center"/>
+                <TextBox 
+                    Grid.Column="1"
+                    Text="{Binding Unit, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}"
+                    mah:TextBoxHelper.Watermark="Unit"
+                    mah:TextBoxHelper.ClearTextButton="True">
+                </TextBox>
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding DataType}" Value="MSFS/SimConnect/LVar">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+            </Grid>
+
+            <Grid d:Visibility="Visible" Margin="0,20,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Comparison Value" Foreground="White" VerticalAlignment="Center"/>
+                <TextBox
+                    Grid.Column="1"
+                    Text="{Binding ComparisonValue, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}"
+                    mah:TextBoxHelper.Watermark="Comparison Value"
+                    mah:TextBoxHelper.ClearTextButton="True">
+                </TextBox>
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <MultiDataTrigger>
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsComparisonValueEnabled}" Value="True"/>
+                                    <Condition Binding="{Binding OutputType}" Value="LED"/>
+                                </MultiDataTrigger.Conditions>
+                            </MultiDataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Grid.Style>
@@ -206,7 +269,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Row="1" Text="Invert" Foreground="White" VerticalAlignment="Center"/>
+                <TextBlock Text="Invert" Foreground="White" VerticalAlignment="Center"/>
                 <CheckBox
                     Grid.Column="1"
                     IsChecked="{Binding IsInverted, UpdateSourceTrigger=PropertyChanged}" 
@@ -214,11 +277,168 @@
                     mah:CheckBoxHelper.CheckGlyphForegroundCheckedPressed="Gray"
                     mah:CheckBoxHelper.CheckGlyphForegroundCheckedMouseOver="Gray">
                 </CheckBox>
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <MultiDataTrigger>
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsComparisonValueEnabled}" Value="True"/>
+                                    <Condition Binding="{Binding OutputType}" Value="LED"/>
+                                </MultiDataTrigger.Conditions>
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
             </Grid>
 
-        </StackPanel>
+            <Border d:Visibility="Visible"  Margin="0,40,0,0" BorderBrush="SlateGray" BorderThickness="2" CornerRadius="5">
+                <StackPanel Margin="20,0,20,20">
 
-        <Button Content="OK" Command="{Binding OkCommand}" Margin="0,0,0,25" Width="100" VerticalAlignment="Bottom" Cursor="Hand"/>
+                    <TextBlock Margin="0,10,0,0" Text="Display" FontWeight="Bold" FontSize="18" Foreground="White" HorizontalAlignment="Center"/>
+
+                    <Grid Margin="0,20,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Left Padding" Foreground="White" VerticalAlignment="Center"/>
+                        <CheckBox
+                            Grid.Column="1"
+                            IsChecked="{Binding IsPadded, UpdateSourceTrigger=PropertyChanged}" 
+                            mah:CheckBoxHelper.CheckGlyphForegroundChecked="White"
+                            mah:CheckBoxHelper.CheckGlyphForegroundCheckedPressed="Gray"
+                            mah:CheckBoxHelper.CheckGlyphForegroundCheckedMouseOver="Gray">
+                        </CheckBox>
+                    </Grid>
+
+                    <Grid d:Visibility="Visible" Margin="0,20,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Padding Character" Foreground="White" VerticalAlignment="Center"/>
+                        <ComboBox
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            DisplayMemberPath="Key"
+                            mah:TextBoxHelper.ClearTextButton="True"
+                            SelectedItem="{Binding PaddingCharacterPair, UpdateSourceTrigger=PropertyChanged}"
+                            ItemsSource="{Binding PaddingCharacters}">
+                        </ComboBox>
+                    </Grid>
+
+                    <Grid d:Visibility="Visible" Margin="0,20,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Digit Count" Foreground="White" VerticalAlignment="Center"/>
+                        <ComboBox
+                            Grid.Column="1"
+                            mah:TextBoxHelper.ClearTextButton="True"
+                            SelectedItem="{Binding DigitCount, UpdateSourceTrigger=PropertyChanged}"
+                            ItemsSource="{Binding DigitCounts}">
+                        </ComboBox>
+                    </Grid>
+
+                    <Grid d:Visibility="Visible" Margin="0,20,0,0" Height="70">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Digit" Foreground="White" VerticalAlignment="Top" Height="18"/>
+                        <TextBlock Grid.Row="1" Text="Decimal Point" Foreground="White" VerticalAlignment="Top" Height="18"/>
+                        <ListView 
+                            Grid.Column="1"
+                            Grid.RowSpan="2"
+                            ItemsSource="{Binding Digits}"
+                            d:ItemsSource="{d:SampleData ItemCount=8}"
+                            Background="Transparent">
+                            <ListView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ListView.ItemsPanel>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Vertical" Margin="-5,0,9.25,0" Width="18">
+                                        <CheckBox
+                                        IsChecked="{Binding IsDigitChecked}"
+                                        mah:CheckBoxHelper.CheckGlyphForegroundChecked="White"
+                                        mah:CheckBoxHelper.CheckGlyphForegroundCheckedPressed="Gray"
+                                        mah:CheckBoxHelper.CheckGlyphForegroundCheckedMouseOver="Gray"/>
+                                        <TextBlock d:Text="8" Text="{Binding Digit}" HorizontalAlignment="Center"/>
+                                        <CheckBox
+                                        IsChecked="{Binding IsDecimalPointChecked}"
+                                        mah:CheckBoxHelper.CheckGlyphForegroundChecked="White"
+                                        mah:CheckBoxHelper.CheckGlyphForegroundCheckedPressed="Gray"
+                                        mah:CheckBoxHelper.CheckGlyphForegroundCheckedMouseOver="Gray"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem" BasedOn="{StaticResource MahApps.Styles.ListBoxItem}">
+                                    <Setter Property="IsTabStop" Value="False"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="mah:ItemHelper.SelectedBackgroundBrush" Value="Transparent"/>
+                                    <Setter Property="mah:ItemHelper.ActiveSelectionBackgroundBrush" Value="Transparent"/>
+                                    <Setter Property="mah:ItemHelper.HoverBackgroundBrush" Value="Transparent"/>
+                                    <Setter Property="mah:ItemHelper.HoverSelectedBackgroundBrush" Value="Transparent"/>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                        </ListView>
+                    </Grid>
+
+                    <Grid Margin="0,20,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Substring Start" Foreground="White" VerticalAlignment="Center"/>
+                        <TextBox
+                            Grid.Column="1"
+                            Text="{Binding SubstringStart, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}"
+                            mah:TextBoxHelper.Watermark="Number 0 - 255"
+                            mah:TextBoxHelper.ClearTextButton="True">
+                        </TextBox>
+                    </Grid>
+
+                    <Grid Margin="0,20,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Substring End" Foreground="White" VerticalAlignment="Center"/>
+                        <TextBox
+                            Grid.Column="1"
+                            Text="{Binding SubstringEnd, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}"
+                            mah:TextBoxHelper.Watermark="Number 0 - 255"
+                            mah:TextBoxHelper.ClearTextButton="True">
+                        </TextBox>
+                    </Grid>
+
+                </StackPanel>
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding OutputType}" Value="7 Segment">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+            </Border>
+
+            <Button Content="OK" Command="{Binding OkCommand}" Margin="0,30,0,0" Width="100" Cursor="Hand"/>
+
+        </StackPanel>
 
     </Grid>
 </mah:MetroWindow>

@@ -165,7 +165,7 @@ public class PMDG_NG3_SDK
         public byte NAVDIS_FMCSelector;                         // 0: BOTH ON L 1: NORMAL 2: BOTH ON R
         public byte NAVDIS_SourceSelector;                      // 0: ALL ON 1 1: AUTO 2: ALL ON 2
         public byte NAVDIS_ControlPaneSelector;                 // 0: BOTH ON 1 1: NORMAL 2: BOTH ON 2
-        public uint ADF_StandbyFrequency;                       // Standby frequency multiplied by 10	// Standby frequency multiplied by 10
+        public uint ADF_StandbyFrequency;                       // Standby frequency multiplied by 10
 
         // Fuel
         public float FUEL_FuelTempNeedle;                        // Value
@@ -488,7 +488,7 @@ public class PMDG_NG3_SDK
         public byte COMM_GrdCall_PressCount;                    // incremented with each button press
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)] public byte[] COMM_SelectedMic;                           // array: 0=capt, 1=F/O, 2=observer.
                                                                                                                        // values: 0=VHF1 1=VHF2 2=VHF3 3=HF1 4=HF2 5=FLT 6=SVC 7=PA
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)] public uint[] COMM_ReceiverSwitches;                      // Bit flags for selector receivers (see ACP_SEL_RECV_VHF1 etc): [0]=Capt, [1]=FO, [2]=Overhead	// Bit flags for selector receivers (see ACP_SEL_RECV_VHF1 etc): [0]=Capt, [1]=FO, [2]=Overhead
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)] public uint[] COMM_ReceiverSwitches;                      // Bit flags for selector receivers (see ACP_SEL_RECV_VHF1 etc): [0]=Capt, [1]=FO, [2]=Overhead
         [MarshalAs(UnmanagedType.I1)] public bool TRIM_StabTrimMainElecSw_NORMAL;
         [MarshalAs(UnmanagedType.I1)] public bool TRIM_StabTrimAutoPilotSw_NORMAL;
         [MarshalAs(UnmanagedType.I1)] public bool PED_annunParkingBrake;

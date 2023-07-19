@@ -30,6 +30,7 @@ public abstract class ENET : IITProfileBase
 
     public override void Stop()
     {
+        base.Stop();
         simConnectClient.SimConnect_Close();
         cancellationTokenSource.Cancel();
         interfaceITEthernet.CloseStream();

@@ -43,9 +43,10 @@ namespace Device_Interface_Manager.MVVM.View
         {
             if (((Forms.MouseEventArgs)e).Button == Forms.MouseButtons.Left)
             {
-                Show();
+                Application.Current.MainWindow.WindowState = WindowState.Normal;
                 ShowInTaskbar = true;
                 notifyIcon.Visible = false;
+                Show();
             }
         }
 
