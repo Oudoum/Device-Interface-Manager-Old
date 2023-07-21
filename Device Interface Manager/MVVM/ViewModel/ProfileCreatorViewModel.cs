@@ -35,7 +35,10 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
            });
         if (dialogResult == MessageDialogResult.Affirmative)
         {
-            _ = StartProfiles();
+            if (IsStarted)
+            {
+                _ = StartProfiles();
+            }
             foreach (var item in Devices)
             {
                 InterfaceITAPI_Data.InterfaceITDisable(item);

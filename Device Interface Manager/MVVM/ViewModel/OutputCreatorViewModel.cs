@@ -296,8 +296,8 @@ public partial class OutputCreatorViewModel : ObservableObject, ICloseWindowsChe
             DigitFormatting digitFormatting = new()
             {
                 Digit = (byte)(i + 1),
-                IsDigitChecked = (DigitCheckedSum & (1 << i)) != 0,
-                IsDecimalPointChecked = (DecimalPointCheckedSum & (1 << i)) != 0
+                IsDigitChecked = OutputCreatorModel.DigitCheckedSum != null && (DigitCheckedSum & (1 << i)) != 0,
+                IsDecimalPointChecked = OutputCreatorModel.DecimalPointCheckedSum != null && (DecimalPointCheckedSum & (1 << i)) != 0
             };
             digits.Add(digitFormatting);
         }

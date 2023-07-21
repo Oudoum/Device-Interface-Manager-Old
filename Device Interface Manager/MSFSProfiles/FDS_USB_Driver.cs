@@ -41,25 +41,22 @@ public class FDS_USB_Driver : USB
         {
             if (item.Output is not null)
             {
-                if (simVar.Unit == "MHz" && item.OutputType == ProfileCreatorModel.SEVENSEGMENT)
+                if (string.IsNullOrEmpty(simVar.Unit) && item.OutputType == ProfileCreatorModel.SEVENSEGMENT)
                 {
-                    SetStringValue(simVar.Data.ToString(".000", System.Globalization.CultureInfo.InvariantCulture), null, item);
+                    SetStringValue(simVar.Data.ToString(System.Globalization.CultureInfo.InvariantCulture), null, item);
                 }
-                else if (simVar.Unit == "kHz" && item.OutputType == ProfileCreatorModel.SEVENSEGMENT)
+                else if (simVar.Data != (int)simVar.Data)
+                {
+                    SetStringValue(simVar.Data.ToString(System.Globalization.CultureInfo.InvariantCulture), null, item);
+                }
+                else if (item.OutputType == ProfileCreatorModel.SEVENSEGMENT)
                 {
                     SetStringValue(simVar.Data.ToString(".0", System.Globalization.CultureInfo.InvariantCulture), null, item);
                 }
-                else if (string.IsNullOrEmpty(simVar.Unit))
+                else if (item.OutputType == ProfileCreatorModel.LED)
                 {
-                    if (item.OutputType == ProfileCreatorModel.SEVENSEGMENT)
-                    {
-                        SetStringValue(simVar.Data.ToString(System.Globalization.CultureInfo.InvariantCulture), null, item);
-                    }
-                    else if (item.OutputType == ProfileCreatorModel.LED)
-                    {
-                        bool value = item.IsInverted ? !simVar.BData() : simVar.BData();
-                        interfaceIT.USB.InterfaceITAPI_Data.interfaceIT_LED_Set(Device.Session, item.Output.Value, value);
-                    }
+                    bool value = item.IsInverted ? !simVar.BData() : simVar.BData();
+                    interfaceIT.USB.InterfaceITAPI_Data.interfaceIT_LED_Set(Device.Session, item.Output.Value, value);
                 }
             }
         }
