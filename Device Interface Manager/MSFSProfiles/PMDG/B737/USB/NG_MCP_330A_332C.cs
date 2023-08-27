@@ -145,7 +145,7 @@ public class NG_MCP_330A_332C : NG_MCP_3311
                 break;
 
             //747
-            case 19 when Device.DeviceInfo.nDatalineCount == 2:
+            case 19 when Device.DeviceInfo.DatalineCount == 2:
                 simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_MCP_SPD_INTV_SWITCH);
                 break;
 
@@ -162,7 +162,7 @@ public class NG_MCP_330A_332C : NG_MCP_3311
                 break;
 
             //747
-            case 22 when Device.DeviceInfo.nDatalineCount == 2:
+            case 22 when Device.DeviceInfo.DatalineCount == 2:
                 simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_MCP_CWS_B_SWITCH);
                 break;
 

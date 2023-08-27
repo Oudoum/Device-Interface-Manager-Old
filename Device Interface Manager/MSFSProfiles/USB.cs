@@ -9,7 +9,7 @@ public abstract class USB : IITProfileBase
 {
     protected Device Device;
 
-    protected INTERFACEIT_KEY_NOTIFY_PROC_UINT interfaceItKeyNotifyProc;
+    protected KeyNotificationCallbackUint interfaceItKeyNotifyProc;
 
     protected abstract void KeyPressedProc(uint session, int key, uint direction);
 
@@ -19,8 +19,8 @@ public abstract class USB : IITProfileBase
         {
             Device = device;
             InterfaceITEnable(Device);
-            await StartSimConnectAsync();
             interfaceItKeyNotifyProc = KeyPressedProc;
+            await StartSimConnectAsync();
             if ((oldCameraState = simConnectClient.GetSimVar("CAMERA STATE")) == 2)
             {
                 interfaceIT_Switch_Enable_Callback(Device.Session, true, interfaceItKeyNotifyProc);

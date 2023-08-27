@@ -11,7 +11,7 @@ public partial class SwitchTestViewModel : ObservableObject, ISwitchLogChanged
 {
     public ObservableCollection<string> SwitchLog { get; set; } = new();
 
-    private InterfaceITAPI_Data.INTERFACEIT_KEY_NOTIFY_PROC keyNotifiyCallback;
+    private InterfaceITAPI_Data.KeyNotificationCallback keyNotifiyCallback;
 
     [ObservableProperty]
     private bool _pollModeEnabled;
@@ -72,7 +72,7 @@ public partial class SwitchTestViewModel : ObservableObject, ISwitchLogChanged
     {
         System.Windows.Application.Current.Dispatcher.Invoke(() =>
         {
-            SwitchLog.Add($"Session {session}, Switch {key} is now {(direction == InterfaceITAPI_Data.SwitchDirectionInfo.INTERFACEIT_SWITCH_DIR_DOWN ? "on" : "off")}");
+            SwitchLog.Add($"Session {session}, Switch {key} is now {(direction == (int)InterfaceITAPI_Data.SwitchDirectionInfo.INTERFACEIT_SWITCH_DIR_DOWN ? "on" : "off")}");
         });
     }
 }

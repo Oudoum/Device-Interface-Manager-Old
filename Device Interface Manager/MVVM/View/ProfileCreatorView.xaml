@@ -15,18 +15,18 @@
     SaveWindowPosition="True"
     mc:Ignorable="d"
     Background="#1B1A24"
-    Height="900"
-    MinHeight="400"
-    Width="1660"
-    MinWidth="800">
+    Height="600"
+    MinHeight="600"
+    Width="1200"
+    MinWidth="1200">
 
-    <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch">
+    <Grid VerticalAlignment="Top" HorizontalAlignment="Left">
 
         <Grid.Resources>
             <Style TargetType="DataGrid" BasedOn="{StaticResource MahApps.Styles.DataGrid}">
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding IsStarted}" Value="True">
-                        <Setter Property="IsEnabled" Value="False"/>
+                        <Setter Property="IsHitTestVisible" Value="False"/>
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
@@ -37,14 +37,12 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid HorizontalAlignment="Center" Margin="0,10,0,0" >
+        <Grid Margin="25,10,0,0" HorizontalAlignment="Left">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-
-            <TextBlock d:Text="Test" Text="{Binding ErrorText}" Foreground="White" FontSize="18" HorizontalAlignment="Center"/>
 
             <StackPanel Grid.Row="1" Margin="0" Orientation="Horizontal">
                 <StackPanel.Resources>
@@ -85,7 +83,7 @@
                                 <DataTrigger Binding="{Binding ProfileNameButtonContent}" Value="Ok">
                                     <Setter Property="IsEnabled" Value="False"/>
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding DeviceName}" Value="{x:Null}">
+                                <DataTrigger Binding="{Binding Device.Key}" Value="{x:Null}">
                                     <Setter Property="IsEnabled" Value="False"/>
                                 </DataTrigger>
                             </Style.Triggers>
@@ -102,7 +100,7 @@
                         <Style TargetType="Button" BasedOn="{StaticResource ButtonIcon}">
                             <Setter Property="IsEnabled" Value="True"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding DeviceName}" Value="{x:Null}">
+                                <DataTrigger Binding="{Binding Device.Key}" Value="{x:Null}">
                                     <Setter Property="IsEnabled" Value="False"/>
                                 </DataTrigger>
                             </Style.Triggers>
@@ -170,7 +168,7 @@
                 <Button Command="{Binding ClearProfileCommand}">
                     <Viewbox Width="48" Height="48">
                         <Canvas Height="24" Width="24">
-                            <Path  Fill="White" Data="M19.36,2.72L20.78,4.14L15.06,9.85C16.13,11.39 16.28,13.24 15.38,14.44L9.06,8.12C10.26,7.22 12.11,7.37 13.65,8.44L19.36,2.72M5.93,17.57C3.92,15.56 2.69,13.16 2.35,10.92L7.23,8.83L14.67,16.27L12.58,21.15C10.34,20.81 7.94,19.58 5.93,17.57Z"/>
+                            <Path  Fill="White" Data="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"/>
                         </Canvas>
                     </Viewbox>
                     <Button.Style>
@@ -223,8 +221,9 @@
                         </Style>
                     </Button.Style>
                 </Button>
+                <TextBlock d:Text="Test" Text="{Binding ErrorText}" Margin="100,0,0,0" Foreground="White" FontSize="18" VerticalAlignment="Center"/>
             </StackPanel>
-            <StackPanel Grid.Row="2" Margin="0,10,0,0" Orientation="Horizontal">
+            <StackPanel Grid.Row="2" Margin="0,10,0,0" Orientation="Horizontal" HorizontalAlignment="Left">
                 <StackPanel>
                     <TextBlock Text="Profile name" Foreground="White"/>
                     <TextBox Text="{Binding ProfileName}" Width="200" mah:TextBoxHelper.Watermark="Enter profile name...">
@@ -257,7 +256,12 @@
                 </StackPanel>
                 <StackPanel Margin="20,0,0,0" VerticalAlignment="Bottom">
                     <TextBlock Text="Device" Foreground="White"/>
-                    <ComboBox mah:TextBoxHelper.Watermark="Select device..." ItemsSource="{Binding DeviceNameCollection}" SelectedItem="{Binding DeviceName}" Width="200">
+                    <ComboBox mah:TextBoxHelper.Watermark="Select device..." ItemsSource="{Binding DeviceCollection}" SelectedItem="{Binding Device}" DisplayMemberPath="Key" Width="200" ToolTip="{Binding Path=SelectedItem.Value, RelativeSource={RelativeSource Self}}">
+                        <ComboBox.ItemContainerStyle>
+                            <Style TargetType="ComboBoxItem">
+                                <Setter Property="ToolTip" Value="{Binding Value}" />
+                            </Style>
+                        </ComboBox.ItemContainerStyle>
                         <ComboBox.Style>
                             <Style TargetType="ComboBox" BasedOn="{StaticResource MahApps.Styles.ComboBox}">
                                 <Style.Triggers>
@@ -279,8 +283,10 @@
             </StackPanel>
         </Grid>
 
-        <mah:MetroTabControl Margin="50,20,50,20" HorizontalContentAlignment="Left" Background="Transparent" Grid.Row="1" d:Visibility="Visible" >
+        <mah:MetroTabControl Margin="25,20,50,20" HorizontalContentAlignment="Left" Background="Transparent" Grid.Row="1" d:Visibility="Visible" >
+
             <TabItem Header="Input" Background="#FF252525">
+
 
                 <DockPanel HorizontalAlignment="Left">
 
@@ -307,66 +313,57 @@
                             Header="Input Type"
                             Binding="{Binding InputType}"
                             SortMemberPath="InputType"
-                            IsReadOnly="True"
-                            Width="90"/>
+                            IsReadOnly="True"/>
                             
                             <DataGridTextColumn
                             Header="Input"
                             Binding="{Binding Input}"
                             SortMemberPath="Input"
-                            IsReadOnly="True"
-                            Width="60"/>
+                            IsReadOnly="True"/>
 
                             <DataGridTextColumn
                             Header="Event Type"
                             Binding="{Binding EventType}"
                             SortMemberPath="EventType"
-                            IsReadOnly="True"
-                            Width="180"/>
+                            IsReadOnly="True"/>
 
                             <DataGridTextColumn
                             Header="PMDG Event"
                             Binding="{Binding PMDGEvent}"
                             SortMemberPath="PMDGEvent"
-                            IsReadOnly="True"
-                            Width="280"/>
+                            IsReadOnly="True"/>
 
                             <DataGridTextColumn
                             Header="Event"
                             Binding="{Binding Event}"
                             SortMemberPath="Event"
-                            IsReadOnly="True"
-                            Width="280"/>
+                            IsReadOnly="True"/>
 
                             <DataGridTextColumn
                             Header="Mouse Press"
                             Binding="{Binding PMDGMousePress.Key}"
                             SortMemberPath="PMDGMousePress"
-                            IsReadOnly="True"
-                            Width="160"/>
+                            IsReadOnly="True"/>
 
                             <DataGridTextColumn
                             Header="Mouse Release"
                             Binding="{Binding PMDGMouseRelease.Key}"
                             SortMemberPath="PMDGMouseRelease"
-                            IsReadOnly="True"
-                            Width="160"/>
+                            IsReadOnly="True"/>
 
                             <DataGridTextColumn
                             Header="Data Press"
                             Binding="{Binding DataPress}"
                             SortMemberPath="DataPress"
-                            IsReadOnly="True"
-                            Width="100"/>
+                            IsReadOnly="True"/>
 
                             <DataGridTextColumn
                             Header="Data Release"
                             Binding="{Binding DataRelease}"
                             SortMemberPath="DataRelease"
-                            IsReadOnly="True"
-                            Width="100"/>
+                            IsReadOnly="True"/>
 
-                            <DataGridTemplateColumn Header="Edit" Width="55" IsReadOnly="True">
+                            <DataGridTemplateColumn Header="Edit" IsReadOnly="True">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button
@@ -409,7 +406,7 @@
                                 </DataGridTemplateColumn.CellStyle>
                             </DataGridTemplateColumn>
 
-                            <DataGridTemplateColumn Header="Delete" Width="55" IsReadOnly="True">
+                            <DataGridTemplateColumn Header="Delete" IsReadOnly="True">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button
@@ -499,31 +496,27 @@
                             Header="Output Type"
                             Binding="{Binding OutputType}"
                             SortMemberPath="OutputType"
-                            IsReadOnly="True"
-                            Width="90"/>
+                            IsReadOnly="True"/>
 
                             <DataGridTextColumn
                             Header="Output"
                             Binding="{Binding Output}"
                             SortMemberPath="Output"
-                            IsReadOnly="True"
-                            Width="60"/>
+                            IsReadOnly="True"/>
 
                             <DataGridTextColumn
                             Header="Data Type"
                             Binding="{Binding DataType}"
                             SortMemberPath="DataType"
-                            IsReadOnly="True"
-                            Width="180"/>
+                            IsReadOnly="True"/>
 
                             <DataGridTextColumn
                             Header="PMDG Data"
                             Binding="{Binding PMDGData}"
                             SortMemberPath="PMDGData"
-                            IsReadOnly="True"
-                            Width="280"/>
+                            IsReadOnly="True"/>
 
-                            <DataGridTemplateColumn Header="Data" IsReadOnly="True" Width="560">
+                            <DataGridTemplateColumn Header="Data" IsReadOnly="True">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Style="{StaticResource MahApps.Styles.TextBlock.DataGrid}">
@@ -536,25 +529,28 @@
                             </DataGridTemplateColumn>
 
                             <DataGridTextColumn
-                            Header="Array index"
+                            Header="Array Index"
                             Binding="{Binding PMDGDataArrayIndex}"
                             SortMemberPath="PMDGDataArrayIndex"
-                            IsReadOnly="True"
-                            Width="110"/>
+                            IsReadOnly="True"/>
 
                             <DataGridTextColumn
-                            Header="Value"
+                            Header="Operator"
+                            Binding="{Binding Operator}"
+                            SortMemberPath="Operator"
+                            IsReadOnly="True"/>
+
+                            <DataGridTextColumn
+                            Header="Comparison Value"
                             Binding="{Binding ComparisonValue}"
-                            SortMemberPath="Value"
-                            IsReadOnly="True"
-                            Width="60"/>
+                            SortMemberPath="Comparison Value"
+                            IsReadOnly="True"/>
 
                             <DataGridCheckBoxColumn
                             Header="Inverted"
                             Binding="{Binding IsInverted}"
                             SortMemberPath="IsInverted"
-                            IsReadOnly="True"
-                            Width="70">
+                            IsReadOnly="True">
                                 <DataGridCheckBoxColumn.ElementStyle>
                                     <Style TargetType="CheckBox" BasedOn="{StaticResource MahApps.Styles.CheckBox.DataGrid}">
                                         <Setter Property="mah:CheckBoxHelper.CheckGlyphForegroundChecked" Value="White"/>
@@ -563,7 +559,7 @@
 
                             </DataGridCheckBoxColumn>
 
-                            <DataGridTemplateColumn Header="Edit" Width="55" IsReadOnly="True">
+                            <DataGridTemplateColumn Header="Edit" IsReadOnly="True">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button
@@ -606,7 +602,7 @@
                                 </DataGridTemplateColumn.CellStyle>
                             </DataGridTemplateColumn>
 
-                            <DataGridTemplateColumn Header="Delete" Width="55" IsReadOnly="True">
+                            <DataGridTemplateColumn Header="Delete" IsReadOnly="True">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button
@@ -649,6 +645,20 @@
                                 </DataGridTemplateColumn.CellStyle>
                             </DataGridTemplateColumn>
 
+                            <DataGridTextColumn
+                            Header="Flight Sim Value"
+                            Foreground="Red"
+                            Binding="{Binding FlightSimValue}"
+                            SortMemberPath="Value"
+                            IsReadOnly="True"/>
+
+                            <DataGridTextColumn
+                            Header="Output Value"
+                            Foreground="Green"
+                            Binding="{Binding OutputValue}"
+                            SortMemberPath="Value"
+                            IsReadOnly="True"/>
+
                         </DataGrid.Columns>
 
                     </DataGrid>
@@ -671,7 +681,7 @@
             <mah:MetroTabControl.Style>
                 <Style TargetType="mah:MetroTabControl" BasedOn="{StaticResource MahApps.Styles.TabControl.Animated}">
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding DeviceName}" Value="{x:Null}">
+                        <DataTrigger Binding="{Binding Device.Key}" Value="{x:Null}">
                             <Setter Property="Visibility" Value="Hidden"/>
                         </DataTrigger>
                     </Style.Triggers>
@@ -679,6 +689,9 @@
             </mah:MetroTabControl.Style>
 
             <mah:MetroTabControl.Resources>
+                <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource MahApps.Styles.DataGridColumnHeader}">
+                    <Setter Property="mah:ControlsHelper.ContentCharacterCasing" Value="Normal"/>
+                </Style>
                 <ContextMenu x:Key="DataGridContextMenu">
                     <MenuItem Command="{Binding DuplicateInputOutputCreatorRowCommand}"
                               CommandParameter="{Binding Path=PlacementTarget.SelectedItems, RelativeSource={RelativeSource AncestorType=ContextMenu}}">

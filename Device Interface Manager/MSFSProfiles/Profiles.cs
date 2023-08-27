@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Dynamic;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Device_Interface_Manager.MVVM.Model;
 using Device_Interface_Manager.interfaceIT.USB;
-using Device_Interface_Manager.MSFSProfiles.PMDG.B737;
 using Device_Interface_Manager.MSFSProfiles.PMDG;
-using System.Reflection;
 
 namespace Device_Interface_Manager.MSFSProfiles;
 public class Profiles
@@ -32,8 +31,6 @@ public class Profiles
 
     public IDictionary<string, object> DynDict { get; private set; } = new ExpandoObject();
 
-    private bool pMDG737Registered;
-
     private bool simConnectStarted;
 
     private bool initialized;
@@ -48,9 +45,8 @@ public class Profiles
 
     public void Stop()
     {
-        fDS_USB_Drivers.ForEach(d => d.Stop());
-        fDS_USB_Drivers.Clear();
-        pMDG737Registered = false;
+        fDS_USB_Drivers?.ForEach(d => d.Stop());
+        fDS_USB_Drivers?.Clear();
         simConnectStarted = false;
         initialized = false;
         WatchedFields.Clear();
@@ -58,16 +54,9 @@ public class Profiles
     }
 
     private List<FDS_USB_Driver> fDS_USB_Drivers;
-    public async Task StartAsync(ProfileCreatorModel[] profileCreatorModel, InterfaceIT_BoardInfo.Device[] devices)
-    {
-        foreach (var item in profileCreatorModel)
-        {
-            await StartAsync(item, devices.FirstOrDefault(k => k.BoardType == item.DeviceName));
-        }
-    }
 
     public async Task StartAsync(ProfileCreatorModel profileCreatorModel, InterfaceIT_BoardInfo.Device device)
-    {
+   {
         if (profileCreatorModel.Driver == ProfileCreatorModel.FDSUSB)
         {
             fDS_USB_Drivers ??= new();
@@ -76,20 +65,8 @@ public class Profiles
                 ProfileCreatorModel = profileCreatorModel
             };
             await fDS_USB_Driver.StartAsync(device);
+            fDS_USB_Driver.Start();
             fDS_USB_Drivers.Add(fDS_USB_Driver);
-        }
-
-        if (!pMDG737Registered)
-        {
-            foreach (var input in profileCreatorModel.InputCreator)
-            {
-                if (input.EventType == ProfileCreatorModel.PMDG737)
-                {
-                    pMDG737Registered = true;
-                    PMDG737.RegisterPMDGDataEvents(SimConnectClient.Instance.SimConnect);
-                    break;
-                }
-            }
         }
 
         foreach (var output in profileCreatorModel.OutputCreator)
@@ -107,11 +84,6 @@ public class Profiles
                     {
                         WatchedFields.Add(pMDGDataFieldName);
                     }
-                }
-                if (!pMDG737Registered)
-                {
-                    pMDG737Registered = true;
-                    PMDG737.RegisterPMDGDataEvents(SimConnectClient.Instance.SimConnect);
                 }
                 if (!initialized)
                 {

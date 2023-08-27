@@ -7,7 +7,7 @@ public class MCDU_L : MSFSProfiles.USB
 {
     protected override void SimConnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
     {
-        interfaceIT_Dataline_Set(Device.Session, Device.DeviceInfo.nDatalineFirst, true);
+        interfaceIT_Dataline_Set(Device.Session, Device.DeviceInfo.DatalineFirst, true);
 
         simConnectClient.RegisterSimVar("L:I_CDU1_FAIL");
         simConnectClient.RegisterSimVar("L:I_CDU1_MCDU_MENU");

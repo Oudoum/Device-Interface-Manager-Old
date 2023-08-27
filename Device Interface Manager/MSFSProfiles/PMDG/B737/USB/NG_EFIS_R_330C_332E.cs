@@ -9,8 +9,13 @@ public class NG_EFIS_R_330C_332E : MSFSProfiles.USB
     protected override async Task StartSimConnectAsync()
     {
         await base.StartSimConnectAsync();
-        PMDG737.RegisterPMDGDataEvents(simConnectClient.SimConnect);
         NG_MCP_3311.OnBackgroundLEDChanged += NG_MCP_3311_OnBackgroundLEDChanged;
+    }
+
+    public override void Stop()
+    {
+        NG_MCP_3311.OnBackgroundLEDChanged -= NG_MCP_3311_OnBackgroundLEDChanged;
+        base.Stop();
     }
 
     public int[] BackgroundLEDs { get; init; } = new int[] { 1, 2, 3, 4, 5, 6, 7 };
@@ -216,36 +221,36 @@ public class NG_EFIS_R_330C_332E : MSFSProfiles.USB
 
             //-18 & -17
             //330C
-            case 41 when direction == 1 && Device.DeviceInfo.szBoardType == "330C":
+            case 41 when direction == 1 && Device.DeviceInfo.BoardType == "330C":
                 TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_FO_MINIMUMS, true);
                 break;
 
-            case 42 when direction == 1 && Device.DeviceInfo.szBoardType == "330C":
+            case 42 when direction == 1 && Device.DeviceInfo.BoardType == "330C":
                 TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_FO_MINIMUMS, false);
                 break;
 
-            case 43 when direction == 1 && Device.DeviceInfo.szBoardType == "330C":
+            case 43 when direction == 1 && Device.DeviceInfo.BoardType == "330C":
                 TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_FO_BARO, true);
                 break;
 
-            case 44 when direction == 1 && Device.DeviceInfo.szBoardType == "330C":
+            case 44 when direction == 1 && Device.DeviceInfo.BoardType == "330C":
                 TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_FO_BARO, false);
                 break;
 
             //332E
-            case 41 when direction == 1 && Device.DeviceInfo.szBoardType == "332E":
+            case 41 when direction == 1 && Device.DeviceInfo.BoardType == "332E":
                 TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_FO_MINIMUMS, false);
                 break;
 
-            case 42 when direction == 1 && Device.DeviceInfo.szBoardType == "332E":
+            case 42 when direction == 1 && Device.DeviceInfo.BoardType == "332E":
                 TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_FO_MINIMUMS, true);
                 break;
 
-            case 43 when direction == 1 && Device.DeviceInfo.szBoardType == "332E":
+            case 43 when direction == 1 && Device.DeviceInfo.BoardType == "332E":
                 TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_FO_BARO, false);
                 break;
 
-            case 44 when direction == 1 && Device.DeviceInfo.szBoardType == "332E":
+            case 44 when direction == 1 && Device.DeviceInfo.BoardType == "332E":
                 TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_FO_BARO, true);
                 break;
         }

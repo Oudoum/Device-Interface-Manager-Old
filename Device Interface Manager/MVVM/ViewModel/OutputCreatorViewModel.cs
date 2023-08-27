@@ -48,9 +48,15 @@ public partial class OutputCreatorViewModel : ObservableObject, ICloseWindowsChe
                 else if (value == ProfileCreatorModel.SEVENSEGMENT)
                 {
                     IsPadded = false;
+                    Operator = null;
                     ComparisonValue = null;
+                    TrueValue = null;
+                    FalseValue = null;
                     IsInverted = false;
+                    OnPropertyChanged(nameof(Operator));
                     OnPropertyChanged(nameof(ComparisonValue));
+                    OnPropertyChanged(nameof(TrueValue));
+                    OnPropertyChanged(nameof(FalseValue));
                     OnPropertyChanged(nameof(IsInverted));
                 }
             }
@@ -96,11 +102,18 @@ public partial class OutputCreatorViewModel : ObservableObject, ICloseWindowsChe
                         Unit = null;
                     }
                 }
+                Operator = null;
+                ComparisonValue = null;
+                TrueValue = null;
+                FalseValue = null;
                 OnPropertyChanged(nameof(DataType));
                 OnPropertyChanged(nameof(PMDGDataArrayIndices));
                 OnPropertyChanged(nameof(PMDGDataArrayIndex));
-                OnPropertyChanged(nameof(IsComparisonValueEnabled));
+                OnPropertyChanged(nameof(IsComparisonEnabled));
+                OnPropertyChanged(nameof(Operator));
                 OnPropertyChanged(nameof(ComparisonValue));
+                OnPropertyChanged(nameof(TrueValue));
+                OnPropertyChanged(nameof(FalseValue));
             }
         }
     }
@@ -115,11 +128,18 @@ public partial class OutputCreatorViewModel : ObservableObject, ICloseWindowsChe
             if (OutputCreatorModel.PMDGData != value)
             {
                 OutputCreatorModel.PMDGData = value;
+                Operator = null;
+                ComparisonValue = null;
+                TrueValue = null;
+                FalseValue = null;
                 OnPropertyChanged(nameof(PMDGData));
                 OnPropertyChanged(nameof(PMDGDataArrayIndices));
                 OnPropertyChanged(nameof(PMDGDataArrayIndex));
-                OnPropertyChanged(nameof(IsComparisonValueEnabled));
+                OnPropertyChanged(nameof(IsComparisonEnabled));
+                OnPropertyChanged(nameof(Operator));
                 OnPropertyChanged(nameof(ComparisonValue));
+                OnPropertyChanged(nameof(TrueValue));
+                OnPropertyChanged(nameof(FalseValue));
             }
         }
     }
@@ -134,6 +154,8 @@ public partial class OutputCreatorViewModel : ObservableObject, ICloseWindowsChe
                 OutputCreatorModel.SearchPMDGData = value;
                 OnPropertyChanged(nameof(PMDGDataArray));
                 OnPropertyChanged(nameof(PMDGData));
+                OnPropertyChanged(nameof(PMDGDataArrayIndices));
+                OnPropertyChanged(nameof(PMDGDataArrayIndex));
             }
         }
     }
@@ -155,14 +177,34 @@ public partial class OutputCreatorViewModel : ObservableObject, ICloseWindowsChe
 
     public int?[] PMDGDataArrayIndices => OutputCreatorModel.PMDGDataArrayIndices;
 
-    public bool IsComparisonValueEnabled => !string.IsNullOrEmpty(PMDGData)
+    public bool IsComparisonEnabled => !string.IsNullOrEmpty(PMDGData)
     && typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetField(PMDGData)?.FieldType != typeof(bool)
     && typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetField(PMDGData)?.FieldType != typeof(bool[]);
 
-    public int? ComparisonValue
+    public string[] Operators => OutputCreatorModel.Operators;
+
+    public string Operator
+    {
+        get => OutputCreatorModel.Operator;
+        set => OutputCreatorModel.Operator = value;
+    }
+
+    public double? ComparisonValue
     {
         get => OutputCreatorModel.ComparisonValue;
         set => OutputCreatorModel.ComparisonValue = value;
+    }
+
+    public double? TrueValue
+    {
+        get => OutputCreatorModel.TrueValue;
+        set => OutputCreatorModel.TrueValue = value;
+    }
+
+    public double? FalseValue
+    {
+        get => OutputCreatorModel.FalseValue;
+        set => OutputCreatorModel.FalseValue = value;
     }
 
     public string Data
@@ -392,53 +434,6 @@ public partial class OutputCreatorViewModel : ObservableObject, ICloseWindowsChe
         {
             SetOutputPosition(null);
         }
-    }
-
-    [RelayCommand]
-    private void ComboBoxSlectionChanged(SelectionChangedEventArgs e)
-    {
-        //int? addedValue = null;
-        //if (e.AddedItems.Count > 0)
-        //{
-        //    addedValue = (int?)e.AddedItems[0];
-        //}
-
-        //int? removedValue = null;
-        //if (e.RemovedItems.Count > 0)
-        //{
-        //    removedValue = (int?)e.RemovedItems[0];
-        //}
-
-        //if (addedValue is not null)
-        //{
-        //    foreach (var item in TestCreator.OutputCreator)
-        //    {
-        //        if (item.SelectedLED != addedValue)
-        //        {
-        //            item.LEDs.Remove(addedValue);
-        //        }
-        //    }
-
-        //    if (!TestCreator.RemovedLEDsItems.Contains(addedValue))
-        //    {
-        //        TestCreator.RemovedLEDsItems.Add(addedValue);
-        //    }
-        //    return;
-        //}
-
-        //TestCreator.RemovedLEDsItems.Remove(removedValue);
-
-        //TestCreator.OutputCreator
-        //    .Where(item => !item.LEDs.Contains(removedValue))
-        //    .ToList()
-        //    .ForEach(item =>
-        //    {
-        //        List<int?> leds = new(item.LEDs)
-        //        {
-        //            removedValue
-        //        };
-        //        item.LEDs = new(leds.OrderBy(i => i));
-        //    });
     }
 
     public bool Save { get; set; }

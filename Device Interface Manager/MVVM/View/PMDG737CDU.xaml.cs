@@ -71,7 +71,7 @@ namespace Device_Interface_Manager.MVVM.View
             }
         }
 
-        private int? _brightness;
+        private int? _brightness = 4095;
         public int? Brightness
         {
             get => _brightness;
@@ -87,7 +87,7 @@ namespace Device_Interface_Manager.MVVM.View
 
         public void GetPMDGCDUCells(PMDG_NG3_CDU_Screen pMDG_NG3_CDU_Screen)
         {
-            if (pMDG_NG3_CDU_Screen.CDU_Columns is not null && pMDG_NG3_CDU_Screen.Powered)
+            if (pMDG_NG3_CDU_Screen.CDU_Columns is not null && pMDG_NG3_CDU_Screen.Powered && CDUGrid.Children.Count > 0)
             {
                 int count = 0;
                 int columnCount = 0;

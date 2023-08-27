@@ -17,8 +17,6 @@ public partial class LEDTestViewModel : ObservableObject
     public required int LEDLast { get; init; }
     public required string BoardType { get; init; }
 
-    public LEDTestViewModel() { }
-
     [RelayCommand]
     private void LEDEnable()
     {

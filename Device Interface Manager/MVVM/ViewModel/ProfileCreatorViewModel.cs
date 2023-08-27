@@ -88,11 +88,12 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
             switch (value)
             {
                 case ProfileCreatorModel.FDSUSB:
-                    foreach (var device in Devices)
+                    foreach (var iitdevice in Devices)
                     {
-                        if (!DeviceNameCollection.Contains(device.BoardType))
+                        KeyValuePair<string, string> device = new(iitdevice.BoardType, iitdevice.SerialNumber);
+                        if (!DeviceCollection.Contains(device))
                         {
-                            DeviceNameCollection.Add(device.BoardType);
+                            DeviceCollection.Add(device);
                         }
                     }
                     break;
@@ -104,17 +105,19 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
 
     public static string[] Drivers => ProfileCreatorModel.Drivers;
 
-    public string DeviceName
+
+    private KeyValuePair<string, string> _device;
+    public KeyValuePair<string, string> Device
     {
-        get => ProfileCreatorModel.DeviceName;
+        get => _device;
         set
         {
-            if (string.IsNullOrEmpty(ProfileCreatorModel.DeviceName) || result.Value && !ProfileCreatorModels.Any(s => s.DeviceName == value))
+            if (string.IsNullOrEmpty(ProfileCreatorModel.DeviceName) || result.Value && !ProfileCreatorModels.Any(s => s.DeviceName == Device.Key))
             {
                 ProfileCreatorModels.Add(ProfileCreatorModel);
                 SetDevice(value, ProfileCreatorModel);
             }
-            else if (!ProfileCreatorModels.Any(s => s.DeviceName == value))
+            else if (!ProfileCreatorModels.Any(s => s.DeviceName == value.Key))
             {
                 ProfileCreatorModel profileCreatorModel = new()
                 {
@@ -124,22 +127,23 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
                 SetDevice(value, profileCreatorModel);
                 ProfileCreatorModels.Add(profileCreatorModel);
             }
-            else if (result.Value && ProfileCreatorModels.Any(s => s.DeviceName == value))
+            else if (result.Value && ProfileCreatorModels.Any(s => s.DeviceName == value.Key))
             {
                 if (OverrideDevice() == MessageDialogResult.Affirmative)
                 {
-                    int index = ProfileCreatorModels.FindIndex(x => x.DeviceName == value);
+                    int index = ProfileCreatorModels.FindIndex(s => s.DeviceName == value.Key);
                     if (index != -1)
                     {
                         ProfileCreatorModels[index] = ProfileCreatorModel;
                     }
                 }
             }
-            ProfileCreatorModel = ProfileCreatorModels.Where(s => s.DeviceName == value).FirstOrDefault();
-            ProfileCreatorModel.DeviceName = value;
+            ProfileCreatorModel = ProfileCreatorModels.Where(s => s.DeviceName == value.Key).FirstOrDefault();
+            ProfileCreatorModel.DeviceName = value.Key;
             ProfileName = ProfileCreatorModel.ProfileName;
             Driver = ProfileCreatorModel.Driver;
-            OnPropertyChanged(nameof(DeviceName));
+            _device = value;
+            OnPropertyChanged(nameof(Device));
         }
     }
 
@@ -155,36 +159,36 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
         });
     }
 
-    private void SetDevice(string deviceName, ProfileCreatorModel profileCreatorModel)
+    private void SetDevice(KeyValuePair<string,string> device, ProfileCreatorModel profileCreatorModel)
     {
         switch (Driver)
         {
             case ProfileCreatorModel.FDSUSB:
-                InterfaceIT_BoardInfo.Device device = Devices.Where(s => s.BoardType == deviceName).FirstOrDefault();
-                for (int i = device.DeviceInfo.nSwitchFirst; i <= device.DeviceInfo.nSwitchLast; i++)
+                InterfaceIT_BoardInfo.Device iitdevice = Devices.Where(s => s.SerialNumber == device.Value).FirstOrDefault();
+                for (int i = iitdevice.DeviceInfo.SwitchFirst; i <= iitdevice.DeviceInfo.SwitchLast; i++)
                 {
                     profileCreatorModel.Switches.Add(i);
                 }
-                for (int i = device.DeviceInfo.nLEDFirst; i <= device.DeviceInfo.nLEDLast; i++)
+                for (int i = iitdevice.DeviceInfo.LEDFirst; i <= iitdevice.DeviceInfo.LEDLast; i++)
                 {
                     profileCreatorModel.LEDs.Add(i);
                 }
-                for (int i = device.DeviceInfo.n7SegmentFirst; i <= device.DeviceInfo.n7SegmentLast; i++)
+                for (int i = iitdevice.DeviceInfo.SevenSegmentFirst; i <= iitdevice.DeviceInfo.SevenSegmentLast; i++)
                 {
-                    if (device.DeviceInfo.n7SegmentCount > 0)
+                    if (iitdevice.DeviceInfo.SevenSegmentCount > 0)
                     {
                         profileCreatorModel.SevenSegments.Add(i);
                     }
                 }
-                InterfaceITAPI_Data.interfaceIT_LED_Enable(device.Session, true);
-                InterfaceITAPI_Data.interfaceIT_Switch_Enable_Poll(device.Session, true);
-                InterfaceITAPI_Data.interfaceIT_7Segment_Enable(device.Session, true);
+                InterfaceITAPI_Data.interfaceIT_LED_Enable(iitdevice.Session, true);
+                InterfaceITAPI_Data.interfaceIT_Switch_Enable_Poll(iitdevice.Session, true);
+                InterfaceITAPI_Data.interfaceIT_7Segment_Enable(iitdevice.Session, true);
                 break;
         }
-        profileCreatorModel.DeviceName = deviceName;
+        profileCreatorModel.DeviceName = device.Key;
     }
 
-    public ObservableCollection<string> DeviceNameCollection { get; set; } = new();
+    public ObservableCollection<KeyValuePair<string, string>> DeviceCollection { get; set; } = new();
 
     public InterfaceIT_BoardInfo.Device[] Devices { get; set; }
 
@@ -223,26 +227,20 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
                     ProfileCreatorModel profileCreatorModel = await JsonSerializer.DeserializeAsync<ProfileCreatorModel>(stream);
                     if (Devices.Any(s => s.BoardType == profileCreatorModel.DeviceName))
                     {
-                        foreach (var item in profileCreatorModel.InputCreator)
-                        {
-                            if (string.IsNullOrEmpty(item.InputType) && item.Input is not null)
-                            {
-                                item.InputType = ProfileCreatorModel.SWITCH;
-                            }
-                        }
-                        foreach (var item in profileCreatorModel.OutputCreator)
-                        {
-                            if (string.IsNullOrEmpty(item.OutputType) && item.Output is not null)
-                            {
-                                item.OutputType = ProfileCreatorModel.LED;
-                            }
-                        }
                         profileCreatorModel.LEDs = ProfileCreatorModel.LEDs;
                         profileCreatorModel.Switches = ProfileCreatorModel.Switches;
                         profileCreatorModel.SevenSegments = ProfileCreatorModel.SevenSegments;
+                        Driver = profileCreatorModel.Driver;
                         ProfileCreatorModel = profileCreatorModel;
                         PreviousProfileName = ProfileName;
-                        DeviceName = ProfileCreatorModel.DeviceName;
+                        foreach (var item in DeviceCollection)
+                        {
+                            if (item.Key == profileCreatorModel.DeviceName)
+                            {
+                                Device = item;
+                                break;
+                            }
+                        }
                         ProfileNameButtonContent = "Edit";
                         ErrorText = ProfileName + " successfully loaded";
                         result = false;
@@ -360,11 +358,7 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
                 NegativeButtonText = "No"
             }))
         {
-            ProfileCreatorModel.UsedSwitches.Clear();
             ProfileCreatorModel.InputCreator.Clear();
-
-            ProfileCreatorModel.UsedLEDs.Clear();
-            ProfileCreatorModel.UsedSevenSegments.Clear();
             ProfileCreatorModel.OutputCreator.Clear();
         }
     }
@@ -403,7 +397,7 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
             {
                 return;
             }
-            DeleteInputCreatorRow(inputCreator);
+            ProfileCreatorModel.InputCreator.Remove(inputCreator);
         }
         else if (creator is OutputCreator outputCreator)
         {
@@ -411,7 +405,7 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
             {
                 return;
             }
-            DeleteOutputCreatorRow(outputCreator);
+            ProfileCreatorModel.OutputCreator.Remove(outputCreator);
         }
         else if (creator is IList selectedItems)
         {
@@ -428,7 +422,7 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
                         }
                     }
                     isShown = true;
-                    DeleteInputCreatorRow(input);
+                    ProfileCreatorModel.InputCreator.Remove(input);
                 }
                 else if (item is OutputCreator output)
                 {
@@ -440,29 +434,10 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
                         }
                     }
                     isShown = true;
-                    DeleteOutputCreatorRow(output);
+                    ProfileCreatorModel.OutputCreator.Remove(output);
                 }
             }
         }
-    }
-
-    private void DeleteInputCreatorRow(InputCreator input)
-    {
-        ProfileCreatorModel.UsedSwitches.Remove(input.Input);
-        ProfileCreatorModel.InputCreator.Remove(input);
-    }
-
-    private void DeleteOutputCreatorRow(OutputCreator output)
-    {
-        if (output.OutputType == ProfileCreatorModel.LED)
-        {
-            ProfileCreatorModel.UsedLEDs.Remove(output.Output);
-        }
-        else if (output.OutputType == ProfileCreatorModel.SEVENSEGMENT)
-        {
-            ProfileCreatorModel.UsedSevenSegments.Remove(output.Output);
-        }
-        ProfileCreatorModel.OutputCreator.Remove(output);
     }
 
     [RelayCommand]
@@ -494,33 +469,15 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
         NavigationService navigationService = new();
         if (inputOutputCreator is InputCreator inputCreator)
         {
-            ProfileCreatorModel.UsedSwitches.Remove(inputCreator.Input);
             inputCreator.InputType ??= ProfileCreatorModel.SWITCH;
             inputCreator.EventType ??= EventDataTypePreSelection;
-            navigationService.NavigateToInputCreator(inputCreator, ProfileCreatorModel.Switches.ToArray() ,Devices.FirstOrDefault(k => k.BoardType == ProfileCreatorModel.DeviceName));
-            ProfileCreatorModel.UsedSwitches.Add(inputCreator.Input);
+            navigationService.NavigateToInputCreator(inputCreator, ProfileCreatorModel.Switches.ToArray() ,Devices.FirstOrDefault(k => k.SerialNumber == Device.Value));
         }
         else if (inputOutputCreator is OutputCreator outputCreator)
         {
-            if (outputCreator.OutputType == ProfileCreatorModel.LED)
-            {
-                ProfileCreatorModel.UsedLEDs.Remove(outputCreator.Output);
-            }
-            else if (outputCreator.OutputType == ProfileCreatorModel.SEVENSEGMENT)
-            {
-                ProfileCreatorModel.UsedSevenSegments.Remove(outputCreator.Output);
-            }
             outputCreator.OutputType ??= ProfileCreatorModel.LED;
             outputCreator.DataType ??= EventDataTypePreSelection;
-            navigationService.NavigateToOutputCreator(outputCreator, ProfileCreatorModel.LEDs.ToArray(), ProfileCreatorModel.SevenSegments.ToArray(), Devices.FirstOrDefault(k => k.BoardType == ProfileCreatorModel.DeviceName));
-            if (outputCreator.OutputType == ProfileCreatorModel.LED)
-            {
-                ProfileCreatorModel.UsedLEDs.Add(outputCreator.Output);
-            }
-            else if (outputCreator.OutputType == ProfileCreatorModel.SEVENSEGMENT)
-            {
-                ProfileCreatorModel.UsedSevenSegments.Add(outputCreator.Output);
-            }
+            navigationService.NavigateToOutputCreator(outputCreator, ProfileCreatorModel.LEDs.ToArray(), ProfileCreatorModel.SevenSegments.ToArray(), Devices.FirstOrDefault(k => k.SerialNumber == Device.Value));
         }
     }
 
@@ -534,7 +491,7 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
         if (!IsStarted)
         {
             Profiles.Instance.Stop();
-            ErrorText = "Profiles stopped";
+            ErrorText = ProfileCreatorModel.ProfileName + " stopped";
         }
         foreach (var device in Devices)
         {
@@ -544,8 +501,8 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
         }
         if (IsStarted)
         {
-            await Profiles.Instance.StartAsync(ProfileCreatorModels.ToArray(), Devices.ToArray());
-            ErrorText = "Profiles started";
+            await Profiles.Instance.StartAsync(ProfileCreatorModel, Devices.FirstOrDefault(k => k.SerialNumber== Device.Value));
+            ErrorText = ProfileCreatorModel.ProfileName + " started";
         }
     }
 

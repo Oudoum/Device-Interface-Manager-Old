@@ -4,8 +4,6 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Device_Interface_Manager.MSFSProfiles.PMDG;
-using CommunityToolkit.Mvvm.ComponentModel;
-using System.Collections.ObjectModel;
 
 namespace Device_Interface_Manager.MVVM.Model;
 public class OutputCreatorModel
@@ -75,16 +73,25 @@ public class OutputCreatorModel
         ? new int?[size].Select((_, i) => i).Cast<int?>().ToArray()
         : null;
 
-    private int? _comparisonValue;
-    public int? ComparisonValue
+    public string[] Operators { get; set; } = new string[] { "=", "≠", "<", ">", "≤", "≥" };
+
+    public string Operator { get; set; }
+
+    private double? _comparisonValue;
+    public double? ComparisonValue
     {
         get => string.IsNullOrEmpty(PMDGData)
-            || typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetField(PMDGData)?.FieldType == typeof(bool)
-            || typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetField(PMDGData)?.FieldType == typeof(bool[])
-            ? null
-            : _comparisonValue;
+            || typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetField(PMDGData)?.FieldType != typeof(bool)
+            || typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetField(PMDGData)?.FieldType != typeof(bool[])
+            || DataType == ProfileCreatorModel.MSFSSimConnect
+            ? _comparisonValue
+            : null;
         set => _comparisonValue = value;
     }
+
+    public double? TrueValue { get; set; }
+
+    public double? FalseValue { get; set; }
 
     public string Data { get; set; }
 
@@ -94,7 +101,7 @@ public class OutputCreatorModel
 
     public bool? IsPadded { get; set; }
 
-    public static Dictionary<string, char?> PaddingCharacters => new() { [""] = null, ["Zero"] = '0', ["Space"] = ' ' };
+    public static Dictionary<string, char?> PaddingCharacters => new() { ["Zero"] = '0', ["Space"] = ' ' };
 
     public char? PaddingCharacter { get; set; }
 

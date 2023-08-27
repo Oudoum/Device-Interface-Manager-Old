@@ -68,7 +68,6 @@ public class PMDG_737_CDU_StartupManager
 
     public async Task PMDG737CDUStartup(SimConnectClient simConnectClient)
     {
-        PMDG737.RegisterPMDGDataEvents(simConnectClient.SimConnect);
         await Application.Current.Dispatcher.InvokeAsync(delegate
         {
             PMDG737CDU = new();

@@ -1,4 +1,6 @@
-﻿using MahApps.Metro.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
+using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 
 namespace Device_Interface_Manager.MVVM.View;
@@ -12,7 +14,7 @@ public partial class ProfileCreatorView : MetroWindow
         Loaded += ProfileCreatorView_Loaded;
     }
 
-    private void ProfileCreatorView_Loaded(object sender, System.Windows.RoutedEventArgs e)
+    private void ProfileCreatorView_Loaded(object sender, RoutedEventArgs e)
     {
         if (DataContext is Core.ICloseWindowsCheck vm)
         {

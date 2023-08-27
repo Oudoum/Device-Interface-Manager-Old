@@ -116,7 +116,7 @@ public abstract class NG_CDU_Base : MSFSProfiles.USB
             _eLEC_BusPowered_15 = value;
             if (!value)
             {
-                PMDG737CDU.ClearPMDGCDUCells();
+                PMDG737CDU?.ClearPMDGCDUCells();
             }
         }
     }
@@ -141,7 +141,7 @@ public abstract class NG_CDU_Base : MSFSProfiles.USB
             LTS_PedPanelKnob = pMDG_NG3_Data.LTS_PedPanelKnob;
             RecvData();
         }
-        if ((uint)CDU_ID == data.dwRequestID)
+        if ((uint)CDU_ID == data.dwRequestID && startupManager.PMDG737CDU is not null)
         {
             if (!((PMDG_NG3_CDU_Screen)data.dwData[0]).Powered)
             {
@@ -164,32 +164,15 @@ public abstract class NG_CDU_Base : MSFSProfiles.USB
         {
             await startupManager.PMDG737CDUStartup(simConnectClient);
             PMDG737CDU = startupManager.PMDG737CDU;
-            _ = Task.Run(GetValues);
-            interfaceIT_Dataline_Set(Device.Session, Device.DeviceInfo.nDatalineFirst, true);
+            GetCDUAnalogValues();
+            interfaceIT_Dataline_Set(Device.Session, Device.DeviceInfo.DatalineFirst, true);
         }
     }
+
+    protected abstract void GetCDUAnalogValues();
 
     protected override void KeyPressedProc(uint session, int key, uint direction)
     {
 
-    }
-
-    public void GetValues()
-    {
-        int oldValue = 0;
-        int noldValue = 0;
-        while (simConnectClient.SimConnect is not null)
-        {
-            interfaceIT_Analog_GetValue(Device.Session, 0, out int value);
-            if (Math.Abs(value - oldValue) >= 50 || oldValue == 0)
-            {
-                oldValue = value;
-            }
-            if (Math.Abs(value - noldValue) > 40 || noldValue == 0)
-            {
-                PMDG737CDU?.Dispatcher.BeginInvoke(() => PMDG737CDU.Brightness = noldValue = value);
-            }
-            Thread.Sleep(50);
-        }
     }
 }

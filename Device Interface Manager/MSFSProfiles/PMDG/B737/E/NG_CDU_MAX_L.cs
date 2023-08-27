@@ -21,6 +21,10 @@ public class NG_CDU_MAX_L : NG_CDU_L
             case 52:
                 key = 53;
                 break;
+				
+			case 53:
+				key = 60;
+				break;
 
             case 60:
                 key = 52;

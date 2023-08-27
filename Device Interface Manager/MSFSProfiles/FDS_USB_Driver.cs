@@ -10,21 +10,32 @@ public class FDS_USB_Driver : USB
 {
     public required ProfileCreatorModel ProfileCreatorModel { get; init; }
 
+    private bool isInit;
+
+    public void Start()
+    {
+        if (simConnectClient.IsConnected && Device is not null && !isInit)
+        {
+            Profiles.Instance.FieldChanged += PMDGProfile_FieldChanged;
+
+            Profiles.Instance.WatchedFields.ForEach(x => PMDGProfile_FieldChanged(null, new PMDGDataFieldChangedEventArgs(x, Profiles.Instance.DynDict[x])));
+
+            if (Device.DeviceInfo.DatalineCount > 0)
+            {
+                interfaceIT.USB.InterfaceITAPI_Data.interfaceIT_Dataline_Set(Device.Session, Device.DeviceInfo.DatalineFirst, true);
+            }
+
+            foreach (var item in ProfileCreatorModel.OutputCreator.Where(item => item.DataType == ProfileCreatorModel.MSFSSimConnect && !string.IsNullOrEmpty(item.Data)))
+            {
+                simConnectClient.RegisterSimVar(item.Data, item.Unit);
+            }
+            isInit = true;
+        }
+    }
+
     protected override void SimConnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
     {
-        Profiles.Instance.FieldChanged += PMDGProfile_FieldChanged;
-
-        Profiles.Instance.WatchedFields.ForEach(x => PMDGProfile_FieldChanged(null, new PMDGDataFieldChangedEventArgs(x, Profiles.Instance.DynDict[x])));
-
-        if (Device.DeviceInfo.nDatalineCount > 0)
-        {
-            interfaceIT.USB.InterfaceITAPI_Data.interfaceIT_Dataline_Set(Device.Session, Device.DeviceInfo.nDatalineFirst, true);
-        }
-
-        foreach (var item in ProfileCreatorModel.OutputCreator.Where(item => item.DataType == ProfileCreatorModel.MSFSSimConnect && !string.IsNullOrEmpty(item.Data)))
-        {
-            simConnectClient.RegisterSimVar(item.Data, item.Unit);
-        }
+        Start();
     }
 
     public override void Stop()
@@ -39,101 +50,97 @@ public class FDS_USB_Driver : USB
 
         foreach (var item in ProfileCreatorModel.OutputCreator.Where(k => k.Data == simVar.Name))
         {
+            item.FlightSimValue = simVar.Data;
             if (item.Output is not null)
             {
-                if (string.IsNullOrEmpty(simVar.Unit) && item.OutputType == ProfileCreatorModel.SEVENSEGMENT)
+                switch(item.OutputType)
                 {
-                    SetStringValue(simVar.Data.ToString(System.Globalization.CultureInfo.InvariantCulture), null, item);
-                }
-                else if (simVar.Data != (int)simVar.Data)
-                {
-                    SetStringValue(simVar.Data.ToString(System.Globalization.CultureInfo.InvariantCulture), null, item);
-                }
-                else if (item.OutputType == ProfileCreatorModel.SEVENSEGMENT)
-                {
-                    SetStringValue(simVar.Data.ToString(".0", System.Globalization.CultureInfo.InvariantCulture), null, item);
-                }
-                else if (item.OutputType == ProfileCreatorModel.LED)
-                {
-                    bool value = item.IsInverted ? !simVar.BData() : simVar.BData();
-                    interfaceIT.USB.InterfaceITAPI_Data.interfaceIT_LED_Set(Device.Session, item.Output.Value, value);
+                    case ProfileCreatorModel.LED when item.ComparisonValue is null:
+                        SetSendOuput(item, simVar.BData());
+                        break;
+
+                    case ProfileCreatorModel.LED when item.ComparisonValue is not null:
+                        SetSendOuput(item, CheckComparison(item, simVar.Data));
+                        break;
+
+                    case ProfileCreatorModel.SEVENSEGMENT when simVar.Data == Math.Truncate(simVar.Data):
+                        SetStringValue(simVar.Data.ToString(".0", System.Globalization.CultureInfo.InvariantCulture), simVar.Name, item);
+                        break;
+
+                    case ProfileCreatorModel.SEVENSEGMENT:
+                        SetStringValue(simVar.Data.ToString(System.Globalization.CultureInfo.InvariantCulture), simVar.Name, item);
+                        break;
                 }
             }
         }
     }
 
-
     private void PMDGProfile_FieldChanged(object sender, PMDGDataFieldChangedEventArgs e)
     {
-        foreach (var item in ProfileCreatorModel.OutputCreator.Where(k => k.DataType == ProfileCreatorModel.PMDG737))
+        foreach (var item in ProfileCreatorModel.OutputCreator
+            .Where(k => k.DataType == ProfileCreatorModel.PMDG737 && (k.PMDGDataArrayIndex is not null && k.PMDGData + '_' + k.PMDGDataArrayIndex == e.PMDGDataName) || k.PMDGData == e.PMDGDataName))
         {
-            if ((item.PMDGDataArrayIndex is not null && item.PMDGData + '_' + item.PMDGDataArrayIndex == e.PMDGDataName) || item.PMDGData == e.PMDGDataName)
+            item.FlightSimValue = e.Value;
+            if (item.Output is not null)
             {
-                if (item.Output is null)
-                {
-                    return;
-                }
                 switch (e.Value)
                 {
                     //bool
                     case bool valueBool:
-                        interfaceIT.USB.InterfaceITAPI_Data.interfaceIT_LED_Set(Device.Session, item.Output.Value, item.IsInverted ? !valueBool : valueBool);
-                        break;
-
-                    //byte
-                    case byte valueByte when item.ComparisonValue is not null && item.ComparisonValue <= byte.MaxValue && item.ComparisonValue >= byte.MinValue:
-                        interfaceIT.USB.InterfaceITAPI_Data.interfaceIT_LED_Set(Device.Session, item.Output.Value, valueByte == Convert.ToByte(item.ComparisonValue));
-                        break;
-
-                    case byte valueByte when item.ComparisonValue is null && item.OutputType == ProfileCreatorModel.SEVENSEGMENT:
-                        SetStringValue(valueByte.ToString(), e.PMDGDataName, item);
-                        break;
-
-                    //uint
-                    case uint valueUint when item.ComparisonValue is not null && item.ComparisonValue <= uint.MaxValue && item.ComparisonValue >= uint.MinValue:
-                        interfaceIT.USB.InterfaceITAPI_Data.interfaceIT_LED_Set(Device.Session, item.Output.Value, valueUint == Convert.ToUInt32(item.ComparisonValue));
-                        break;
-
-                    case uint valueUint when item.ComparisonValue is null && item.OutputType == ProfileCreatorModel.SEVENSEGMENT:
-                        SetStringValue(valueUint.ToString(), e.PMDGDataName, item);
-                        break;
-
-                    //int
-                    case int valueInt when item.ComparisonValue is not null && item.ComparisonValue <= int.MaxValue && item.ComparisonValue >= int.MinValue:
-                        interfaceIT.USB.InterfaceITAPI_Data.interfaceIT_LED_Set(Device.Session, item.Output.Value, valueInt == item.ComparisonValue);
-                        break;
-
-                    case int valueInt when item.ComparisonValue is null && item.OutputType == ProfileCreatorModel.SEVENSEGMENT:
-                        SetStringValue(valueInt.ToString(), e.PMDGDataName, item);
-                        break;
-
-                    //float
-                    case float valueFLoat:
-                        SetStringValue(valueFLoat.ToString(System.Globalization.CultureInfo.InvariantCulture), e.PMDGDataName, item);
-                        break;
-
-                    //ushort
-                    case ushort valueUshort:
-                        SetStringValue(valueUshort.ToString(), e.PMDGDataName, item);
-                        break;
-
-                    //short
-                    case short valueShort:
-                        SetStringValue(valueShort.ToString(), e.PMDGDataName, item);
+                        SetSendOuput(item, valueBool);
                         break;
 
                     //string
                     case string valueString:
-                        SetStringValue(valueString.ToString(), e.PMDGDataName, item);
+                        SetStringValue(valueString, e.PMDGDataName, item);
+                        break;
+
+                    default:
+                        //byte, ushort, short, uint, int, float
+                        double valuedouble = Convert.ToDouble(e.Value);
+                        if (item.ComparisonValue is not null)
+                        {
+                            SetSendOuput(item, CheckComparison(item, valuedouble));
+                        }
+                        else if (item.ComparisonValue is null)
+                        {
+                            SetStringValue(valuedouble.ToString(), e.PMDGDataName, item);
+                        }
                         break;
                 }
             }
         }
     }
 
+    private static bool CheckComparison(OutputCreator item, double value)
+    {
+        return item.Operator switch
+        {
+            "=" => value == item.ComparisonValue,
+            "≠" => value != item.ComparisonValue,
+            "<" => value < item.ComparisonValue,
+            ">" => value > item.ComparisonValue,
+            "≤" => value <= item.ComparisonValue,
+            "≥" => value >= item.ComparisonValue,
+            _ => false,
+        };
+    }
+
+    private void SetSendOuput(OutputCreator item, bool valueBool)
+    {
+        valueBool = item.IsInverted ? !valueBool : valueBool;
+        SetBooleanOuput(item, valueBool);
+        item.OutputValue = valueBool;
+    }
+
+    private void SetBooleanOuput(OutputCreator item, bool valueBool)
+    {
+        interfaceIT.USB.InterfaceITAPI_Data.interfaceIT_LED_Set(Device.Session, item.Output.Value, valueBool);
+    }
+
     private void SetStringValue(string value, string name, OutputCreator item)
     {
-        if (Device.DeviceInfo.n7SegmentCount > 0)
+        if (Device.DeviceInfo.SevenSegmentCount > 0)
         {
             StringBuilder sb = new(value);
             if (item.DigitCount is not null)
@@ -202,8 +209,15 @@ public class FDS_USB_Driver : USB
                     sb.Length = (int)(item.SubstringEnd - item.SubstringStart + 1);
                 }
             }
-            interfaceIT.USB.InterfaceITAPI_Data.interfaceIT_7Segment_Display(Device.Session, sb.ToString(), item.Output.Value);
+            string outputValue = sb.ToString();
+            SetDisplayOutput(item, outputValue);
+            item.OutputValue = outputValue;
         }
+    }
+
+    private void SetDisplayOutput(OutputCreator item, string outputValue)
+    {
+        interfaceIT.USB.InterfaceITAPI_Data.interfaceIT_7Segment_Display(Device.Session, outputValue, item.Output.Value);
     }
 
     public static void FormatString(ref StringBuilder sb, OutputCreator item)
@@ -260,25 +274,28 @@ public class FDS_USB_Driver : USB
             }
 
             //Direction
-            direction = direction switch
+            switch (direction)
             {
-                0 when item.DataRelease is not null => item.DataRelease.Value,
+                case 0 when item.DataRelease is not null:
+                    direction = item.DataRelease.Value;
+                    break;
 
-                1 when item.DataPress is not null => item.DataPress.Value,
+                case 1 when item.DataPress is not null:
+                    direction = item.DataPress.Value;
+                    break;
 
-                0 when item.PMDGMouseRelease is not null => item.PMDGMouseRelease.Value.Value,
+                case 0 when item.PMDGMouseRelease is not null:
+                    direction = item.PMDGMouseRelease.Value.Value;
+                    break;
 
-                1 when item.PMDGMousePress is not null => item.PMDGMousePress.Value.Value,
+                case 1 when item.PMDGMousePress is not null:
+                    direction = item.PMDGMousePress.Value.Value;
+                    break;
 
-                _ => int.MaxValue,
-            };
-
-            if (direction == int.MaxValue)
-            {
-                return;
+                default:
+                    continue;
             }
 
-            //MSFS/SimConnect/LVar
             if (item.EventType == ProfileCreatorModel.MSFSSimConnect && !string.IsNullOrEmpty(item.Event))
             {
                 simConnectClient.SetSimVar(direction, item.Event);

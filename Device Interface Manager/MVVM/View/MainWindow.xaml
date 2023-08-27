@@ -5,8 +5,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:viewModel="clr-namespace:Device_Interface_Manager.MVVM.ViewModel"
+    xmlns:view="clr-namespace:Device_Interface_Manager.MVVM.View"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:local="clr-namespace:Device_Interface_Manager"
+    d:DataContext="{d:DesignInstance Type=viewModel:MainViewModel}"
     mc:Ignorable="d"
     Title="Device Interface Manager"
     Height="600"
@@ -16,7 +19,10 @@
     MaxHeight="{x:Static SystemParameters.MaximizedPrimaryScreenHeight}"
     SaveWindowPosition="True"
     WindowStyle="None"
-    UseNoneWindowStyle="True"
+    ShowTitleBar="False"
+    ShowMinButton="False"
+    ShowMaxRestoreButton="False"
+    ShowCloseButton="False"
     Background="Transparent"
     BorderThickness="0"
     AllowsTransparency="True">
@@ -53,11 +59,6 @@
         </Style>
     </Window.Resources>
 
-
-    <Window.DataContext>
-        <viewModel:MainViewModel/>
-    </Window.DataContext>
-
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing">
             <i:InvokeCommandAction Command="{Binding WindowClosingCommand}"/>
@@ -87,8 +88,19 @@
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
                 Background="Transparent"
-                Foreground="White"
-                FontSize="50"><Run Text="DIM"/></TextBlock>
+                Text="DIM"
+                FontSize="50">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource MahApps.Styles.TextBlock}">
+                        <Setter Property="Foreground" Value="White"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsSimConnectOpen}" Value="True">
+                                <Setter Property="Foreground" Value="Green"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
 
             <StackPanel Grid.Row="1">
 
@@ -274,14 +286,14 @@
                 </ListView>
             </Grid>
 
-            <Grid
+            <StackPanel
                 Grid.Row="1"
-                Margin="0,0,0,15"
+                Margin="0,0,0,10"
                 HorizontalAlignment="Center"
-                VerticalAlignment="Bottom" 
-                Cursor="Hand">
+                VerticalAlignment="Bottom">
                 <Button 
                     x:Name="button"
+                    Cursor="Hand"
                     BorderThickness="0"
                     Background="Transparent"
                     IsTabStop="False"
@@ -340,7 +352,16 @@
                         </Path>
                     </Viewbox>
                 </Button>
-            </Grid>
+                <TextBlock
+                    Margin="0,10,0,0"
+                    FontSize="18"
+                    Foreground="Yellow"
+                    HorizontalAlignment="Center"
+                    d:Text="0.0.0">
+                    <Run Text="Alpha"/>
+                    <Run Text="{Binding DIMVersion}"/>
+                </TextBlock>
+            </StackPanel>
 
             <Button
                 Grid.Column="1"
@@ -392,84 +413,42 @@
 
             <ContentControl
                 Content="{Binding CurrentView}"
+                d:Content="{Binding Source={ d:DesignInstance Type=view:HomeUSBView, IsDesignTimeCreatable=True}}"
                 Grid.Row="1"
                 Grid.Column="1"
                 IsTabStop="False"/>
 
             <Grid Grid.Column="1" MouseDown="Grid_MouseDown">
-                <Button
-                Content="{Binding TotalControllers, NotifyOnTargetUpdated=True}"
-                Command="{Binding RefreshDeviceListCommand}"
-                IsEnabled="{Binding HomeUSBVM.IsUSBEnabled}"
-                FontSize="18"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                Cursor="Hand"
-                IsTabStop="False">
-                    <Button.Resources>
-                        <Style TargetType="Button">
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border
-                                        Background="{TemplateBinding Background}">
-                                            <ContentPresenter 
-                                          Content="{TemplateBinding Content}"/>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="CadetBlue"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Resources>
-                    <Button.Visibility>
-                        <Binding Converter="{StaticResource BooleanToVisibilityConverter}" Path="Enet"/>
-                    </Button.Visibility>
-                </Button>
-
-                <Button
-                Command="{Binding OpenProfileCreatorCommand}"
-                mah:ControlsHelper.ContentCharacterCasing="Normal"
-                Cursor="Hand"
-                Visibility="Visible"
-                Content="ProfileCreator"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                FontSize="32"
-                IsTabStop="False"/>
-
                 <TextBlock
-                FontSize="18"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Margin="655,0,147,0">
-                    <Run Text="{Binding DIMVersionText}" Foreground="White" />
-                    <Run Text="{Binding DIMVersionDate}" Foreground="Yellow" />
-                </TextBlock>
-
-                <Ellipse 
-                HorizontalAlignment="Center"
-                Height="40" 
-                Margin="0,0,330,0"
-                StrokeThickness="4"
-                Stroke="Gray"  
-                Width="40">
-                    <Ellipse.Style>
-                        <Style TargetType="Ellipse">
-                            <Setter Property="Fill" Value="Red"/>
+                    Text="{Binding TotalControllers}"
+                    d:Text="TotalControllers"
+                    FontSize="18"
+                    Margin="20,0,0,0"
+                    Foreground="White"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource MahApps.Styles.TextBlock}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsSimConnectOpen}" Value="True">
-                                    <Setter Property="Fill" Value="Green"/>
+                                <DataTrigger Binding="{Binding HomeUSBVM.IsUSBEnabled}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </Ellipse.Style>
-                </Ellipse>
+                    </TextBlock.Style>
+                </TextBlock>
+
+                <Button
+                    Command="{Binding OpenProfileCreatorCommand}"
+                    mah:ControlsHelper.ContentCharacterCasing="Normal"
+                    Cursor="Hand"
+                    Visibility="Visible"
+                    Content="ProfileCreator [Beta]"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="32"
+                    IsTabStop="False"/>
+                
             </Grid>
         </Grid>
     </Border>

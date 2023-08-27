@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Input;
+using Device_Interface_Manager.MVVM.ViewModel;
 using MahApps.Metro.Controls;
 using Forms = System.Windows.Forms;
 
@@ -10,9 +11,11 @@ namespace Device_Interface_Manager.MVVM.View
     {
         readonly Forms.NotifyIcon notifyIcon;
 
-        public MainWindow()
+        public MainWindow(MainViewModel viewModel)
         {
             InitializeComponent();
+
+            DataContext = viewModel;
 
             notifyIcon = new()
             {

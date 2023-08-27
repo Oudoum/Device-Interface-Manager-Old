@@ -6,11 +6,14 @@ using System.Net.NetworkInformation;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Device_Interface_Manager.MVVM.Model;
+using Microsoft.Extensions.Logging;
 
 namespace Device_Interface_Manager.MVVM.ViewModel;
 
 public partial class SettingsViewModel : ObservableObject
 {
+    private readonly ILogger<SettingsViewModel> logger;
+
     [ObservableProperty]
     private string _wasmModuleUpdaterMessage;
 
@@ -22,6 +25,7 @@ public partial class SettingsViewModel : ObservableObject
     partial void OnMinimizedHideChanged(bool value)
     {
         Properties.Settings.Default.MinimizedHide = value;
+        logger.LogInformation("MinimizedHide: " + value);
         Properties.Settings.Default.Save();
     }
 
@@ -30,6 +34,7 @@ public partial class SettingsViewModel : ObservableObject
     partial void OnAutoHideChanged(bool value)
     {
         Properties.Settings.Default.AutoHide = value;
+        logger.LogInformation("AutoHide: " + value);
         Properties.Settings.Default.Save();
     }
 
@@ -91,8 +96,9 @@ public partial class SettingsViewModel : ObservableObject
         File.WriteAllText("SimConnect.cfg", File.ReadAllText("SimConnect.cfg").Replace(key + "=" + oldValue, key + "=" + newValue));
     }
 
-    public SettingsViewModel() 
+    public SettingsViewModel(ILogger<SettingsViewModel> logger) 
     {
+        this.logger = logger;
         GetInterfaceITAPIVersion();
         ReadSimConnectCfg();
     }
@@ -106,9 +112,11 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private async Task InstallUpdateDIMWASModule()
     {
+        logger.LogInformation("InstallUpdateDIMWASModule started");
         WasmModuleUpdater wasmModuleUpdater = new();
         WasmModuleUpdaterMessage = await Task.Run(wasmModuleUpdater.InstallWasmModule);
         wasmModuleUpdater = null;
+        logger.LogInformation("InstallUpdateDIMWASModule finished");
     }
 
     [RelayCommand]
@@ -136,7 +144,9 @@ public partial class SettingsViewModel : ObservableObject
     private async Task<bool> PingHostAsync()
     {
         using Ping ping = new();
-        return (await ping.SendPingAsync(IP)).Status == IPStatus.Success;
+        IPStatus status = (await ping.SendPingAsync(IP)).Status;
+        logger.LogInformation($"Ping result for IP {IP}: {status}");
+        return status == IPStatus.Success;
     }
 
     private async Task<bool> ConnectToHostAsync()
@@ -145,22 +155,27 @@ public partial class SettingsViewModel : ObservableObject
         {
             using TcpClient tcpClient = new();
             await tcpClient.ConnectAsync(IP, Convert.ToInt32(Port)).WaitAsync(TimeSpan.FromSeconds(1));
+            logger.LogInformation("SimConnect is available");
             return true;
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException ex)
         {
+            logger.LogCritical(ex, "ConnectToHostAsync OperationCanceledException");
             return false;
         }
-        catch (ArgumentNullException)
+        catch (ArgumentNullException ex)
         {
+            logger.LogCritical(ex, "ConnectToHostAsync ArgumentNullException");
             return false;
         }
-        catch (SocketException)
+        catch (SocketException ex)
         {
+            logger.LogCritical(ex, "ConnectToHostAsync SocketException");
             return false;
         }
-        catch (TimeoutException)
+        catch (TimeoutException ex)
         {
+            logger.LogCritical(ex, "ConnectToHostAsync TimeoutException");
             return false;
         }
     }

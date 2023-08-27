@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.CodeDom;
+using System.Linq;
 using System.Windows;
 using Device_Interface_Manager.interfaceIT.USB;
 using Device_Interface_Manager.MVVM.Model;
@@ -83,7 +84,10 @@ public class NavigationService : INavigationService
                 DataType = outputCreator.DataType,
                 PMDGData = outputCreator.PMDGData,
                 PMDGDataArrayIndex = outputCreator.PMDGDataArrayIndex,
+                Operator = outputCreator.Operator,
                 ComparisonValue = outputCreator.ComparisonValue,
+                TrueValue = outputCreator.TrueValue,
+                FalseValue = outputCreator.FalseValue,
                 Data = outputCreator.Data,
                 Unit = outputCreator.Unit,
                 IsInverted = outputCreator.IsInverted,
@@ -114,7 +118,10 @@ public class NavigationService : INavigationService
             outputCreator.DataType = viewModel.DataType;
             outputCreator.PMDGData = viewModel.PMDGData;
             outputCreator.PMDGDataArrayIndex = viewModel.PMDGDataArrayIndex;
+            outputCreator.Operator = viewModel.Operator;
             outputCreator.ComparisonValue = viewModel.ComparisonValue;
+            outputCreator.TrueValue = viewModel.TrueValue;
+            outputCreator.FalseValue = viewModel.FalseValue;
             outputCreator.Data = viewModel.Data;
             outputCreator.Unit = viewModel.Unit;
             outputCreator.IsInverted = viewModel.IsInverted;

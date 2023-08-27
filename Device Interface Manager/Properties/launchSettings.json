@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Device Interface Manager": {
+      "commandName": "Project",
+      "remoteDebugEnabled": false,
+      "remoteDebugMachine": "172.22.8.241"
+    }
+  }
+}

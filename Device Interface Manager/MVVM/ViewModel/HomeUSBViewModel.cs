@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Device_Interface_Manager.interfaceIT.USB;
@@ -16,6 +17,8 @@ namespace Device_Interface_Manager.MVVM.ViewModel;
 
 public partial class HomeUSBViewModel : ObservableObject
 {
+    private readonly ILogger<HomeUSBViewModel> logger;
+
     private const string usb = @"Profiles\USB.json";
 
     [ObservableProperty]
@@ -37,8 +40,13 @@ public partial class HomeUSBViewModel : ObservableObject
 
     private List<ProfileCreatorModel> profileCreatorModels;
 
-    public HomeUSBViewModel()
+    [ObservableProperty]
+    public ObservableCollection<string> _logMessages;
+
+    public HomeUSBViewModel(ILogger<HomeUSBViewModel> logger)
     {
+        this.logger = logger;
+
         profileActions = new()
         {
             { "-- None --", null },
@@ -154,30 +162,30 @@ public partial class HomeUSBViewModel : ObservableObject
         BoardInfo.Clear();
         BoardType.Clear();
 
-        BoardInfo.Add($"Board {bOARDCAPS.szBoardType} manufactured on {bOARDCAPS.szManufactureDate} has the following features: ");
+        BoardInfo.Add($"Board {bOARDCAPS.BoardType} manufactured on {bOARDCAPS.ManufactureDate} has the following features: ");
 
-        AddFeatureInfo(bOARDCAPS.dwFeatures == InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_NONE, "No features programmed. Please obtain the update patch for this board.");
+        AddFeatureInfo(bOARDCAPS.Features == InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_NONE, "No features programmed. Please obtain the update patch for this board.");
 
-        AddFeatureInfo((bOARDCAPS.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_OUTPUT_LED) != 0, $"{bOARDCAPS.nLEDCount} | LEDs ( {bOARDCAPS.nLEDFirst} - {bOARDCAPS.nLEDLast} )");
+        AddFeatureInfo((bOARDCAPS.Features & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_OUTPUT_LED) != 0, $"{bOARDCAPS.LEDCount} | LEDs ( {bOARDCAPS.LEDFirst} - {bOARDCAPS.LEDLast} )");
 
-        AddFeatureInfo((bOARDCAPS.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_INPUT_SWITCHES) != 0, $"{bOARDCAPS.nSwitchCount} | Switches ( {bOARDCAPS.nSwitchFirst} - {bOARDCAPS.nSwitchLast} )");
+        AddFeatureInfo((bOARDCAPS.Features & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_INPUT_SWITCHES) != 0, $"{bOARDCAPS.SwitchCount} | Switches ( {bOARDCAPS.SwitchFirst} - {bOARDCAPS.SwitchLast} )");
 
-        AddFeatureInfo((bOARDCAPS.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_OUTPUT_7SEGMENT) != 0, $"{bOARDCAPS.n7SegmentCount} | 7 Segments ( {bOARDCAPS.n7SegmentFirst} - {bOARDCAPS.n7SegmentLast} )");
+        AddFeatureInfo((bOARDCAPS.Features & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_OUTPUT_7SEGMENT) != 0, $"{bOARDCAPS.SevenSegmentCount} | 7 Segments ( {bOARDCAPS.SevenSegmentFirst} - {bOARDCAPS.SevenSegmentLast} )");
 
-        AddFeatureInfo((bOARDCAPS.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_OUTPUT_DATALINE) != 0, $"{bOARDCAPS.nDatalineCount} | Datalines ( {bOARDCAPS.nDatalineFirst} - {bOARDCAPS.nDatalineLast} )");
+        AddFeatureInfo((bOARDCAPS.Features & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_OUTPUT_DATALINE) != 0, $"{bOARDCAPS.DatalineCount} | Datalines ( {bOARDCAPS.DatalineFirst} - {bOARDCAPS.DatalineLast} )");
 
         //Not available
-        AddFeatureInfo((bOARDCAPS.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_OUTPUT_SERVO) != 0, $"{bOARDCAPS.nServoController} | Servos ( {bOARDCAPS.nServoControllerFirst} - {bOARDCAPS.nServoControllerLast} )");
+        AddFeatureInfo((bOARDCAPS.Features & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_OUTPUT_SERVO) != 0, $"{bOARDCAPS.ServoController} | Servos ( {bOARDCAPS.ServoControllerFirst} - {bOARDCAPS.ServoControllerLast} )");
 
-        AddFeatureInfo((bOARDCAPS.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_SPECIAL_BRIGHTNESS) != 0, "Brightness control supported");
+        AddFeatureInfo((bOARDCAPS.Features & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_SPECIAL_BRIGHTNESS) != 0, "Brightness control supported");
 
-        AddFeatureInfo((bOARDCAPS.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_SPECIAL_ANALOG_INPUT) != 0, "Analog input supported (Single Channel)");
+        AddFeatureInfo((bOARDCAPS.Features & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_SPECIAL_ANALOG_INPUT) != 0, "Analog input supported (Single Channel)");
 
-        AddFeatureInfo((bOARDCAPS.dwFeatures & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_SPECIAL_ANALOG16_INPUT) != 0, "Analog input supported (16 Channels)");
+        AddFeatureInfo((bOARDCAPS.Features & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_SPECIAL_ANALOG16_INPUT) != 0, "Analog input supported (16 Channels)");
 
         foreach (var field in typeof(InterfaceIT_BoardIDs).GetFields())
         {
-            if ((string)field.GetValue(null) == bOARDCAPS.szBoardType)
+            if ((string)field.GetValue(null) == bOARDCAPS.BoardType)
                 BoardType.Add(field.Name.ToString().Replace('_', ' '));
         }
     }
@@ -214,7 +222,7 @@ public partial class HomeUSBViewModel : ObservableObject
 
     private async Task StartUSBCustomProfile(Connection connection)
     {
-        await MSFSProfiles.Profiles.Instance.StartAsync(profileCreatorModels.FirstOrDefault(s => '#' + s.ProfileName == connection.SelectedProfile), Devices.FirstOrDefault(o => o.SerialNumber == connection.Serial));
+        await Task.Run(() => MSFSProfiles.Profiles.Instance.StartAsync(profileCreatorModels.FirstOrDefault(s => '#' + s.ProfileName == connection.SelectedProfile), Devices.FirstOrDefault(o => o.SerialNumber == connection.Serial)));
     }
 
     private async Task StartUSBProfiles(Connection connection)

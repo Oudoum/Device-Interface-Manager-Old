@@ -23,6 +23,7 @@ public partial class ProfileCreatorModel : ObservableObject
     //Outputs
     public const string LED = "LED";
     public const string SEVENSEGMENT = "7 Segment";
+    public const string DATALINE = "Dataline";
 
     public string ProfileName { get; set; }
 
@@ -36,9 +37,6 @@ public partial class ProfileCreatorModel : ObservableObject
     [JsonIgnore]
     public List<int?> Switches { get; set; } = new();
 
-    [JsonIgnore]
-    public List<int?> UsedSwitches { get; set; } = new();
-
     [ObservableProperty]
     private ObservableCollection<OutputCreator> _outputCreator = new();
 
@@ -46,13 +44,7 @@ public partial class ProfileCreatorModel : ObservableObject
     public List<int?> LEDs { get; set; } = new();
 
     [JsonIgnore]
-    public List<int?> UsedLEDs { get; set; } = new();
-
-    [JsonIgnore]
     public List<int?> SevenSegments { get; set; } = new();
-
-    [JsonIgnore]
-    public List<int?> UsedSevenSegments { get; set; } = new();
 }
 
 public partial class InputCreator : ObservableObject
@@ -114,7 +106,16 @@ public partial class OutputCreator : ObservableObject
     private int? _pMDGDataArrayIndex;
 
     [ObservableProperty]
-    private int? _comparisonValue;
+    private string _operator;
+
+    [ObservableProperty]
+    private double? _comparisonValue;
+
+    [ObservableProperty]
+    private double? _trueValue;
+
+    [ObservableProperty]
+    private double? _falseValue;
 
     [ObservableProperty]
     private bool _isInverted;
@@ -140,16 +141,20 @@ public partial class OutputCreator : ObservableObject
     [ObservableProperty]
     private byte? _substringEnd;
 
+    [ObservableProperty]
+    [property: JsonIgnore]
+    private object _flightSimValue;
+
+    [ObservableProperty]
+    [property: JsonIgnore]
+    private object _outputValue;
+
     public OutputCreator Clone()
     {
         return MemberwiseClone() as OutputCreator;
     }
 }
 
-//7Segement
-
 //Brightness
-
-//Dataline
 
 //Analog

@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Device_Interface_Manager.interfaceIT.USB;
@@ -12,7 +12,7 @@ public partial class OtherTestsViewModel : ObservableObject
 {
     private CancellationTokenSource valuesCancellationTokenSource;
 
-    public ObservableCollection<int> SevenSegmentPositions { get; set; } = new();
+    public int[] SevenSegmentPositions => Enumerable.Range(SevenSegmentFirst, SevenSegmentCount).ToArray();
 
     [ObservableProperty]
     private bool _sevenSegmentEnabled;
@@ -36,9 +36,9 @@ public partial class OtherTestsViewModel : ObservableObject
             {
                 Reset7SegmentDisplay();
             }
-            if (value.Length > SevenSegmentCount - SevenSegmentSelectedPosition + 1)
+            if (value.Length > SevenSegmentCount - SevenSegmentSelectedPosition + SevenSegmentFirst)
             {
-                _sevenSegmentText = value.Remove(SevenSegmentCount - SevenSegmentSelectedPosition + 1);
+                _sevenSegmentText = value.Remove(SevenSegmentCount - SevenSegmentSelectedPosition + SevenSegmentFirst);
                 InterfaceITAPI_Data.interfaceIT_7Segment_Display(Session, _sevenSegmentText, SevenSegmentSelectedPosition);
                 return;
             }
@@ -73,8 +73,10 @@ public partial class OtherTestsViewModel : ObservableObject
 
 
     public required uint Session { get; init; }
-    public required uint Features { get; init; }
+    public required InterfaceIT_BoardInfo.Features Features { get; init; }
+    public required int DatalineCount { get; init; }
     public required int DatalineFirst { get; init; }
+    public required int DatalineLast { get; init; }
     public required int SevenSegmentCount { get; init; }
     public required int SevenSegmentFirst { get; init; }
     public required int SevenSegmentLast { get; init; }
@@ -90,17 +92,10 @@ public partial class OtherTestsViewModel : ObservableObject
             return;
         }
         
-        FeatureNotSupported = string.Empty;
         InterfaceITAPI_Data.interfaceIT_7Segment_Enable(Session, SevenSegmentEnabled = !SevenSegmentEnabled);
-        if (SevenSegmentEnabled)
-        {
-            SevenSegmentPositions.Clear();
-            for (int i = SevenSegmentFirst; i <= SevenSegmentLast; i++)
-            {
-                SevenSegmentSelectedPosition = 1;
-                SevenSegmentPositions.Add(i);
-            }
-        }
+        FeatureNotSupported = string.Empty;
+        SevenSegmentText = string.Empty;
+        SevenSegmentSelectedPosition = 1;
     }
 
     [RelayCommand]
@@ -115,12 +110,28 @@ public partial class OtherTestsViewModel : ObservableObject
         FeatureNotSupported = string.Empty;
         if (!DatalineEnabled)
         {
-            InterfaceITAPI_Data.interfaceIT_Dataline_Set(Session, DatalineFirst, DatalineEnabled);
+            for (int i = DatalineFirst; i <= DatalineLast; i++)
+            {
+                InterfaceITAPI_Data.interfaceIT_Dataline_Set(Session, i, DatalineEnabled);
+            }
             InterfaceITAPI_Data.interfaceIT_Dataline_Enable(Session, DatalineEnabled);
             return;
         }
         InterfaceITAPI_Data.interfaceIT_Dataline_Enable(Session, DatalineEnabled);
-        InterfaceITAPI_Data.interfaceIT_Dataline_Set(Session, DatalineFirst, DatalineEnabled);
+    }
+
+    public int[] DataLines => Enumerable.Range(DatalineFirst, DatalineCount).ToArray();
+
+    [RelayCommand]
+    private void DatalineSetOn(int position)
+    {
+        InterfaceITAPI_Data.interfaceIT_Dataline_Set(Session, position, true);
+    }
+
+    [RelayCommand]
+    private void DatalineSetOff(int position)
+    {
+        InterfaceITAPI_Data.interfaceIT_Dataline_Set(Session, position, false);
     }
 
     [RelayCommand]
@@ -185,7 +196,7 @@ public partial class OtherTestsViewModel : ObservableObject
             {
                 AnalogValue = noldValue = value;
             }
-            Thread.Sleep(50);
+            Task.Delay(50, token);
         }
     }
 }

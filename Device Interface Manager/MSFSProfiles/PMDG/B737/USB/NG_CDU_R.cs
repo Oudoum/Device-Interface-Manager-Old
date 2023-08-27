@@ -10,6 +10,34 @@ public class NG_CDU_R : NG_CDU_Base
         CDU_ID = DATA_REQUEST_ID.CDU1_REQUEST;
     }
 
+    protected override void GetCDUAnalogValues()
+    {
+        //Task.Run(() => GetValues(cancellationTokenSource.Token));
+    }
+
+    //public void GetValues(CancellationToken cancellationToken)
+    //{
+    //    int oldValue = 0;
+    //    int noldValue = 0;
+    //    while (!cancellationToken.IsCancellationRequested)
+    //    {
+    //        interfaceIT.USB.InterfaceITAPI_Data.interfaceIT_Analog_GetValue(Device.Session, 0, out int value);
+    //        if (Math.Abs(value - oldValue) >= 50 || oldValue == 0)
+    //        {
+    //            oldValue = value;
+    //        }
+    //        if (Math.Abs(value - noldValue) > 40 || noldValue == 0)
+    //        {
+    //            if (PMDG737CDU is not null)
+    //            {
+    //                noldValue = value;
+    //                PMDG737CDU.Dispatcher.BeginInvoke(() => PMDG737CDU.Brightness = value);
+    //            }
+    //        }
+    //        Thread.Sleep(50);
+    //    }
+    //}
+
     protected override void RecvData()
     {
         CDU_annunEXEC = pMDG_NG3_Data.CDU_annunEXEC[1];

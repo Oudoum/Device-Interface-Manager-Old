@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Reflection;
 using System.Collections.ObjectModel;
 using AutoUpdaterDotNET;
+using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.Messaging.Messages;
@@ -13,12 +14,13 @@ using Device_Interface_Manager.interfaceIT.USB;
 using Device_Interface_Manager.MVVM.View;
 using Device_Interface_Manager.Core;
 using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
-using System.Windows;
 
 namespace Device_Interface_Manager.MVVM.ViewModel;
 
 public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStausMessage>
 {
+    private readonly ILogger<MainViewModel> logger;
+
     private const string updateLink = "https://raw.githubusercontent.com/Oudoum/Device-Interface-Manager-Download/main/Updates/AutoUpdaterDIM.xml";
 
     public HomeUSBViewModel HomeUSBVM { get; set; }
@@ -40,34 +42,34 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
     public SettingsViewModel SettingsVM { get; set; }
 
     [ObservableProperty]
-    public bool _isSimConnectOpen;
+    private bool _isSimConnectOpen;
 
     [ObservableProperty]
-    public bool _radioButtonHomeIsChecked = true;
+    private bool _radioButtonHomeIsChecked = true;
 
     [ObservableProperty]
-    public bool _radioButtonLEDTestIsChecked;
+    private bool _radioButtonLEDTestIsChecked;
 
     [ObservableProperty]
-    public bool _radioButtonSwitchTesteIsChecked;
+    private bool _radioButtonSwitchTesteIsChecked;
 
     [ObservableProperty]
-    public bool _radioButtonOtherTestIsChecked;
+    private bool _radioButtonOtherTestIsChecked;
 
     [ObservableProperty]
-    public bool _radioButtonHomeENETIsChecked = true;
+    private bool _radioButtonHomeENETIsChecked = true;
 
     [ObservableProperty]
-    public bool _radioButtonBoardinfoENETIsChecked;
+    private bool _radioButtonBoardinfoENETIsChecked;
 
     [ObservableProperty]
-    public bool _radioButtonTestENETIsChecked;
+    private bool _radioButtonTestENETIsChecked;
 
     [ObservableProperty]
-    public bool _settingsIsChecked;
+    private bool _settingsIsChecked;
 
     [ObservableProperty]
-    public string _totalControllers;
+    private string _totalControllers;
 
     [ObservableProperty]
     private bool _enet = Properties.Settings.Default.ENET;
@@ -102,19 +104,19 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
         }
     }
 
+    public Version DIMVersion { get; set; } = Assembly.GetEntryAssembly().GetName().Version;
 
-    public string DIMVersionText { get; set; } = "DIM Dev Version: ";
-    public string DIMVersionDate { get; set; } = "2023-07-21";
+    private int hidDeviceCount;
 
-    //public string DIMVersion { get; } = "DIM Dev Version " + Assembly.GetEntryAssembly().GetName().Version;
-
-    public MainViewModel()
+    public MainViewModel(ILogger<MainViewModel> logger, ILogger<HomeUSBViewModel> homeUSBLogger, ILogger<SettingsViewModel> settingsLogger)
     {
-        HomeUSBVM = new HomeUSBViewModel();
+        this.logger = logger;
+
+        HomeUSBVM = new HomeUSBViewModel(homeUSBLogger);
         HomeENETVM = new HomeENETViewModel();
         BoardinfoENETVM = new BoardinfoENETViewModel();
         TestENETVM = new TestENETViewModel();
-        SettingsVM = new SettingsViewModel();
+        SettingsVM = new SettingsViewModel(settingsLogger);
 
         GetInterfaceITDevices();
 
@@ -124,6 +126,34 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
 
         Update();
         StrongReferenceMessenger.Default.Register(this);
+
+        hidDeviceCount = GetSpecificDevicesCount();
+        HidSharp.DeviceList.Local.Changed += COMDeviceListChanged;
+    }
+
+    private int GetSpecificDevicesCount()
+    {
+        return HidSharp.DeviceList.Local.GetHidDevices(8145, 1002).Where(s =>
+        {
+            try
+            {
+                return s.GetFriendlyName() == "Plain I/O";
+            }
+            catch
+            {
+                return false;
+            }
+        }).Count();
+    }
+
+    private void COMDeviceListChanged(object sender, HidSharp.DeviceListChangedEventArgs e)
+    {
+        int hidDeviceCount = GetSpecificDevicesCount();
+        if (this.hidDeviceCount != hidDeviceCount)
+        {
+            this.hidDeviceCount = hidDeviceCount;
+            System.Windows.Application.Current.Dispatcher.Invoke(RefreshDeviceList);
+        }
     }
 
     private static void Update()
@@ -230,7 +260,6 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
         RadioButtonTestENETIsChecked = false;
     }
 
-    [RelayCommand]
     private void RefreshDeviceList()
     {
         CloseInterfaceITDevices();
@@ -264,12 +293,7 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
     {
         int totalControllers = -1;
         interfaceIT_GetTotalControllers(ref totalControllers);
-        if (totalControllers > 0)
-        {
-            TotalControllers = $"Total controllers detected: {totalControllers}\nClick to refresh!";
-            return;
-        }
-        TotalControllers = "No controllers detected!\nClick to refresh!";
+        TotalControllers = totalControllers > 0 ? "Total controllers detected: " + totalControllers : "No controllers detected!";
     }
 
     private void GetDeviceList()
@@ -286,14 +310,14 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
             {
                 interfaceIT_Bind(device, out uint session);
                 interfaceIT_GetBoardInfo(session, out InterfaceIT_BoardInfo.BOARDCAPS bOARDCAPS);
-                if (bOARDCAPS.szBoardType == "330A" || bOARDCAPS.szBoardType == "332C")
+                if (bOARDCAPS.BoardType == "330A" || bOARDCAPS.BoardType == "332C")
                 {
-                    interfaceIT_SetBoardOptions(session, BoardOptions.INTERFACEIT_BOARD_OPTION_FORCE64);
+                    interfaceIT_SetBoardOptions(session, (uint)BoardOptions.INTERFACEIT_BOARD_OPTION_FORCE64);
                 }
                 string boardType = string.Empty;
                 foreach (FieldInfo field in typeof(InterfaceIT_BoardIDs).GetFields())
                 {
-                    if ((string)field.GetValue(null) == bOARDCAPS.szBoardType)
+                    if ((string)field.GetValue(null) == bOARDCAPS.BoardType)
                         boardType = field.Name.ToString().Replace('_', ' ');
                 }
                 DeviceList.Add(new InterfaceIT_BoardInfo.Device
@@ -307,8 +331,8 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
                 LEDTestViewModels.Add(new LEDTestViewModel()
                 {
                     Session = session,
-                    LEDFirst = bOARDCAPS.nLEDFirst,
-                    LEDLast = bOARDCAPS.nLEDLast,
+                    LEDFirst = bOARDCAPS.LEDFirst,
+                    LEDLast = bOARDCAPS.LEDLast,
                     BoardType = boardType 
                 });
                 SwitchTestViewModels.Add(new SwitchTestViewModel()
@@ -318,11 +342,13 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
                 OtherTestViewModels.Add(new OtherTestsViewModel()
                 {
                     Session = session,
-                    Features = bOARDCAPS.dwFeatures,
-                    DatalineFirst = bOARDCAPS.nDatalineFirst,
-                    SevenSegmentCount = bOARDCAPS.n7SegmentCount,
-                    SevenSegmentFirst = bOARDCAPS.n7SegmentFirst,
-                    SevenSegmentLast = bOARDCAPS.n7SegmentLast
+                    Features = bOARDCAPS.Features,
+                    DatalineCount = bOARDCAPS.DatalineCount,
+                    DatalineFirst = bOARDCAPS.DatalineFirst,
+                    DatalineLast = bOARDCAPS.DatalineLast,
+                    SevenSegmentCount = bOARDCAPS.SevenSegmentCount,
+                    SevenSegmentFirst = bOARDCAPS.SevenSegmentFirst,
+                    SevenSegmentLast = bOARDCAPS.SevenSegmentLast
                 });
             }
         }

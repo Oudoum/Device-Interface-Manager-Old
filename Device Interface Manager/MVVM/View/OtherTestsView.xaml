@@ -5,6 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:viewModel="clr-namespace:Device_Interface_Manager.MVVM.ViewModel"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     mc:Ignorable="d" 
     d:DataContext="{d:DesignInstance Type=viewModel:OtherTestsViewModel, IsDesignTimeCreatable=True}"
     d:DesignWidth="1040"
@@ -37,9 +38,9 @@
         </Grid.Resources>
         <StackPanel>
 
-            <Button 
+            <Button
                 Command="{Binding DatalineEnableCommand}"
-                Margin="0,50,0,0"
+                Margin="0,25,0,0"
                 Content="Dataline">
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
@@ -51,6 +52,22 @@
                     </Style>
                 </Button.Style>
             </Button>
+
+            <StackPanel Orientation="Horizontal" Margin="0,30,0,0" HorizontalAlignment="Center" d:Visibility="Visible">
+                <ComboBox x:Name="MyComboBox" ItemsSource="{Binding DataLines}"/>
+                <Button Margin="25,0,0,0" Width="75" Content="On" Command="{Binding DatalineSetOnCommand}" CommandParameter="{Binding SelectedItem, ElementName=MyComboBox}" mah:ControlsHelper.CornerRadius="3,0,0,3" Cursor="Hand"/>
+                <Button Width="75" Content="Off" Command="{Binding DatalineSetOffCommand}" CommandParameter="{Binding SelectedItem, ElementName=MyComboBox}"  mah:ControlsHelper.CornerRadius="0,3,3,0" Cursor="Hand"/>
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding DatalineEnabled}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+            </StackPanel>
 
             <Button
                 Command="{Binding BrightnessEnableCommand}"
