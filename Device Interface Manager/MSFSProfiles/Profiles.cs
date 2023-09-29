@@ -71,15 +71,11 @@ public class Profiles
 
         foreach (var output in profileCreatorModel.OutputCreator)
         {
-            if (output.DataType == ProfileCreatorModel.PMDG737)
+            if (output.DataType == ProfileCreatorModel.PMDG737 && output.IsActive)
             {
                 if (!string.IsNullOrEmpty(output.PMDGData))
                 {
-                    string pMDGDataFieldName = output.PMDGData;
-                    if (output.PMDGDataArrayIndex is not null)
-                    {
-                        pMDGDataFieldName = pMDGDataFieldName + '_' + output.PMDGDataArrayIndex;
-                    }
+                    string pMDGDataFieldName = ConvertDataToPMDGDataFieldName(output);
                     if (!WatchedFields.Contains(pMDGDataFieldName))
                     {
                         WatchedFields.Add(pMDGDataFieldName);
@@ -98,6 +94,16 @@ public class Profiles
             SimConnectClient.Instance.SimConnect.OnRecvClientData += SimConnect_OnRecvClientData;
             simConnectStarted = true;
         }
+    }
+
+    public static string ConvertDataToPMDGDataFieldName(OutputCreator ouput)
+    {
+        string pMDGDataFieldName = ouput.PMDGData;
+        if (ouput.PMDGDataArrayIndex is not null)
+        {
+            pMDGDataFieldName = pMDGDataFieldName + '_' + ouput.PMDGDataArrayIndex;
+        }
+        return pMDGDataFieldName;
     }
 
     private void Initialize()

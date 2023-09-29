@@ -236,7 +236,7 @@ public sealed class SimConnectClient
     {
         if (!SimVars.Exists(lvar => lvar.Name == simVarName))
         {
-            SimVar newSimVar = new() { Name = simVarName, Unit = simVarUnit, ID = (uint)SimVars.Count + offset + 1 };
+            SimVar newSimVar = new((uint)SimVars.Count + offset + 1, simVarName, simVarUnit);
             SimVars.Add(newSimVar);
 
             SimConnect?.AddToDataDefinition(
@@ -267,11 +267,26 @@ public sealed class SimConnectClient
     public class SimVar
     {
         public uint ID { get; set; }
+
         public string Name { get; set; }
 
         public string Unit { get; set; }
 
         public double Data { get; set; }
+
+        public SimVar(uint id, string name, string unit)
+        {
+            ID = id;
+            Name = name;
+            Unit = unit;
+        }
+
+        public SimVar(string name, double data)
+        {
+            Name = name;
+            Data = data;
+        }
+
         public bool BData()
         {
             return Convert.ToBoolean(Data);

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -44,11 +45,23 @@ public partial class ProfileCreatorModel : ObservableObject
     public List<int?> LEDs { get; set; } = new();
 
     [JsonIgnore]
+    public List<int?> Datalines { get; set; } = new();
+
+    [JsonIgnore]
     public List<int?> SevenSegments { get; set; } = new();
 }
 
 public partial class InputCreator : ObservableObject
 {
+    [ObservableProperty]
+    private Guid _id;
+
+    [ObservableProperty]
+    private bool _isActive;
+
+    [ObservableProperty]
+    private string _description;
+
     [ObservableProperty]
     private string _inputType;
 
@@ -76,14 +89,28 @@ public partial class InputCreator : ObservableObject
     [ObservableProperty]
     private uint? _dataRelease;
 
+    [ObservableProperty]
+    private Precondition[] _preconditions = Array.Empty<Precondition>();
+
     public InputCreator Clone()
     {
-        return MemberwiseClone() as InputCreator;
+        var clone = MemberwiseClone() as InputCreator;
+        clone.Id = Guid.NewGuid();
+        return clone;
     }
 }
 
 public partial class OutputCreator : ObservableObject
 {
+    [ObservableProperty]
+    private Guid _id;
+
+    [ObservableProperty]
+    private bool _isActive;
+
+    [ObservableProperty]
+    private string _description;
+
     [ObservableProperty]
     private string _outputType;
 
@@ -106,10 +133,10 @@ public partial class OutputCreator : ObservableObject
     private int? _pMDGDataArrayIndex;
 
     [ObservableProperty]
-    private string _operator;
+    private char? _operator;
 
     [ObservableProperty]
-    private double? _comparisonValue;
+    private string _comparisonValue;
 
     [ObservableProperty]
     private double? _trueValue;
@@ -149,10 +176,33 @@ public partial class OutputCreator : ObservableObject
     [property: JsonIgnore]
     private object _outputValue;
 
+    [ObservableProperty]
+    private Precondition[] _preconditions = Array.Empty<Precondition>();
+
     public OutputCreator Clone()
     {
-        return MemberwiseClone() as OutputCreator;
+        var clone = MemberwiseClone() as OutputCreator;
+        clone.Id = Guid.NewGuid();
+        return clone;
     }
+}
+
+public partial class Precondition : ObservableObject
+{
+    [ObservableProperty]
+    private bool _isActive;
+
+    [ObservableProperty]
+    private Guid _referenceId;
+
+    [ObservableProperty]
+    private char? _operator;
+
+    [ObservableProperty]
+    private string _comparisonValue;
+
+    [ObservableProperty]
+    private bool _isOrOperator;
 }
 
 //Brightness

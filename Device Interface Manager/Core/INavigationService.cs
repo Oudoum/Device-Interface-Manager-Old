@@ -1,4 +1,4 @@
-﻿using System.CodeDom;
+﻿using System;
 using System.Linq;
 using System.Windows;
 using Device_Interface_Manager.interfaceIT.USB;
@@ -11,9 +11,9 @@ interface INavigationService
 {
     void NavigateTo<TView>(object parameter) where TView : Window, new();
 
-    void NavigateToInputCreator(InputCreator inputCreator, int?[] switches, object device);
+    void NavigateToInputCreator(InputCreator inputCreator, int?[] switches, OutputCreator[] outputCreators, object device);
 
-    void NavigateToOutputCreator(OutputCreator outputCreator, int?[] lEDs, int?[] sevenSegments, object device);
+    void NavigateToOutputCreator(OutputCreator outputCreator, int?[] lEDs, int?[] datalines, int?[] sevenSegments, OutputCreator[] outputCreators, object device);
 }
 
 public class NavigationService : INavigationService
@@ -28,11 +28,11 @@ public class NavigationService : INavigationService
         view.Show();
     }
 
-    public void NavigateToInputCreator(InputCreator inputCreator, int?[] switches, object device)
+    public void NavigateToInputCreator(InputCreator inputCreator, int?[] switches, OutputCreator[] outputCreators, object device)
     {
-        InputCreatorViewModel viewModel = new()
-        {
-            InputCreatorModel = new()
+        InputCreatorViewModel viewModel = new(
+            
+            new()
             {
                 Switches = switches,
                 InputType = inputCreator.InputType,
@@ -43,13 +43,11 @@ public class NavigationService : INavigationService
                 PMDGMouseRelease = inputCreator.PMDGMouseRelease,
                 Event = inputCreator.Event,
                 DataPress = inputCreator.DataPress,
-                DataRelease = inputCreator.DataRelease
-            }
-        };
-        if (device is InterfaceIT_BoardInfo.Device)
-        {
-            viewModel.Device = device as InterfaceIT_BoardInfo.Device;
-        }
+                DataRelease = inputCreator.DataRelease,
+                OutputCreator = outputCreators,
+                Preconditions = new(inputCreator.Preconditions.Select(precondition => new PreconditionModel(precondition, outputCreators)))
+            },
+            device);
 
         InputCreatorView view = new()
         {
@@ -68,16 +66,17 @@ public class NavigationService : INavigationService
             inputCreator.Event = viewModel.Event;
             inputCreator.DataPress = viewModel.DataPress;
             inputCreator.DataRelease = viewModel.DataRelease;
+            inputCreator.Preconditions = viewModel.Preconditions.ToArray();
         }
     }
 
-    public void NavigateToOutputCreator(OutputCreator outputCreator, int?[] lEDs, int?[] sevenSegments, object device)
+    public void NavigateToOutputCreator(OutputCreator outputCreator, int?[] lEDs, int?[] datalines, int?[] sevenSegments, OutputCreator[] outputCreators, object device)
     {
-        OutputCreatorViewModel viewModel = new()
-        {
-            OutputCreatorModel = new()
+        OutputCreatorViewModel viewModel = new(
+            new()
             {
                 LEDs = lEDs,
+                Datalines = datalines,
                 SevenSegments = sevenSegments,
                 OutputType = outputCreator.OutputType,
                 Output = outputCreator.Output,
@@ -98,12 +97,10 @@ public class NavigationService : INavigationService
                 DecimalPointCheckedSum = outputCreator.DecimalPointCheckedSum,
                 SubstringStart = outputCreator.SubstringStart,
                 SubstringEnd = outputCreator.SubstringEnd,
-            }
-        };
-        if (device is InterfaceIT_BoardInfo.Device)
-        {
-            viewModel.Device = device as InterfaceIT_BoardInfo.Device;
-        }
+                OutputCreator = outputCreators.Where(x => x != outputCreator).ToArray(),
+                Preconditions = new(outputCreator.Preconditions.Select(precondition => new PreconditionModel(precondition, outputCreators)))
+            }, 
+            device);
 
         OutputCreatorView view = new()
         {
@@ -132,6 +129,7 @@ public class NavigationService : INavigationService
             outputCreator.DecimalPointCheckedSum = viewModel.DecimalPointCheckedSum;
             outputCreator.SubstringStart = viewModel.SubstringStart;
             outputCreator.SubstringEnd = viewModel.SubstringEnd;
+            outputCreator.Preconditions = viewModel.Preconditions.ToArray();
         }
     }
 }

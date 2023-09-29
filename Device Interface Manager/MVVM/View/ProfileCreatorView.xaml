@@ -17,8 +17,8 @@
     Background="#1B1A24"
     Height="600"
     MinHeight="600"
-    Width="1200"
-    MinWidth="1200">
+    Width="1615"
+    MinWidth="1000">
 
     <Grid VerticalAlignment="Top" HorizontalAlignment="Left">
 
@@ -93,7 +93,7 @@
                 <Button Command="{Binding SaveProfileAsCommand}">
                     <Viewbox Width="48" Height="48">
                         <Canvas Height="24" Width="24">
-                            <Path  Fill="White" Data="M4 19H10V21H4C2.89 21 2 20.1 2 19V5C2 3.9 2.89 3 4 3H16L20 7V9.12L18 11.12V7.83L15.17 5H4V19M14 10V6H5V10H14M20.42 12.3C20.31 12.19 20.18 12.13 20.04 12.13C19.9 12.13 19.76 12.19 19.65 12.3L18.65 13.3L20.7 15.35L21.7 14.35C21.92 14.14 21.92 13.79 21.7 13.58L20.42 12.3M12 19.94V22H14.06L20.12 15.93L18.07 13.88L12 19.94M14 15C14 13.34 12.66 12 11 12S8 13.34 8 15 9.34 18 11 18C11.04 18 11.08 18 11.13 18L14 15.13C14 15.09 14 15.05 14 15"/>
+                            <Path Fill="White" Data="M4 19H10V21H4C2.89 21 2 20.1 2 19V5C2 3.9 2.89 3 4 3H16L20 7V9.12L18 11.12V7.83L15.17 5H4V19M14 10V6H5V10H14M20.42 12.3C20.31 12.19 20.18 12.13 20.04 12.13C19.9 12.13 19.76 12.19 19.65 12.3L18.65 13.3L20.7 15.35L21.7 14.35C21.92 14.14 21.92 13.79 21.7 13.58L20.42 12.3M12 19.94V22H14.06L20.12 15.93L18.07 13.88L12 19.94M14 15C14 13.34 12.66 12 11 12S8 13.34 8 15 9.34 18 11 18C11.04 18 11.08 18 11.13 18L14 15.13C14 15.09 14 15.05 14 15"/>
                         </Canvas>
                     </Viewbox>
                     <Button.Style>
@@ -287,6 +287,12 @@
 
             <TabItem Header="Input" Background="#FF252525">
 
+                <TabItem.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Activate" Command="{Binding ActivateAllInputOutputCreatorCommand}" CommandParameter="{Binding ProfileCreatorModel.InputCreator}"/>
+                        <MenuItem Header="Deactivate" Command="{Binding DeactivateAllInputOutputCreatorCommand}" CommandParameter="{Binding ProfileCreatorModel.InputCreator}"/>
+                    </ContextMenu>
+                </TabItem.ContextMenu>
 
                 <DockPanel HorizontalAlignment="Left">
 
@@ -308,6 +314,32 @@
                     ContextMenu="{DynamicResource DataGridContextMenu}">
 
                         <DataGrid.Columns>
+
+                            <DataGridTemplateColumn Header="Active" SortMemberPath="IsActive">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding IsActive, UpdateSourceTrigger=PropertyChanged}" Padding="0" HorizontalAlignment="Center">
+                                            <CheckBox.Style>
+                                                <Style TargetType="CheckBox" BasedOn="{StaticResource MahApps.Styles.CheckBox}">
+                                                    <Setter Property="mah:CheckBoxHelper.CheckGlyphForegroundChecked" Value="White"/>
+                                                    <Setter Property="mah:CheckBoxHelper.CheckGlyphForegroundCheckedMouseOver" Value="White"/>
+                                                </Style>
+                                            </CheckBox.Style>
+                                        </CheckBox>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                                <DataGridTemplateColumn.CellStyle>
+                                    <Style TargetType="DataGridCell" BasedOn="{StaticResource MahApps.Styles.DataGridCell}">
+                                        <Setter Property="IsTabStop" Value="False"/>
+                                    </Style>
+                                </DataGridTemplateColumn.CellStyle>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTextColumn
+                            Header="Description"
+                            Width="500"
+                            Binding="{Binding Description}"
+                            SortMemberPath="Description"/>
 
                             <DataGridTextColumn
                             Header="Input Type"
@@ -362,6 +394,23 @@
                             Binding="{Binding DataRelease}"
                             SortMemberPath="DataRelease"
                             IsReadOnly="True"/>
+
+                            <DataGridCheckBoxColumn
+                            Header="Logic"
+                            SortMemberPath="HasLogic"
+                            IsReadOnly="True">
+                                <DataGridCheckBoxColumn.ElementStyle>
+                                    <Style TargetType="CheckBox" BasedOn="{StaticResource MahApps.Styles.CheckBox.DataGrid}">
+                                        <Setter Property="IsChecked" Value="True"/>
+                                        <Setter Property="mah:CheckBoxHelper.CheckGlyphForegroundChecked" Value="White"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Preconditions.Count}" Value="0">
+                                                <Setter Property="IsChecked" Value="False"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGridCheckBoxColumn.ElementStyle>
+                            </DataGridCheckBoxColumn>
 
                             <DataGridTemplateColumn Header="Edit" IsReadOnly="True">
                                 <DataGridTemplateColumn.CellTemplate>
@@ -466,10 +515,17 @@
                     </Button>
 
                 </DockPanel>
-
+                
             </TabItem>
 
             <TabItem Header="Output" Background="#FF252525">
+
+                <TabItem.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Activate" Command="{Binding ActivateAllInputOutputCreatorCommand}" CommandParameter="{Binding ProfileCreatorModel.OutputCreator}"/>
+                        <MenuItem Header="Deactivate" Command="{Binding DeactivateAllInputOutputCreatorCommand}" CommandParameter="{Binding ProfileCreatorModel.OutputCreator}"/>
+                    </ContextMenu>
+                </TabItem.ContextMenu>
 
                 <DockPanel HorizontalAlignment="Left">
 
@@ -491,6 +547,32 @@
                     ContextMenu="{DynamicResource DataGridContextMenu}">
 
                         <DataGrid.Columns>
+
+                            <DataGridTemplateColumn Header="Active" SortMemberPath="IsActive">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding IsActive, UpdateSourceTrigger=PropertyChanged}" Padding="0" HorizontalAlignment="Center">
+                                            <CheckBox.Style>
+                                                <Style TargetType="CheckBox" BasedOn="{StaticResource MahApps.Styles.CheckBox}">
+                                                    <Setter Property="mah:CheckBoxHelper.CheckGlyphForegroundChecked" Value="White"/>
+                                                    <Setter Property="mah:CheckBoxHelper.CheckGlyphForegroundCheckedMouseOver" Value="White"/>
+                                                </Style>
+                                            </CheckBox.Style>
+                                        </CheckBox>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                                <DataGridTemplateColumn.CellStyle>
+                                    <Style TargetType="DataGridCell" BasedOn="{StaticResource MahApps.Styles.DataGridCell}">
+                                        <Setter Property="IsTabStop" Value="False"/>
+                                    </Style>
+                                </DataGridTemplateColumn.CellStyle>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTextColumn
+                            Header="Description"
+                            Width="500"
+                            Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
+                            SortMemberPath="Description"/>
 
                             <DataGridTextColumn
                             Header="Output Type"
@@ -556,7 +638,23 @@
                                         <Setter Property="mah:CheckBoxHelper.CheckGlyphForegroundChecked" Value="White"/>
                                     </Style>
                                 </DataGridCheckBoxColumn.ElementStyle>
+                            </DataGridCheckBoxColumn>
 
+                            <DataGridCheckBoxColumn
+                            Header="Logic"
+                            SortMemberPath="HasLogic"
+                            IsReadOnly="True">
+                                <DataGridCheckBoxColumn.ElementStyle>
+                                    <Style TargetType="CheckBox" BasedOn="{StaticResource MahApps.Styles.CheckBox.DataGrid}">
+                                        <Setter Property="IsChecked" Value="True"/>
+                                        <Setter Property="mah:CheckBoxHelper.CheckGlyphForegroundChecked" Value="White"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Preconditions.Count}" Value="0">
+                                                <Setter Property="IsChecked" Value="False"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGridCheckBoxColumn.ElementStyle>
                             </DataGridCheckBoxColumn>
 
                             <DataGridTemplateColumn Header="Edit" IsReadOnly="True">
@@ -654,7 +752,7 @@
 
                             <DataGridTextColumn
                             Header="Output Value"
-                            Foreground="Green"
+                            Foreground="LimeGreen"
                             Binding="{Binding OutputValue}"
                             SortMemberPath="Value"
                             IsReadOnly="True"/>

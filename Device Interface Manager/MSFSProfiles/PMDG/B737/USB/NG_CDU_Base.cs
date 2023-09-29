@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.FlightSimulator.SimConnect;
 using static Device_Interface_Manager.MSFSProfiles.PMDG.PMDG_NG3_SDK;
 using static Device_Interface_Manager.interfaceIT.USB.InterfaceITAPI_Data;
+using MahApps.Metro.Controls;
 
 namespace Device_Interface_Manager.MSFSProfiles.PMDG.B737.USB;
 
@@ -164,6 +165,7 @@ public abstract class NG_CDU_Base : MSFSProfiles.USB
         {
             await startupManager.PMDG737CDUStartup(simConnectClient);
             PMDG737CDU = startupManager.PMDG737CDU;
+            PMDG737CDU.Invoke(() => PMDG737CDU.Brightness = 4095);
             GetCDUAnalogValues();
             interfaceIT_Dataline_Set(Device.Session, Device.DeviceInfo.DatalineFirst, true);
         }

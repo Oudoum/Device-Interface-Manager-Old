@@ -1,22 +1,19 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Controls;
-using System.Collections.Generic;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Collections.Generic;
 using CommunityToolkit.Mvvm.Input;
-using Device_Interface_Manager.Core;
 using Device_Interface_Manager.interfaceIT.USB;
 using Device_Interface_Manager.MSFSProfiles.PMDG;
 using Device_Interface_Manager.MVVM.Model;
+using System.Collections.ObjectModel;
 
 namespace Device_Interface_Manager.MVVM.ViewModel;
-public partial class InputCreatorViewModel : ObservableObject, ICloseWindows
+public partial class InputCreatorViewModel : BaseCreatorViewModel
 {
+    public InputCreatorViewModel(InputCreatorModel inputCreatorModel, object device) : base(device)
+    {
+        InputCreatorModel = inputCreatorModel;
+    }
+
     public InputCreatorModel InputCreatorModel { get; set; }
-
-    public Action Close { get; set; }
-
-    public InterfaceIT_BoardInfo.Device Device { get; set; }
 
     public string InputType
     {
@@ -208,6 +205,18 @@ public partial class InputCreatorViewModel : ObservableObject, ICloseWindows
         }
     }
 
+    public override OutputCreator[] OutputCreator
+    {
+        get => InputCreatorModel.OutputCreator;
+        set => InputCreatorModel.OutputCreator = value;
+    }
+
+    public override ObservableCollection<PreconditionModel> Preconditions
+    {
+        get => InputCreatorModel.Preconditions;
+        set => InputCreatorModel.Preconditions = value;
+    }
+
     [RelayCommand]
     private void GetSwitch()
     {
@@ -219,74 +228,4 @@ public partial class InputCreatorViewModel : ObservableObject, ICloseWindows
             }
         }
     }
-
-    [RelayCommand]
-    private void SwitchComboBoxSlectionChanged(SelectionChangedEventArgs e)
-    {
-        //int? addedValue = null;
-        //if (e.AddedItems.Count > 0)
-        //{
-        //    addedValue = (int?)e.AddedItems[0];
-        //}
-
-        //int? removedValue = null;
-        //if (e.RemovedItems.Count > 0)
-        //{
-        //    removedValue = (int?)e.RemovedItems[0];
-        //}
-
-        //if (addedValue is not null)
-        //{
-        //    foreach (var item in TestCreator.InputCreator)
-        //    {
-        //        if (item.SelectedSwitch != addedValue)
-        //        {
-        //            item.Switches.Remove(addedValue);
-        //        }
-        //    }
-
-        //    if (!TestCreator.RemovedSwitchItems.Contains(addedValue))
-        //    {
-        //        TestCreator.RemovedSwitchItems.Add(addedValue);
-        //    }
-        //    return;
-        //}
-
-        //TestCreator.RemovedSwitchItems.Remove(removedValue);
-
-        //TestCreator.InputCreator
-        //    .Where(item => !item.Switches.Contains(removedValue))
-        //    .ToList()
-        //    .ForEach(item =>
-        //    {
-        //        List<int?> switches = new(item.Switches)
-        //        {
-        //            removedValue
-        //        };
-        //        item.Switches = new(switches.OrderBy(i => i));
-        //    });
-    }
-
-    public bool Save { get; set; }
-
-    [RelayCommand]
-    private void Ok()
-    {
-        Save = true;
-        Close?.Invoke();
-    }
-
-    [RelayCommand]
-    private static void ComboboxMouseEnterLeave(RoutedEventArgs e)
-    {
-        if (e.RoutedEvent == UIElement.GotFocusEvent)
-        {
-            ((ComboBox)e.Source).IsDropDownOpen = true;
-        }
-        else if (e.RoutedEvent == UIElement.LostFocusEvent)
-        {
-            ((ComboBox)e.Source).IsDropDownOpen = false;
-        }
-    }
-
 }

@@ -173,6 +173,10 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
                 {
                     profileCreatorModel.LEDs.Add(i);
                 }
+                for (int i = iitdevice.DeviceInfo.DatalineFirst; i <= iitdevice.DeviceInfo.DatalineLast; i++)
+                {
+                    profileCreatorModel.Datalines.Add(i);
+                }
                 for (int i = iitdevice.DeviceInfo.SevenSegmentFirst; i <= iitdevice.DeviceInfo.SevenSegmentLast; i++)
                 {
                     if (iitdevice.DeviceInfo.SevenSegmentCount > 0)
@@ -227,8 +231,9 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
                     ProfileCreatorModel profileCreatorModel = await JsonSerializer.DeserializeAsync<ProfileCreatorModel>(stream);
                     if (Devices.Any(s => s.BoardType == profileCreatorModel.DeviceName))
                     {
-                        profileCreatorModel.LEDs = ProfileCreatorModel.LEDs;
                         profileCreatorModel.Switches = ProfileCreatorModel.Switches;
+                        profileCreatorModel.LEDs = ProfileCreatorModel.LEDs;
+                        profileCreatorModel.Datalines = ProfileCreatorModel.Datalines;
                         profileCreatorModel.SevenSegments = ProfileCreatorModel.SevenSegments;
                         Driver = profileCreatorModel.Driver;
                         ProfileCreatorModel = profileCreatorModel;
@@ -366,13 +371,13 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
     [RelayCommand]
     private void AddInput()
     {
-        ProfileCreatorModel?.InputCreator.Add(new InputCreator());
+        ProfileCreatorModel?.InputCreator.Add(new InputCreator() { Id = Guid.NewGuid(), IsActive = true });
     }
 
     [RelayCommand]
     private void AddOutput()
     {
-        ProfileCreatorModel?.OutputCreator.Add(new OutputCreator());
+        ProfileCreatorModel?.OutputCreator.Add(new OutputCreator() { Id = Guid.NewGuid(), IsActive = true });
     }
 
     private async Task<bool> ShowConfirmationDialog(string rowType)
@@ -443,17 +448,44 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
     [RelayCommand]
     private void DuplicateInputOutputCreatorRow(object creator)
     {
+        ActivateDeactivateAllOrCloneInputOutputCreator(null, creator);
+    }
+
+    [RelayCommand]
+    private void ActivateAllInputOutputCreator(object creator)
+    {
+        ActivateDeactivateAllOrCloneInputOutputCreator(true, creator);
+    }
+
+    [RelayCommand]
+    private void DeactivateAllInputOutputCreator(object creator)
+    {
+        ActivateDeactivateAllOrCloneInputOutputCreator(false, creator);
+    }
+
+    private void ActivateDeactivateAllOrCloneInputOutputCreator(bool? isActive, object creator)
+    {
         if (creator is IList selectedItems)
         {
             foreach (var item in selectedItems.Cast<object>().ToList())
             {
                 if (item is InputCreator input)
                 {
-                    ProfileCreatorModel.InputCreator.Add(input.Clone());
+                    if (isActive is null)
+                    {
+                        ProfileCreatorModel.InputCreator.Add(input.Clone());
+                        continue;
+                    }
+                    input.IsActive = isActive.Value;
                 }
                 else if (item is OutputCreator output)
                 {
-                    ProfileCreatorModel.OutputCreator.Add(output.Clone());
+                    if (isActive is null)
+                    {
+                        ProfileCreatorModel.OutputCreator.Add(output.Clone());
+                        continue;
+                    }
+                    output.IsActive = isActive.Value;
                 }
             }
         }
@@ -471,13 +503,23 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
         {
             inputCreator.InputType ??= ProfileCreatorModel.SWITCH;
             inputCreator.EventType ??= EventDataTypePreSelection;
-            navigationService.NavigateToInputCreator(inputCreator, ProfileCreatorModel.Switches.ToArray() ,Devices.FirstOrDefault(k => k.SerialNumber == Device.Value));
+            navigationService.NavigateToInputCreator(
+                inputCreator,
+                ProfileCreatorModel.Switches.ToArray(),
+                ProfileCreatorModel.OutputCreator.ToArray(),
+                Devices.FirstOrDefault(k => k.SerialNumber == Device.Value));
         }
         else if (inputOutputCreator is OutputCreator outputCreator)
         {
             outputCreator.OutputType ??= ProfileCreatorModel.LED;
             outputCreator.DataType ??= EventDataTypePreSelection;
-            navigationService.NavigateToOutputCreator(outputCreator, ProfileCreatorModel.LEDs.ToArray(), ProfileCreatorModel.SevenSegments.ToArray(), Devices.FirstOrDefault(k => k.SerialNumber == Device.Value));
+            navigationService.NavigateToOutputCreator(
+                outputCreator,
+                ProfileCreatorModel.LEDs.ToArray(),
+                ProfileCreatorModel.Datalines.ToArray(),
+                ProfileCreatorModel.SevenSegments.ToArray(),
+                ProfileCreatorModel.OutputCreator.ToArray(),
+                Devices.FirstOrDefault(k => k.SerialNumber == Device.Value));
         }
     }
 
@@ -488,22 +530,14 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
     private async Task StartProfiles()
     {
         IsStarted = !IsStarted;
-        if (!IsStarted)
-        {
-            Profiles.Instance.Stop();
-            ErrorText = ProfileCreatorModel.ProfileName + " stopped";
-        }
-        foreach (var device in Devices)
-        {
-            InterfaceITAPI_Data.interfaceIT_LED_Enable(device.Session, !IsStarted);
-            InterfaceITAPI_Data.interfaceIT_Switch_Enable_Poll(device.Session, !IsStarted);
-            InterfaceITAPI_Data.interfaceIT_7Segment_Enable(device.Session, !IsStarted);
-        }
         if (IsStarted)
         {
-            await Profiles.Instance.StartAsync(ProfileCreatorModel, Devices.FirstOrDefault(k => k.SerialNumber== Device.Value));
+            await Profiles.Instance.StartAsync(ProfileCreatorModel, Devices.FirstOrDefault(k => k.SerialNumber == Device.Value));
             ErrorText = ProfileCreatorModel.ProfileName + " started";
+            return;
         }
+        Profiles.Instance.Stop();
+        ErrorText = ProfileCreatorModel.ProfileName + " stopped";
     }
 
     public void DragOver(IDropInfo dropInfo)

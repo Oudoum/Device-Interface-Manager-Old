@@ -4,17 +4,20 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Device_Interface_Manager.MSFSProfiles.PMDG;
+using System.Collections.ObjectModel;
 
 namespace Device_Interface_Manager.MVVM.Model;
 public class OutputCreatorModel
 {
     public string OutputType { get; set; }
 
-    public string[] OutputTypes { get; set; } = { ProfileCreatorModel.LED, ProfileCreatorModel.SEVENSEGMENT };
+    public string[] OutputTypes { get; set; } = { ProfileCreatorModel.LED, ProfileCreatorModel.DATALINE, ProfileCreatorModel.SEVENSEGMENT };
 
     public int? Output { get; set; }
 
     public int?[] LEDs { get; set; }
+
+    public int?[] Datalines { get; set; }
 
     public int?[] SevenSegments { get; set; }
 
@@ -73,12 +76,12 @@ public class OutputCreatorModel
         ? new int?[size].Select((_, i) => i).Cast<int?>().ToArray()
         : null;
 
-    public string[] Operators { get; set; } = new string[] { "=", "≠", "<", ">", "≤", "≥" };
+    public static char[] Operators { get; set; } = new char[] { '=', '≠', '<', '>', '≤', '≥' };
 
-    public string Operator { get; set; }
+    public char? Operator { get; set; }
 
-    private double? _comparisonValue;
-    public double? ComparisonValue
+    private string _comparisonValue;
+    public string ComparisonValue
     {
         get => string.IsNullOrEmpty(PMDGData)
             || typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetField(PMDGData)?.FieldType != typeof(bool)
@@ -190,4 +193,8 @@ public class OutputCreatorModel
 
         public static event EventHandler SumDecimalPointCheckedChanged;
     }
+
+    public OutputCreator[] OutputCreator { get; set; }
+
+    public ObservableCollection<PreconditionModel> Preconditions { get; set; }
 }

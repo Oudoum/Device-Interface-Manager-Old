@@ -47,11 +47,10 @@ public partial class BoardinfoENETViewModel : ObservableObject, IRecipient<Inter
             "Board " + interfaceITEthernetInfo.ID + " has the flollowing features:",
         };
 
-        int boardNumberMinusOne = interfaceITEthernetInfo.USAGE - 1;
         string[] componentTypes = { "LEDS", "SWITCHES", "SEVENSEGMENTS", "DATALINES", "ENCODERS", "ANALOGINS", "PULSEWIDTHS" };
         foreach (string componentType in componentTypes)
         {
-            var component = interfaceITEthernetInfo.BOARDS[boardNumberMinusOne].GetType().GetProperty(componentType).GetValue(interfaceITEthernetInfo.BOARDS[boardNumberMinusOne], null);
+            var component = interfaceITEthernetInfo.BOARDS[0].GetType().GetProperty(componentType).GetValue(interfaceITEthernetInfo.BOARDS[0], null);
             if (component is not null)
             {
                 InterfaceITEthernetInfoTextCollection.Add(((InterfaceITEthernetInfoBoardConfig)component).Total + $" | {componentType} ( " + ((InterfaceITEthernetInfoBoardConfig)component).Start + " - " + ((InterfaceITEthernetInfoBoardConfig)component).Stop + " )");

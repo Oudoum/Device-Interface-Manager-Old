@@ -225,7 +225,7 @@
 
             <Grid
                 Grid.Row="1"
-                Margin="10,260,10,70"
+                Margin="10,260,10,105"
                 Visibility="{Binding Enet, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <ListView
                     VerticalAlignment="Top"

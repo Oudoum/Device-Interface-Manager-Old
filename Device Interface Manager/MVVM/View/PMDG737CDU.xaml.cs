@@ -71,7 +71,7 @@ namespace Device_Interface_Manager.MVVM.View
             }
         }
 
-        private int? _brightness = 4095;
+        private int? _brightness;
         public int? Brightness
         {
             get => _brightness;
@@ -211,9 +211,12 @@ namespace Device_Interface_Manager.MVVM.View
             await System.Threading.Tasks.Task.Delay(500);
             Dispatcher.Invoke(delegate ()
             {
-                foreach (Label lb in CDUGrid.Children.OfType<Label>())
+                foreach (Border br in CDUGrid.Children.OfType<Border>())
                 {
-                    lb.Content = null;
+                    if (br.Child is TextBlock textBlock)
+                    {
+                        textBlock.Text = null;
+                    }
                 }
             });
         }

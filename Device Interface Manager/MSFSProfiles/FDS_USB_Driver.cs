@@ -20,12 +20,7 @@ public class FDS_USB_Driver : USB
 
             Profiles.Instance.WatchedFields.ForEach(x => PMDGProfile_FieldChanged(null, new PMDGDataFieldChangedEventArgs(x, Profiles.Instance.DynDict[x])));
 
-            if (Device.DeviceInfo.DatalineCount > 0)
-            {
-                interfaceIT.USB.InterfaceITAPI_Data.interfaceIT_Dataline_Set(Device.Session, Device.DeviceInfo.DatalineFirst, true);
-            }
-
-            foreach (var item in ProfileCreatorModel.OutputCreator.Where(item => item.DataType == ProfileCreatorModel.MSFSSimConnect && !string.IsNullOrEmpty(item.Data)))
+            foreach (var item in ProfileCreatorModel.OutputCreator.Where(item => item.DataType == ProfileCreatorModel.MSFSSimConnect && !string.IsNullOrEmpty(item.Data) && item.IsActive))
             {
                 simConnectClient.RegisterSimVar(item.Data, item.Unit);
             }
@@ -48,29 +43,51 @@ public class FDS_USB_Driver : USB
     {
         base.SimConnectClient_OnSimVarChanged(sender, simVar);
 
-        foreach (var item in ProfileCreatorModel.OutputCreator.Where(k => k.Data == simVar.Name))
+        foreach (var item in ProfileCreatorModel.OutputCreator.Where(k => k.DataType == ProfileCreatorModel.MSFSSimConnect && k.Data == simVar.Name && k.IsActive))
         {
-            item.FlightSimValue = simVar.Data;
-            if (item.Output is not null)
+            ProfileEntryIteration(item, simVar);
+            PrecomparisonIterartion(item);
+        }
+    }
+
+    private void ProfileEntryIteration(OutputCreator outputCreator, SimConnectClient.SimVar simVar)
+    {
+        outputCreator.FlightSimValue = simVar.Data;
+        outputCreator.OutputValue = null;
+        if (outputCreator.Output is not null && CheckPrecomparison(outputCreator.Preconditions))
+        {
+            switch (outputCreator.OutputType)
             {
-                switch(item.OutputType)
-                {
-                    case ProfileCreatorModel.LED when item.ComparisonValue is null:
-                        SetSendOuput(item, simVar.BData());
-                        break;
+                case ProfileCreatorModel.LED or ProfileCreatorModel.DATALINE when outputCreator.ComparisonValue is null:
+                    SetSendOuput(outputCreator, simVar.BData());
+                    break;
 
-                    case ProfileCreatorModel.LED when item.ComparisonValue is not null:
-                        SetSendOuput(item, CheckComparison(item, simVar.Data));
-                        break;
+                case ProfileCreatorModel.LED or ProfileCreatorModel.DATALINE when outputCreator.ComparisonValue is not null:
+                    SetSendOuput(outputCreator, CheckComparison(outputCreator.ComparisonValue, outputCreator.Operator, simVar.Data));
+                    break;
 
-                    case ProfileCreatorModel.SEVENSEGMENT when simVar.Data == Math.Truncate(simVar.Data):
-                        SetStringValue(simVar.Data.ToString(".0", System.Globalization.CultureInfo.InvariantCulture), simVar.Name, item);
-                        break;
+                case ProfileCreatorModel.SEVENSEGMENT when simVar.Data == Math.Truncate(simVar.Data):
+                    SetStringValue(simVar.Data.ToString(".0", System.Globalization.CultureInfo.InvariantCulture), simVar.Name, outputCreator);
+                    break;
 
-                    case ProfileCreatorModel.SEVENSEGMENT:
-                        SetStringValue(simVar.Data.ToString(System.Globalization.CultureInfo.InvariantCulture), simVar.Name, item);
-                        break;
-                }
+                case ProfileCreatorModel.SEVENSEGMENT:
+                    SetStringValue(simVar.Data.ToString(System.Globalization.CultureInfo.InvariantCulture), simVar.Name, outputCreator);
+                    break;
+            }
+        }
+    }
+
+    private void PrecomparisonIterartion(OutputCreator outputCreator)
+    {
+        foreach (var itemContainsPrecondition in ProfileCreatorModel.OutputCreator.Where(k => k.FlightSimValue is not null && k.Preconditions.Length > 0 && k.IsActive && k.Preconditions.Any(l => l.ReferenceId == outputCreator.Id)))
+        {
+            if (itemContainsPrecondition.DataType == ProfileCreatorModel.MSFSSimConnect)
+            {
+                ProfileEntryIteration(itemContainsPrecondition, (SimConnectClient.SimVar)new(itemContainsPrecondition.Data, (double)itemContainsPrecondition.FlightSimValue));
+            }
+            else if (itemContainsPrecondition.DataType == ProfileCreatorModel.PMDG737)
+            {
+                ProfileEntryIteration(itemContainsPrecondition, (PMDGDataFieldChangedEventArgs)new(Profiles.ConvertDataToPMDGDataFieldName(itemContainsPrecondition), itemContainsPrecondition.FlightSimValue));
             }
         }
     }
@@ -78,52 +95,111 @@ public class FDS_USB_Driver : USB
     private void PMDGProfile_FieldChanged(object sender, PMDGDataFieldChangedEventArgs e)
     {
         foreach (var item in ProfileCreatorModel.OutputCreator
-            .Where(k => k.DataType == ProfileCreatorModel.PMDG737 && (k.PMDGDataArrayIndex is not null && k.PMDGData + '_' + k.PMDGDataArrayIndex == e.PMDGDataName) || k.PMDGData == e.PMDGDataName))
+            .Where(k => k.DataType == ProfileCreatorModel.PMDG737 && k.IsActive && (k.PMDGDataArrayIndex is not null && k.PMDGData + '_' + k.PMDGDataArrayIndex == e.PMDGDataName) || k.PMDGData == e.PMDGDataName))
         {
-            item.FlightSimValue = e.Value;
-            if (item.Output is not null)
+            ProfileEntryIteration(item, e);
+            PrecomparisonIterartion(item);
+        }
+    }
+
+    private void ProfileEntryIteration(OutputCreator outputCreator, PMDGDataFieldChangedEventArgs e)
+    {
+        outputCreator.FlightSimValue = e.Value;
+        outputCreator.OutputValue = null;
+        if (outputCreator.Output is not null && CheckPrecomparison(outputCreator.Preconditions))
+        {
+            switch (e.Value)
             {
-                switch (e.Value)
-                {
-                    //bool
-                    case bool valueBool:
-                        SetSendOuput(item, valueBool);
-                        break;
+                //bool
+                case bool valueBool:
+                    SetSendOuput(outputCreator, valueBool);
+                    break;
 
-                    //string
-                    case string valueString:
-                        SetStringValue(valueString, e.PMDGDataName, item);
-                        break;
+                //string
+                case string valueString:
+                    SetStringValue(valueString, e.PMDGDataName, outputCreator);
+                    break;
 
-                    default:
-                        //byte, ushort, short, uint, int, float
-                        double valuedouble = Convert.ToDouble(e.Value);
-                        if (item.ComparisonValue is not null)
-                        {
-                            SetSendOuput(item, CheckComparison(item, valuedouble));
-                        }
-                        else if (item.ComparisonValue is null)
-                        {
-                            SetStringValue(valuedouble.ToString(), e.PMDGDataName, item);
-                        }
-                        break;
-                }
+                default:
+                    //byte, ushort, short, uint, int, float
+                    double valuedouble = Convert.ToDouble(e.Value);
+                    if (outputCreator.ComparisonValue is not null)
+                    {
+                        SetSendOuput(outputCreator, CheckComparison(outputCreator.ComparisonValue, outputCreator.Operator, valuedouble));
+                    }
+                    else if (outputCreator.ComparisonValue is null)
+                    {
+                        SetStringValue(valuedouble.ToString(), e.PMDGDataName, outputCreator);
+                    }
+                    break;
             }
         }
     }
 
-    private static bool CheckComparison(OutputCreator item, double value)
+    private bool CheckPrecomparison(Precondition[] preconditions)
     {
-        return item.Operator switch
+        if (preconditions.Length == 0)
         {
-            "=" => value == item.ComparisonValue,
-            "≠" => value != item.ComparisonValue,
-            "<" => value < item.ComparisonValue,
-            ">" => value > item.ComparisonValue,
-            "≤" => value <= item.ComparisonValue,
-            "≥" => value >= item.ComparisonValue,
-            _ => false,
-        };
+            return true;
+        }
+        bool result = false;
+        for (int i = 0; i < preconditions.Length; i++)
+        {
+            var item = preconditions[i];
+            OutputCreator matchingOutputCreator = ProfileCreatorModel.OutputCreator.FirstOrDefault(oc => oc.Id == item.ReferenceId);
+            if (matchingOutputCreator is null)
+            {
+                return false;
+            }
+            bool comparisonResult = true;
+            if (item.IsActive)
+            {
+                comparisonResult = CheckComparison(item.ComparisonValue, item.Operator, matchingOutputCreator.FlightSimValue);
+            }
+            if (i == 0)
+            {
+                result = comparisonResult;
+                continue;
+            }
+            if (preconditions[i - 1].IsOrOperator)
+            {
+                result = result || comparisonResult;
+                continue;
+            }
+            result = result && comparisonResult;
+        }
+        return result;
+    }
+
+    private static bool CheckComparison(string sComparisonValue, char? charOperator, double value)
+    {
+        if (double.TryParse(sComparisonValue, out double comparisonValue))
+        {
+            return charOperator switch
+            {
+                '=' => value == comparisonValue,
+                '≠' => value != comparisonValue,
+                '<' => value < comparisonValue,
+                '>' => value > comparisonValue,
+                '≤' => value <= comparisonValue,
+                '≥' => value >= comparisonValue,
+                _ => false,
+            };
+        }
+        return false;
+    }
+
+
+    //finish string
+    private static bool CheckComparison(string sComparisonValue, char? charOperator, string svalue)
+    {
+        return double.TryParse(svalue, out double value) && CheckComparison(sComparisonValue, charOperator, value);
+    }
+
+    private static bool CheckComparison(string sComparisonValue, char? charOperator, object svalue)
+    {
+        string valueStr = svalue is bool boolValue ? (boolValue ? "1" : "0") : svalue.ToString();
+        return double.TryParse(valueStr, out double value) && CheckComparison(sComparisonValue, charOperator, value);
     }
 
     private void SetSendOuput(OutputCreator item, bool valueBool)
@@ -135,7 +211,14 @@ public class FDS_USB_Driver : USB
 
     private void SetBooleanOuput(OutputCreator item, bool valueBool)
     {
-        interfaceIT.USB.InterfaceITAPI_Data.interfaceIT_LED_Set(Device.Session, item.Output.Value, valueBool);
+        if (item.OutputType == ProfileCreatorModel.LED)
+        {
+            interfaceIT.USB.InterfaceITAPI_Data.interfaceIT_LED_Set(Device.Session, item.Output.Value, valueBool);
+        }
+        else if (item.OutputType == ProfileCreatorModel.DATALINE)
+        {
+            interfaceIT.USB.InterfaceITAPI_Data.interfaceIT_Dataline_Set(Device.Session, item.Output.Value, valueBool);
+        }
     }
 
     private void SetStringValue(string value, string name, OutputCreator item)
@@ -264,8 +347,19 @@ public class FDS_USB_Driver : USB
 
     protected override void KeyPressedProc(uint session, int key, uint direction)
     {
-        foreach (var item in ProfileCreatorModel.InputCreator.Where(k => k.Input == key))
+        ButtonIteration(key, direction);
+    }
+
+    private void ButtonIteration(int key, uint direction)
+    {
+        foreach (var item in ProfileCreatorModel.InputCreator.Where(k => k.Input == key && k.IsActive))
         {
+            //Precondition
+            if (item.Preconditions.Length > 0 && !CheckPrecomparison(item.Preconditions))
+            {
+                continue;
+            }
+
             //RPN
             if (item.EventType == ProfileCreatorModel.RPN && direction == 1)
             {

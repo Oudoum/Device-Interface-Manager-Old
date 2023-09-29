@@ -229,7 +229,6 @@ public class InterfaceITEthernet : ObservableObject
 
             case "USAGE":
                 InterfaceITEthernetInfo.USAGE = Convert.ToInt32(value);
-                InterfaceITEthernetInfo.BOARDS = new InterfaceITEthernetInfoBoard[InterfaceITEthernetInfo.USAGE];
                 break;
 
             case "HOSTNAME":
@@ -240,10 +239,10 @@ public class InterfaceITEthernet : ObservableObject
                 InterfaceITEthernetInfo.CLIENT = value;
                 break;
 
-            case "BOARD":
+            case "BOARD": //Only one board supported
                 string[] board = value.Split(':');
-                int boardNumber = Convert.ToInt32(board[0]);
-                InterfaceITEthernetInfo.BOARDS[boardNumber - 1] = new() { BOARDNUMBER = boardNumber, ID = board[1], DESC = board[2] };
+                InterfaceITEthernetInfo.BOARDS ??= new InterfaceITEthernetInfoBoard[1];
+                InterfaceITEthernetInfo.BOARDS[0] = new() { BOARDNUMBER = Convert.ToInt32(board[0]), ID = board[1], DESC = board[2] };
                 break;
 
             case "CONFIG":
@@ -314,7 +313,11 @@ public class InterfaceITEthernet : ObservableObject
 
     public void SendinterfaceITEthernetLEDAllOff()
     {
-        stream?.Write(Encoding.ASCII.GetBytes("B1:CLEAR" + "\r\n"));
+        for (int i = InterfaceITEthernetInfo.BOARDS[0].LEDS.Start; i <= InterfaceITEthernetInfo.BOARDS[0].LEDS.Total; i++)
+        {
+            stream?.Write(Encoding.ASCII.GetBytes("B1:LED:" + i + ":" + 0 + "\r\n"));
+        }
+        //stream?.Write(Encoding.ASCII.GetBytes("B1:CLEAR" + "\r\n"));
     }
 
     public void SendinterfaceITEthernetLED(int nLED, bool bOn)

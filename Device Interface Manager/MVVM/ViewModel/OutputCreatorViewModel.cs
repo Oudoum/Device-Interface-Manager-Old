@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Linq;
-using System.Windows;
 using System.Windows.Controls;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Device_Interface_Manager.Core;
 using Device_Interface_Manager.interfaceIT.USB;
 using Device_Interface_Manager.MVVM.Model;
 using Device_Interface_Manager.MSFSProfiles.PMDG;
@@ -14,13 +11,14 @@ using MahApps.Metro.Controls.Dialogs;
 using static Device_Interface_Manager.MVVM.Model.OutputCreatorModel;
 
 namespace Device_Interface_Manager.MVVM.ViewModel;
-public partial class OutputCreatorViewModel : ObservableObject, ICloseWindowsCheck
+public partial class OutputCreatorViewModel : BaseCreatorViewModel
 {
+    public OutputCreatorViewModel(OutputCreatorModel outputCreatorModel, object device) : base(device)
+    {
+        OutputCreatorModel = outputCreatorModel;
+    }
+
     public OutputCreatorModel OutputCreatorModel { get; set; }
-
-    public Action Close { get; set; }
-
-    public InterfaceIT_BoardInfo.Device Device { get; set; }
 
     public string OutputType
     {
@@ -79,6 +77,8 @@ public partial class OutputCreatorViewModel : ObservableObject, ICloseWindowsChe
     }
 
     public int?[] LEDs => OutputCreatorModel.LEDs;
+
+    public int?[] Datalines => OutputCreatorModel.Datalines;
 
     public int?[] SevenSegments => OutputCreatorModel.SevenSegments;
 
@@ -181,15 +181,13 @@ public partial class OutputCreatorViewModel : ObservableObject, ICloseWindowsChe
     && typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetField(PMDGData)?.FieldType != typeof(bool)
     && typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetField(PMDGData)?.FieldType != typeof(bool[]);
 
-    public string[] Operators => OutputCreatorModel.Operators;
-
-    public string Operator
+    public char? Operator
     {
         get => OutputCreatorModel.Operator;
         set => OutputCreatorModel.Operator = value;
     }
 
-    public double? ComparisonValue
+    public string ComparisonValue
     {
         get => OutputCreatorModel.ComparisonValue;
         set => OutputCreatorModel.ComparisonValue = value;
@@ -370,7 +368,17 @@ public partial class OutputCreatorViewModel : ObservableObject, ICloseWindowsChe
         set => OutputCreatorModel.SubstringEnd = value;
     }
 
+    public override OutputCreator[] OutputCreator 
+    { 
+        get => OutputCreatorModel.OutputCreator;
+        set => OutputCreatorModel.OutputCreator = value;
+    }
 
+    public override ObservableCollection<PreconditionModel> Preconditions
+    {
+        get => OutputCreatorModel.Preconditions;
+        set => OutputCreatorModel.Preconditions = value;
+    }
 
     private int? outputPosition;
 
@@ -381,24 +389,36 @@ public partial class OutputCreatorViewModel : ObservableObject, ICloseWindowsChe
         {
             if (outputPosition is not null)
             {
-                if (OutputType == ProfileCreatorModel.LED)
+                switch (OutputType)
                 {
-                    InterfaceITAPI_Data.interfaceIT_LED_Set(Device.Session, outputPosition.Value, false);
-                }
-                else if (OutputType == ProfileCreatorModel.SEVENSEGMENT)
-                {
-                    InterfaceITAPI_Data.interfaceIT_7Segment_Display(Device.Session, " ", outputPosition.Value);
+                    case ProfileCreatorModel.LED:
+                        InterfaceITAPI_Data.interfaceIT_LED_Set(Device.Session, outputPosition.Value, false);
+                        break;
+
+                    case ProfileCreatorModel.DATALINE:
+                        InterfaceITAPI_Data.interfaceIT_Dataline_Set(Device.Session, outputPosition.Value, false);
+                        break;
+
+                    case ProfileCreatorModel.SEVENSEGMENT:
+                        InterfaceITAPI_Data.interfaceIT_7Segment_Display(Device.Session, " ", outputPosition.Value);
+                        break;
                 }
             }
             if (value is not null)
             {
-                if (OutputType == ProfileCreatorModel.LED)
+                switch (OutputType)
                 {
-                    InterfaceITAPI_Data.interfaceIT_LED_Set(Device.Session, value.Value, true);
-                }
-                else if (OutputType == ProfileCreatorModel.SEVENSEGMENT)
-                {
-                    InterfaceITAPI_Data.interfaceIT_7Segment_Display(Device.Session, "8", value.Value);
+                    case ProfileCreatorModel.LED:
+                        InterfaceITAPI_Data.interfaceIT_LED_Set(Device.Session, value.Value, true);
+                        break;
+
+                    case ProfileCreatorModel.DATALINE:
+                        InterfaceITAPI_Data.interfaceIT_Dataline_Set(Device.Session, value.Value, true);
+                        break;
+
+                    case ProfileCreatorModel.SEVENSEGMENT:
+                        InterfaceITAPI_Data.interfaceIT_7Segment_Display(Device.Session, "8", value.Value);
+                        break;
                 }
             }
             outputPosition = value;
@@ -436,32 +456,10 @@ public partial class OutputCreatorViewModel : ObservableObject, ICloseWindowsChe
         }
     }
 
-    public bool Save { get; set; }
-
-    [RelayCommand]
-    private void Ok()
-    {
-        Save = true;
-        Close?.Invoke();
-    }
-
-    public MessageDialogResult CanCloseAsync()
+    public override MessageDialogResult CanCloseAsync()
     {
         DigitFormatting.SumDecimalPointCheckedChanged -= DigitFormatting_SumDecimalPointCheckedChanged;
         DigitFormatting.SumDigitCheckedChanged -= DigitFormatting_SumDigitCheckedChanged;
-        return MessageDialogResult.Affirmative;
-    }
-
-    [RelayCommand]
-    private static void ComboboxMouseEnterLeave(RoutedEventArgs e)
-    {
-        if (e.RoutedEvent == UIElement.GotFocusEvent)
-        {
-            ((ComboBox)e.Source).IsDropDownOpen = true;
-        }
-        else if (e.RoutedEvent == UIElement.LostFocusEvent)
-        {
-            ((ComboBox)e.Source).IsDropDownOpen = false;
-        }
+        return base.CanCloseAsync();
     }
 }

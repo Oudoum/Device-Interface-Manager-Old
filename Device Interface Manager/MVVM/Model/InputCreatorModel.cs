@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using Device_Interface_Manager.MSFSProfiles.PMDG;
+using System.Collections.ObjectModel;
 
 namespace Device_Interface_Manager.MVVM.Model;
 public class InputCreatorModel
@@ -119,4 +120,8 @@ public class InputCreatorModel
         //{ "WheelFlip", PMDG_NG3_SDK.MOUSE_FLAG_WHEEL_FLIP },
         //{ "WheelSkip", PMDG_NG3_SDK.MOUSE_FLAG_WHEEL_SKIP },
     };
+
+    public OutputCreator[] OutputCreator { get; set; }
+
+    public ObservableCollection<PreconditionModel> Preconditions { get; set; }
 }
