@@ -1,0 +1,239 @@
+﻿<UserControl
+    x:Class="Device_Interface_Manager.Views.HomeENETView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:viewModel="clr-namespace:Device_Interface_Manager.ViewModels"
+    xmlns:local="clr-namespace:Device_Interface_Manager.Views"
+    d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type={x:Type viewModel:HomeENETViewModel}}"
+    mc:Ignorable="d"
+    d:DesignWidth="1040"
+    d:DesignHeight="560">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+
+            <Button
+                Command="{Binding SearchDevicesCommand}"
+                Margin="0,25,0,0"
+                Cursor="Hand"
+                Content="Search Devices"
+                FontSize="23"
+                IsTabStop="False">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MahApps.Styles.Button}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsENETEnabled}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsENETEnabled}" Value="False">
+                                <Setter Property="Visibility" Value="Hidden"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Resources>
+            </Button>
+            <Button 
+                Grid.Column="1"
+                Command="{Binding StartENETCommand}"
+                Margin="25,25,0,0"
+                Width="150"
+                FontSize="23"
+                Cursor="Hand"
+                IsTabStop="False">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MahApps.Styles.Button}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsENETEnabled}" Value="True">
+                                <Setter Property="Content" Value="Start"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsENETEnabled}" Value="False">
+                                <Setter Property="Content" Value="Stop"/>
+                                <Setter Property="Background" Value="Green"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Resources>
+            </Button>
+            <Button
+                Grid.Column="2"
+                Command="{Binding ResetENETScreensCommand}"
+                Content="Reset CDU/MCDU"
+                d:Visibility="Visible"
+                Margin="25,25,0,0"
+                FontSize="23"
+                Cursor="Hand"
+                IsTabStop="False">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MahApps.Styles.Button}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsENETEnabled}" Value="True">
+                                <Setter Property="Visibility" Value="Hidden"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsENETEnabled}" Value="False">
+                                <Setter  Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Resources>
+            </Button>
+        </StackPanel>
+
+        <DockPanel HorizontalAlignment="Center" Grid.Row="1">
+            <DataGrid
+                    ItemsSource="{Binding Connections}"
+                    d:ItemsSource="{d:SampleData ItemCount=11}"
+                    IsHitTestVisible="{Binding IsENETEnabled}"
+                    DockPanel.Dock="Top"
+                    Margin="0,10,0,40"
+                    AutoGenerateColumns="False"
+                    CanUserDeleteRows="False"
+                    CanUserAddRows="False"
+                    CanUserResizeColumns="False"
+                    CanUserResizeRows="False"
+                    GridLinesVisibility="All"
+                    BorderThickness="5"
+                    FontSize="18">
+
+                <DataGrid.Columns>
+
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="300">
+                        <DataGridTextColumn.EditingElementStyle>
+                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MahApps.Styles.TextBox.DataGrid.Editing}">
+                                <Setter Property="FontSize" Value="18"/>
+                            </Style>
+                        </DataGridTextColumn.EditingElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Header="IP-Address" Binding="{Binding IPAddress}" Width="180">
+                        <DataGridTextColumn.EditingElementStyle>
+                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MahApps.Styles.TextBox.DataGrid.Editing}">
+                                <Setter Property="FontSize" Value="18"/>
+                            </Style>
+                        </DataGridTextColumn.EditingElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTemplateColumn Header="Status" Width="80" IsReadOnly="True" SortMemberPath="Status">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Ellipse Height="25" Width="25" StrokeThickness="2" Stroke="White">
+                                    <Ellipse.Resources>
+                                        <Style TargetType="{x:Type Ellipse}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Status}" Value="1">
+                                                    <Setter Property="Fill" Value="Red"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="2">
+                                                    <Setter Property="Fill" Value="Yellow"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="3">
+                                                    <Setter Property="Fill" Value="Green"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Resources>
+                                </Ellipse>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellStyle>
+                            <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource MahApps.Styles.DataGridCell}">
+                                <Setter Property="IsTabStop" Value="False"/>
+                            </Style>
+                        </DataGridTemplateColumn.CellStyle>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="Select Profile" Width="350" IsReadOnly="True" SortMemberPath="SelectedProfile">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ComboBox
+                                        ItemsSource="{Binding DataContext.Profiles, RelativeSource={RelativeSource FindAncestor, AncestorType=local:HomeENETView}}"
+                                        SelectedItem="{Binding SelectedProfile, UpdateSourceTrigger=PropertyChanged}"
+                                        FontSize="18"
+                                        BorderThickness="0"
+                                        Background="Transparent"
+                                        Cursor="Hand">
+                                    <ComboBox.ItemContainerStyle>
+                                        <Style TargetType="{x:Type ComboBoxItem}" BasedOn="{StaticResource MahApps.Styles.ComboBoxItem}">
+                                            <Setter Property="Cursor" Value="Hand"/>
+                                        </Style>
+                                    </ComboBox.ItemContainerStyle>
+                                </ComboBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellStyle>
+                            <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource MahApps.Styles.DataGridCell}">
+                                <Setter Property="IsTabStop" Value="False"/>
+                            </Style>
+                        </DataGridTemplateColumn.CellStyle>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="Delete" Width="80" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button
+                                        Command="{Binding DataContext.DeleteRowCommand, RelativeSource={RelativeSource AncestorType=local:HomeENETView, Mode=FindAncestor}}" 
+                                        CommandParameter="{Binding}"
+                                        Content="🗙︎"
+                                        Cursor="Hand">
+                                    <Button.Resources>
+                                        <Style TargetType="{x:Type Button}">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type Button}">
+                                                        <Border
+                                                                Background="{TemplateBinding Background}">
+                                                            <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="Red"/>
+                                                </Trigger>
+                                                <Trigger Property="IsFocused" Value="True">
+                                                    <Setter Property="Background" Value="Red"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellStyle>
+                            <Style TargetType="{x:Type DataGridCell}">
+                                <Setter Property="IsTabStop" Value="False"/>
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                            </Style>
+                        </DataGridTemplateColumn.CellStyle>
+                    </DataGridTemplateColumn>
+
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <Button
+                Command="{Binding AddRowCommand}"
+                Visibility="{Binding IsENETEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Margin="0,-40,0,0"
+                Grid.Row="1"
+                VerticalAlignment="Top"
+                Cursor="Hand"
+                FontSize="16"
+                Content="Add"
+                IsTabStop="False"/>
+        </DockPanel>
+    </Grid>
+
+</UserControl>

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MobiFlight.HubHop;
+namespace Device_Interface_Manager.HubHop;
 
 public class Msfs2020EventPresetList
 {

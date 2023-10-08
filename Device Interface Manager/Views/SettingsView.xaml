@@ -1,0 +1,200 @@
+﻿<UserControl
+    x:Class="Device_Interface_Manager.Views.SettingsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:viewModel="clr-namespace:Device_Interface_Manager.ViewModels"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    mc:Ignorable="d" 
+    d:DataContext="{d:DesignInstance Type=viewModel:SettingsViewModel}"
+    d:DesignWidth="1040"
+    d:DesignHeight="560">
+
+    <Grid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top">
+            <Button
+                Command="{Binding DiscordCommand}"
+                Margin="0,25,0,0"
+                Background="Transparent"
+                Cursor="Hand"
+                IsTabStop="False">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock 
+                        FontWeight="Bold"
+                        FontSize="22"
+                        Text="Join us on"
+                        FontFamily="Arial Black"/>
+                    <Image
+                        Height="25"
+                        Margin="20,0"
+                        RenderOptions.BitmapScalingMode="HighQuality"
+                        Source="pack://application:,,,/Assets/Images/small_logo_white_RGB_Discord.png"/>
+                </StackPanel>
+            </Button>
+            <TextBlock
+                Text="{Binding WasmModuleUpdaterMessage}"
+                d:Text="WASM Mesage!"
+                FontSize="23"
+                HorizontalAlignment="Center"
+                Margin="0,50,0,0">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding WasmModuleUpdaterMessage}" Value="DIM Event WASM module is up to date!">
+                                <Setter Property="Foreground" Value="Green"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding WasmModuleUpdaterMessage}" Value="DIM Event WASM module was successfully installed!">
+                                <Setter Property="Foreground" Value="Green"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding WasmModuleUpdaterMessage}" Value="Community folder could not be located!">
+                                <Setter Property="Foreground" Value="Red"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding WasmModuleUpdaterMessage}" Value="Folder: &quot;dim-event-module&quot; could not be loacted in the DIM directory!">
+                                <Setter Property="Foreground" Value="Red"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <Button
+                Command="{Binding InstallUpdateDIMWASModuleCommand}"
+                Content="Install/Update DIM Event Module"
+                Margin="0,10,0,0"
+                FontWeight="Bold"
+                FontSize="18"
+                Cursor="Hand"
+                IsTabStop="False"
+                mah:ControlsHelper.ContentCharacterCasing="Normal"/>
+        </StackPanel>
+
+        <Grid Margin="0,200,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="500"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <ListBox ItemsSource="{Binding Source={x:Static Application.Current}, Path=LogMessages}" Margin="10" d:ItemsSource="{d:SampleData ItemCount=5}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" TextWrapping="Wrap" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel.Resources>
+                    <Style TargetType="ToolTip">
+                        <Setter Property="Background" Value="Black"/>
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                </StackPanel.Resources>
+                <mah:ToggleSwitch
+                    IsOn="{Binding AutoHide}"
+                    Header="Autohide to tray on startup"
+                    ToolTip="Software will start directly into the tray and all assigned profiles will start automatically."
+                    Cursor="Hand"
+                    IsTabStop="False"/>
+
+                <mah:ToggleSwitch
+                    IsOn="{Binding MinimizedHide}"
+                    Margin="0,20,0,0"
+                    Header="Hide to tray if minimized"
+                    ToolTip="Software will minimize to tray."
+                    Cursor="Hand"
+                    IsTabStop="False"/>
+
+                <mah:ToggleSwitch
+                    IsOn="{Binding IsP3D}"
+                    Margin="0,20,0,0"
+                    Header="P3Dv4/v5/v6"
+                    ToolTip="Software will use Prepar3D."
+                    Cursor="Hand"
+                    IsTabStop="False"/>
+
+                <TextBlock
+                    Text="{Binding InterfaceITAPIVersion}"
+                    Foreground="White"
+                    Margin="0,75,0,0"/>
+                
+            </StackPanel>
+
+            <Border
+                Grid.Column="2"
+                BorderThickness="5"
+                BorderBrush="Firebrick"
+                CornerRadius="10"
+                VerticalAlignment="Center"
+                Width="210">
+                
+                <StackPanel Orientation="Vertical">
+                    <StackPanel.Resources>
+                        <Style TargetType="TextBox" BasedOn="{StaticResource MahApps.Styles.TextBox}">
+                            <Setter Property="TextAlignment" Value="Center"/>
+                            <Setter Property="FontSize" Value="20"/>
+                        </Style>
+                    </StackPanel.Resources>
+                    
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Foreground="White"
+                        FontSize="22"
+                        Text="SimConnect:"/>
+
+                    <TextBox
+                        Text="{Binding IP}"
+                        Margin="0,20,0,0"
+                        Width="180">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="GotFocus">
+                                <i:InvokeCommandAction Command="{Binding GotIPPortTextBoxFocusCommand}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBox>
+
+                    <TextBox
+                        Text="{Binding Port}"
+                        Margin="0,20,0,0"
+                        Width="100">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="GotFocus">
+                                <i:InvokeCommandAction Command="{Binding GotIPPortTextBoxFocusCommand}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBox>
+
+                    <Button
+                        Margin="0,20,0,20"
+                        Content="OK"
+                        FontWeight="Bold"
+                        FontSize="18"
+                        Width="80"
+                        Cursor="Hand"
+                        Command="{Binding CheckSimConnectConnectionCommand}">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource MahApps.Styles.Button}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Status}" Value="1">
+                                        <Setter Property="Background" Value="Red"/>
+                                        <Setter Property="Foreground" Value="Black"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Status}" Value="2">
+                                        <Setter Property="Background" Value="Yellow"/>
+                                        <Setter Property="Foreground" Value="Black"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Status}" Value="3">
+                                        <Setter Property="Background" Value="Green"/>
+                                        <Setter Property="Foreground" Value="Black"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

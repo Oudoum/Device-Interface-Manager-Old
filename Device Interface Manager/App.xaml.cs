@@ -17,14 +17,14 @@ namespace Device_Interface_Manager
                 {
                     loggingBuilder.AddProvider(new Core.CollectionLoggerProvider(LogMessages));
                 })
-                .AddSingleton<MVVM.View.MainWindow>()
-                .AddTransient<MVVM.ViewModel.MainViewModel>()
+                .AddSingleton<Views.MainWindow>()
+                .AddTransient<ViewModels.MainViewModel>()
                 .BuildServiceProvider());
         }
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            MVVM.View.MainWindow mainWindow = Ioc.Default.GetService<MVVM.View.MainWindow>();
+            Views.MainWindow mainWindow = Ioc.Default.GetService<Views.MainWindow>();
             mainWindow.Show();
         }
     }

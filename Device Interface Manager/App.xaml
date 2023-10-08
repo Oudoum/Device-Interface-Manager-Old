@@ -1,10 +1,13 @@
 ﻿<Application x:Class="Device_Interface_Manager.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:viewModel="clr-namespace:Device_Interface_Manager.MVVM.ViewModel"
-             xmlns:view="clr-namespace:Device_Interface_Manager.MVVM.View">
+             xmlns:viewModel="clr-namespace:Device_Interface_Manager.ViewModels"
+             xmlns:view="clr-namespace:Device_Interface_Manager.Views">
+    
     <Application.Resources>
+        
         <ResourceDictionary>
+            
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
@@ -45,16 +48,18 @@
                 <view:SettingsView/>
             </DataTemplate>
             
-            <FontFamily x:Key="PMDG_NG3_DU_A">pack://application:,,,/Fonts/#PMDG_NGXu_DU_A</FontFamily>
-            <FontFamily x:Key="PMDG_NG3_DU_B">pack://application:,,,/Fonts/#PMDG_NGXu_DU_B</FontFamily>
-            <FontFamily x:Key="PMDG_NG3_DU_C">pack://application:,,,/Fonts/#PMDG_NGXu_DU_C</FontFamily>
-            <FontFamily x:Key="BOEING">pack://application:,,,/Fonts/#BOEING-style</FontFamily>
+            <FontFamily x:Key="BOEING">pack://application:,,,/Assets/Fonts/#BOEING-style</FontFamily>
+            
             <Style TargetType="ContentControl">
                 <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             </Style>
+            
             <Style TargetType="Button" BasedOn="{StaticResource MahApps.Styles.Button}">
                 <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             </Style>
+            
         </ResourceDictionary>
+        
     </Application.Resources>
+    
 </Application>

@@ -3,7 +3,14 @@
     "Device Interface Manager": {
       "commandName": "Project",
       "remoteDebugEnabled": false,
-      "remoteDebugMachine": "172.22.8.241"
+      "remoteDebugMachine": "",
+      "authenticationMode": "Windows"
+    },
+    "Device Interface Manager Remote": {
+      "commandName": "Project",
+      "remoteDebugEnabled": true,
+      "remoteDebugMachine": "192.168.196.134:4026",
+      "authenticationMode": "Windows"
     }
   }
 }

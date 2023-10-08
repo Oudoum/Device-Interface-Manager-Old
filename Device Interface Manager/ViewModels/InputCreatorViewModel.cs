@@ -1,0 +1,260 @@
+﻿using System.Collections.Generic;
+using CommunityToolkit.Mvvm.Input;
+using Device_Interface_Manager.Devices.interfaceIT.USB;
+using Device_Interface_Manager.SimConnectProfiles.PMDG;
+using Device_Interface_Manager.Models;
+using System.Collections.ObjectModel;
+using MahApps.Metro.Controls.Dialogs;
+
+namespace Device_Interface_Manager.ViewModels;
+public partial class InputCreatorViewModel : BaseCreatorViewModel
+{
+    public InputCreatorViewModel(InputCreatorModel inputCreatorModel, object device) : base(device)
+    {
+        InputCreatorModel = inputCreatorModel;
+        if (device is InterfaceIT_BoardInfo.Device)
+        {
+            InterfaceITAPI_Data.interfaceIT_Switch_Enable_Poll(Device.Session, true);
+        }
+    }
+
+    public InputCreatorModel InputCreatorModel { get; set; }
+
+    public string InputType
+    {
+        get => InputCreatorModel.InputType;
+        set
+        {
+            if (InputCreatorModel.InputType != value)
+            {
+                InputCreatorModel.InputType = value;
+                OnPropertyChanged(nameof(InputType));
+            }
+        }
+    }
+
+    public string[] InputTypes => InputCreatorModel.InputTypes;
+
+    public int? Input
+    {
+        get => InputCreatorModel.Input;
+        set
+        {
+            if (InputCreatorModel.Input != value)
+            {
+                InputCreatorModel.Input = value;
+                OnPropertyChanged(nameof(Input));
+            }
+        }
+    }
+
+    public int?[] Switches => InputCreatorModel.Switches;
+
+    public string EventType
+    {
+        get => InputCreatorModel.EventType;
+        set
+        {
+            if (InputCreatorModel.EventType != value)
+            {
+                InputCreatorModel.EventType = value;
+                if (value is not null)
+                {
+                    if (value == ProfileCreatorModel.MSFSSimConnect || value == ProfileCreatorModel.RPN)
+                    {
+                        PMDGEvent = null;
+                        PMDGMousePress = null;
+                        PMDGMouseRelease = null;
+                        OnRelease = false;
+                    }
+                    if (value == ProfileCreatorModel.RPN)
+                    {
+                        DataPress = null;
+                        DataRelease = null;
+                    }
+                    else if (value == ProfileCreatorModel.PMDG737)
+                    {
+                        Event = null;
+                        OnRelease = false;
+                    }
+                }
+                OnPropertyChanged(nameof(EventType));
+            }
+        }
+    }
+
+    public string[] EventTypes => InputCreatorModel.EventTypes;
+
+    public PMDG_NG3_SDK.PMDGEvents? PMDGEvent
+    {
+        get => InputCreatorModel.PMDGEvent;
+        set
+        {
+            if (InputCreatorModel.PMDGEvent != value)
+            {
+                InputCreatorModel.PMDGEvent = value;
+                OnPropertyChanged(nameof(PMDGEvent));
+            }
+        }
+    }
+
+    public string SearchPMDGEvent
+    {
+        get => InputCreatorModel.SearchPMDGEvent;
+        set
+        {
+            if (InputCreatorModel.SearchPMDGEvent != value)
+            {
+                InputCreatorModel.SearchPMDGEvent = value;
+                OnPropertyChanged(nameof(PMDGEvents));
+                OnPropertyChanged(nameof(PMDGEvent));
+            }
+        }
+    }
+
+    public PMDG_NG3_SDK.PMDGEvents[] PMDGEvents => InputCreatorModel.PMDGEvents;
+
+    public KeyValuePair<string, uint>? PMDGMousePress
+    {
+        get => InputCreatorModel.PMDGMousePress;
+        set
+        {
+            if (!InputCreatorModel.PMDGMousePress.Equals(value))
+            {
+                InputCreatorModel.PMDGMousePress = value;
+                OnPropertyChanged(nameof(PMDGMousePress));
+
+            }
+        }
+    }
+
+    public string SearchPMDGMousePress
+    {
+        get => InputCreatorModel.SearchPMDGMousePress;
+        set
+        {
+            if (InputCreatorModel.SearchPMDGMousePress != value)
+            {
+                InputCreatorModel.SearchPMDGMousePress = value;
+                OnPropertyChanged(nameof(PMDGMousePressArray));
+                OnPropertyChanged(nameof(PMDGMousePress));
+            }
+        }
+    }
+
+    public KeyValuePair<string, uint>[] PMDGMousePressArray => InputCreatorModel.PMDGMousePressArray;
+
+    public KeyValuePair<string, uint>? PMDGMouseRelease
+    {
+        get => InputCreatorModel.PMDGMouseRelease;
+        set
+        {
+            if (!InputCreatorModel.PMDGMouseRelease.Equals(value))
+            {
+                InputCreatorModel.PMDGMouseRelease = value;
+                OnPropertyChanged(nameof(PMDGMouseRelease));
+            }
+        }
+    }
+
+    public string SearchPMDGMouseRelease
+    {
+        get => InputCreatorModel.SearchPMDGMouseRelease;
+        set
+        {
+            if (InputCreatorModel.SearchPMDGMouseRelease != value)
+            {
+                InputCreatorModel.SearchPMDGMouseRelease = value;
+                OnPropertyChanged(nameof(PMDGMouseReleaseArray));
+                OnPropertyChanged(nameof(PMDGMouseRelease));
+            }
+        }
+    }
+
+    public KeyValuePair<string, uint>[] PMDGMouseReleaseArray => InputCreatorModel.PMDGMouseReleaseArray;
+
+    public string Event
+    {
+        get => InputCreatorModel.Event;
+        set
+        {
+            if (InputCreatorModel.Event != value)
+            {
+                InputCreatorModel.Event = value;
+                OnPropertyChanged(nameof(Event));
+            }
+        }
+    }
+
+    public bool OnRelease
+    {
+        get => InputCreatorModel.OnRelease;
+        set
+        {
+            if (InputCreatorModel.OnRelease != value)
+            {
+                InputCreatorModel.OnRelease = value;
+                OnPropertyChanged(nameof(OnRelease));
+            }
+        }
+    }
+
+    public uint? DataPress
+    {
+        get => InputCreatorModel.DataPress;
+        set
+        {
+            if (InputCreatorModel.DataPress != value)
+            {
+                InputCreatorModel.DataPress = value;
+                OnPropertyChanged(nameof(DataPress));
+            }
+        }
+    }
+
+    public uint? DataRelease
+    {
+        get => InputCreatorModel.DataRelease;
+        set
+        {
+            if (InputCreatorModel.DataRelease != value)
+            {
+                InputCreatorModel.DataRelease = value;
+                OnPropertyChanged(nameof(DataRelease));
+            }
+        }
+    }
+
+    public override OutputCreator[] OutputCreator
+    {
+        get => InputCreatorModel.OutputCreator;
+        set => InputCreatorModel.OutputCreator = value;
+    }
+
+    public override ObservableCollection<PreconditionModel> Preconditions
+    {
+        get => InputCreatorModel.Preconditions;
+        set => InputCreatorModel.Preconditions = value;
+    }
+
+    public override MessageDialogResult CanCloseAsync()
+    {
+        if (Device is not null)
+        {
+            InterfaceITAPI_Data.interfaceIT_Switch_Enable_Poll(Device.Session, false);
+        }
+        return base.CanCloseAsync();
+    }
+
+    [RelayCommand]
+    private void GetSwitch()
+    {
+        while (InterfaceITAPI_Data.interfaceIT_Switch_Get_Item(Device.Session, out int key, out int direction) == 0)
+        {
+            if (direction == 1)
+            {
+                Input = key;
+            }
+        }
+    }
+}

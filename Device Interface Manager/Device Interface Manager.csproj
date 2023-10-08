@@ -9,8 +9,9 @@
     <UseWindowsForms>True</UseWindowsForms>
     <ApplicationIcon>DIM.ico</ApplicationIcon>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <AssemblyVersion>1.1.11.1</AssemblyVersion>
-    <FileVersion>1.1.11.1</FileVersion>
+    <AssemblyVersion>1.1.14.2</AssemblyVersion>
+    <FileVersion>1.1.14.2</FileVersion>
+
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -46,10 +47,10 @@
     <Content Include="dim-event-module\modules\DIM_WASM_Module.wasm">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Resource Include="Fonts\BOEING-style.ttf">
+    <Resource Include="Assets\Fonts\BOEING-style.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Images\small_logo_white_RGB_Discord.png">
+    <Resource Include="Assets\Images\small_logo_white_RGB_Discord.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Content Include="interfaceITAPI x64.dll">
@@ -82,6 +83,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="LockheedMartin.Prepar3D.SimConnect">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <HintPath>..\..\..\..\..\..\Program Files\Lockheed Martin\Prepar3D v4 SDK 4.5.14.34698\lib\SimConnect\managed\LockheedMartin.Prepar3D.SimConnect.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.FlightSimulator.SimConnect">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
@@ -90,13 +96,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Fonts\PMDG_NG3_DU_A.ttf">
+    <Resource Include="Assets\Fonts\PMDG_NG3_DU_A.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Fonts\PMDG_NG3_DU_B.ttf">
+    <Resource Include="Assets\Fonts\PMDG_NG3_DU_B.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Fonts\PMDG_NG3_DU_C.ttf">
+    <Resource Include="Assets\Fonts\PMDG_NG3_DU_C.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
@@ -113,7 +119,7 @@
     <None Update="DIM.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-    <None Update="Images\DIM.png">
+    <None Update="Assets\Images\DIM.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>

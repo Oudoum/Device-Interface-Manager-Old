@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace MobiFlight.HubHop;
+namespace Device_Interface_Manager.HubHop;
 
 public enum HubHopType
 {

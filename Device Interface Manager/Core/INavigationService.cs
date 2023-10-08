@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Windows;
-using Device_Interface_Manager.interfaceIT.USB;
-using Device_Interface_Manager.MVVM.Model;
-using Device_Interface_Manager.MVVM.View;
-using Device_Interface_Manager.MVVM.ViewModel;
+using Device_Interface_Manager.Devices.interfaceIT.USB;
+using Device_Interface_Manager.Models;
+using Device_Interface_Manager.Views;
+using Device_Interface_Manager.ViewModels;
 
 namespace Device_Interface_Manager.Core;
 interface INavigationService
@@ -42,6 +42,7 @@ public class NavigationService : INavigationService
                 PMDGMousePress = inputCreator.PMDGMousePress,
                 PMDGMouseRelease = inputCreator.PMDGMouseRelease,
                 Event = inputCreator.Event,
+                OnRelease = inputCreator.OnRelease,
                 DataPress = inputCreator.DataPress,
                 DataRelease = inputCreator.DataRelease,
                 OutputCreator = outputCreators,
@@ -64,6 +65,7 @@ public class NavigationService : INavigationService
             inputCreator.PMDGMousePress = viewModel.PMDGMousePress;
             inputCreator.PMDGMouseRelease = viewModel.PMDGMouseRelease;
             inputCreator.Event = viewModel.Event;
+            inputCreator.OnRelease = viewModel.OnRelease;
             inputCreator.DataPress = viewModel.DataPress;
             inputCreator.DataRelease = viewModel.DataRelease;
             inputCreator.Preconditions = viewModel.Preconditions.ToArray();
