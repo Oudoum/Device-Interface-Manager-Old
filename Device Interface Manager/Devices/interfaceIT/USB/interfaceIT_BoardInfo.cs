@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Device_Interface_Manager.Devices.interfaceIT.USB;
 
@@ -8,12 +9,13 @@ public class InterfaceIT_BoardInfo
     {
         public int Id { get; init; }
         public uint Session { get; init; }
-        public string BoardType { get; init; }
+        public InterfaceIT_BoardIDs BoardID { get; init; }
+        public string BoardName { get; init; }
         public string SerialNumber { get; init; }
-        public BOARDCAPS DeviceInfo { get; init; }
+        public BoardInfo BoardInfo { get; init; }
     }
 
-    public readonly struct BOARDCAPS
+    public readonly struct BoardInfo
     {
         public int LEDCount { get; }              // Total number of LED outputs
         public int LEDFirst { get; }              // First LED output number
@@ -52,30 +54,31 @@ public class InterfaceIT_BoardInfo
         public int UpdateLevel { get; }           // Update level that is currently applied to this board
     }
 
-    public enum Features
+    [Flags]
+    public enum Features : uint
     {
-        INTERFACEIT_FEATURE_NONE,
+        None = 0x00000000,
 
-        INTERFACEIT_FEATURE_INPUT_SWITCHES = 0x00000001,
-        INTERFACEIT_FEATURE_INPUT_RC = 0x00000002,
-        INTERFACEIT_FEATURE_INPUT_SPI = 0x00000004,
-        INTERFACEIT_FEATURE_INPUT_DATALINE = 0x00000008,
-        INTERFACEIT_FEATURE_INPUT_IIC = 0x00000010,
-        INTERFACEIT_FEATURE_INPUT_RESERVED6 = 0x00000020,
-        INTERFACEIT_FEATURE_INPUT_RESERVED7 = 0x00000040,
-        INTERFACEIT_FEATURE_INPUT_RESERVED8 = 0x00000080,
+        InputSwitches = 0x00000001,
+        InputRC = 0x00000002,
+        InputSPI = 0x00000004,
+        InputDataLine = 0x00000008,
+        InputIIC = 0x00000010,
+        InputReserved6 = 0x00000020,
+        InputReserved7 = 0x00000040,
+        InputReserved8 = 0x00000080,
 
-        INTERFACEIT_FEATURE_OUTPUT_LED = 0x00000100,
-        INTERFACEIT_FEATURE_OUTPUT_LCD = 0x00000200,
-        INTERFACEIT_FEATURE_OUTPUT_7SEGMENT = 0x00000400,
-        INTERFACEIT_FEATURE_OUTPUT_SPI = 0x00000800,
-        INTERFACEIT_FEATURE_OUTPUT_IIC = 0x00001000,
-        INTERFACEIT_FEATURE_OUTPUT_DATALINE = 0x00002000,
-        INTERFACEIT_FEATURE_OUTPUT_SERVO = 0x00004000,
-        INTERFACEIT_FEATURE_OUTPUT_RESERVED16 = 0x00008000,
+        OutputLED = 0x00000100,
+        OutputLCD = 0x00000200,
+        Output7Segment = 0x00000400,
+        OutputSPI = 0x00000800,
+        OutputIIC = 0x00001000,
+        OutputDataLine = 0x00002000,
+        OutputServo = 0x00004000,
+        OutputReserved16 = 0x00008000,
 
-        INTERFACEIT_FEATURE_SPECIAL_BRIGHTNESS = 0x00010000,
-        INTERFACEIT_FEATURE_SPECIAL_ANALOG_INPUT = 0x00020000,
-        INTERFACEIT_FEATURE_SPECIAL_ANALOG16_INPUT = 0x00040000,
+        SpecialBrightness = 0x00010000,
+        SpecialAnalogInput = 0x00020000,
+        SpecialAnalog16Input = 0x00040000,
     }
 }

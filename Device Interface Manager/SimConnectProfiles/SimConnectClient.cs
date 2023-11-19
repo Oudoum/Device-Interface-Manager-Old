@@ -18,7 +18,7 @@ public sealed class SimConnectClient
 {
     private static readonly SimConnectClient _instance = new();
 
-    public static SimConnectClient Instance { get =>  _instance; }
+    public static SimConnectClient Instance { get => _instance; }
 
     public MSFS.SimConnect SimConnectMSFS { get; private set; } = null;
 
@@ -75,10 +75,16 @@ public sealed class SimConnectClient
                 if (!Properties.Settings.Default.P3D)
                 {
                     SimConnectMSFS = new MSFS.SimConnect("Device-Interface-Manager", handle, WM_USER_SIMCONNECT, null, 0);
+                    SimConnectMSFS.OnRecvOpen += SimConnect_OnRecvOpen;
+                    SimConnectMSFS.OnRecvQuit += SimConnect_OnRecvQuit;
+                    SimConnectMSFS.OnRecvException += SimConnect_OnRecvException;
                     break;
                 }
 
                 SimConnectP3D = new P3D.SimConnect("Device-Interface-Manager", handle, WM_USER_SIMCONNECT, null, 0);
+                SimConnectP3D.OnRecvOpen += SimConnect_OnRecvOpen;
+                SimConnectP3D.OnRecvQuit += SimConnect_OnRecvQuit;
+                SimConnectP3D.OnRecvException += SimConnect_OnRecvException;
                 break;
             }
             catch (Exception)
@@ -92,39 +98,6 @@ public sealed class SimConnectClient
 
                 }
             }
-        }
-
-        if (!Properties.Settings.Default.P3D)
-        {
-            SimConnectMSFS.OnRecvException += SimConnect_OnRecvException;
-
-            SimConnectMSFS.OnRecvOpen += SimConnect_OnRecvOpen;
-            SimConnectMSFS.OnRecvQuit += SimConnect_OnRecvQuit;
-
-
-            SimConnectMSFS.MapClientDataNameToID(CLIENT_DATA_NAME_COMMAND, CLIENT_DATA_ID.CLIENT_DATA_ID_COMMAND);
-            SimConnectMSFS.AddToClientDataDefinition(DEFINE_ID.DATA_DEFINITION_ID_COMMAND, 0, MESSAGE_SIZE, 0, 0);
-
-            PMDG.PMDG.RegisterPMDGNG3DataEvents(SimConnectMSFS);
-
-            RegisterSimVar("CAMERA STATE", "Enum");
-
-            SimConnectMSFS.OnRecvSimobjectData += Simconnect_OnRecvSimobjectData;
-        }
-
-        else if (Properties.Settings.Default.P3D)
-        {
-            SimConnectP3D.OnRecvException += SimConnect_OnRecvException;
-
-            SimConnectP3D.OnRecvOpen += SimConnect_OnRecvOpen;
-            SimConnectP3D.OnRecvQuit += SimConnect_OnRecvQuit;
-
-            //PMDG.PMDG.RegisterPMDG777DataEvents(SimConnectP3D);
-            PMDG.PMDG.RegisterPMDG747DataEvents(SimConnectP3D);
-
-            RegisterSimVar("CAMERA STATE", "Enum");
-
-            SimConnectP3D.OnRecvSimobjectData += Simconnect_OnRecvSimobjectData;
         }
     }
 
@@ -159,6 +132,7 @@ public sealed class SimConnectClient
             }
 
             SimVars.Clear();
+            SimEvents.Clear();
             SendSimConnectConnectionStatus(false);
         }
     }
@@ -166,20 +140,38 @@ public sealed class SimConnectClient
     private void SimConnect_OnRecvOpen(MSFS.SimConnect sender, MSFS.SIMCONNECT_RECV_OPEN data)
     {
         SendSimConnectConnectionStatus(true);
+
+        SimConnectMSFS.MapClientDataNameToID(CLIENT_DATA_NAME_COMMAND, CLIENT_DATA_ID.CLIENT_DATA_ID_COMMAND);
+        SimConnectMSFS.AddToClientDataDefinition(DEFINE_ID.DATA_DEFINITION_ID_COMMAND, 0, MESSAGE_SIZE, 0, 0);
+
+        PMDG.PMDG.RegisterPMDGNG3DataEvents(SimConnectMSFS);
+
+        RegisterSimVar("CAMERA STATE", "Enum");
+
+        SimConnectMSFS.OnRecvSimobjectData += Simconnect_OnRecvSimobjectData;
     }
 
     private void SimConnect_OnRecvOpen(P3D.SimConnect sender, P3D.SIMCONNECT_RECV_OPEN data)
     {
         SendSimConnectConnectionStatus(true);
+
+        //PMDG.PMDG.RegisterPMDG777DataEvents(SimConnectP3D);
+        //PMDG.PMDG.RegisterPMDG747DataEvents(SimConnectP3D);
+
+        RegisterSimVar("CAMERA STATE", "Enum");
+
+        SimConnectP3D.OnRecvSimobjectData += Simconnect_OnRecvSimobjectData;
     }
 
     private void SimConnect_OnRecvQuit(MSFS.SimConnect sender, MSFS.SIMCONNECT_RECV data)
     {
+        SimConnectConnectionChanged?.Invoke(this, false);
         SendSimConnectConnectionStatus(false);
     }
 
     private void SimConnect_OnRecvQuit(P3D.SimConnect sender, P3D.SIMCONNECT_RECV data)
     {
+        SimConnectConnectionChanged?.Invoke(this, false);
         SendSimConnectConnectionStatus(false);
     }
 
@@ -209,6 +201,7 @@ public sealed class SimConnectClient
             }
         }
     }
+    public event EventHandler<bool> SimConnectConnectionChanged;
 
     public event EventHandler<SimVar> OnSimVarChanged;
 
@@ -239,7 +232,9 @@ public sealed class SimConnectClient
 
     private readonly List<SimVar> SimVars = new();
 
-    private readonly object lockObject = new();
+    private readonly List<SimEvent> SimEvents = new();
+
+    public readonly object lockObject = new();
 
     public void TransmitEvent(uint data, Enum eventID)
     {
@@ -249,14 +244,14 @@ public sealed class SimConnectClient
                 0,
                 eventID,
                 data,
-                PMDG.PMDG.SIMCONNECT_GROUP_PRIORITY.STANDARD,
+                SIMCONNECT_GROUP_PRIORITY.STANDARD,
                 MSFS.SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
 
             SimConnectP3D?.TransmitClientEvent(
                 0,
                 eventID,
                 data,
-                PMDG.PMDG.SIMCONNECT_GROUP_PRIORITY.STANDARD,
+                SIMCONNECT_GROUP_PRIORITY.STANDARD,
                 P3D.SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
         }
     }
@@ -384,24 +379,38 @@ public sealed class SimConnectClient
         }
     }
 
-    public class SimVar
+    public void RegisterSimEvent(string simEventName)
     {
-        public uint ID { get; set; }
+        if (!SimEvents.Exists(k => k.Name == simEventName))
+        {
+            SimEvent simEvent = new((uint)SimEvents.Count + 1, simEventName);
+            SimEvents.Add(simEvent);
 
-        public string Name { get; set; }
+            SimConnectMSFS?.MapClientEventToSimEvent((EVENT_ID)simEvent.ID, simEventName);
+            SimConnectP3D?.MapClientEventToSimEvent((EVENT_ID)simEvent.ID, simEventName);
+        }
+    }
 
+    public void TransmitSimEvent(uint data, string simEventName)
+    {
+        Instance.TransmitEvent(data, (EVENT_ID)SimEvents.FirstOrDefault(k => k.Name == simEventName).ID);
+    }
+
+    public class SimVar : SimEvent
+    {
         public string Unit { get; set; }
 
         public double Data { get; set; }
 
-        public SimVar(uint id, string name, string unit)
+        public SimVar(uint id, string name, string unit) : base(id, name)
         {
+
             ID = id;
             Name = name;
             Unit = unit;
         }
 
-        public SimVar(string name, double data)
+        public SimVar(string name, double data) : base(0, name)
         {
             Name = name;
             Data = data;
@@ -410,6 +419,19 @@ public sealed class SimConnectClient
         public bool BData()
         {
             return Convert.ToBoolean(Data);
+        }
+    }
+
+    public class SimEvent
+    {
+        public uint ID { get; set; }
+
+        public string Name { get; set; }
+
+        public SimEvent(uint id, string name)
+        {
+            ID = id;
+            Name = name;
         }
     }
 
@@ -428,10 +450,24 @@ public sealed class SimConnectClient
         DATA_DEFINITION_ID_COMMAND
     }
 
+    private enum EVENT_ID
+    {
+        EVENT_ID
+    }
+
     private struct CommandStruct
     {
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MESSAGE_SIZE)]
         public string command;
+    }
+
+    public enum SIMCONNECT_GROUP_PRIORITY : uint
+    {
+        HIGHEST = 1u,
+        HIGHEST_MASKABLE = 10000000u,
+        STANDARD = 1900000000u,
+        DEFAULT = 2000000000u,
+        LOWEST = 4000000000u
     }
 
     public enum CameraState

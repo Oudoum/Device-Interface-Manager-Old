@@ -16,6 +16,33 @@ public partial class OutputCreatorViewModel : BaseCreatorViewModel
     public OutputCreatorViewModel(OutputCreatorModel outputCreatorModel, object device) : base(device)
     {
         OutputCreatorModel = outputCreatorModel;
+        if (device is InterfaceIT_BoardInfo.Device iitdevice)
+        {
+            for (int i = iitdevice.BoardInfo.LEDFirst; i <= iitdevice.BoardInfo.LEDLast; i++)
+            {
+                string position = i.ToString();
+                LEDs.Add(position, position);
+            }
+            for (int i = iitdevice.BoardInfo.DatalineFirst; i <= iitdevice.BoardInfo.DatalineLast; i++)
+            {
+                string position = i.ToString();
+                Datalines.Add(position, position);
+            }
+            for (int i = iitdevice.BoardInfo.SevenSegmentFirst; i <= iitdevice.BoardInfo.SevenSegmentLast; i++)
+            {
+                if (iitdevice.BoardInfo.SevenSegmentCount > 0)
+                {
+                    string position = i.ToString();
+                    SevenSegments.Add(position, position);
+                }
+            }
+        }
+        else if (device is Devices.CPflight.Device cpflightdevice)
+        {
+            LEDs = cpflightdevice.LEDCommands;
+            Datalines = cpflightdevice.DatalinesCommands;
+            SevenSegments = cpflightdevice.SevenSegmentCommands;
+        }
     }
 
     public OutputCreatorModel OutputCreatorModel { get; set; }
@@ -63,12 +90,12 @@ public partial class OutputCreatorViewModel : BaseCreatorViewModel
 
     public string[] OutputTypes => OutputCreatorModel.OutputTypes;
 
-    public int? Output
+    public KeyValuePair<string, string>? Output
     {
         get => OutputCreatorModel.Output;
         set
         {
-            if (OutputCreatorModel.Output != value)
+            if (!OutputCreatorModel.Output.Equals(value))
             {
                 OutputCreatorModel.Output = value;
                 OnPropertyChanged(nameof(Output));
@@ -76,11 +103,23 @@ public partial class OutputCreatorViewModel : BaseCreatorViewModel
         }
     }
 
-    public int?[] LEDs => OutputCreatorModel.LEDs;
+    public Dictionary<string, string> LEDs
+    {
+        get => OutputCreatorModel.LEDs;
+        set => OutputCreatorModel.LEDs = value;
+    }
 
-    public int?[] Datalines => OutputCreatorModel.Datalines;
+    public Dictionary<string, string> Datalines
+    {
+        get => OutputCreatorModel.Datalines;
+        set => OutputCreatorModel.Datalines = value;
+    }
 
-    public int?[] SevenSegments => OutputCreatorModel.SevenSegments;
+    public Dictionary<string, string> SevenSegments
+    {
+        get => OutputCreatorModel.SevenSegments;
+        set => OutputCreatorModel.SevenSegments = value;
+    }
 
     public string DataType
     {
@@ -368,8 +407,8 @@ public partial class OutputCreatorViewModel : BaseCreatorViewModel
         set => OutputCreatorModel.SubstringEnd = value;
     }
 
-    public override OutputCreator[] OutputCreator 
-    { 
+    public override OutputCreator[] OutputCreator
+    {
         get => OutputCreatorModel.OutputCreator;
         set => OutputCreatorModel.OutputCreator = value;
     }
@@ -380,27 +419,26 @@ public partial class OutputCreatorViewModel : BaseCreatorViewModel
         set => OutputCreatorModel.Preconditions = value;
     }
 
-    private int? outputPosition;
+    private string outputPosition;
 
-    private void SetOutputPosition(int? value)
+    private void SetOutputPosition(string value)
     {
-        //DISABLE FOR DEBUG
         if (outputPosition != value)
         {
             if (outputPosition is not null)
             {
                 switch (OutputType)
                 {
-                    case ProfileCreatorModel.LED:
-                        InterfaceITAPI_Data.interfaceIT_LED_Set(Device.Session, outputPosition.Value, false);
+                    case ProfileCreatorModel.LED when Device is InterfaceIT_BoardInfo.Device iitdevice:
+                        InterfaceITAPI_Data.interfaceIT_LED_Set(iitdevice.Session, Convert.ToInt32(outputPosition), false);
                         break;
 
-                    case ProfileCreatorModel.DATALINE:
-                        InterfaceITAPI_Data.interfaceIT_Dataline_Set(Device.Session, outputPosition.Value, false);
+                    case ProfileCreatorModel.DATALINE when Device is InterfaceIT_BoardInfo.Device iitdevice:
+                        InterfaceITAPI_Data.interfaceIT_Dataline_Set(iitdevice.Session, Convert.ToInt32(outputPosition), false);
                         break;
 
-                    case ProfileCreatorModel.SEVENSEGMENT:
-                        InterfaceITAPI_Data.interfaceIT_7Segment_Display(Device.Session, " ", outputPosition.Value);
+                    case ProfileCreatorModel.SEVENSEGMENT when Device is InterfaceIT_BoardInfo.Device iitdevice:
+                        InterfaceITAPI_Data.interfaceIT_7Segment_Display(iitdevice.Session, " ", Convert.ToInt32(outputPosition));
                         break;
                 }
             }
@@ -408,22 +446,21 @@ public partial class OutputCreatorViewModel : BaseCreatorViewModel
             {
                 switch (OutputType)
                 {
-                    case ProfileCreatorModel.LED:
-                        InterfaceITAPI_Data.interfaceIT_LED_Set(Device.Session, value.Value, true);
+                    case ProfileCreatorModel.LED when Device is InterfaceIT_BoardInfo.Device iitdevice:
+                        InterfaceITAPI_Data.interfaceIT_LED_Set(iitdevice.Session, Convert.ToInt32(value), true);
                         break;
 
-                    case ProfileCreatorModel.DATALINE:
-                        InterfaceITAPI_Data.interfaceIT_Dataline_Set(Device.Session, value.Value, true);
+                    case ProfileCreatorModel.DATALINE when Device is InterfaceIT_BoardInfo.Device iitdevice:
+                        InterfaceITAPI_Data.interfaceIT_Dataline_Set(iitdevice.Session, Convert.ToInt32(value), true);
                         break;
 
-                    case ProfileCreatorModel.SEVENSEGMENT:
-                        InterfaceITAPI_Data.interfaceIT_7Segment_Display(Device.Session, "8", value.Value);
+                    case ProfileCreatorModel.SEVENSEGMENT when Device is InterfaceIT_BoardInfo.Device iitdevice:
+                        InterfaceITAPI_Data.interfaceIT_7Segment_Display(iitdevice.Session, "8", Convert.ToInt32(value));
                         break;
                 }
             }
             outputPosition = value;
         }
-        //DISABLE FOR DEBUG
     }
 
     [RelayCommand]
@@ -431,17 +468,15 @@ public partial class OutputCreatorViewModel : BaseCreatorViewModel
     {
         if (e.OriginalSource is TextBlock textBlock)
         {
-            string text = textBlock.Text;
-            if (text == "r")
-            {
-                return;
-            }
-            SetOutputPosition(int.Parse(text));
+            SetOutputPosition(((KeyValuePair<string, string>)textBlock.DataContext).Key);
             return;
         }
         else if (e.OriginalSource is Grid grid)
         {
-            SetOutputPosition(((OutputCreatorViewModel)grid.DataContext).Output);
+            if (((OutputCreatorViewModel)grid.DataContext).Output is not null)
+            {
+                SetOutputPosition(((OutputCreatorViewModel)grid.DataContext).Output.Value.Key);
+            }
             return;
         }
         SetOutputPosition(null);

@@ -7,61 +7,62 @@ namespace Device_Interface_Manager.Devices.interfaceIT.USB;
 
 public partial class InterfaceITAPI_Data
 {
-    public delegate void KeyNotificationCallback(uint session, int key, int direction);
-    public delegate void KeyNotificationCallbackUint(uint session, int key, uint direction);
+    public delegate void KeyNotifyCallback(uint session, int key, int direction);
+    public delegate void KeyNotifyCallbackUint(uint session, int key, uint direction);
 
     public delegate void DeviceChangeCallback(int action);
 
-    public enum DeviceNotification
+    public enum DeviceNotification : byte
     {
-        INTERFACEIT_DEVICE_REMOVAL = 0x01,
-        INTERFACEIT_DEVICE_ARRIVAL = 0x02,
+        Removal = 0x01,
+        Arrival = 0x02,
     }
 
-    public enum SwitchDirectionInfo
+    public enum SwitchDirection : byte
     {
-        INTERFACEIT_SWITCH_DIR_UNKNOWN = 0xFF,
-        INTERFACEIT_SWITCH_DIR_UP = 0x0,
-        INTERFACEIT_SWITCH_DIR_DOWN = 0x1,
+        Unknown = 0xFF,
+        Up = 0x0,
+        Down = 0x1,
     }
 
-    public enum BoardOptions
+    [Flags]
+    public enum BoardOptions : byte
     {
-       INTERFACEIT_BOARD_OPTION_NONE = 0x0,
-       INTERFACEIT_BOARD_OPTION_CDUKEYS = 0x1,     // CDU v9 does not need this.  Used for v7 CDU
-       INTERFACEIT_BOARD_OPTION_FORCE64 = 0x2,     // Required for the new FDS-CONTROLLER-MCP boards for relay to function
-       INTERFACEIT_BOARD_OPTION_RESERVED3 = 0x4,
+       None = 0x0,
+       CDUKeys = 0x1,     // CDU v9 does not need this.  Used for v7 CDU
+       Force64 = 0x2,     // Required for the new FDS-CONTROLLER-MCP boards for relay to function
+       Reserved3 = 0x4,
     }
 
-    public enum ErrorCodes
+    public enum ErrorCodes : short
     {
-        IITAPI_ERR_OK = -0,
-        IITAPI_ERR_CONTROLLERS_OPEN_FAILED = -1,
-        IITAPI_ERR_CONTROLLERS_ALREADY_OPENED = -2,
-        IITAPI_ERR_CONTROLLERS_NOT_OPENED = -3,
-        IITAPI_ERR_INVALID_HANDLE = -4,
-        IITAPI_ERR_INVALID_POINTER = -5,
-        IITAPI_ERR_INVALID_CONTROLLER_NAME = -6,
-        IITAPI_ERR_FAILED = -7,
-        IITAPI_ERR_INVALID_CONTROLLER_POINTER = -8,
-        IITAPI_ERR_INVALID_CALLBACK = -9,
-        IITAPI_ERR_RETRIEVING_CONTROLLER = -10,
-        IITAPI_ERR_NOT_ENABLED = -11,
-        IITAPI_ERR_BUFFER_NOT_LARGE_ENOUGH = -12,
-        IITAPI_ERR_PARAMETER_LENGTH_INCORRECT = -13,
-        IITAPI_ERR_PARAMETER_OUT_OF_RANGE = -14,
-        IITAPI_ERR_FEATURE_NOT_AVAILABLE = -15,
-        IITAPI_ERR_ALREADY_ENABLED = -16,
-        IITAPI_ERR_NO_ITEMS = -17,
-        IITAPI_ERR_CONTROLLER_ALREADY_BOUND = -18,
-        IITAPI_ERR_NO_CONTROLLERS_FOUND = -19,
-        IITAPI_ERR_UNKNOWN = -20,
-        IITAPI_ERR_NOT_LICENSED = -21,
-        IITAPI_ERR_INVALID_LICENSE = -22,
-        IITAPI_ERR_ALREADY_LICENSED = -23,
-        IITAPI_ERR_GENERATING_ACTIVATIONID = -24,
-        IITAPI_ERR_EXPIRED_LICENSE = -25,
-        IITAPI_ERR_EXPIRED_TRIAL = -26,
+        OK = 0,
+        ControllersOpenFailed = -1,
+        ControllersAlreadyOpened = -2,
+        ControllersNotOpened = -3,
+        InvalidHandle = -4,
+        InvalidPointer = -5,
+        InvalidControllerName = -6,
+        Failed = -7,
+        InvalidControllerPointer = -8,
+        InvalidCallback = -9,
+        RetrievingController = -10,
+        NotEnabled = -11,
+        BufferNotLargeEnough = -12,
+        ParameterLengthIncorrect = -13,
+        ParameterOutOfRange = -14,
+        FeatureNotAvailable = -15,
+        AlreadyEnabled = -16,
+        NoItems = -17,
+        ControllerAlreadyBound = -18,
+        NoControllersFound = -19,
+        UnknownError = -20,
+        NotLicensed = -21,
+        InvalidLicense = -22,
+        AlreadyLicensed = -23,
+        GeneratingActivationIDFailed = -24,
+        ExpiredLicense = -25,
+        ExpiredTrial = -26,
     }
 
     //Main Functions
@@ -94,7 +95,7 @@ public partial class InterfaceITAPI_Data
 
     [DllImport("interfaceITAPI x64.dll")]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "SYSLIB1054:Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time", Justification = "<Pending>")]
-    internal static extern void interfaceIT_GetBoardInfo(uint session, out BOARDCAPS pbc);
+    internal static extern void interfaceIT_GetBoardInfo(uint session, out BoardInfo pbc);
 
     [LibraryImport("interfaceITAPI x64.dll")]
     internal static partial void interfaceIT_SetBoardOptions(uint session, uint options);
@@ -122,10 +123,10 @@ public partial class InterfaceITAPI_Data
 
     //Switch Functions
     [LibraryImport("interfaceITAPI x64.dll")]
-    internal static partial void interfaceIT_Switch_Enable_Callback(uint session, [MarshalAs(UnmanagedType.Bool)] bool enable, KeyNotificationCallback pROC);
+    internal static partial void interfaceIT_Switch_Enable_Callback(uint session, [MarshalAs(UnmanagedType.Bool)] bool enable, KeyNotifyCallback pROC);
 
     [LibraryImport("interfaceITAPI x64.dll")]
-    internal static partial void interfaceIT_Switch_Enable_Callback(uint session, [MarshalAs(UnmanagedType.Bool)] bool enable, KeyNotificationCallbackUint pROC);
+    internal static partial void interfaceIT_Switch_Enable_Callback(uint session, [MarshalAs(UnmanagedType.Bool)] bool enable, KeyNotifyCallbackUint pROC);
 
     [LibraryImport("interfaceITAPI x64.dll")]
     internal static partial void interfaceIT_Switch_Enable_Poll(uint session, [MarshalAs(UnmanagedType.Bool)] bool enable);
@@ -196,97 +197,93 @@ public partial class InterfaceITAPI_Data
     internal static partial void interfaceIT_EnableLogging([MarshalAs(UnmanagedType.Bool)] bool enable);
 
 
-    internal static void InterfaceITEnable(Device device)
+    internal static void EnableDeviceFeatures(Device device)
     {
-        if ((device.DeviceInfo.Features & Features.INTERFACEIT_FEATURE_SPECIAL_ANALOG16_INPUT) != 0)
+        Features features = device.BoardInfo.Features;
+        uint session = device.Session;
+
+        if (HasFeature(features, Features.SpecialAnalog16Input))
         {
-            interfaceIT_Analog_Enable(device.Session, true);
+            interfaceIT_Analog_Enable(session, true);
         }
 
-        if ((device.DeviceInfo.Features & Features.INTERFACEIT_FEATURE_SPECIAL_ANALOG_INPUT) != 0)
+        if (HasFeature(features, Features.SpecialAnalogInput))
         {
-            interfaceIT_Analog_Enable(device.Session, true);
+            interfaceIT_Analog_Enable(session, true);
         }
 
-        if ((device.DeviceInfo.Features & Features.INTERFACEIT_FEATURE_SPECIAL_BRIGHTNESS) != 0)
+        if (HasFeature(features, Features.SpecialBrightness))
         {
-            interfaceIT_Brightness_Enable(device.Session, true);
+            interfaceIT_Brightness_Enable(session, true);
         }
 
-        if ((device.DeviceInfo.Features & Features.INTERFACEIT_FEATURE_OUTPUT_SERVO) != 0)
+        if (HasFeature(features, Features.OutputDataLine))
         {
-            //Not available
+            interfaceIT_Dataline_Enable(session, true);
         }
 
-        if ((device.DeviceInfo.Features & Features.INTERFACEIT_FEATURE_OUTPUT_DATALINE) != 0)
+        if (HasFeature(features, Features.Output7Segment))
         {
-            interfaceIT_Dataline_Enable(device.Session, true);
+            interfaceIT_7Segment_Enable(session, true);
         }
 
-        if ((device.DeviceInfo.Features & Features.INTERFACEIT_FEATURE_OUTPUT_7SEGMENT) != 0)
+        if (HasFeature(features, Features.OutputLED))
         {
-            interfaceIT_7Segment_Enable(device.Session, true);
-        }
-
-        if ((device.DeviceInfo.Features & Features.INTERFACEIT_FEATURE_OUTPUT_LED) != 0)
-        {
-            interfaceIT_LED_Enable(device.Session, true);
+            interfaceIT_LED_Enable(session, true);
         }
     }
 
     internal static void InterfaceITDisable(Device device)
     {
-        if ((device.DeviceInfo.Features & Features.INTERFACEIT_FEATURE_OUTPUT_LED) != 0)
+        Features features = device.BoardInfo.Features;
+        uint session = device.Session;
+
+        if (HasFeature(features, Features.OutputLED))
         {
-            for (int i = device.DeviceInfo.LEDFirst; i <= device.DeviceInfo.LEDLast; i++)
+            for (int i = device.BoardInfo.LEDFirst; i <= device.BoardInfo.LEDLast; i++)
             {
-                interfaceIT_LED_Set(device.Session, i, false);
+                interfaceIT_LED_Set(session, i, false);
             }
-            interfaceIT_LED_Enable(device.Session, false);
+            interfaceIT_LED_Enable(session, false);
         }
 
-        if ((device.DeviceInfo.Features & Features.INTERFACEIT_FEATURE_INPUT_SWITCHES) != 0)
+        if (HasFeature(features, Features.InputSwitches))
         {
-            interfaceIT_Switch_Enable_Poll(device.Session, false);
+            interfaceIT_Switch_Enable_Poll(session, false);
         }
 
-        if ((device.DeviceInfo.Features & Features.INTERFACEIT_FEATURE_OUTPUT_7SEGMENT) != 0)
+        if (HasFeature(features, Features.Output7Segment))
         {
-            for (int i = device.DeviceInfo.SevenSegmentFirst; i <= device.DeviceInfo.SevenSegmentLast; i++)
+            for (int i = device.BoardInfo.SevenSegmentFirst; i <= device.BoardInfo.SevenSegmentLast; i++)
             {
-                interfaceIT_7Segment_Display(device.Session, null, i);
+                interfaceIT_7Segment_Display(session, null, i);
             }
-            interfaceIT_7Segment_Enable(device.Session, false);
+            interfaceIT_7Segment_Enable(session, false);
         }
 
-        if ((device.DeviceInfo.Features & Features.INTERFACEIT_FEATURE_OUTPUT_DATALINE) != 0)
+        if (HasFeature(features, Features.OutputDataLine))
         {
-            for (int i = device.DeviceInfo.DatalineFirst; i <= device.DeviceInfo.DatalineLast; i++)
+            for (int i = device.BoardInfo.DatalineFirst; i <= device.BoardInfo.DatalineLast; i++)
             {
-                interfaceIT_Dataline_Set(device.Session, i, false);
+                interfaceIT_Dataline_Set(session, i, false);
             }
-            interfaceIT_Dataline_Enable(device.Session, false);
+            interfaceIT_Dataline_Enable(session, false);
         }
 
-        if ((device.DeviceInfo.Features & Features.INTERFACEIT_FEATURE_OUTPUT_SERVO) != 0)
+        if (HasFeature(features, Features.SpecialBrightness))
         {
-            //Not available
+            interfaceIT_Brightness_Set(session, 0);
+            interfaceIT_Brightness_Enable(session, false);
         }
 
-        if ((device.DeviceInfo.Features & Features.INTERFACEIT_FEATURE_SPECIAL_BRIGHTNESS) != 0)
+        if (HasFeature(features, Features.SpecialAnalogInput) || HasFeature(features, Features.SpecialAnalog16Input))
         {
-            interfaceIT_Brightness_Set(device.Session, 0);
-            interfaceIT_Brightness_Enable(device.Session, false);
+            interfaceIT_Analog_Enable(session, false);
         }
+    }
 
-        if ((device.DeviceInfo.Features & Features.INTERFACEIT_FEATURE_SPECIAL_ANALOG_INPUT) != 0)
-        {
-            interfaceIT_Analog_Enable(device.Session, false);
-        }
-
-        if ((device.DeviceInfo.Features & Features.INTERFACEIT_FEATURE_SPECIAL_ANALOG16_INPUT) != 0)
-        {
-            interfaceIT_Analog_Enable(device.Session, false);
-        }
+    private static bool HasFeature(Features featuresToCheck, Features feature)
+    {
+        return (featuresToCheck & feature) != 0;
     }
 }

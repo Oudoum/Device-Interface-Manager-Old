@@ -12,17 +12,17 @@ public partial class ProfileCreatorModel : ObservableObject
     //Drivers
     public const string FDSUSB = "FDS USB";
     public const string FDSENET = "FDS E-Series";
-    public const string CPFlightUSB = "CPFlight USB";
-    public const string CPFlightENET = "CPFlight ENET";
+    public const string CPflightUSB = "CPflight USB";
+    public const string CPflightENET = "CPflight ENET";
     public const string HID = "HID";
     public const string Arduino = "Arduino";
-    public const string FlightIllusion = "Flight Illusion";
     public const string SIOC = "SIOC";
 
-    public static string[] Drivers => new string[] { FDSUSB };
+    public static string[] Drivers => new string[] { FDSUSB, FDSENET, CPflightUSB, CPflightENET, HID, Arduino, SIOC };
 
     //Data-/EventTypes
     public const string PMDG737 = "PMDG737";
+    public const string KEVENT = "K:Event";
     public const string MSFSSimConnect = "MSFS/SimConnect/LVar";
     public const string RPN = "RPN/H-Events";
 
@@ -43,20 +43,8 @@ public partial class ProfileCreatorModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<InputCreator> _inputCreator = new();
 
-    [JsonIgnore]
-    public List<int?> Switches { get; set; } = new();
-
     [ObservableProperty]
     private ObservableCollection<OutputCreator> _outputCreator = new();
-
-    [JsonIgnore]
-    public List<int?> LEDs { get; set; } = new();
-
-    [JsonIgnore]
-    public List<int?> Datalines { get; set; } = new();
-
-    [JsonIgnore]
-    public List<int?> SevenSegments { get; set; } = new();
 }
 
 public partial class InputCreator : ObservableObject
@@ -74,7 +62,7 @@ public partial class InputCreator : ObservableObject
     private string _inputType;
 
     [ObservableProperty]
-    public int? _input;
+    private KeyValuePair<string, string>? _input;
 
     [ObservableProperty]
     private string _eventType;
@@ -126,7 +114,7 @@ public partial class OutputCreator : ObservableObject
     private string _outputType;
 
     [ObservableProperty]
-    private int? _output;
+    private KeyValuePair<string, string>? _output;
 
     [ObservableProperty]
     private string _dataType;
@@ -215,7 +203,3 @@ public partial class Precondition : ObservableObject
     [ObservableProperty]
     private bool _isOrOperator;
 }
-
-//Brightness
-
-//Analog

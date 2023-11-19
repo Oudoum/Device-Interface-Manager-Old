@@ -38,7 +38,7 @@ public class Profiles
 
     public void Stop()
     {
-        fDS_USB_Drivers?.ForEach(d => d.Stop());
+        fDS_USB_Drivers?.ForEach(d => d.Close());
         fDS_USB_Drivers?.Clear();
         simConnectStarted = false;
         initialized = false;
@@ -77,7 +77,7 @@ public class Profiles
                 if (!initialized)
                 {
                     initialized = true;
-                    Initialize();
+                    Initialize<PMDG_NG3_SDK.PMDG_NG3_Data>();
                 }
             }
         }
@@ -99,9 +99,9 @@ public class Profiles
         return pMDGDataFieldName;
     }
 
-    private void Initialize()
+    private void Initialize<T>() where T : struct
     {
-        foreach (FieldInfo field in typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetFields())
+        foreach (FieldInfo field in typeof(T).GetFields())
         {
             if (field.Name == "reserved")
             {
@@ -127,9 +127,9 @@ public class Profiles
         }
     }
 
-    private void Iteration(PMDG_NG3_SDK.PMDG_NG3_Data newData)
+    private void Iteration<T>(T newData) where T : struct
     {
-        foreach (FieldInfo field in typeof(PMDG_NG3_SDK.PMDG_NG3_Data).GetFields())
+        foreach (FieldInfo field in typeof(T).GetFields())
         {
             if (field.Name == "reserved")
             {

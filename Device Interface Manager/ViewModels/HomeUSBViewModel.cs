@@ -24,8 +24,6 @@ public partial class HomeUSBViewModel : ObservableObject
 
     public ObservableCollection<string> BoardInfo { get; set; } = new();
 
-    public ObservableCollection<string> BoardType { get; set; } = new();
-
     public ObservableCollection<Connection> Connections { get; set; }
 
     public ObservableCollection<string> Profiles { get; set; } = new();
@@ -40,6 +38,8 @@ public partial class HomeUSBViewModel : ObservableObject
 
     [ObservableProperty]
     public ObservableCollection<string> _logMessages;
+
+    //Devices.COM.SerialDevice SerialDevice { get; set; } = new();
 
     public HomeUSBViewModel(ILogger<HomeUSBViewModel> logger)
     {
@@ -57,6 +57,17 @@ public partial class HomeUSBViewModel : ObservableObject
             { "PMDG 737NG MCP (330A | 332C)", StartUSBProfile<SimConnectProfiles.PMDG.B737.USB.NG_MCP_330A_332C> },
             { "PMDG 737NG EFIS L (330B | 332D)", StartUSBProfile<SimConnectProfiles.PMDG.B737.USB.NG_EFIS_L_330B_332D> },
             { "PMDG 737NG EFIS R (330C | 332E)", StartUSBProfile<SimConnectProfiles.PMDG.B737.USB.NG_EFIS_R_330C_332E> },
+            //{ "Asobo 747-8I Left CDU", StartUSBProfile<SimConnectProfiles.Asobo.B747.USB.CDU_L>},
+            //{ "Asobo 747-8I Right CDU", StartUSBProfile<SimConnectProfiles.Asobo.B747.USB.CDU_R>},
+            { "[P3D] PMDG 747 Left CDU", StartUSBProfile<SimConnectProfiles.PMDG.B747.USB.B747_CDU_L> },
+            { "[P3D] PMDG 747 Right CDU", StartUSBProfile<SimConnectProfiles.PMDG.B747.USB.B747_CDU_R> },
+            { "[P3D] PMDG 747 Center CDU", StartUSBProfile<SimConnectProfiles.PMDG.B747.USB.B747_CDU_C> },
+            { "[P3D] PMDG 747 MCP (330A)", StartUSBProfile<SimConnectProfiles.PMDG.B747.USB.B747_MCP_330A> },
+            { "[P3D] PMDG 747 EFIS L (330B)", StartUSBProfile<SimConnectProfiles.PMDG.B747.USB.B747_EFIS_L_330B> },
+            { "[P3D] PMDG 747 EFIS R (330C)", StartUSBProfile<SimConnectProfiles.PMDG.B747.USB.B747_EFIS_R_330C> },
+            //{ "[P3D] PMDG 777 Left CDU", StartUSBProfile<SimConnectProfiles.PMDG.B777.USB.B777_CDU_L> },
+            //{ "[P3D] PMDG 777 Right CDU", StartUSBProfile<SimConnectProfiles.PMDG.B777.USB.B777_CDU_R> },
+            //{ "[P3D] PMDG 777 Center CDU", StartUSBProfile<SimConnectProfiles.PMDG.B777.USB.B777_CDU_C> },
 
         //"PMDG 737MAX Left CDU"
         //"PMDG 737MAX Right CDU"
@@ -139,7 +150,6 @@ public partial class HomeUSBViewModel : ObservableObject
     public void GetBoardInfo()
     {
         BoardInfo.Clear();
-        BoardType.Clear();
         for (int i = 0; i < 4; i++)
         {
             BoardInfo.Add(string.Empty);
@@ -152,37 +162,32 @@ public partial class HomeUSBViewModel : ObservableObject
         BoardInfo.Add(hasFeature ? featureInfo : string.Empty);
     }
 
-    public void GetBoardInfo(InterfaceIT_BoardInfo.BOARDCAPS bOARDCAPS)
+    public void GetBoardInfo(InterfaceIT_BoardInfo.Device device)
     {
+        InterfaceIT_BoardInfo.BoardInfo bOARDCAPS = device.BoardInfo;
+
         BoardInfo.Clear();
-        BoardType.Clear();
 
-        BoardInfo.Add($"Board {bOARDCAPS.BoardType} manufactured on {bOARDCAPS.ManufactureDate} has the following features: ");
+        BoardInfo.Add($"Board \"{device.BoardName}\" ({bOARDCAPS.BoardType}) manufactured on {bOARDCAPS.ManufactureDate} has the following features: ");
 
-        AddFeatureInfo(bOARDCAPS.Features == InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_NONE, "No features programmed. Please obtain the update patch for this board.");
+        AddFeatureInfo(bOARDCAPS.Features == InterfaceIT_BoardInfo.Features.None, "No features programmed. Please obtain the update patch for this board.");
 
-        AddFeatureInfo((bOARDCAPS.Features & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_OUTPUT_LED) != 0, $"{bOARDCAPS.LEDCount} | LEDs ( {bOARDCAPS.LEDFirst} - {bOARDCAPS.LEDLast} )");
+        AddFeatureInfo((bOARDCAPS.Features & InterfaceIT_BoardInfo.Features.OutputLED) != 0, $"{bOARDCAPS.LEDCount} | LEDs ( {bOARDCAPS.LEDFirst} - {bOARDCAPS.LEDLast} )");
 
-        AddFeatureInfo((bOARDCAPS.Features & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_INPUT_SWITCHES) != 0, $"{bOARDCAPS.SwitchCount} | Switches ( {bOARDCAPS.SwitchFirst} - {bOARDCAPS.SwitchLast} )");
+        AddFeatureInfo((bOARDCAPS.Features & InterfaceIT_BoardInfo.Features.InputSwitches) != 0, $"{bOARDCAPS.SwitchCount} | Switches ( {bOARDCAPS.SwitchFirst} - {bOARDCAPS.SwitchLast} )");
 
-        AddFeatureInfo((bOARDCAPS.Features & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_OUTPUT_7SEGMENT) != 0, $"{bOARDCAPS.SevenSegmentCount} | 7 Segments ( {bOARDCAPS.SevenSegmentFirst} - {bOARDCAPS.SevenSegmentLast} )");
+        AddFeatureInfo((bOARDCAPS.Features & InterfaceIT_BoardInfo.Features.Output7Segment) != 0, $"{bOARDCAPS.SevenSegmentCount} | 7 Segments ( {bOARDCAPS.SevenSegmentFirst} - {bOARDCAPS.SevenSegmentLast} )");
 
-        AddFeatureInfo((bOARDCAPS.Features & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_OUTPUT_DATALINE) != 0, $"{bOARDCAPS.DatalineCount} | Datalines ( {bOARDCAPS.DatalineFirst} - {bOARDCAPS.DatalineLast} )");
+        AddFeatureInfo((bOARDCAPS.Features & InterfaceIT_BoardInfo.Features.OutputDataLine) != 0, $"{bOARDCAPS.DatalineCount} | Datalines ( {bOARDCAPS.DatalineFirst} - {bOARDCAPS.DatalineLast} )");
 
         //Not available
-        AddFeatureInfo((bOARDCAPS.Features & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_OUTPUT_SERVO) != 0, $"{bOARDCAPS.ServoController} | Servos ( {bOARDCAPS.ServoControllerFirst} - {bOARDCAPS.ServoControllerLast} )");
+        AddFeatureInfo((bOARDCAPS.Features & InterfaceIT_BoardInfo.Features.OutputServo) != 0, $"{bOARDCAPS.ServoController} | Servos ( {bOARDCAPS.ServoControllerFirst} - {bOARDCAPS.ServoControllerLast} )");
 
-        AddFeatureInfo((bOARDCAPS.Features & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_SPECIAL_BRIGHTNESS) != 0, "Brightness control supported");
+        AddFeatureInfo((bOARDCAPS.Features & InterfaceIT_BoardInfo.Features.SpecialBrightness) != 0, "Brightness control supported");
 
-        AddFeatureInfo((bOARDCAPS.Features & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_SPECIAL_ANALOG_INPUT) != 0, "Analog input supported (Single Channel)");
+        AddFeatureInfo((bOARDCAPS.Features & InterfaceIT_BoardInfo.Features.SpecialAnalogInput) != 0, "Analog input supported (Single Channel)");
 
-        AddFeatureInfo((bOARDCAPS.Features & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_SPECIAL_ANALOG16_INPUT) != 0, "Analog input supported (16 Channels)");
-
-        foreach (var field in typeof(InterfaceIT_BoardIDs).GetFields())
-        {
-            if ((string)field.GetValue(null) == bOARDCAPS.BoardType)
-                BoardType.Add(field.Name.ToString().Replace('_', ' '));
-        }
+        AddFeatureInfo((bOARDCAPS.Features & InterfaceIT_BoardInfo.Features.SpecialAnalog16Input) != 0, "Analog input supported (16 Channels)");
     }
 
     [RelayCommand]
@@ -202,7 +207,7 @@ public partial class HomeUSBViewModel : ObservableObject
 
     private void StopUSB()
     {
-        USBList.ForEach(o => o.Stop());
+        USBList.ForEach(o => o.Close());
         USBList.Clear();
         Device_Interface_Manager.SimConnectProfiles.Profiles.Instance.Stop();
         IsUSBEnabled = true;

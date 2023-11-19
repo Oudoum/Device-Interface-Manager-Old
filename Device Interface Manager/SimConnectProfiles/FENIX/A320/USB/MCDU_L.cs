@@ -5,9 +5,9 @@ namespace Device_Interface_Manager.SimConnectProfiles.FENIX.A320.USB;
 
 public class MCDU_L : Device_Interface_Manager.SimConnectProfiles.USB
 {
-    protected override void SimConnect_OnRecvOpen()
+    protected override void OnRecvOpen()
     {
-        interfaceIT_Dataline_Set(Device.Session, Device.DeviceInfo.DatalineFirst, true);
+        interfaceIT_Dataline_Set(Device.Session, Device.BoardInfo.DatalineFirst, true);
 
         simConnectClient.RegisterSimVar("L:I_CDU1_FAIL");
         simConnectClient.RegisterSimVar("L:I_CDU1_MCDU_MENU");

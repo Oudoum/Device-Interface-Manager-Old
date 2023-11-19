@@ -258,7 +258,7 @@
                                             <ContentPresenter.ContentTemplate>
                                                 <DataTemplate>
                                                     <Viewbox StretchDirection="DownOnly" Margin="5">
-                                                        <TextBlock FontSize="20" Cursor="Hand" MouseMove="ListViewItem_MouseMove" Text="{Binding BoardType}" ToolTip="{Binding SerialNumber}"/>
+                                                        <TextBlock FontSize="20" Cursor="Hand" MouseMove="ListViewItem_MouseMove" Text="{Binding BoardName}" ToolTip="{Binding SerialNumber}"/>
                                                     </Viewbox>
                                                 </DataTemplate>
                                             </ContentPresenter.ContentTemplate>
@@ -433,7 +433,7 @@
                     mah:ControlsHelper.ContentCharacterCasing="Normal"
                     Cursor="Hand"
                     Visibility="Visible"
-                    Content="ProfileCreator [Beta]"
+                    Content="ProfileCreator"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     FontSize="32"

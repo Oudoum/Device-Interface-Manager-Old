@@ -21,7 +21,7 @@ public abstract class ENET : ProfileBase<InterfaceITEthernet>
         return connectionStatus;
     }
 
-    protected override void StopDevice()
+    protected override void Stop()
     {
         Device.CloseStream();
     }

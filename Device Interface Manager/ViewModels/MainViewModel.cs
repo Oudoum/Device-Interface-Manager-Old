@@ -14,6 +14,7 @@ using Device_Interface_Manager.Devices.interfaceIT.USB;
 using Device_Interface_Manager.Views;
 using Device_Interface_Manager.Core;
 using static Device_Interface_Manager.Devices.interfaceIT.USB.InterfaceITAPI_Data;
+using Device_Interface_Manager.Devices.COM;
 
 namespace Device_Interface_Manager.ViewModels;
 
@@ -96,7 +97,7 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
             OnPropertyChanged();
             if (DeviceList.Count > 0)
             {
-                HomeUSBVM.GetBoardInfo(DeviceList[value].DeviceInfo);
+                HomeUSBVM.GetBoardInfo(DeviceList[value]);
                 HomeUSBVM.Devices = DeviceList.ToList();
             }
         }
@@ -305,31 +306,28 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
             if (!string.IsNullOrEmpty(device))
             {
                 interfaceIT_Bind(device, out uint session);
-                interfaceIT_GetBoardInfo(session, out InterfaceIT_BoardInfo.BOARDCAPS bOARDCAPS);
-                if (bOARDCAPS.BoardType == "330A" || bOARDCAPS.BoardType == "332C" || bOARDCAPS.BoardType == "3401")
+                interfaceIT_GetBoardInfo(session, out InterfaceIT_BoardInfo.BoardInfo bOARDCAPS);
+                InterfaceIT_BoardIDs boardID = (InterfaceIT_BoardIDs)Convert.ToUInt16(bOARDCAPS.BoardType, 16);
+                if (boardID == InterfaceIT_BoardIDs.FDS_CONTROLLER_MCP || boardID == InterfaceIT_BoardIDs.FDS_737_PMX_MCP || boardID == InterfaceIT_BoardIDs.JetMAX_737_RADIO)
                 {
-                    interfaceIT_SetBoardOptions(session, (uint)BoardOptions.INTERFACEIT_BOARD_OPTION_FORCE64);
+                    interfaceIT_SetBoardOptions(session, (uint)BoardOptions.Force64);
                 }
-                string boardType = string.Empty;
-                foreach (FieldInfo field in typeof(InterfaceIT_BoardIDs).GetFields())
-                {
-                    if ((string)field.GetValue(null) == bOARDCAPS.BoardType)
-                        boardType = field.Name.ToString().Replace('_', ' ');
-                }
+                string boardName = boardID.ToString().Replace('_', ' ');
                 DeviceList.Add(new InterfaceIT_BoardInfo.Device
                 {
                     Id = i++,
-                    BoardType = boardType,
+                    BoardID = boardID,
+                    BoardName = boardName,
                     SerialNumber = device,
                     Session = session,
-                    DeviceInfo = bOARDCAPS
+                    BoardInfo = bOARDCAPS
                 });
                 LEDTestViewModels.Add(new LEDTestViewModel()
                 {
                     Session = session,
                     LEDFirst = bOARDCAPS.LEDFirst,
                     LEDLast = bOARDCAPS.LEDLast,
-                    BoardType = boardType 
+                    BoardType = boardName 
                 });
                 SwitchTestViewModels.Add(new SwitchTestViewModel()
                 {

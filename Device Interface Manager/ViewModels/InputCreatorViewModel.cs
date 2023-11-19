@@ -5,6 +5,8 @@ using Device_Interface_Manager.SimConnectProfiles.PMDG;
 using Device_Interface_Manager.Models;
 using System.Collections.ObjectModel;
 using MahApps.Metro.Controls.Dialogs;
+using HidSharp;
+using System.Linq;
 
 namespace Device_Interface_Manager.ViewModels;
 public partial class InputCreatorViewModel : BaseCreatorViewModel
@@ -12,9 +14,18 @@ public partial class InputCreatorViewModel : BaseCreatorViewModel
     public InputCreatorViewModel(InputCreatorModel inputCreatorModel, object device) : base(device)
     {
         InputCreatorModel = inputCreatorModel;
-        if (device is InterfaceIT_BoardInfo.Device)
+        if (device is InterfaceIT_BoardInfo.Device iitdevice)
         {
-            InterfaceITAPI_Data.interfaceIT_Switch_Enable_Poll(Device.Session, true);
+            for (int i = iitdevice.BoardInfo.SwitchFirst; i <= iitdevice.BoardInfo.SwitchLast; i++)
+            {
+                string position = i.ToString();
+                Inputs.Add(position, position);
+            }
+            InterfaceITAPI_Data.interfaceIT_Switch_Enable_Poll(iitdevice.Session, true);
+        }
+        else if (device is Devices.CPflight.Device cpflightdevice)
+        {
+            Inputs = cpflightdevice.SwitchInformations;
         }
     }
 
@@ -35,12 +46,12 @@ public partial class InputCreatorViewModel : BaseCreatorViewModel
 
     public string[] InputTypes => InputCreatorModel.InputTypes;
 
-    public int? Input
+    public KeyValuePair<string, string>? Input
     {
         get => InputCreatorModel.Input;
         set
         {
-            if (InputCreatorModel.Input != value)
+            if (!InputCreatorModel.Input.Equals(value))
             {
                 InputCreatorModel.Input = value;
                 OnPropertyChanged(nameof(Input));
@@ -48,7 +59,11 @@ public partial class InputCreatorViewModel : BaseCreatorViewModel
         }
     }
 
-    public int?[] Switches => InputCreatorModel.Switches;
+    public Dictionary<string, string> Inputs
+    {
+        get => InputCreatorModel.Inputs;
+        set => InputCreatorModel.Inputs = value;
+    }
 
     public string EventType
     {
@@ -60,22 +75,25 @@ public partial class InputCreatorViewModel : BaseCreatorViewModel
                 InputCreatorModel.EventType = value;
                 if (value is not null)
                 {
-                    if (value == ProfileCreatorModel.MSFSSimConnect || value == ProfileCreatorModel.RPN)
+                    switch (value)
                     {
-                        PMDGEvent = null;
-                        PMDGMousePress = null;
-                        PMDGMouseRelease = null;
-                        OnRelease = false;
-                    }
-                    if (value == ProfileCreatorModel.RPN)
-                    {
-                        DataPress = null;
-                        DataRelease = null;
-                    }
-                    else if (value == ProfileCreatorModel.PMDG737)
-                    {
-                        Event = null;
-                        OnRelease = false;
+                        case ProfileCreatorModel.MSFSSimConnect:
+                        case ProfileCreatorModel.RPN:
+                        case ProfileCreatorModel.KEVENT:
+                            PMDGEvent = null;
+                            PMDGMousePress = null;
+                            PMDGMouseRelease = null;
+                            OnRelease = false;
+                            if (value == ProfileCreatorModel.RPN)
+                            {
+                                DataPress = null;
+                                DataRelease = null;
+                            }
+                            break;
+                        case ProfileCreatorModel.PMDG737:
+                            Event = null;
+                            OnRelease = false;
+                            break;
                     }
                 }
                 OnPropertyChanged(nameof(EventType));
@@ -241,7 +259,10 @@ public partial class InputCreatorViewModel : BaseCreatorViewModel
     {
         if (Device is not null)
         {
-            InterfaceITAPI_Data.interfaceIT_Switch_Enable_Poll(Device.Session, false);
+            if (Device is InterfaceIT_BoardInfo.Device iitdevice)
+            {
+                InterfaceITAPI_Data.interfaceIT_Switch_Enable_Poll(iitdevice.Session, false);
+            }
         }
         return base.CanCloseAsync();
     }
@@ -249,12 +270,17 @@ public partial class InputCreatorViewModel : BaseCreatorViewModel
     [RelayCommand]
     private void GetSwitch()
     {
-        while (InterfaceITAPI_Data.interfaceIT_Switch_Get_Item(Device.Session, out int key, out int direction) == 0)
+        switch (Device)
         {
-            if (direction == 1)
-            {
-                Input = key;
-            }
+            case InterfaceIT_BoardInfo.Device iitdevice:
+                while (InterfaceITAPI_Data.interfaceIT_Switch_Get_Item(iitdevice.Session, out int key, out int direction) == 0)
+                {
+                    if (direction == 1)
+                    {
+                        Input = Inputs.FirstOrDefault(k => k.Key == key.ToString());
+                    }
+                }
+                break;
         }
     }
 }

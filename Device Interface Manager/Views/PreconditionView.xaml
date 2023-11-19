@@ -19,7 +19,7 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal" Margin="15,0,15,0">
-                            <CheckBox IsChecked="{Binding IsActive}" Padding="0" VerticalAlignment="Center" mah:CheckBoxHelper.CheckGlyphForegroundChecked="White" mah:CheckBoxHelper.CheckGlyphForegroundCheckedMouseOver="White"/>
+                            <CheckBox IsChecked="{Binding IsActive}" Padding="0" VerticalAlignment="Center" mah:CheckBoxHelper.CheckGlyphForegroundChecked="White" mah:CheckBoxHelper.CheckGlyphForegroundCheckedMouseOver="White" Cursor="Hand"/>
                             <TextBlock Margin="25,0,0,0" VerticalAlignment="Center">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock" BasedOn="{StaticResource MahApps.Styles.TextBlock}">
@@ -63,7 +63,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Button HorizontalAlignment="Left" Command="{Binding AddPreconditionCommand}">
+                <Button HorizontalAlignment="Left" Command="{Binding AddPreconditionCommand}" Cursor="Hand">
                     <Viewbox Width="48" Height="48">
                         <Canvas Height="24" Width="24">
                             <Path Fill="White" Data="M17,13H13V17H11V13H7V11H11V7H13V11H17M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3Z"/>
@@ -72,14 +72,14 @@
                 </Button>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Margin="0,0,25,0" Command="{Binding RemovePreconditionCommand}">
+                    <Button Margin="0,0,25,0" Command="{Binding RemovePreconditionCommand}" Cursor="Hand">
                         <Viewbox Width="48" Height="48">
                             <Canvas Height="24" Width="24">
                                 <Path Fill="White" Data="M17,13H7V11H17M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3Z"/>
                             </Canvas>
                         </Viewbox>
                     </Button>
-                    <Button Command="{Binding ClearPreconditionsCommand}">
+                    <Button Command="{Binding ClearPreconditionsCommand}" Cursor="Hand">
                         <Viewbox Width="48" Height="48">
                             <Canvas Height="24" Width="24">
                                 <Path Fill="White" Data="M14 10H3V12H14V10M14 6H3V8H14V6M3 16H10V14H3V16M14.4 22L17 19.4L19.6 22L21 20.6L18.4 18L21 15.4L19.6 14L17 16.6L14.4 14L13 15.4L15.6 18L13 20.6L14.4 22Z"/>
@@ -181,6 +181,7 @@
                         <Button
                             Command="{Binding ChangeLogicalOperatorCommand}"
                             CommandParameter="AND"
+                            Cursor="Hand"
                             BorderThickness="0"
                             Background="Transparent"
                             Focusable="False"
@@ -218,6 +219,7 @@
                         <Button
                            Command="{Binding ChangeLogicalOperatorCommand}"
                             CommandParameter="OR"
+                            Cursor="Hand"
                             Margin="20,0,0,0"
                             BorderThickness="0"
                             Background="Transparent"

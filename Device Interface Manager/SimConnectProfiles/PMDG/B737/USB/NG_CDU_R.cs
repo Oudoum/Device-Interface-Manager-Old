@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using static Device_Interface_Manager.SimConnectProfiles.PMDG.PMDG_NG3_SDK;
 
 namespace Device_Interface_Manager.SimConnectProfiles.PMDG.B737.USB;
@@ -48,6 +49,80 @@ public class NG_CDU_R : CDU_Base_USB<PMDG_NG3_Data>
         CDU_annunOFST = PMDG_Data.CDU_annunOFST[1];
     }
 
+    private readonly Dictionary<int, PMDGEvents> keyEventMap = new()
+    {
+        { 1, PMDGEvents.EVT_CDU_R_EXEC},
+        { 2, PMDGEvents.EVT_CDU_R_PROG},
+        { 3, PMDGEvents.EVT_CDU_R_HOLD},
+        { 4, PMDGEvents.EVT_CDU_R_CRZ},
+        { 5, PMDGEvents.EVT_CDU_R_DEP_ARR},
+        { 6, PMDGEvents.EVT_CDU_R_LEGS},
+        { 7, PMDGEvents.EVT_CDU_R_MENU},
+        { 8, PMDGEvents.EVT_CDU_R_CLB},
+        { 9, PMDGEvents.EVT_CDU_R_E},
+        {10, PMDGEvents.EVT_CDU_R_D},
+        {11, PMDGEvents.EVT_CDU_R_C},
+        {12, PMDGEvents.EVT_CDU_R_B},
+        {13, PMDGEvents.EVT_CDU_R_A},
+        {14, PMDGEvents.EVT_CDU_R_FIX},
+        {15, PMDGEvents.EVT_CDU_R_N1_LIMIT},
+        {16, PMDGEvents.EVT_CDU_R_RTE},
+        {17, PMDGEvents.EVT_CDU_R_J},
+        {18, PMDGEvents.EVT_CDU_R_I},
+        {19, PMDGEvents.EVT_CDU_R_H},
+        {20, PMDGEvents.EVT_CDU_R_G},
+        {21, PMDGEvents.EVT_CDU_R_F},
+        {22, PMDGEvents.EVT_CDU_R_NEXT_PAGE},
+        {23, PMDGEvents.EVT_CDU_R_PREV_PAGE},
+
+        {25, PMDGEvents.EVT_CDU_R_O},
+        {26, PMDGEvents.EVT_CDU_R_N},
+        {27, PMDGEvents.EVT_CDU_R_M},
+        {28, PMDGEvents.EVT_CDU_R_L},
+        {29, PMDGEvents.EVT_CDU_R_K},
+        {30, PMDGEvents.EVT_CDU_R_3},
+        {31, PMDGEvents.EVT_CDU_R_2},
+        {32, PMDGEvents.EVT_CDU_R_1},
+        {33, PMDGEvents.EVT_CDU_R_T},
+        {34, PMDGEvents.EVT_CDU_R_S},
+        {35, PMDGEvents.EVT_CDU_R_R},
+        {36, PMDGEvents.EVT_CDU_R_Q},
+        {37, PMDGEvents.EVT_CDU_R_P},
+        {38, PMDGEvents.EVT_CDU_R_6},
+        {39, PMDGEvents.EVT_CDU_R_5},
+        {40, PMDGEvents.EVT_CDU_R_4},
+        {41, PMDGEvents.EVT_CDU_R_Y},
+        {42, PMDGEvents.EVT_CDU_R_X},
+        {43, PMDGEvents.EVT_CDU_R_W},
+        {44, PMDGEvents.EVT_CDU_R_V},
+        {45, PMDGEvents.EVT_CDU_R_U},
+        {46, PMDGEvents.EVT_CDU_R_9},
+        {47, PMDGEvents.EVT_CDU_R_8},
+        {48, PMDGEvents.EVT_CDU_R_7},
+        {49, PMDGEvents.EVT_CDU_R_CLR},
+        {50, PMDGEvents.EVT_CDU_R_SLASH},
+        {51, PMDGEvents.EVT_CDU_R_DEL},
+        {52, PMDGEvents.EVT_CDU_R_SPACE},
+        {53, PMDGEvents.EVT_CDU_R_Z},
+        {54, PMDGEvents.EVT_CDU_R_PLUS_MINUS},
+        {55, PMDGEvents.EVT_CDU_R_0},
+        {56, PMDGEvents.EVT_CDU_R_DOT},
+        {57, PMDGEvents.EVT_CDU_R_L1},
+        {58, PMDGEvents.EVT_CDU_R_L2},
+        {59, PMDGEvents.EVT_CDU_R_L3},
+        {60, PMDGEvents.EVT_CDU_R_L4},
+        {61, PMDGEvents.EVT_CDU_R_L5},
+        {62, PMDGEvents.EVT_CDU_R_L6},
+        {63, PMDGEvents.EVT_CDU_R_INIT_REF},
+        {64, PMDGEvents.EVT_CDU_R_R1},
+        {65, PMDGEvents.EVT_CDU_R_R2},
+        {66, PMDGEvents.EVT_CDU_R_R3},
+        {67, PMDGEvents.EVT_CDU_R_R4},
+        {68, PMDGEvents.EVT_CDU_R_R5},
+        {69, PMDGEvents.EVT_CDU_R_R6},
+        {70, PMDGEvents.EVT_CDU_R_DES},
+    };
+
     protected override void KeyPressedProc(uint session, int key, uint direction)
     {
         switch (direction)
@@ -65,283 +140,9 @@ public class NG_CDU_R : CDU_Base_USB<PMDG_NG3_Data>
                 break;
         }
 
-        switch (key)
+        if (keyEventMap.ContainsKey(key))
         {
-            case 1:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_EXEC);
-                break;
-
-            case 2:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_PROG);
-                break;
-
-            case 3:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_HOLD);
-                break;
-
-            case 4:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_CRZ);
-                break;
-
-            case 5:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_DEP_ARR);
-                break;
-
-            case 6:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_LEGS);
-                break;
-
-            case 7:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_MENU);
-                break;
-
-            case 8:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_CLB);
-                break;
-
-            case 9:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_E);
-                break;
-
-            case 10:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_D);
-                break;
-
-            case 11:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_C);
-                break;
-
-            case 12:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_B);
-                break;
-
-            case 13:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_A);
-                break;
-
-            case 14:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_FIX);
-                break;
-
-            case 15:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_N1_LIMIT);
-                break;
-
-            case 16:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_RTE);
-                break;
-
-            case 17:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_J);
-                break;
-
-            case 18:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_I);
-                break;
-
-            case 19:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_H);
-                break;
-
-            case 20:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_G);
-                break;
-
-            case 21:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_F);
-                break;
-
-            case 22:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_NEXT_PAGE);
-                break;
-
-            case 23:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_PREV_PAGE);
-                break;
-
-            case 25:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_O);
-                break;
-
-            case 26:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_N);
-                break;
-
-            case 27:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_M);
-                break;
-
-            case 28:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_L);
-                break;
-
-            case 29:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_K);
-                break;
-
-            case 30:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_3);
-                break;
-
-            case 31:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_2);
-                break;
-
-            case 32:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_1);
-                break;
-
-            case 33:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_T);
-                break;
-
-            case 34:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_S);
-                break;
-
-            case 35:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_R);
-                break;
-
-            case 36:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_Q);
-                break;
-
-            case 37:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_P);
-                break;
-
-            case 38:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_6);
-                break;
-
-            case 39:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_5);
-                break;
-
-            case 40:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_4);
-                break;
-
-            case 41:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_Y);
-                break;
-
-            case 42:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_X);
-                break;
-
-            case 43:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_W);
-                break;
-
-            case 44:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_V);
-                break;
-
-            case 45:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_U);
-                break;
-
-            case 46:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_9);
-                break;
-
-            case 47:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_8);
-                break;
-
-            case 48:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_7);
-                break;
-
-            case 49:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_CLR);
-                break;
-
-            case 50:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_SLASH);
-                break;
-
-            case 51:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_DEL);
-                break;
-
-            case 52:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_SPACE);
-                break;
-
-            case 53:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_Z);
-                break;
-
-            case 54:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_PLUS_MINUS);
-                break;
-
-            case 55:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_0);
-                break;
-
-            case 56:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_DOT);
-                break;
-
-            case 57:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_L1);
-                break;
-
-            case 58:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_L2);
-                break;
-
-            case 59:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_L3);
-                break;
-
-            case 60:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_L4);
-                break;
-
-            case 61:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_L5);
-                break;
-
-            case 62:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_L6);
-                break;
-
-            case 63:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_INIT_REF);
-                break;
-
-            case 64:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_R1);
-                break;
-
-            case 65:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_R2);
-                break;
-
-            case 66:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_R3);
-                break;
-
-            case 67:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_R4);
-                break;
-
-            case 68:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_R5);
-                break;
-
-            case 69:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_R6);
-                break;
-
-            case 70:
-                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_CDU_R_DES);
-                break;
+            simConnectClient.TransmitEvent(direction, keyEventMap[key]);
         }
     }
 }

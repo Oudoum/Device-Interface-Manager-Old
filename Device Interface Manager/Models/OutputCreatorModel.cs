@@ -13,13 +13,13 @@ public class OutputCreatorModel
 
     public string[] OutputTypes { get; set; } = { ProfileCreatorModel.LED, ProfileCreatorModel.DATALINE, ProfileCreatorModel.SEVENSEGMENT };
 
-    public int? Output { get; set; }
+    public Dictionary<string, string> LEDs { get; set; } = new();
 
-    public int?[] LEDs { get; set; }
+    public Dictionary<string, string> Datalines { get; set; } = new();
 
-    public int?[] Datalines { get; set; }
+    public Dictionary<string, string> SevenSegments { get; set; } = new();
 
-    public int?[] SevenSegments { get; set; }
+    public KeyValuePair<string, string>? Output { get; set; }
 
     public string DataType { get; set; } = ProfileCreatorModel.PMDG737;
 

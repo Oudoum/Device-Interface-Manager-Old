@@ -8,8 +8,6 @@ using CommunityToolkit.Mvvm.Messaging;
 using Device_Interface_Manager.Devices.interfaceIT.ENET;
 using Device_Interface_Manager.SimConnectProfiles;
 using static Device_Interface_Manager.Models.HomeENETModel;
-using Device_Interface_Manager.SimConnectProfiles.PMDG.B747.E;
-using Device_Interface_Manager.SimConnectProfiles.PMDG.B777.E;
 
 namespace Device_Interface_Manager.ViewModels;
 
@@ -43,12 +41,14 @@ public partial class HomeENETViewModel : ObservableObject
             { "PMDG 737NG Right CDU", StartENETProfile<SimConnectProfiles.PMDG.B737.E.NG_CDU_R> },
             { "PMDG 737NG Left CDU (MAX)", StartENETProfile<SimConnectProfiles.PMDG.B737.E.NG_CDU_MAX_L> },
             { "PMDG 737NG Right CDU (MAX)", StartENETProfile<SimConnectProfiles.PMDG.B737.E.NG_CDU_MAX_R> },
-            { "[P3D] PMDG 747 Left CDU", StartENETProfile<B747_CDU_L> },
-            { "[P3D] PMDG 747 Right CDU", StartENETProfile<B747_CDU_R> },
-            { "[P3D] PMDG 747 Center CDU", StartENETProfile<B747_CDU_C> },
-            { "[P3D] PMDG 777 Left CDU", StartENETProfile<B777_CDU_L> },
-            { "[P3D] PMDG 777 Right CDU", StartENETProfile<B777_CDU_R> },
-            { "[P3D] PMDG 777 Center CDU", StartENETProfile<B777_CDU_C> },
+            { "Asobo 747-8I Left CDU", StartENETProfile<SimConnectProfiles.Asobo.B747.E.CDU_L>},
+            { "Asobo 747-8I Right CDU", StartENETProfile<SimConnectProfiles.Asobo.B747.E.CDU_R>},
+            { "[P3D] PMDG 747 Left CDU", StartENETProfile<SimConnectProfiles.PMDG.B747.E.B747_CDU_L> },
+            { "[P3D] PMDG 747 Right CDU", StartENETProfile<SimConnectProfiles.PMDG.B747.E.B747_CDU_R> },
+            { "[P3D] PMDG 747 Center CDU", StartENETProfile<SimConnectProfiles.PMDG.B747.E.B747_CDU_C> },
+            { "[P3D] PMDG 777 Left CDU", StartENETProfile<SimConnectProfiles.PMDG.B777.E.B777_CDU_L> },
+            { "[P3D] PMDG 777 Right CDU", StartENETProfile<SimConnectProfiles.PMDG.B777.E.B777_CDU_R> },
+            { "[P3D] PMDG 777 Center CDU", StartENETProfile<SimConnectProfiles.PMDG.B777.E.B777_CDU_C> },
             { "CDU/MCDU Test", StartTest },
 
         //"PMDG 737MAX Left CDU"
@@ -84,7 +84,7 @@ public partial class HomeENETViewModel : ObservableObject
     {
         isActive = false;
         WeakReferenceMessenger.Default.Send(string.Empty);
-        ENETList.ForEach(o => o.Stop());
+        ENETList.ForEach(o => o.Close());
         ENETList.Clear();
         foreach (Connection connection in Connections)
         {

@@ -2,13 +2,12 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.FlightSimulator.SimConnect;
 using static Device_Interface_Manager.Devices.interfaceIT.USB.InterfaceITAPI_Data;
 using static Device_Interface_Manager.SimConnectProfiles.PMDG.PMDG_NG3_SDK;
 
 namespace Device_Interface_Manager.SimConnectProfiles.PMDG.B737.USB;
 
-public class NG_MCP_3311 : Device_Interface_Manager.SimConnectProfiles.USB
+public class NG_MCP_3311 : SimConnectProfiles.USB
 {
     //MCP SETUP
     private CancellationTokenSource pmdg737MCPBlinkingCancellationTokenSource;
@@ -627,9 +626,9 @@ public class NG_MCP_3311 : Device_Interface_Manager.SimConnectProfiles.USB
         }
     }
 
-    protected override void StopDevice()
+    protected override void Stop()
     {
-        base.StopDevice();
+        base.Stop();
         pmdg737MCPBlinkingCancellationTokenSource?.Cancel();
         pmdg737MCPIASOverspeedUnderspeedFlashingCancellationTokenSource?.Cancel();
         pmdg737MCPLightCancellationTokenSource?.Cancel();

@@ -3,6 +3,7 @@ using System.Text;
 using System.Linq;
 using System.Data;
 using Device_Interface_Manager.Models;
+using System.IO;
 
 namespace Device_Interface_Manager.SimConnectProfiles;
 public abstract class ProfileCreatorBase<T> : ProfileBase<T>
@@ -13,7 +14,7 @@ public abstract class ProfileCreatorBase<T> : ProfileBase<T>
 
     public void Start()
     {
-        if (simConnectClient.IsConnected && Device is not null && !isInit)
+        if (Device is not null && !isInit)
         {
             Profiles.Instance.FieldChanged += PMDGProfile_FieldChanged;
 
@@ -23,18 +24,24 @@ public abstract class ProfileCreatorBase<T> : ProfileBase<T>
             {
                 simConnectClient.RegisterSimVar(item.Data, item.Unit);
             }
+
+            foreach (var item in ProfileCreatorModel.InputCreator.Where(item => item.EventType == ProfileCreatorModel.KEVENT && !string.IsNullOrEmpty(item.Event) && item.IsActive))
+            {
+                simConnectClient.RegisterSimEvent(item.Event);
+            }
             isInit = true;
         }
     }
 
-    protected override void SimConnect_OnRecvOpen()
+    protected override void OnRecvOpen()
     {
         Start();
     }
 
-    protected override void StopDevice()
+    protected override void Stop()
     {
         Profiles.Instance.FieldChanged -= PMDGProfile_FieldChanged;
+        StopDevice();
     }
 
     protected override void SimConnectClient_OnSimVarChanged(object sender, SimConnectClient.SimVar simVar)
@@ -47,6 +54,8 @@ public abstract class ProfileCreatorBase<T> : ProfileBase<T>
             PrecomparisonIterartion(item);
         }
     }
+
+    protected abstract void StopDevice();
 
     protected abstract void SetBooleanOuput(OutputCreator item, bool valueBool);
 
@@ -367,9 +376,9 @@ public abstract class ProfileCreatorBase<T> : ProfileBase<T>
         }
     }
 
-    protected void ButtonIteration(int key, uint direction)
+    protected void ButtonIteration(string key, uint direction)
     {
-        foreach (var item in ProfileCreatorModel.InputCreator.Where(k => k.Input == key && k.IsActive))
+        foreach (var item in ProfileCreatorModel.InputCreator.Where(k => k.Input.Value.Key == key && k.IsActive))
         {
             //Precondition
             if (item.Preconditions.Length > 0 && !CheckPrecomparison(item.Preconditions))
@@ -377,7 +386,7 @@ public abstract class ProfileCreatorBase<T> : ProfileBase<T>
                 continue;
             }
 
-            //RPN
+            //HTML Event(H:Event), Reverse Polish Notation (RPN)
             if (item.EventType == ProfileCreatorModel.RPN && !string.IsNullOrEmpty(item.Event) && Convert.ToBoolean(direction) == !item.OnRelease)
             {
                 simConnectClient.SendWASMEvent(item.Event);
@@ -407,10 +416,16 @@ public abstract class ProfileCreatorBase<T> : ProfileBase<T>
                     continue;
             }
 
-            //MSFS/SimConnect/Lvars
+            //Simulation Variable (SimVar[A]), Local Variable (L:Var[L]), Key Event ID (K:Event[K])
             if (item.EventType == ProfileCreatorModel.MSFSSimConnect && !string.IsNullOrEmpty(item.Event))
             {
                 simConnectClient.SetSimVar(direction, item.Event);
+                continue;
+            }
+
+            if (item.EventType == ProfileCreatorModel.KEVENT &&  !string.IsNullOrEmpty(item.Event))
+            {
+                simConnectClient.TransmitSimEvent(direction, item.Event);
                 continue;
             }
 

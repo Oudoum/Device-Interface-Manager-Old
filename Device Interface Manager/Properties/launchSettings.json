@@ -9,7 +9,7 @@
     "Device Interface Manager Remote": {
       "commandName": "Project",
       "remoteDebugEnabled": true,
-      "remoteDebugMachine": "192.168.196.134:4026",
+      "remoteDebugMachine": "192.168.196.90:4026",
       "authenticationMode": "Windows"
     }
   }

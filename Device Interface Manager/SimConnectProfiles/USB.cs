@@ -6,7 +6,7 @@ namespace Device_Interface_Manager.SimConnectProfiles;
 
 public abstract class USB : ProfileBase<Device>
 {
-    protected KeyNotificationCallbackUint interfaceItKeyNotifyProc;
+    protected KeyNotifyCallbackUint interfaceItKeyNotifyProc;
 
     protected override Device Device { get; set; }
 
@@ -14,12 +14,12 @@ public abstract class USB : ProfileBase<Device>
 
     protected override Task<Devices.interfaceIT.ENET.InterfaceITEthernet.ConnectionStatus> StartDevice()
     {
-        InterfaceITEnable(Device);
+        EnableDeviceFeatures(Device);
         interfaceItKeyNotifyProc = KeyPressedProc;
         return Task.FromResult(Devices.interfaceIT.ENET.InterfaceITEthernet.ConnectionStatus.Connected);
     }
 
-    protected override void StopDevice()
+    protected override void Stop()
     {
         interfaceIT_Switch_Enable_Callback(Device.Session, false, interfaceItKeyNotifyProc);
         InterfaceITDisable(Device);

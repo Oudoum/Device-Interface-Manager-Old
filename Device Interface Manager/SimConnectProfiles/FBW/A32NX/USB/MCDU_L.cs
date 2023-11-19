@@ -1,12 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Text.Json;
-using Microsoft.FlightSimulator.SimConnect;
 using static Device_Interface_Manager.Devices.interfaceIT.USB.InterfaceITAPI_Data;
 
 namespace Device_Interface_Manager.SimConnectProfiles.FBW.A32NX.USB;
 
-public class MCDU_L : Device_Interface_Manager.SimConnectProfiles.USB
+public class MCDU_L : SimConnectProfiles.USB
 {
     public MCDU_L()
     {
@@ -24,9 +23,9 @@ public class MCDU_L : Device_Interface_Manager.SimConnectProfiles.USB
         });
     }
 
-    protected override void StopDevice()
+    protected override void Stop()
     {
-        base.StopDevice();
+        base.Stop();
         FBWA32NXMCDU?.Close();
     }
 
@@ -67,9 +66,9 @@ public class MCDU_L : Device_Interface_Manager.SimConnectProfiles.USB
         File.WriteAllText(settings, json);
     }
 
-    protected override void SimConnect_OnRecvOpen()
+    protected override void OnRecvOpen()
     {
-        interfaceIT_Dataline_Set(Device.Session, Device.DeviceInfo.DatalineFirst, true);
+        interfaceIT_Dataline_Set(Device.Session, Device.BoardInfo.DatalineFirst, true);
 
         simConnectClient.RegisterSimVar("L:A32NX_OVHD_INTLT_ANN");
         simConnectClient.RegisterSimVar("L:A32NX_ELEC_AC_ESS_SHED_BUS_IS_POWERED");

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Device_Interface_Manager.Devices.interfaceIT.USB;
 using static Device_Interface_Manager.SimConnectProfiles.PMDG.PMDG_NG3_SDK;
 
 namespace Device_Interface_Manager.SimConnectProfiles.PMDG.B737.USB;
-public class NG_EFIS_L_330B_332D : Device_Interface_Manager.SimConnectProfiles.USB
+public class NG_EFIS_L_330B_332D : SimConnectProfiles.USB
 {
     protected override async Task StartSimConnectAsync()
     {
@@ -12,10 +13,10 @@ public class NG_EFIS_L_330B_332D : Device_Interface_Manager.SimConnectProfiles.U
         NG_MCP_3311.OnBackgroundLEDChanged += NG_MCP_3311_OnBackgroundLEDChanged;
     }
 
-    protected override void StopDevice()
+    protected override void Stop()
     {
         NG_MCP_3311.OnBackgroundLEDChanged -= NG_MCP_3311_OnBackgroundLEDChanged;
-        base.StopDevice();
+        base.Stop();
     }
 
     public int[] BackgroundLEDs { get; init; } = new int[] { 1, 2, 3, 4, 5, 6, 7 };
@@ -23,7 +24,7 @@ public class NG_EFIS_L_330B_332D : Device_Interface_Manager.SimConnectProfiles.U
     {
         foreach (int ledNumber in BackgroundLEDs)
         {
-            Devices.interfaceIT.USB.InterfaceITAPI_Data.interfaceIT_LED_Set(Device.Session, ledNumber, e);
+            InterfaceITAPI_Data.interfaceIT_LED_Set(Device.Session, ledNumber, e);
         }
     }
 
@@ -101,6 +102,16 @@ public class NG_EFIS_L_330B_332D : Device_Interface_Manager.SimConnectProfiles.U
                 break;
 
             //0-...
+            //SwannSim
+            case 5 when direction == 1 && Device.SerialNumber == "03EA00001062":
+                simConnectClient.TransmitEvent(1, PMDGEvents.EVT_EFIS_CPT_BARO_IN_HPA);
+                break;
+
+            case 6 when direction == 1 && Device.SerialNumber == "03EA00001062":
+                simConnectClient.TransmitEvent(0, PMDGEvents.EVT_EFIS_CPT_BARO_IN_HPA);
+                break;
+            //
+
             case 5 when direction == 1:
                 simConnectClient.TransmitEvent(0, PMDGEvents.EVT_EFIS_CPT_BARO_IN_HPA);
                 break;
@@ -221,36 +232,36 @@ public class NG_EFIS_L_330B_332D : Device_Interface_Manager.SimConnectProfiles.U
 
             //-18 & -17
             //330B
-            case 41 when direction == 1 && Device.DeviceInfo.BoardType == "330B":
+            case 41 when direction == 1 && Device.BoardID == InterfaceIT_BoardIDs.FDS_CONTROLLER_EFIS_CA:
                 TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_CPT_MINIMUMS, true);
                 break;
 
-            case 42 when direction == 1 && Device.DeviceInfo.BoardType == "330B":
+            case 42 when direction == 1 && Device.BoardID == InterfaceIT_BoardIDs.FDS_CONTROLLER_EFIS_CA:
                 TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_CPT_MINIMUMS, false);
                 break;
 
-            case 43 when direction == 1 && Device.DeviceInfo.BoardType == "330B":
+            case 43 when direction == 1 && Device.BoardID == InterfaceIT_BoardIDs.FDS_CONTROLLER_EFIS_CA:
                 TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_CPT_BARO, true);
                 break;
 
-            case 44 when direction == 1 && Device.DeviceInfo.BoardType == "330B":
+            case 44 when direction == 1 && Device.BoardID == InterfaceIT_BoardIDs.FDS_CONTROLLER_EFIS_CA:
                 TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_CPT_BARO, false);
                 break;
 
             //332D
-            case 41 when direction == 1 && Device.DeviceInfo.BoardType == "332D":
+            case 41 when direction == 1 && Device.BoardID == InterfaceIT_BoardIDs.FDS_737_PMX_EFIS_E_CA:
                 TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_CPT_MINIMUMS, false);
                 break;
 
-            case 42 when direction == 1 && Device.DeviceInfo.BoardType == "332D":
+            case 42 when direction == 1 && Device.BoardID == InterfaceIT_BoardIDs.FDS_737_PMX_EFIS_E_CA:
                 TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_CPT_MINIMUMS, true);
                 break;
 
-            case 43 when direction == 1 && Device.DeviceInfo.BoardType == "332D":
+            case 43 when direction == 1 && Device.BoardID == InterfaceIT_BoardIDs.FDS_737_PMX_EFIS_E_CA:
                 TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_CPT_BARO, false);
                 break;
 
-            case 44 when direction == 1 && Device.DeviceInfo.BoardType == "332D":
+            case 44 when direction == 1 && Device.BoardID == InterfaceIT_BoardIDs.FDS_737_PMX_EFIS_E_CA:
                 TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_CPT_BARO, true);
                 break;
         }

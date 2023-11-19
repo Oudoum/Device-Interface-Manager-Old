@@ -11,9 +11,9 @@ public class InputCreatorModel
 
     public string[] InputTypes { get; set; } = { ProfileCreatorModel.SWITCH};
 
-    public int? Input { get; set; }
+    public Dictionary<string, string> Inputs { get; set; } = new();
 
-    public int?[] Switches { get; set; }
+    public KeyValuePair<string, string>? Input { get; set; }
 
     public string EventType { get; set; }
 

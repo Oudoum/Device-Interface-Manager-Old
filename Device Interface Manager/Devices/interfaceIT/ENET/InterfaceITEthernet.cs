@@ -6,6 +6,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Net.NetworkInformation;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -142,7 +143,7 @@ public class InterfaceITEthernet : ObservableObject
                             isInitializing = true;
                             InterfaceITEthernetInfo = new()
                             {
-                                HOSTIPADDRESS = HostIPAddress,
+                                HostIpAddress = HostIPAddress,
                             };
                             break;
 
@@ -204,53 +205,53 @@ public class InterfaceITEthernet : ObservableObject
         switch (ethernetData[..index])
         {
             case "ID":
-                InterfaceITEthernetInfo.ID = value;
+                InterfaceITEthernetInfo.Id = value;
                 break;
 
             case "NAME":
-                InterfaceITEthernetInfo.NAME = value;
+                InterfaceITEthernetInfo.Name = value;
                 break;
 
             case "SERIAL":
-                InterfaceITEthernetInfo.SERIAL = value;
+                InterfaceITEthernetInfo.SerialNumber = value;
                 break;
 
             case "DESC":
-                InterfaceITEthernetInfo.DESC = value;
+                InterfaceITEthernetInfo.Description = value;
                 break;
 
             case "COPYRIGHT":
-                InterfaceITEthernetInfo.COPYRIGHT = value;
+                InterfaceITEthernetInfo.Copyright = value;
                 break;
 
             case "VERSION":
-                InterfaceITEthernetInfo.VERSION = value;
+                InterfaceITEthernetInfo.Version = value;
                 break;
 
             case "FIRMWARE":
-                InterfaceITEthernetInfo.FIRMWARE = value;
+                InterfaceITEthernetInfo.Firmware = value;
                 break;
 
             case "LOCATION":
-                InterfaceITEthernetInfo.LOCATION = Convert.ToInt32(value);
+                InterfaceITEthernetInfo.Location = Convert.ToByte(value);
                 break;
 
             case "USAGE":
-                InterfaceITEthernetInfo.USAGE = Convert.ToInt32(value);
+                InterfaceITEthernetInfo.Usage = Convert.ToByte(value);
                 break;
 
             case "HOSTNAME":
-                InterfaceITEthernetInfo.HOSTNAME = value;
+                InterfaceITEthernetInfo.HostName = value;
                 break;
 
             case "CLIENT":
-                InterfaceITEthernetInfo.CLIENT = value;
+                InterfaceITEthernetInfo.Client = value;
                 break;
 
-            case "BOARD": //Only one board supported
+            case "BOARD":
                 string[] board = value.Split(':');
-                InterfaceITEthernetInfo.BOARDS ??= new InterfaceITEthernetInfoBoard[1];
-                InterfaceITEthernetInfo.BOARDS[0] = new() { BOARDNUMBER = Convert.ToInt32(board[0]), ID = board[1], DESC = board[2] };
+                InterfaceITEthernetInfo.Boards ??= new();
+                InterfaceITEthernetInfo.Boards.Add(new() { BoardNumber = Convert.ToByte(board[0]), Id = board[1], Description = board[2] });
                 break;
 
             case "CONFIG":
@@ -266,42 +267,42 @@ public class InterfaceITEthernet : ObservableObject
         switch (config[1])
         {
             case "LED":
-                InterfaceITEthernetInfo.BOARDS[boardNumberMinusOne].LEDS = GetConfigData(config);
+                InterfaceITEthernetInfo.Boards[boardNumberMinusOne].LedsConfig = GetConfigData(config);
                 break;
 
             case "SWITCH":
-                InterfaceITEthernetInfo.BOARDS[boardNumberMinusOne].SWITCHES = GetConfigData(config);
+                InterfaceITEthernetInfo.Boards[boardNumberMinusOne].SwitchesConfig = GetConfigData(config);
                 break;
 
             case "7 SEGMENT":
-                InterfaceITEthernetInfo.BOARDS[boardNumberMinusOne].SEVENSEGMENTS = GetConfigData(config);
+                InterfaceITEthernetInfo.Boards[boardNumberMinusOne].SevenSegmentsConfig = GetConfigData(config);
                 break;
 
             case "DATALINE":
-                InterfaceITEthernetInfo.BOARDS[boardNumberMinusOne].DATALINES = GetConfigData(config);
+                InterfaceITEthernetInfo.Boards[boardNumberMinusOne].DataLinesConfig = GetConfigData(config);
                 break;
 
             case "ENCODER":
-                InterfaceITEthernetInfo.BOARDS[boardNumberMinusOne].ENCODERS = GetConfigData(config);
+                InterfaceITEthernetInfo.Boards[boardNumberMinusOne].EncodersConfig = GetConfigData(config);
                 break;
 
             case "ANALOG IN":
-                InterfaceITEthernetInfo.BOARDS[boardNumberMinusOne].ANALOGINS = GetConfigData(config);
+                InterfaceITEthernetInfo.Boards[boardNumberMinusOne].AnalogInputsConfig = GetConfigData(config);
                 break;
 
             case "PULSE WIDTH":
-                InterfaceITEthernetInfo.BOARDS[boardNumberMinusOne].PULSEWIDTHS = GetConfigData(config);
+                InterfaceITEthernetInfo.Boards[boardNumberMinusOne].PulseWidthsConfig = GetConfigData(config);
                 break;
         }
     }
 
-    private static InterfaceITEthernetInfoBoardConfig GetConfigData(string[] config)
+    private static InterfaceITEthernetBoardConfig GetConfigData(string[] config)
     {
-        return new InterfaceITEthernetInfoBoardConfig
+        return new InterfaceITEthernetBoardConfig
         {
-            Start = Convert.ToInt32(config[3]),
-            Stop = Convert.ToInt32(config[5]),
-            Total = Convert.ToInt32(config[7])
+            StartIndex = Convert.ToInt32(config[3]),
+            StopIndex = Convert.ToInt32(config[5]),
+            TotalCount = Convert.ToInt32(config[7])
         };
     }
 
@@ -321,11 +322,14 @@ public class InterfaceITEthernet : ObservableObject
 
     public void SendinterfaceITEthernetLEDAllOff()
     {
-        for (int i = InterfaceITEthernetInfo.BOARDS[0].LEDS.Start; i <= InterfaceITEthernetInfo.BOARDS[0].LEDS.Total; i++)
+        if (InterfaceITEthernetInfo.Boards is not null)
         {
-            stream?.Write(Encoding.ASCII.GetBytes("B1:LED:" + i + ":" + 0 + "\r\n"));
+            for (int i = InterfaceITEthernetInfo.Boards[0].LedsConfig.StartIndex; i <= InterfaceITEthernetInfo.Boards[0].LedsConfig.TotalCount; i++)
+            {
+                stream?.Write(Encoding.ASCII.GetBytes("B1:LED:" + i + ":" + 0 + "\r\n"));
+            }
+            //stream?.Write(Encoding.ASCII.GetBytes("B1:CLEAR" + "\r\n"));
         }
-        //stream?.Write(Encoding.ASCII.GetBytes("B1:CLEAR" + "\r\n"));
     }
 
     public void SendinterfaceITEthernetLED(int nLED, bool bOn)
@@ -402,38 +406,38 @@ public class InterfaceITEthernet : ObservableObject
 
 public class InterfaceITEthernetInfo
 {
-    public string HOSTIPADDRESS { get; set; }
-    public string ID { get; set; }
-    public string NAME { get; set; }
-    public string SERIAL { get; set; }
-    public string DESC { get; set; }
-    public string COPYRIGHT { get; set; }
-    public string VERSION { get; set; }
-    public string FIRMWARE { get; set; }
-    public int LOCATION { get; set; }
-    public int USAGE { get; set; }
-    public string HOSTNAME { get; set; }
-    public string CLIENT { get; set; }
-    public InterfaceITEthernetInfoBoard[] BOARDS { get; set; }
+    public string HostIpAddress { get; set; }
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public string SerialNumber { get; set; }
+    public string Description { get; set; }
+    public string Copyright { get; set; }
+    public string Version { get; set; }
+    public string Firmware { get; set; }
+    public byte Location { get; set; }
+    public byte Usage { get; set; }
+    public string HostName { get; set; }
+    public string Client { get; set; }
+    public List<InterfaceITEthernetBoardInfo> Boards { get; set; }
 }
 
-public class InterfaceITEthernetInfoBoard
+public class InterfaceITEthernetBoardInfo
 {
-    public int BOARDNUMBER { get; set; }
-    public string ID { get; set; }
-    public string DESC { get; set; }
-    public InterfaceITEthernetInfoBoardConfig LEDS { get; set; }
-    public InterfaceITEthernetInfoBoardConfig SWITCHES { get; set; }
-    public InterfaceITEthernetInfoBoardConfig SEVENSEGMENTS { get; set; }
-    public InterfaceITEthernetInfoBoardConfig DATALINES { get; set; }
-    public InterfaceITEthernetInfoBoardConfig ENCODERS { get; set; }
-    public InterfaceITEthernetInfoBoardConfig ANALOGINS { get; set; }
-    public InterfaceITEthernetInfoBoardConfig PULSEWIDTHS { get; set; }
+    public byte BoardNumber { get; set; }
+    public string Id { get; set; }
+    public string Description { get; set; }
+    public InterfaceITEthernetBoardConfig LedsConfig { get; set; }
+    public InterfaceITEthernetBoardConfig SwitchesConfig { get; set; }
+    public InterfaceITEthernetBoardConfig SevenSegmentsConfig { get; set; }
+    public InterfaceITEthernetBoardConfig DataLinesConfig { get; set; }
+    public InterfaceITEthernetBoardConfig EncodersConfig { get; set; }
+    public InterfaceITEthernetBoardConfig AnalogInputsConfig { get; set; }
+    public InterfaceITEthernetBoardConfig PulseWidthsConfig { get; set; }
 }
 
-public class InterfaceITEthernetInfoBoardConfig
+public class InterfaceITEthernetBoardConfig
 {
-    public int Start { get; set; }
-    public int Stop { get; set; }
-    public int Total { get; set; }
+    public int StartIndex { get; set; }
+    public int StopIndex { get; set; }
+    public int TotalCount { get; set; }
 }

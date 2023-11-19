@@ -24,15 +24,13 @@ public abstract class ProfileBase<T>
         await simConnectClient.SimConnect_OpenAsync(cancellationTokenSource.Token);
         if (simConnectClient.SimConnectMSFS is not null)
         {
-            simConnectClient.SimConnectMSFS.OnRecvOpen += SimConnect_OnRecvOpenMSFS;
-            simConnectClient.SimConnectMSFS.OnRecvQuit += SimConnect_OnRecvQuitMSFS;
             simConnectClient.SimConnectMSFS.OnRecvClientData += SimConnect_OnRecvClientDataMSFS;
+            OnRecvOpen();
         }
         else if (simConnectClient.SimConnectP3D is not null)
         {
-            simConnectClient.SimConnectP3D.OnRecvOpen += SimConnect_OnRecvOpenP3D;
-            simConnectClient.SimConnectP3D.OnRecvQuit += SimConnect_OnRecvQuitP3D;
             simConnectClient.SimConnectP3D.OnRecvClientData += SimConnect_OnRecvClientDataP3D;
+            OnRecvOpen();
         }
     }
 
@@ -50,30 +48,26 @@ public abstract class ProfileBase<T>
 
     protected abstract Task<Devices.interfaceIT.ENET.InterfaceITEthernet.ConnectionStatus> StartDevice();
 
-    public void Stop()
+    public void Close()
     {
         if (Device is not null)
         {
             if (simConnectClient.SimConnectMSFS is not null)
             {
                 simConnectClient.SimConnectMSFS.OnRecvClientData -= SimConnect_OnRecvClientDataMSFS;
-                simConnectClient.SimConnectMSFS.OnRecvQuit -= SimConnect_OnRecvQuitMSFS;
-                simConnectClient.SimConnectMSFS.OnRecvOpen -= SimConnect_OnRecvOpenMSFS;
             }
             else if (simConnectClient.SimConnectP3D is not null)
             {
                 simConnectClient.SimConnectP3D.OnRecvClientData -= SimConnect_OnRecvClientDataP3D;
-                simConnectClient.SimConnectP3D.OnRecvQuit -= SimConnect_OnRecvQuitP3D;
-                simConnectClient.SimConnectP3D.OnRecvOpen -= SimConnect_OnRecvOpenP3D;
             }
             simConnectClient.OnSimVarChanged -= SimConnectClient_OnSimVarChanged;
             cancellationTokenSource.Cancel();
-            StopDevice();
+            Stop();
             simConnectClient.SimConnect_Close();
         }
     }
 
-    protected abstract void StopDevice();
+    protected abstract void Stop();
 
     protected abstract void CockpitLoaded(bool isLoaded);
 
@@ -103,29 +97,9 @@ public abstract class ProfileBase<T>
         }
     }
 
-    private void SimConnect_OnRecvOpenMSFS(Microsoft.FlightSimulator.SimConnect.SimConnect sender, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_RECV_OPEN data)
-    {
-        SimConnect_OnRecvOpen();
-    }
-
-    private void SimConnect_OnRecvQuitMSFS(Microsoft.FlightSimulator.SimConnect.SimConnect sender, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_RECV data)
-    {
-        SimConnect_OnRecvQuit();
-    }
-
     private void SimConnect_OnRecvClientDataMSFS(Microsoft.FlightSimulator.SimConnect.SimConnect sender, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_RECV_CLIENT_DATA data)
     {
         SimConnect_OnRecvClientData(data.dwRequestID, data.dwData[0]);
-    }
-
-    private void SimConnect_OnRecvOpenP3D(LockheedMartin.Prepar3D.SimConnect.SimConnect sender, LockheedMartin.Prepar3D.SimConnect.SIMCONNECT_RECV_OPEN data)
-    {
-        SimConnect_OnRecvOpen();
-    }
-
-    private void SimConnect_OnRecvQuitP3D(LockheedMartin.Prepar3D.SimConnect.SimConnect sender, LockheedMartin.Prepar3D.SimConnect.SIMCONNECT_RECV data)
-    {
-        SimConnect_OnRecvQuit();
     }
 
     private void SimConnect_OnRecvClientDataP3D(LockheedMartin.Prepar3D.SimConnect.SimConnect sender, LockheedMartin.Prepar3D.SimConnect.SIMCONNECT_RECV_CLIENT_DATA data)
@@ -133,14 +107,9 @@ public abstract class ProfileBase<T>
         SimConnect_OnRecvClientData(data.dwRequestID, data.dwData[0]);
     }
 
-    protected virtual void SimConnect_OnRecvOpen()
+    protected virtual void OnRecvOpen()
     {
 
-    }
-
-    protected virtual void SimConnect_OnRecvQuit()
-    {
-        Stop();
     }
 
     protected virtual void SimConnect_OnRecvClientData(uint dwRequestID, object dwData)

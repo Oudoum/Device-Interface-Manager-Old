@@ -86,7 +86,7 @@ public partial class OtherTestsViewModel : ObservableObject
     [RelayCommand]
     private void SevenSegmentEnable()
     {
-        if ((Features & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_OUTPUT_7SEGMENT) == 0)
+        if ((Features & InterfaceIT_BoardInfo.Features.Output7Segment) == 0)
         {
             FeatureNotSupported = "7 Segment not supported!";
             return;
@@ -101,7 +101,7 @@ public partial class OtherTestsViewModel : ObservableObject
     [RelayCommand]
     private void DatalineEnable()
     {
-        if ((Features & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_OUTPUT_DATALINE) == 0)
+        if ((Features & InterfaceIT_BoardInfo.Features.OutputDataLine) == 0)
         {
             FeatureNotSupported = "Dataline not supported!";
             return;
@@ -138,7 +138,7 @@ public partial class OtherTestsViewModel : ObservableObject
     private void BrightnessEnable()
     {
         BrightnessValue = 0;
-        if ((Features & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_SPECIAL_BRIGHTNESS) == 0)
+        if ((Features & InterfaceIT_BoardInfo.Features.SpecialBrightness) == 0)
         {
             FeatureNotSupported = "Brightness not supported!";
             return;
@@ -150,8 +150,8 @@ public partial class OtherTestsViewModel : ObservableObject
     [RelayCommand]
     private void AnalogEnable()
     {
-        if ((Features & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_SPECIAL_ANALOG_INPUT) == 0 &&
-            (Features & InterfaceIT_BoardInfo.Features.INTERFACEIT_FEATURE_SPECIAL_ANALOG16_INPUT) == 0)
+        if ((Features & InterfaceIT_BoardInfo.Features.SpecialAnalogInput) == 0 &&
+            (Features & InterfaceIT_BoardInfo.Features.SpecialAnalog16Input) == 0)
         {
             FeatureNotSupported = "Analog input not supported!";
             return;

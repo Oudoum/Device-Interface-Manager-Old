@@ -19,8 +19,8 @@ public partial class BoardinfoENETViewModel : ObservableObject, IRecipient<Inter
 
     public void Receive(InterfaceITEthernetInfo message)
     {
-        InterfaceITEthernetInfoIP = message.HOSTIPADDRESS;
-        if (message.ID is null)
+        InterfaceITEthernetInfoIP = message.HostIpAddress;
+        if (string.IsNullOrEmpty(message.Id))
         {
             InterfaceITEthernetInfoTextCollection = null;
             OnPropertyChanged(nameof(InterfaceITEthernetInfoTextCollection));
@@ -34,26 +34,26 @@ public partial class BoardinfoENETViewModel : ObservableObject, IRecipient<Inter
     {
         InterfaceITEthernetInfoTextCollection = new()
         {
-            "Board ID: " + interfaceITEthernetInfo.ID,
-            "Name: " + interfaceITEthernetInfo.NAME,
-            "Serial: " + interfaceITEthernetInfo.SERIAL,
-            "Description: " + interfaceITEthernetInfo.DESC,
-            "Version: " + interfaceITEthernetInfo.VERSION,
-            "Firmware: " + interfaceITEthernetInfo.FIRMWARE,
-            "Location: " + interfaceITEthernetInfo.LOCATION,
-            "Usage: " + interfaceITEthernetInfo.USAGE,
-            "Hostname: " + interfaceITEthernetInfo.HOSTNAME,
-            "Client: " + interfaceITEthernetInfo.CLIENT,
-            "Board " + interfaceITEthernetInfo.ID + " has the flollowing features:",
+            "Board ID: " + interfaceITEthernetInfo.Id,
+            "Name: " + interfaceITEthernetInfo.Name,
+            "Serial: " + interfaceITEthernetInfo.SerialNumber,
+            "Description: " + interfaceITEthernetInfo.Description,
+            "Version: " + interfaceITEthernetInfo.Version,
+            "Firmware: " + interfaceITEthernetInfo.Firmware,
+            "Location: " + interfaceITEthernetInfo.Location,
+            "Usage: " + interfaceITEthernetInfo.Usage,
+            "Hostname: " + interfaceITEthernetInfo.HostName,
+            "Client: " + interfaceITEthernetInfo.Client,
+            "Board " + interfaceITEthernetInfo.Id + " has the flollowing features:",
         };
 
-        string[] componentTypes = { "LEDS", "SWITCHES", "SEVENSEGMENTS", "DATALINES", "ENCODERS", "ANALOGINS", "PULSEWIDTHS" };
+        string[] componentTypes = { "LedsConfig", "SwitchesConfig", "SevenSegmentsConfig", "DataLinesConfig", "EncodersConfig", "AnalogInputsConfig", "PulseWidthsConfig" };
         foreach (string componentType in componentTypes)
         {
-            var component = interfaceITEthernetInfo.BOARDS[0].GetType().GetProperty(componentType).GetValue(interfaceITEthernetInfo.BOARDS[0], null);
+            var component = interfaceITEthernetInfo.Boards[0].GetType().GetProperty(componentType).GetValue(interfaceITEthernetInfo.Boards[0], null);
             if (component is not null)
             {
-                InterfaceITEthernetInfoTextCollection.Add(((InterfaceITEthernetInfoBoardConfig)component).Total + $" | {componentType} ( " + ((InterfaceITEthernetInfoBoardConfig)component).Start + " - " + ((InterfaceITEthernetInfoBoardConfig)component).Stop + " )");
+                InterfaceITEthernetInfoTextCollection.Add(((InterfaceITEthernetBoardConfig)component).TotalCount + $" | {componentType} ( " + ((InterfaceITEthernetBoardConfig)component).StartIndex + " - " + ((InterfaceITEthernetBoardConfig)component).StopIndex + " )");
             }
         }
     }

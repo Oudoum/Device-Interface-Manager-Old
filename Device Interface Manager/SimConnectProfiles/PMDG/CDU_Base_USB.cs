@@ -118,9 +118,9 @@ public abstract class CDU_Base_USB<T> : USB where T : struct
         }
     }
 
-    protected override void StopDevice()
+    protected override void Stop()
     {
-        base.StopDevice();
+        base.Stop();
         startupManager.PMDGCDU?.Close();
     }
 
@@ -140,6 +140,7 @@ public abstract class CDU_Base_USB<T> : USB where T : struct
             if (PMDG_Data is PMDG_NG3_SDK.PMDG_NG3_Data pMDGNG3)
             {
                 SetELEC_BusPowered_15(pMDGNG3.ELEC_BusPowered[15]);
+                ELEC_BusPowered_3 = pMDGNG3.ELEC_BusPowered[3];
                 LTS_PedPanelKnob = pMDGNG3.LTS_PedPanelKnob;
             }
             else if (PMDG_Data is PMDG_777X_SDK.PMDG_777X_Data || PMDG_Data is PMDG_747QOTSII_SDK.PMDG_747QOTSII_Data)
@@ -174,7 +175,7 @@ public abstract class CDU_Base_USB<T> : USB where T : struct
             PMDGCDU = startupManager.PMDGCDU;
             PMDGCDU.Invoke(() => PMDGCDU.Brightness = 4095);
             GetCDUAnalogValues();
-            interfaceIT_Dataline_Set(Device.Session, Device.DeviceInfo.DatalineFirst, true);
+            interfaceIT_Dataline_Set(Device.Session, Device.BoardInfo.DatalineFirst, true);
         }
     }
 

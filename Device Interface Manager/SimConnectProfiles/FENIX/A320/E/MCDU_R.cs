@@ -2,7 +2,7 @@
 
 public class MCDU_R : ENET
 {
-    protected override void SimConnect_OnRecvOpen()
+    protected override void OnRecvOpen()
     {
         simConnectClient.RegisterSimVar("L:I_CDU2_FAIL");
         simConnectClient.RegisterSimVar("L:I_CDU2_MCDU_MENU");

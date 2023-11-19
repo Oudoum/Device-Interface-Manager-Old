@@ -30,18 +30,20 @@
 
             <mah:MetroTabControl Background="Transparent">
 
-                <TabItem Header="Output">
+                <TabItem Header="Output" Cursor="Hand">
 
-                    <StackPanel Margin="20,20,20,20" HorizontalAlignment="Center" Width="400">
+                    <StackPanel Margin="20,20,20,20" HorizontalAlignment="Center" Width="400" Cursor="Arrow">
                         
                         <StackPanel  Orientation="Horizontal" HorizontalAlignment="Center">
-                            <RadioButton Content="MSFS/SimConnect/LVar"
-                             Background="Transparent"
-                             IsChecked="{Binding Path=DataType, Mode=TwoWay, Converter={StaticResource StringToBooleanConverter}, ConverterParameter={x:Static model:ProfileCreatorModel.MSFSSimConnect}}"/>
-                            <RadioButton Content="PMDG737"
-                             Background="Transparent"
-                             Margin="25,0,0,0"
-                             IsChecked="{Binding Path=DataType, Mode=TwoWay, Converter={StaticResource StringToBooleanConverter}, ConverterParameter={x:Static model:ProfileCreatorModel.PMDG737}}"/>
+                            <RadioButton Content="SimVar / L:Var"
+                                         Cursor="Hand"
+                                         Background="Transparent"
+                                         IsChecked="{Binding Path=DataType, Mode=TwoWay, Converter={StaticResource StringToBooleanConverter}, ConverterParameter={x:Static model:ProfileCreatorModel.MSFSSimConnect}}"/>
+                            <RadioButton Content="PMDG 737"
+                                         Cursor="Hand"
+                                         Background="Transparent"
+                                         Margin="25,0,0,0"
+                                         IsChecked="{Binding Path=DataType, Mode=TwoWay, Converter={StaticResource StringToBooleanConverter}, ConverterParameter={x:Static model:ProfileCreatorModel.PMDG737}}"/>
                         </StackPanel>
 
                         <Grid Margin="0,25,0,0">
@@ -78,12 +80,14 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <TextBlock Grid.Row="1" Text="Output" Foreground="White" VerticalAlignment="Center"/>
-                            <TextBlock Grid.Column="1" d:Text="TEST" Foreground="White" Margin="0,0,0,5" Text="{Binding Output}" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" d:Text="TEST" Foreground="White" Margin="0,0,0,5" Text="{Binding Output.Value}" HorizontalAlignment="Center"/>
                             <ComboBox
                                 Grid.Row="1"
                                 Grid.Column="1"
                                 mah:TextBoxHelper.ClearTextButton="True"
-                                SelectedItem="{Binding Output, UpdateSourceTrigger=PropertyChanged}">
+                                SelectedItem="{Binding Output, UpdateSourceTrigger=PropertyChanged}"
+                                DisplayMemberPath="Value"
+                                ToolTip="{Binding Output.Key}">
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="MouseMove">
                                         <i:InvokeCommandAction Command="{Binding MouseMoveComboBoxCommand}" PassEventArgsToCommand="True"/>
@@ -94,6 +98,7 @@
                                 </i:Interaction.Triggers>
                                 <ComboBox.ItemContainerStyle>
                                     <Style TargetType="ComboBoxItem">
+                                        <Setter Property="ToolTip" Value="{Binding Key}"/>
                                         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                                     </Style>
                                 </ComboBox.ItemContainerStyle>
@@ -204,7 +209,7 @@
                             <TextBox 
                                 Grid.Column="1"
                                 Text="{Binding Data, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}"
-                                mah:TextBoxHelper.Watermark="MSFS/SimConnect/LVar"
+                                mah:TextBoxHelper.Watermark="SimVar / L:Var"
                                 mah:TextBoxHelper.ClearTextButton="True">
                             </TextBox>
                             <Grid.Style>
@@ -251,6 +256,8 @@
                             <TextBlock Text="Invert" Foreground="White" VerticalAlignment="Center"/>
                             <CheckBox
                                 Grid.Column="1"
+                                Cursor="Hand"
+                                HorizontalAlignment="Left"
                                 IsChecked="{Binding IsInverted, UpdateSourceTrigger=PropertyChanged}" 
                                 mah:CheckBoxHelper.CheckGlyphForegroundChecked="White"
                                 mah:CheckBoxHelper.CheckGlyphForegroundCheckedPressed="Gray"
@@ -278,9 +285,9 @@
 
                 </TabItem>
 
-                <TabItem Header="Comparison" d:Visibility="Visible">
+                <TabItem Header="Comparison" d:Visibility="Visible" Cursor="Hand">
 
-                    <StackPanel Margin="20,20,20,20" Width="400">
+                    <StackPanel Margin="20,20,20,20" Width="400" Cursor="Arrow">
 
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -366,9 +373,9 @@
                 </TabItem>
 
 
-                <TabItem Header="Display" d:Visibility="Visible">
+                <TabItem Header="Display" d:Visibility="Visible" Cursor="Hand">
 
-                    <StackPanel Margin="20,20,20,20" Width="400">
+                    <StackPanel Margin="20,20,20,20" Width="400" Cursor="Arrow">
 
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -510,8 +517,8 @@
 
                 </TabItem>
 
-                <TabItem Header="Precondition">
-                    <local:PreconditionView/>
+                <TabItem Header="Precondition" Cursor="Hand">
+                    <local:PreconditionView Cursor="Arrow"/>
                     <TabItem.Style>
                         <Style TargetType="TabItem" BasedOn="{StaticResource MahApps.Styles.TabItem}">
                             <Setter Property="Visibility" Value="Visible"/>

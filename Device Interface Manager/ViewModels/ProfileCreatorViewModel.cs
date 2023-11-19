@@ -53,7 +53,7 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
     }
 
     [ObservableProperty]
-    private ProfileCreatorModel _profileCreatorModel = new();
+    private ProfileCreatorModel _profileCreatorModel;
 
     public List<ProfileCreatorModel> ProfileCreatorModels { get; set; } = new();
 
@@ -61,7 +61,7 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
 
     public string ProfileName
     {
-        get => ProfileCreatorModel.ProfileName;
+        get => ProfileCreatorModel?.ProfileName;
         set
         {
             PreviousProfileName = ProfileCreatorModel.ProfileName;
@@ -81,25 +81,53 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
 
     public string Driver
     {
-        get => ProfileCreatorModel.Driver;
+        get => ProfileCreatorModel?.Driver;
         set
         {
-            ProfileCreatorModel.Driver = value;
-            switch (value)
+            if (ProfileCreatorModel?.Driver != value)
             {
-                case ProfileCreatorModel.FDSUSB:
-                    foreach (var iitdevice in Devices)
-                    {
-                        KeyValuePair<string, string> device = new(iitdevice.BoardType, iitdevice.SerialNumber);
-                        if (!DeviceCollection.Contains(device))
-                        {
-                            DeviceCollection.Add(device);
-                        }
-                    }
-                    break;
+                ProfileCreatorModel = new()
+                {
+                    Driver = value
+                };
+                ProfileCreatorModels.Clear();
+                DeviceCollection.Clear();
+                Device = new();
+
+                SetupDriver(value);
+
+                OnPropertyChanged(nameof(Driver));
+                UpdateButtons();
             }
-            OnPropertyChanged(nameof(Driver));
-            UpdateButtons();
+        }
+    }
+
+    [ObservableProperty]
+    private string _portName = "COM3";
+
+    private void SetupDriver(string driver)
+    {
+        switch (driver)
+        {
+            case ProfileCreatorModel.FDSUSB:
+                foreach (var iitdevice in Devices)
+                {
+                    CreateDevice(iitdevice.BoardName, iitdevice.SerialNumber);
+                }
+                break;
+
+            case ProfileCreatorModel.CPflightUSB:
+                CreateDevice(Device_Interface_Manager.Devices.CPflight.Device.MCP.DeviceName, PortName);
+                break;
+        }
+    }
+
+    private void CreateDevice(string name, string serial)
+    {
+        KeyValuePair<string, string>  device = new(name, serial);
+        if (!DeviceCollection.Contains(device))
+        {
+            DeviceCollection.Add(device);
         }
     }
 
@@ -112,6 +140,13 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
         get => _device;
         set
         {
+            if (value.Key is null)
+            {
+                _device = value;
+                OnPropertyChanged(nameof(Device));
+                return;
+            }
+
             if (string.IsNullOrEmpty(ProfileCreatorModel.DeviceName) || result.Value && !ProfileCreatorModels.Any(s => s.DeviceName == Device.Key))
             {
                 ProfileCreatorModels.Add(ProfileCreatorModel);
@@ -164,25 +199,13 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
         switch (Driver)
         {
             case ProfileCreatorModel.FDSUSB:
-                InterfaceIT_BoardInfo.Device iitdevice = Devices.Where(s => s.SerialNumber == device.Value).FirstOrDefault();
-                for (int i = iitdevice.DeviceInfo.SwitchFirst; i <= iitdevice.DeviceInfo.SwitchLast; i++)
+                fullDevice = Devices.Where(s => s.SerialNumber == device.Value).FirstOrDefault();
+                break;
+
+            case ProfileCreatorModel.CPflightUSB:
+                if (device.Key == Device_Interface_Manager.Devices.CPflight.Device.MCP.DeviceName)
                 {
-                    profileCreatorModel.Switches.Add(i);
-                }
-                for (int i = iitdevice.DeviceInfo.LEDFirst; i <= iitdevice.DeviceInfo.LEDLast; i++)
-                {
-                    profileCreatorModel.LEDs.Add(i);
-                }
-                for (int i = iitdevice.DeviceInfo.DatalineFirst; i <= iitdevice.DeviceInfo.DatalineLast; i++)
-                {
-                    profileCreatorModel.Datalines.Add(i);
-                }
-                for (int i = iitdevice.DeviceInfo.SevenSegmentFirst; i <= iitdevice.DeviceInfo.SevenSegmentLast; i++)
-                {
-                    if (iitdevice.DeviceInfo.SevenSegmentCount > 0)
-                    {
-                        profileCreatorModel.SevenSegments.Add(i);
-                    }
+                    fullDevice = Device_Interface_Manager.Devices.CPflight.Device.MCP;
                 }
                 break;
         }
@@ -192,6 +215,8 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
     public ObservableCollection<KeyValuePair<string, string>> DeviceCollection { get; set; } = new();
 
     public InterfaceIT_BoardInfo.Device[] Devices { get; set; }
+
+    public object fullDevice;
 
     [ObservableProperty]
     private string _errorText;
@@ -226,12 +251,8 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
                 using (FileStream stream = File.OpenRead(dialog.FileName))
                 {
                     ProfileCreatorModel profileCreatorModel = await JsonSerializer.DeserializeAsync<ProfileCreatorModel>(stream);
-                    if (Devices.Any(s => s.BoardType == profileCreatorModel.DeviceName))
+                    if (Devices.Any(s => s.BoardName == profileCreatorModel.DeviceName))
                     {
-                        profileCreatorModel.Switches = ProfileCreatorModel.Switches;
-                        profileCreatorModel.LEDs = ProfileCreatorModel.LEDs;
-                        profileCreatorModel.Datalines = ProfileCreatorModel.Datalines;
-                        profileCreatorModel.SevenSegments = ProfileCreatorModel.SevenSegments;
                         Driver = profileCreatorModel.Driver;
                         ProfileCreatorModel = profileCreatorModel;
                         PreviousProfileName = ProfileName;
@@ -330,14 +351,14 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
         {
             IsSortedAscending ??= false;
             List<InputCreator> sortedInputList = ProfileCreatorModel.InputCreator.ToList();
-            sortedInputList.Sort((x, y) => IsSortedAscending.Value ? Comparer<int?>.Default.Compare(y.Input, x.Input) : Comparer<int?>.Default.Compare(x.Input, y.Input));
+            sortedInputList.Sort((x, y) => IsSortedAscending.Value ? Comparer<KeyValuePair<string, string>?>.Default.Compare(y.Input, x.Input) : Comparer<KeyValuePair<string, string>?>.Default.Compare(x.Input, y.Input));
             for (int i = 0; i < sortedInputList.Count; i++)
             {
                 ProfileCreatorModel.InputCreator.Move(ProfileCreatorModel.InputCreator.IndexOf(sortedInputList[i]), i);
             }
 
             List<OutputCreator> sortedOutputList = ProfileCreatorModel.OutputCreator.ToList();
-            sortedOutputList.Sort((x, y) => IsSortedAscending.Value ? Comparer<int?>.Default.Compare(y.Output, x.Output) : Comparer<int?>.Default.Compare(x.Output, y.Output));
+            sortedOutputList.Sort((x, y) => IsSortedAscending.Value ? Comparer<KeyValuePair<string, string>?>.Default.Compare(y.Output, x.Output) : Comparer<KeyValuePair<string, string>?>.Default.Compare(x.Output, y.Output));
             for (int i = 0; i < sortedOutputList.Count; i++)
             {
                 ProfileCreatorModel.OutputCreator.Move(ProfileCreatorModel.OutputCreator.IndexOf(sortedOutputList[i]), i);
@@ -500,23 +521,21 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
         {
             inputCreator.InputType ??= ProfileCreatorModel.SWITCH;
             inputCreator.EventType ??= EventDataTypePreSelection;
+
             navigationService.NavigateToInputCreator(
                 inputCreator,
-                ProfileCreatorModel.Switches.ToArray(),
                 ProfileCreatorModel.OutputCreator.ToArray(),
-                Devices.FirstOrDefault(k => k.SerialNumber == Device.Value));
+                fullDevice);
         }
         else if (inputOutputCreator is OutputCreator outputCreator)
         {
             outputCreator.OutputType ??= ProfileCreatorModel.LED;
             outputCreator.DataType ??= EventDataTypePreSelection;
+
             navigationService.NavigateToOutputCreator(
                 outputCreator,
-                ProfileCreatorModel.LEDs.ToArray(),
-                ProfileCreatorModel.Datalines.ToArray(),
-                ProfileCreatorModel.SevenSegments.ToArray(),
                 ProfileCreatorModel.OutputCreator.ToArray(),
-                Devices.FirstOrDefault(k => k.SerialNumber == Device.Value));
+                fullDevice);
         }
     }
 
@@ -526,14 +545,17 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
     [RelayCommand]
     private async Task StartProfiles()
     {
-        IsStarted = !IsStarted;
-        if (IsStarted)
+        if (Driver == ProfileCreatorModel.FDSUSB)
         {
-            await Profiles.Instance.StartAsync(ProfileCreatorModel, Devices.FirstOrDefault(k => k.SerialNumber == Device.Value));
-            ErrorText = ProfileCreatorModel.ProfileName + " started";
-            return;
+            IsStarted = !IsStarted;
+            if (IsStarted)
+            {
+                await Profiles.Instance.StartAsync(ProfileCreatorModel, Devices.FirstOrDefault(k => k.SerialNumber == Device.Value));
+                ErrorText = ProfileCreatorModel.ProfileName + " started";
+                return;
+            }
+            Profiles.Instance.Stop();
         }
-        Profiles.Instance.Stop();
         ErrorText = ProfileCreatorModel.ProfileName + " stopped";
     }
 

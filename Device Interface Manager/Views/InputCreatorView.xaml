@@ -30,22 +30,30 @@
 
             <mah:MetroTabControl Background="Transparent">
 
-                <TabItem Header="Input">
+                <TabItem Header="Input" Cursor="Hand">
 
-                    <StackPanel Margin="20,20,20,20" HorizontalAlignment="Center" Width="400">
+                    <StackPanel Margin="20,20,20,20" HorizontalAlignment="Center" Width="420" Cursor="Arrow">
 
-                        <StackPanel  Orientation="Horizontal" HorizontalAlignment="Center">
-                            <RadioButton Content="MSFS/SimConnect/LVar"
-                             Background="Transparent"
-                             IsChecked="{Binding Path=EventType, Mode=TwoWay, Converter={StaticResource StringToBooleanConverter}, ConverterParameter={x:Static model:ProfileCreatorModel.MSFSSimConnect}}"/>
-                            <RadioButton Content="RPN/H-Events"
-                             Background="Transparent"
-                             Margin="25,0,0,0"
-                             IsChecked="{Binding Path=EventType, Mode=TwoWay, Converter={StaticResource StringToBooleanConverter}, ConverterParameter={x:Static model:ProfileCreatorModel.RPN}}"/>
-                            <RadioButton Content="PMDG737"
-                             Background="Transparent"
-                             Margin="25,0,0,0"
-                             IsChecked="{Binding Path=EventType, Mode=TwoWay, Converter={StaticResource StringToBooleanConverter}, ConverterParameter={x:Static model:ProfileCreatorModel.PMDG737}}"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <RadioButton Content="SimVar / L:Var"
+                                         Cursor="Hand"
+                                         Background="Transparent"
+                                         IsChecked="{Binding Path=EventType, Mode=TwoWay, Converter={StaticResource StringToBooleanConverter}, ConverterParameter={x:Static model:ProfileCreatorModel.MSFSSimConnect}}"/>
+                            <RadioButton Content="K:Event"
+                                         Cursor="Hand"
+                                         Background="Transparent"
+                                         Margin="25,0,0,0"
+                                         IsChecked="{Binding Path=EventType, Mode=TwoWay, Converter={StaticResource StringToBooleanConverter}, ConverterParameter={x:Static model:ProfileCreatorModel.KEVENT}}"/>
+                            <RadioButton Content="H:Event / RPN"
+                                         Cursor="Hand"
+                                         Background="Transparent"
+                                         Margin="25,0,0,0"
+                                         IsChecked="{Binding Path=EventType, Mode=TwoWay, Converter={StaticResource StringToBooleanConverter}, ConverterParameter={x:Static model:ProfileCreatorModel.RPN}}"/>
+                            <RadioButton Content="PMDG 737"
+                                         Cursor="Hand"
+                                         Background="Transparent"
+                                         Margin="25,0,0,0"
+                                         IsChecked="{Binding Path=EventType, Mode=TwoWay, Converter={StaticResource StringToBooleanConverter}, ConverterParameter={x:Static model:ProfileCreatorModel.PMDG737}}"/>
                         </StackPanel>
 
 
@@ -60,7 +68,7 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <TextBlock Grid.Row="1" Text="Input" Foreground="White" VerticalAlignment="Center"/>
-                            <TextBlock Grid.Column="2" d:Text="TEST" Foreground="White" Margin="0,0,0,5" Text="{Binding Input}" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="2" d:Text="TEST" Foreground="White" Margin="0,0,0,5" Text="{Binding Input.Value}" HorizontalAlignment="Center"/>
                             <Button
                                 Grid.Row="1"
                                 Grid.Column="1"
@@ -68,12 +76,18 @@
                                 Command="{Binding GetSwitchCommand}"
                                 mah:ControlsHelper.CornerRadius="0"
                                 Cursor="Hand"/>
-                            <ComboBox
-                                Grid.Row="1"
+                            <ComboBox Grid.Row="1"
                                 Grid.Column="2"
                                 mah:TextBoxHelper.ClearTextButton="True"
-                                ItemsSource="{Binding Switches}"
-                                SelectedItem="{Binding Input, UpdateSourceTrigger=PropertyChanged}">
+                                ItemsSource="{Binding Inputs}"
+                                SelectedItem="{Binding Input, UpdateSourceTrigger=PropertyChanged}"
+                                DisplayMemberPath="Value"
+                                ToolTip="{Binding Input.Key}">
+                                <ComboBox.ItemContainerStyle>
+                                    <Style TargetType="ComboBoxItem">
+                                        <Setter Property="ToolTip" Value="{Binding Key}"/>
+                                    </Style>
+                                </ComboBox.ItemContainerStyle>
                             </ComboBox>
                         </Grid>
 
@@ -134,7 +148,7 @@
                             <TextBox 
                                 Grid.Column="1"
                                 Text="{Binding Event, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}"
-                                mah:TextBoxHelper.Watermark="MSFS/SimConnect/LVar"
+                                mah:TextBoxHelper.Watermark="SimVar/K:Event/H:Event/RPN"
                                 mah:TextBoxHelper.ClearTextButton="True">
                             </TextBox>
                             <Grid.Style>
@@ -142,6 +156,9 @@
                                     <Setter Property="Visibility" Value="Collapsed"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding EventType}" Value="MSFS/SimConnect/LVar">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding EventType}" Value="K:Event">
                                             <Setter Property="Visibility" Value="Visible"/>
                                         </DataTrigger>
                                         <DataTrigger Binding="{Binding EventType}" Value="RPN/H-Events">
@@ -338,8 +355,8 @@
                     
                 </TabItem>
 
-                <TabItem Header="Precondition">
-                    <local:PreconditionView/>
+                <TabItem Header="Precondition" Cursor="Hand">
+                    <local:PreconditionView Cursor="Arrow"/>
                     <TabItem.Style>
                         <Style TargetType="TabItem" BasedOn="{StaticResource MahApps.Styles.TabItem}">
                             <Setter Property="Visibility" Value="Visible"/>

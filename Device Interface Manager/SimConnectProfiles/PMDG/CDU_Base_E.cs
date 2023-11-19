@@ -81,9 +81,9 @@ public abstract class CDU_Base_E<T> : ENET where T : struct
         }
     }
 
-    protected override void StopDevice()
+    protected override void Stop()
     {
-        base.StopDevice();
+        base.Stop();
         startupManager.PMDGCDU?.Close();
     }
 

@@ -91,7 +91,7 @@ public partial class TestENETViewModel : ObservableObject, IRecipient<string>
         if ((ConnectionStatus = await interfaceITEthernet.InterfaceITEthernetConnectionAsync((ethernetCancellationTokenSource = new()).Token)) == InterfaceITEthernet.ConnectionStatus.Connected)
         {
             WeakReferenceMessenger.Default.Send(await interfaceITEthernet.GetInterfaceITEthernetDataAsync(KeyPressedAction, ethernetCancellationTokenSource.Token));
-            switch (interfaceITEthernet.InterfaceITEthernetInfo.ID)
+            switch (interfaceITEthernet.InterfaceITEthernetInfo.Id)
             {
                 case "0E08":
                     AirbusBoeingIsChecked = true;

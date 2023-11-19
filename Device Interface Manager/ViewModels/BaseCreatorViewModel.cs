@@ -16,16 +16,16 @@ namespace Device_Interface_Manager.ViewModels
     {
         public BaseCreatorViewModel(object device)
         {
-            if (device is InterfaceIT_BoardInfo.Device)
+            if (device is InterfaceIT_BoardInfo.Device iitdevice)
             {
-                Device = device as InterfaceIT_BoardInfo.Device;
-                InterfaceITAPI_Data.InterfaceITEnable(Device);
+                Device = iitdevice;
+                InterfaceITAPI_Data.EnableDeviceFeatures(iitdevice);
             }
         }
 
         public Action Close { get; set; }
 
-        public InterfaceIT_BoardInfo.Device Device { get; set; }
+        public object Device { get; set; }
 
         public abstract OutputCreator[] OutputCreator { get; set; }
 
@@ -133,7 +133,10 @@ namespace Device_Interface_Manager.ViewModels
         {
             if (Device is not null)
             {
-                InterfaceITAPI_Data.InterfaceITDisable(Device);
+                if (Device is InterfaceIT_BoardInfo.Device iitdevice)
+                {
+                    InterfaceITAPI_Data.InterfaceITDisable(iitdevice);
+                }
             }
             return MessageDialogResult.Affirmative;
         }

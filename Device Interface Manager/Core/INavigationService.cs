@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Windows;
 using Device_Interface_Manager.Devices.interfaceIT.USB;
 using Device_Interface_Manager.Models;
@@ -11,9 +10,9 @@ interface INavigationService
 {
     void NavigateTo<TView>(object parameter) where TView : Window, new();
 
-    void NavigateToInputCreator(InputCreator inputCreator, int?[] switches, OutputCreator[] outputCreators, object device);
+    void NavigateToInputCreator(InputCreator inputCreator, OutputCreator[] outputCreators, object device);
 
-    void NavigateToOutputCreator(OutputCreator outputCreator, int?[] lEDs, int?[] datalines, int?[] sevenSegments, OutputCreator[] outputCreators, object device);
+    void NavigateToOutputCreator(OutputCreator outputCreator, OutputCreator[] outputCreators, object device);
 }
 
 public class NavigationService : INavigationService
@@ -28,13 +27,12 @@ public class NavigationService : INavigationService
         view.Show();
     }
 
-    public void NavigateToInputCreator(InputCreator inputCreator, int?[] switches, OutputCreator[] outputCreators, object device)
+    public void NavigateToInputCreator(InputCreator inputCreator, OutputCreator[] outputCreators, object device)
     {
         InputCreatorViewModel viewModel = new(
             
             new()
             {
-                Switches = switches,
                 InputType = inputCreator.InputType,
                 Input = inputCreator.Input,
                 EventType = inputCreator.EventType,
@@ -72,14 +70,11 @@ public class NavigationService : INavigationService
         }
     }
 
-    public void NavigateToOutputCreator(OutputCreator outputCreator, int?[] lEDs, int?[] datalines, int?[] sevenSegments, OutputCreator[] outputCreators, object device)
+    public void NavigateToOutputCreator(OutputCreator outputCreator, OutputCreator[] outputCreators, object device)
     {
         OutputCreatorViewModel viewModel = new(
             new()
             {
-                LEDs = lEDs,
-                Datalines = datalines,
-                SevenSegments = sevenSegments,
                 OutputType = outputCreator.OutputType,
                 Output = outputCreator.Output,
                 DataType = outputCreator.DataType,
