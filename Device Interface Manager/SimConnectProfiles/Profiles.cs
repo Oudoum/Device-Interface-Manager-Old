@@ -50,6 +50,11 @@ public class Profiles
 
     public async Task StartAsync(ProfileCreatorModel profileCreatorModel, InterfaceIT_BoardInfo.Device device)
    {
+        if (device is null)
+        {
+            return;
+        }
+
         if (profileCreatorModel.Driver == ProfileCreatorModel.FDSUSB)
         {
             fDS_USB_Drivers ??= new();

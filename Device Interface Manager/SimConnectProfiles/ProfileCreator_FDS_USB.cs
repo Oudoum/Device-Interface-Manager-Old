@@ -38,16 +38,16 @@ public class ProfileCreator_FDS_USB : ProfileCreatorBase<Device>
     {
         if (item.OutputType == ProfileCreatorModel.LED)
         {
-            interfaceIT_LED_Set(Device.Session, Convert.ToInt32(item.Output.Value), valueBool);
+            interfaceIT_LED_Set(Device.Session, Convert.ToInt32(item.Output.Value.Key), valueBool);
         }
         else if (item.OutputType == ProfileCreatorModel.DATALINE)
         {
-            interfaceIT_Dataline_Set(Device.Session, Convert.ToInt32(item.Output.Value), valueBool);
+            interfaceIT_Dataline_Set(Device.Session, Convert.ToInt32(item.Output.Value.Key), valueBool);
         }
     }
 
     protected override void SetDisplayOutput(OutputCreator item, string outputValue)
     {
-        interfaceIT_7Segment_Display(Device.Session, outputValue, Convert.ToInt32(item.Output.Value));
+        interfaceIT_7Segment_Display(Device.Session, outputValue, Convert.ToInt32(item.Output.Value.Key));
     }
 }

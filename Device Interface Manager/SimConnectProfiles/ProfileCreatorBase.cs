@@ -249,7 +249,7 @@ public abstract class ProfileCreatorBase<T> : ProfileBase<T>
     private void SetSendOuput(OutputCreator item, bool valueBool)
     {
         valueBool = item.IsInverted ? !valueBool : valueBool;
-        if (item.Output is not null)
+        if (item.Output is not null && !string.IsNullOrEmpty(item.Output.Value.Key))
         {
             SetBooleanOuput(item, valueBool);
         }
@@ -327,7 +327,7 @@ public abstract class ProfileCreatorBase<T> : ProfileBase<T>
             }
         }
         string outputValue = sb.ToString();
-        if (item.Output is not null)
+        if (item.Output is not null && !string.IsNullOrEmpty(item.Output.Value.Key))
         {
             SetDisplayOutput(item, outputValue);
         }

@@ -10,17 +10,15 @@ namespace Device_Interface_Manager
     {
         public ObservableCollection<string> LogMessages { get; set; } = new();
 
-        public App()
-        {
-            Ioc.Default.ConfigureServices(new ServiceCollection()
+        public App() => Ioc.Default.ConfigureServices(new ServiceCollection()
                 .AddLogging(loggingBuilder =>
                 {
                     loggingBuilder.AddProvider(new Core.CollectionLoggerProvider(LogMessages));
                 })
                 .AddSingleton<Views.MainWindow>()
+                .AddSingleton<DevDecoder.HIDDevices.Devices>()
                 .AddTransient<ViewModels.MainViewModel>()
                 .BuildServiceProvider());
-        }
 
         protected override void OnStartup(StartupEventArgs e)
         {

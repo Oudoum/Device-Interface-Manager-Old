@@ -9,8 +9,8 @@
     <UseWindowsForms>True</UseWindowsForms>
     <ApplicationIcon>DIM.ico</ApplicationIcon>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <AssemblyVersion>1.1.15.1</AssemblyVersion>
-    <FileVersion>1.1.15.1</FileVersion>
+    <AssemblyVersion>1.1.15.4</AssemblyVersion>
+    <FileVersion>1.1.15.4</FileVersion>
 
   </PropertyGroup>
 
@@ -65,8 +65,9 @@
     <PackageReference Include="Autoupdater.NET.Official" Version="1.8.4" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     <PackageReference Include="ControlzEx" Version="6.0.0" />
+    <PackageReference Include="FTD2XX.Net" Version="1.2.1" />
     <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
-    <PackageReference Include="HidSharpCore" Version="1.2.1.1" />
+    <PackageReference Include="HIDDevices" Version="3.0.1" />
     <PackageReference Include="LightImage.DragDrop" Version="0.5.5" />
     <PackageReference Include="LightImage.DragDrop.Wpf" Version="0.5.5" />
     <PackageReference Include="MahApps.Metro" Version="3.0.0-alpha0457" />
