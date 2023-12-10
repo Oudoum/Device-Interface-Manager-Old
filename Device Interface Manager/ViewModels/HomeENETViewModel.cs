@@ -33,23 +33,23 @@ public partial class HomeENETViewModel : ObservableObject
         profileActions = new()
         {
             { "-- None --", null },
-            { "Fenix A320 Left MCDU", StartENETProfile<SimConnectProfiles.FENIX.A320.E.MCDU_L> },
-            { "Fenix A320 Right MCDU", StartENETProfile<SimConnectProfiles.FENIX.A320.E.MCDU_R> },
-            { "FBW A32NX Left MCDU", StartENETProfile<SimConnectProfiles.FBW.A32NX.E.MCDU_L> },
-            { "FBW A32NX Right MCDU", StartENETProfile<SimConnectProfiles.FBW.A32NX.E.MCDU_R> },
-            { "PMDG 737NG Left CDU", StartENETProfile<SimConnectProfiles.PMDG.B737.E.NG_CDU_L> },
-            { "PMDG 737NG Right CDU", StartENETProfile<SimConnectProfiles.PMDG.B737.E.NG_CDU_R> },
-            { "PMDG 737NG Left CDU (MAX)", StartENETProfile<SimConnectProfiles.PMDG.B737.E.NG_CDU_MAX_L> },
-            { "PMDG 737NG Right CDU (MAX)", StartENETProfile<SimConnectProfiles.PMDG.B737.E.NG_CDU_MAX_R> },
-            { "Asobo 747-8I Left CDU", StartENETProfile<SimConnectProfiles.Asobo.B747.E.CDU_L>},
-            { "Asobo 747-8I Right CDU", StartENETProfile<SimConnectProfiles.Asobo.B747.E.CDU_R>},
-            { "[P3D] PMDG 747 Left CDU", StartENETProfile<SimConnectProfiles.PMDG.B747.E.B747_CDU_L> },
-            { "[P3D] PMDG 747 Right CDU", StartENETProfile<SimConnectProfiles.PMDG.B747.E.B747_CDU_R> },
-            { "[P3D] PMDG 747 Center CDU", StartENETProfile<SimConnectProfiles.PMDG.B747.E.B747_CDU_C> },
-            { "[P3D] PMDG 777 Left CDU", StartENETProfile<SimConnectProfiles.PMDG.B777.E.B777_CDU_L> },
-            { "[P3D] PMDG 777 Right CDU", StartENETProfile<SimConnectProfiles.PMDG.B777.E.B777_CDU_R> },
-            { "[P3D] PMDG 777 Center CDU", StartENETProfile<SimConnectProfiles.PMDG.B777.E.B777_CDU_C> },
-            { "CDU/MCDU Test", StartTest },
+            { "Fenix A320 Left MCDU", StartENETProfileAsync<SimConnectProfiles.FENIX.A320.E.MCDU_L> },
+            { "Fenix A320 Right MCDU", StartENETProfileAsync<SimConnectProfiles.FENIX.A320.E.MCDU_R> },
+            { "FBW A32NX Left MCDU", StartENETProfileAsync<SimConnectProfiles.FBW.A32NX.E.MCDU_L> },
+            { "FBW A32NX Right MCDU", StartENETProfileAsync<SimConnectProfiles.FBW.A32NX.E.MCDU_R> },
+            { "PMDG 737NG Left CDU", StartENETProfileAsync<SimConnectProfiles.PMDG.B737.E.NG_CDU_L> },
+            { "PMDG 737NG Right CDU", StartENETProfileAsync<SimConnectProfiles.PMDG.B737.E.NG_CDU_R> },
+            { "PMDG 737NG Left CDU (MAX)", StartENETProfileAsync<SimConnectProfiles.PMDG.B737.E.NG_CDU_MAX_L> },
+            { "PMDG 737NG Right CDU (MAX)", StartENETProfileAsync<SimConnectProfiles.PMDG.B737.E.NG_CDU_MAX_R> },
+            { "Asobo 747-8I Left CDU", StartENETProfileAsync<SimConnectProfiles.Asobo.B747.E.CDU_L>},
+            { "Asobo 747-8I Right CDU", StartENETProfileAsync<SimConnectProfiles.Asobo.B747.E.CDU_R>},
+            { "[P3D] PMDG 747 Left CDU", StartENETProfileAsync<SimConnectProfiles.PMDG.B747.E.B747_CDU_L> },
+            { "[P3D] PMDG 747 Right CDU", StartENETProfileAsync<SimConnectProfiles.PMDG.B747.E.B747_CDU_R> },
+            { "[P3D] PMDG 747 Center CDU", StartENETProfileAsync<SimConnectProfiles.PMDG.B747.E.B747_CDU_C> },
+            { "[P3D] PMDG 777 Left CDU", StartENETProfileAsync<SimConnectProfiles.PMDG.B777.E.B777_CDU_L> },
+            { "[P3D] PMDG 777 Right CDU", StartENETProfileAsync<SimConnectProfiles.PMDG.B777.E.B777_CDU_R> },
+            { "[P3D] PMDG 777 Center CDU", StartENETProfileAsync<SimConnectProfiles.PMDG.B777.E.B777_CDU_C> },
+            { "CDU/MCDU Test", StartTestAsync },
 
         //"PMDG 737MAX Left CDU"
         //"PMDG 737MAX Right CDU"
@@ -61,19 +61,19 @@ public partial class HomeENETViewModel : ObservableObject
 
         if (Properties.Settings.Default.AutoHide && Connections.Count > 0)
         {
-            _ = StartENET();
+            _ = StartENETAsync();
         }
     }
 
     [RelayCommand]
-    private async Task StartENET()
+    private async Task StartENETAsync()
     {
         if (!(IsENETEnabled = !IsENETEnabled))
         {
             SaveENETConnections();
             foreach (var connection in Connections)
             {
-                await StartENETProfiles(connection);
+                await StartENETProfilesAsync(connection);
             }
             return;
         }
@@ -93,7 +93,7 @@ public partial class HomeENETViewModel : ObservableObject
         IsENETEnabled = true;
     }
 
-    private async Task StartENETProfile<T>(Connection connection) where T : ENET, new()
+    private async Task StartENETProfileAsync<T>(Connection connection) where T : ENET, new()
     {
         T profile = new();
         ENETList.Add(profile);
@@ -101,7 +101,7 @@ public partial class HomeENETViewModel : ObservableObject
     }
 
     private bool isActive;
-    private async Task StartENETProfiles(Connection connection)
+    private async Task StartENETProfilesAsync(Connection connection)
     {
         if (connection.SelectedProfile is null)
         {
@@ -119,7 +119,7 @@ public partial class HomeENETViewModel : ObservableObject
         }
     }
 
-    private async Task StartTest(Connection connection)
+    private async Task StartTestAsync(Connection connection)
     {
         if (!isActive)
         {
@@ -150,21 +150,21 @@ public partial class HomeENETViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task SearchDevices()
+    private async Task SearchDevicesAsync()
     {
-        string[] result = await InterfaceITEthernet.ReceiveControllerDiscoveryData();
-        if (result is null)
+        InterfaceITEthernetDiscovery? discovery = await InterfaceITEthernet.ReceiveControllerDiscoveryDataAsync();
+        if (discovery is null)
         {
             return;
         }
         foreach (var connection in Connections)
         {
-            if (connection.IPAddress == result[1])
+            if (connection.IPAddress == discovery.Value.IPAddress)
             {
                 return;
             }
         }
-        Connections.Add(new Connection() { Name = result[0], IPAddress = result[1], SelectedProfile = Profiles[0] });
+        Connections.Add(new Connection() { Name = discovery.Value.Description, IPAddress = discovery.Value.IPAddress, SelectedProfile = Profiles[0] });
     }
 
     private void CreateProfiles()

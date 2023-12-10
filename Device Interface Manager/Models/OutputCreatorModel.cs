@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
 using Device_Interface_Manager.SimConnectProfiles.PMDG;
-using System.Collections.ObjectModel;
 
 namespace Device_Interface_Manager.Models;
 public class OutputCreatorModel
@@ -194,7 +194,7 @@ public class OutputCreatorModel
         public static event EventHandler SumDecimalPointCheckedChanged;
     }
 
-    public OutputCreator[] OutputCreator { get; set; }
+    public ObservableCollection<OutputCreator> OutputCreator { get; set; }
 
     public ObservableCollection<PreconditionModel> Preconditions { get; set; }
 }

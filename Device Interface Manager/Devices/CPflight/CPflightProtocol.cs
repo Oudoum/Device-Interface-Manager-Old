@@ -107,10 +107,10 @@ namespace Device_Interface_Manager.Devices.CPflight
                 },
             };
 
-        public void CreateJSONFile()
+        public static void CreateJSONFile(string fileName, Device device)
         {
             Directory.CreateDirectory("CPflight");
-            File.WriteAllText(Path.Combine("CPflight", "TestDevice.json"), JsonSerializer.Serialize(MCP, new JsonSerializerOptions { WriteIndented = true, DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull }));
+            File.WriteAllText(Path.Combine("CPflight", $"{fileName}.json"), JsonSerializer.Serialize(device, new JsonSerializerOptions { WriteIndented = true, DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull }));
         }
     }
 }

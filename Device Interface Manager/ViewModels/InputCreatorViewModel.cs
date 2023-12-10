@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using CommunityToolkit.Mvvm.Input;
-using Device_Interface_Manager.Devices.interfaceIT.USB;
-using Device_Interface_Manager.SimConnectProfiles.PMDG;
-using Device_Interface_Manager.Models;
+﻿using System.Linq;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.Input;
 using MahApps.Metro.Controls.Dialogs;
-using HidSharp;
-using System.Linq;
+using Device_Interface_Manager.Models;
+using Device_Interface_Manager.Devices.interfaceIT.USB;
+using Device_Interface_Manager.Devices.interfaceIT.ENET;
+using Device_Interface_Manager.SimConnectProfiles.PMDG;
 
 namespace Device_Interface_Manager.ViewModels;
 public partial class InputCreatorViewModel : BaseCreatorViewModel
@@ -22,6 +22,15 @@ public partial class InputCreatorViewModel : BaseCreatorViewModel
                 Inputs.Add(position, position);
             }
             InterfaceITAPI_Data.interfaceIT_Switch_Enable_Poll(iitdevice.Session, true);
+        }
+        else if (device is InterfaceITEthernet iitENETdevice && iitENETdevice.InterfaceITEthernetInfo.Boards.Count == 1)
+        {
+            for (int i = iitENETdevice.InterfaceITEthernetInfo.Boards[0].SwitchesConfig.StartIndex; i <= iitENETdevice.InterfaceITEthernetInfo.Boards[0].SwitchesConfig.StopIndex; i++)
+            {
+                string position = i.ToString();
+                Inputs.Add(position, position);
+            }
+            iitENETdevice.IsPolling = true;
         }
         else if (device is Devices.CPflight.Device cpflightdevice)
         {
@@ -243,7 +252,7 @@ public partial class InputCreatorViewModel : BaseCreatorViewModel
         }
     }
 
-    public override OutputCreator[] OutputCreator
+    public override ObservableCollection<OutputCreator> OutputCreator
     {
         get => InputCreatorModel.OutputCreator;
         set => InputCreatorModel.OutputCreator = value;
@@ -255,7 +264,7 @@ public partial class InputCreatorViewModel : BaseCreatorViewModel
         set => InputCreatorModel.Preconditions = value;
     }
 
-    public override MessageDialogResult CanCloseAsync()
+    public override MessageDialogResult CanClose()
     {
         if (Device is not null)
         {
@@ -263,8 +272,12 @@ public partial class InputCreatorViewModel : BaseCreatorViewModel
             {
                 InterfaceITAPI_Data.interfaceIT_Switch_Enable_Poll(iitdevice.Session, false);
             }
+            else if (Device is InterfaceITEthernet iitENETdevice)
+            {
+                iitENETdevice.IsPolling = false;
+            }
         }
-        return base.CanCloseAsync();
+        return base.CanClose();
     }
 
     [RelayCommand]
@@ -277,7 +290,17 @@ public partial class InputCreatorViewModel : BaseCreatorViewModel
                 {
                     if (direction == 1)
                     {
-                        Input = Inputs.FirstOrDefault(k => k.Key == key.ToString());
+                        Input = Inputs.FirstOrDefault(i => i.Key == key.ToString());
+                    }
+                }
+                break;
+
+            case InterfaceITEthernet iitENETdevice:
+                while (iitENETdevice.GetSwitch(out int key, out uint direction))
+                {
+                    if (direction == 1)
+                    {
+                        Input = Inputs.FirstOrDefault(i => i.Key == key.ToString());
                     }
                 }
                 break;

@@ -71,7 +71,7 @@ public class PMDG_CDU_StartupManager
 
     public PMDGCDU PMDGCDU { get; private set; }
 
-    public async Task PMDG737CDUStartup(SimConnectClient simConnectClient, Enum cDUBrightnessButton)
+    public async Task PMDG737CDUStartupAsync(SimConnectClient simConnectClient, Enum cDUBrightnessButton)
     {
         await Application.Current.Dispatcher.InvokeAsync(delegate
         {

@@ -140,9 +140,9 @@ public class NG_CDU_R : CDU_Base_USB<PMDG_NG3_Data>
                 break;
         }
 
-        if (keyEventMap.ContainsKey(key))
+        if (keyEventMap.TryGetValue(key, out PMDGEvents value))
         {
-            simConnectClient.TransmitEvent(direction, keyEventMap[key]);
+            simConnectClient.TransmitEvent(direction, value);
         }
     }
 }

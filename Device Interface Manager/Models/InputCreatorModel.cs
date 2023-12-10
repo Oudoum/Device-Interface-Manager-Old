@@ -123,7 +123,7 @@ public class InputCreatorModel
         //{ "WheelSkip", PMDG_NG3_SDK.MOUSE_FLAG_WHEEL_SKIP },
     };
 
-    public OutputCreator[] OutputCreator { get; set; }
+    public ObservableCollection<OutputCreator> OutputCreator { get; set; }
 
     public ObservableCollection<PreconditionModel> Preconditions { get; set; }
 }

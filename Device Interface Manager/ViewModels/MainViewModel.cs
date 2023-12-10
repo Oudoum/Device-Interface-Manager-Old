@@ -7,17 +7,16 @@ using System.Collections.ObjectModel;
 using AutoUpdaterDotNET;
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
-using CommunityToolkit.Mvvm.Messaging.Messages;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Device_Interface_Manager.Devices.interfaceIT.USB;
-using Device_Interface_Manager.Views;
 using Device_Interface_Manager.Core;
 using static Device_Interface_Manager.Devices.interfaceIT.USB.InterfaceITAPI_Data;
+using Device_Interface_Manager.SimConnectProfiles;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace Device_Interface_Manager.ViewModels;
 
-public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStausMessage>
+public partial class MainViewModel : ObservableObject
 {
     private const string updateLink = "https://raw.githubusercontent.com/Oudoum/Device-Interface-Manager-Download/main/Updates/AutoUpdaterDIM.xml";
 
@@ -78,9 +77,9 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
     }
 
     [ObservableProperty]
-    private object _currentView;
+    private ObservableObject _currentView;
 
-    partial void OnCurrentViewChanged(object value)
+    partial void OnCurrentViewChanged(ObservableObject value)
     {
         SettingsIsChecked = (value?.GetType() == typeof(SettingsViewModel));
     }
@@ -121,10 +120,15 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
         SelectedController = 0;
 
         Update();
-        StrongReferenceMessenger.Default.Register(this);
+        SimConnectClient.Instance.SimConnectConnectionChanged += Instance_SimConnectConnectionChanged;
 
         hidDeviceCount = GetSpecificDevicesCount();
         HidSharp.DeviceList.Local.Changed += COMDeviceListChanged;
+    }
+
+    private void Instance_SimConnectConnectionChanged(object sender, bool isConnected)
+    {
+        IsSimConnectOpen = isConnected;
     }
 
     private int GetSpecificDevicesCount()
@@ -163,20 +167,12 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
     [RelayCommand]
     private void OpenProfileCreator()
     {
-        if (!System.Windows.Application.Current.Windows.OfType<ProfileCreatorView>().Any())
+        ProfileCreatorViewModel profileCreatorViewModel = new(DialogCoordinator.Instance, DeviceList);
+        ViewLocator viewLocator = new(profileCreatorViewModel);
+        viewLocator.Closed += () =>
         {
-            NavigationService navigationService = new();
-            navigationService.NavigateTo<ProfileCreatorView>(DeviceList.ToArray());
-
-            //Dirty
-            System.Windows.Application.Current.Windows.OfType<ProfileCreatorView>().First().Closed += ProfileCreatorView_Closed;
-        }
-    }
-
-    //Dirty
-    private void ProfileCreatorView_Closed(object sender, EventArgs e)
-    {
-        HomeUSBVM.AddProfiles();
+            HomeUSBVM.AddProfiles();
+        };
     }
 
     [RelayCommand]
@@ -409,17 +405,5 @@ public partial class MainViewModel : ObservableObject, IRecipient<SimConnectStau
             return;
         }
         File.WriteAllText(fullPath, json);
-    }
-
-    public void Receive(SimConnectStausMessage message)
-    {
-        IsSimConnectOpen = message.Value;
-    }
-}
-
-public class SimConnectStausMessage : ValueChangedMessage<bool>
-{
-    public SimConnectStausMessage(bool value) : base(value)
-    {
     }
 }

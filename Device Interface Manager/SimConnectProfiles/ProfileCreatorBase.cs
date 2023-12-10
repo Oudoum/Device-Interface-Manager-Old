@@ -3,7 +3,6 @@ using System.Text;
 using System.Linq;
 using System.Data;
 using Device_Interface_Manager.Models;
-using System.IO;
 
 namespace Device_Interface_Manager.SimConnectProfiles;
 public abstract class ProfileCreatorBase<T> : ProfileBase<T>
@@ -261,7 +260,7 @@ public abstract class ProfileCreatorBase<T> : ProfileBase<T>
         StringBuilder sb = new(value);
         if (item.DigitCount is not null)
         {
-            sb.Replace(".", "");
+            _ = sb.Replace(".", "");
             if (sb.Length > item.DigitCount)
             {
                 byte digitCount = item.DigitCount.Value;
@@ -277,7 +276,7 @@ public abstract class ProfileCreatorBase<T> : ProfileBase<T>
                     }
                     if (carry > 0)
                     {
-                        sb.Insert(0, carry);
+                        _ = sb.Insert(0, carry);
                     }
                 }
                 else if (sb[digitCount] - '0' <= 5)
@@ -300,7 +299,7 @@ public abstract class ProfileCreatorBase<T> : ProfileBase<T>
                 }
                 while (sb.Length < item.DigitCount + dotCount)
                 {
-                    sb.Insert(0, item.PaddingCharacter);
+                    _ = sb.Insert(0, item.PaddingCharacter);
                 }
             }
             else if (item.PaddingCharacter is null && item.DigitCount is null)
@@ -311,7 +310,7 @@ public abstract class ProfileCreatorBase<T> : ProfileBase<T>
         }
         if (item.DigitCount is not null)
         {
-            sb.Append('0', item.DigitCount.Value - sb.Length);
+            _ = sb.Append('0', item.DigitCount.Value - sb.Length);
             FormatString(ref sb, item);
         }
         if (item.SubstringStart is null && item.SubstringEnd is not null)
@@ -320,7 +319,7 @@ public abstract class ProfileCreatorBase<T> : ProfileBase<T>
         }
         else if (item.SubstringStart is not null && item.SubstringStart <= sb.Length - 1)
         {
-            sb.Remove(0, (int)item.SubstringStart);
+            _ = sb.Remove(0, (int)item.SubstringStart);
             if (item.SubstringEnd is not null)
             {
                 sb.Length = (int)(item.SubstringEnd - item.SubstringStart + 1);
@@ -351,7 +350,7 @@ public abstract class ProfileCreatorBase<T> : ProfileBase<T>
                 }
                 if (sb.Length <= i)
                 {
-                    sb.Append(item.PaddingCharacter);
+                    _ = sb.Append(item.PaddingCharacter);
                 }
             }
         }
@@ -368,7 +367,7 @@ public abstract class ProfileCreatorBase<T> : ProfileBase<T>
                         decimalPointCount++;
                         continue;
                     }
-                    sb.Insert(i + 1, '.');
+                    _ = sb.Insert(i + 1, '.');
                     i++;
                     decimalPointCount++;
                 }
@@ -394,22 +393,23 @@ public abstract class ProfileCreatorBase<T> : ProfileBase<T>
             }
 
             //Direction
-            switch (direction)
+            uint newDirection = direction;
+            switch (newDirection)
             {
                 case 0 when item.DataRelease is not null:
-                    direction = item.DataRelease.Value;
+                    newDirection = item.DataRelease.Value;
                     break;
 
                 case 1 when item.DataPress is not null:
-                    direction = item.DataPress.Value;
+                    newDirection = item.DataPress.Value;
                     break;
 
                 case 0 when item.PMDGMouseRelease is not null:
-                    direction = item.PMDGMouseRelease.Value.Value;
+                    newDirection = item.PMDGMouseRelease.Value.Value;
                     break;
 
                 case 1 when item.PMDGMousePress is not null:
-                    direction = item.PMDGMousePress.Value.Value;
+                    newDirection = item.PMDGMousePress.Value.Value;
                     break;
 
                 default:
@@ -419,20 +419,20 @@ public abstract class ProfileCreatorBase<T> : ProfileBase<T>
             //Simulation Variable (SimVar[A]), Local Variable (L:Var[L]), Key Event ID (K:Event[K])
             if (item.EventType == ProfileCreatorModel.MSFSSimConnect && !string.IsNullOrEmpty(item.Event))
             {
-                simConnectClient.SetSimVar(direction, item.Event);
+                simConnectClient.SetSimVar(newDirection, item.Event);
                 continue;
             }
 
             if (item.EventType == ProfileCreatorModel.KEVENT &&  !string.IsNullOrEmpty(item.Event))
             {
-                simConnectClient.TransmitSimEvent(direction, item.Event);
+                simConnectClient.TransmitSimEvent(newDirection, item.Event);
                 continue;
             }
 
             //PMDG 737
             if (item.EventType == ProfileCreatorModel.PMDG737 && item.PMDGEvent is not null)
             {
-                simConnectClient.TransmitEvent(direction, item.PMDGEvent);
+                simConnectClient.TransmitEvent(newDirection, item.PMDGEvent);
             }
         }
     }

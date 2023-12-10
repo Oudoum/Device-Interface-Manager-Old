@@ -28,7 +28,7 @@ public class NG_MCP_3311 : SimConnectProfiles.USB
 
     //Task for IAS/MACH flashing
     public int MCPMachSevenSegmentDot { get; init; } = 48;
-    private async Task PMDG737MCPFlashing(string flashingAB, CancellationToken token)
+    private async Task PMDG737MCPFlashingAsync(string flashingAB, CancellationToken token)
     {
         while (!token.IsCancellationRequested)
         {
@@ -369,7 +369,7 @@ public class NG_MCP_3311 : SimConnectProfiles.USB
                 else if (value == 0)
                 {
                     interfaceIT_7Segment_Display(Device.Session, MCPSevenSegmentTest, MCPSevenSegmentStartPos);
-                    Task.Run(() => PMDG737MCPBlinkingAsync((pmdg737MCPBlinkingCancellationTokenSource = new()).Token));
+                    _ = Task.Run(() => PMDG737MCPBlinkingAsync((pmdg737MCPBlinkingCancellationTokenSource = new()).Token));
                     IAS = true;
                     MACH = true;
                 }
@@ -520,7 +520,7 @@ public class NG_MCP_3311 : SimConnectProfiles.USB
                 _mCP_IASOverspeedFlash = value;
                 if (value)
                 {
-                    Task.Run(() => PMDG737MCPFlashing("B", (pmdg737MCPIASOverspeedUnderspeedFlashingCancellationTokenSource = new()).Token));
+                    _ = Task.Run(() => PMDG737MCPFlashingAsync("B", (pmdg737MCPIASOverspeedUnderspeedFlashingCancellationTokenSource = new()).Token));
                     return;
                 }
                 OverSpeedUnderspeedReset();
@@ -552,7 +552,7 @@ public class NG_MCP_3311 : SimConnectProfiles.USB
                 _mCP_IASUnderspeedFlash = value;
                 if (value)
                 {
-                    Task.Run(() => PMDG737MCPFlashing("A", (pmdg737MCPIASOverspeedUnderspeedFlashingCancellationTokenSource = new()).Token));
+                    _ = Task.Run(() => PMDG737MCPFlashingAsync("A", (pmdg737MCPIASOverspeedUnderspeedFlashingCancellationTokenSource = new()).Token));
                     return;
                 }
                 OverSpeedUnderspeedReset();
@@ -646,7 +646,7 @@ public class NG_MCP_3311 : SimConnectProfiles.USB
             }
             else if (value[2] && value[3] && !value[4] && !value[5] && !value[6] && !value[7] && !value[8] && !value[9] && !value[10] && !value[11] && !value[12] && value[15])
             {
-                Task.Run(() => PMDG737MCPLightAsync(true, (pmdg737MCPLightCancellationTokenSource = new()).Token));
+                _ = Task.Run(() => PMDG737MCPLightAsync(true, (pmdg737MCPLightCancellationTokenSource = new()).Token));
                 backgroundLEDStatus = true;
             }
             else if (!value[15] && value[2] && LTS_MainPanelKnob_0 <= 10)

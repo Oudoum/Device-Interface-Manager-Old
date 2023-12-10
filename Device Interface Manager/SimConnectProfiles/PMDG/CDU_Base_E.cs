@@ -76,7 +76,7 @@ public abstract class CDU_Base_E<T> : ENET where T : struct
             _eLEC_BusPowered_15 = value;
             if (!value)
             {
-                startupManager.PMDGCDU.ClearPMDGCDUCells();
+                _ = startupManager.PMDGCDU.ClearPMDGCDUCellsAsync();
             }
         }
     }
@@ -117,7 +117,7 @@ public abstract class CDU_Base_E<T> : ENET where T : struct
             if (!((PMDG_CDU_SDK.ICDU_Screen)dwData).CDU_Screen.Powered)
             {
                 await Task.Delay(500);
-                startupManager.PMDGCDU.ClearPMDGCDUCells();
+                _ = startupManager.PMDGCDU.ClearPMDGCDUCellsAsync();
                 return;
             }
         }
@@ -133,7 +133,7 @@ public abstract class CDU_Base_E<T> : ENET where T : struct
         if (simConnectClient.SimConnectMSFS is not null || simConnectClient.SimConnectP3D is not null)
         {
             startupManager = new(SettingsLocation);
-            await startupManager.PMDG737CDUStartup(simConnectClient, CDUBrightnessButton);
+            await startupManager.PMDG737CDUStartupAsync(simConnectClient, CDUBrightnessButton);
             PMDGCDU = startupManager.PMDGCDU;
 
 

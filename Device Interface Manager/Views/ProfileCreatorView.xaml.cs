@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 
@@ -10,7 +9,6 @@ public partial class ProfileCreatorView : MetroWindow
     public ProfileCreatorView()
     {
         InitializeComponent();
-        DataContext = new ViewModels.ProfileCreatorViewModel(DialogCoordinator.Instance);
         Loaded += ProfileCreatorView_Loaded;
     }
 
@@ -21,7 +19,7 @@ public partial class ProfileCreatorView : MetroWindow
             vm.Close += Close;
             Closing += (s, e) =>
             {
-                if (vm.CanCloseAsync() == MessageDialogResult.Negative)
+                if (vm.CanClose() == MessageDialogResult.Negative)
                 {
                     e.Cancel = true;
                 }

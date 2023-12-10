@@ -16,9 +16,9 @@ namespace Device_Interface_Manager.ViewModels
     {
         public BaseCreatorViewModel(object device)
         {
+            Device = device;
             if (device is InterfaceIT_BoardInfo.Device iitdevice)
             {
-                Device = iitdevice;
                 InterfaceITAPI_Data.EnableDeviceFeatures(iitdevice);
             }
         }
@@ -27,7 +27,7 @@ namespace Device_Interface_Manager.ViewModels
 
         public object Device { get; set; }
 
-        public abstract OutputCreator[] OutputCreator { get; set; }
+        public abstract ObservableCollection<OutputCreator> OutputCreator { get; set; }
 
         private OutputCreator _selectedOutputCreator;
 
@@ -79,7 +79,7 @@ namespace Device_Interface_Manager.ViewModels
         [RelayCommand]
         private void AddPrecondition()
         {
-            if (OutputCreator.Length > 0)
+            if (OutputCreator.Count > 0)
             {
                 Preconditions ??= new();
                 SelectedOutputCreator ??= OutputCreator[0];
@@ -129,7 +129,7 @@ namespace Device_Interface_Manager.ViewModels
             Close?.Invoke();
         }
 
-        public virtual MessageDialogResult CanCloseAsync()
+        public virtual MessageDialogResult CanClose()
         {
             if (Device is not null)
             {

@@ -4,6 +4,21 @@ namespace Device_Interface_Manager.SimConnectProfiles.Asobo.B747.E;
 
 public class CDU_L : ENET
 {
+    protected override void OnRecvOpen()
+    {
+        simConnectClient.RegisterSimVar("L:FMC_EXEC_ACTIVE");
+    }
+
+    protected override void SimConnectClient_OnSimVarChanged(object sender, SimConnectClient.SimVar simVar)
+    {
+        base.SimConnectClient_OnSimVarChanged(sender, simVar);
+
+        if (simVar.Name == "L:FMC_EXEC_ACTIVE")
+        {
+            Device.SendinterfaceITEthernetLED(1, simVar.Data);
+        }
+    }
+
     private readonly Dictionary<int, string> keyEventMap = new()
     {
         { 1, "(>H:B747_8_FMC_1_BTN_DOT)"},
@@ -81,11 +96,11 @@ public class CDU_L : ENET
 
     protected override void KeyPressedAction(int key, uint direction)
     {
-        if (direction == 0 || !keyEventMap.ContainsKey(key))
+        if (direction == 0 || !keyEventMap.TryGetValue(key, out string value))
         {
             return;
         }
 
-        simConnectClient.SendWASMEvent(keyEventMap[key]);
+        simConnectClient.SendWASMEvent(value);
     }
 }

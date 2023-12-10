@@ -1,5 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System.Linq;
+﻿using System.Linq;
+using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Device_Interface_Manager.Models
 {
@@ -19,7 +20,7 @@ namespace Device_Interface_Manager.Models
             Description = outputCreator.Description;
         }
 
-        public PreconditionModel(Precondition precondition, OutputCreator[] outputCreators)
+        public PreconditionModel(Precondition precondition, ObservableCollection<OutputCreator> outputCreators)
         {
             IsActive = precondition.IsActive;
             Operator = precondition.Operator;

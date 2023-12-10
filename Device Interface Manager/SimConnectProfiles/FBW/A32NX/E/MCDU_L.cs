@@ -15,7 +15,7 @@ public class MCDU_L : ENET
         });
         FBWA32NXMCDU.EditormodeOff += FBWA32NXMCDU_EditormodeOff; ;
         FBWA32NXMCDU.Closing += FBWA32NXMCDU_Closing; ;
-        FBWA32NXMCDU.Dispatcher.BeginInvoke(delegate ()
+        _ = FBWA32NXMCDU.Dispatcher.BeginInvoke(delegate ()
         {
             GetPMDG737CDUSettings();
             FBWA32NXMCDU.Show();
@@ -234,11 +234,11 @@ public class MCDU_L : ENET
 
     protected override void KeyPressedAction(int key, uint direction)
     {
-        if (direction == 0 || !keyEventMap.ContainsKey(key))
+        if (direction == 0 || !keyEventMap.TryGetValue(key, out string value))
         {
             return;
         }
 
-        simConnectClient.SendWASMEvent(keyEventMap[key]);
+        simConnectClient.SendWASMEvent(value);
     }
 }

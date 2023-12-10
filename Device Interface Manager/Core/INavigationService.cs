@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Windows;
-using Device_Interface_Manager.Devices.interfaceIT.USB;
+using System.Reactive.Linq;
+using System.Collections.ObjectModel;
 using Device_Interface_Manager.Models;
 using Device_Interface_Manager.Views;
 using Device_Interface_Manager.ViewModels;
@@ -8,26 +9,14 @@ using Device_Interface_Manager.ViewModels;
 namespace Device_Interface_Manager.Core;
 interface INavigationService
 {
-    void NavigateTo<TView>(object parameter) where TView : Window, new();
+    void NavigateToInputCreator(InputCreator inputCreator, ObservableCollection<OutputCreator> outputCreators, object device);
 
-    void NavigateToInputCreator(InputCreator inputCreator, OutputCreator[] outputCreators, object device);
-
-    void NavigateToOutputCreator(OutputCreator outputCreator, OutputCreator[] outputCreators, object device);
+    void NavigateToOutputCreator(OutputCreator outputCreator, ObservableCollection<OutputCreator> outputCreators, object device);
 }
 
 public class NavigationService : INavigationService
 {
-    public void NavigateTo<TView>(object parameter) where TView : Window, new()
-    {
-        TView view = new();
-        if (view.DataContext is ProfileCreatorViewModel viewModel)
-        {
-            viewModel.Devices = parameter as InterfaceIT_BoardInfo.Device[];
-        }
-        view.Show();
-    }
-
-    public void NavigateToInputCreator(InputCreator inputCreator, OutputCreator[] outputCreators, object device)
+    public void NavigateToInputCreator(InputCreator inputCreator, ObservableCollection<OutputCreator> outputCreators, object device)
     {
         InputCreatorViewModel viewModel = new(
             
@@ -70,7 +59,7 @@ public class NavigationService : INavigationService
         }
     }
 
-    public void NavigateToOutputCreator(OutputCreator outputCreator, OutputCreator[] outputCreators, object device)
+    public void NavigateToOutputCreator(OutputCreator outputCreator, ObservableCollection<OutputCreator> outputCreators, object device)
     {
         OutputCreatorViewModel viewModel = new(
             new()
@@ -94,7 +83,7 @@ public class NavigationService : INavigationService
                 DecimalPointCheckedSum = outputCreator.DecimalPointCheckedSum,
                 SubstringStart = outputCreator.SubstringStart,
                 SubstringEnd = outputCreator.SubstringEnd,
-                OutputCreator = outputCreators.Where(x => x != outputCreator).ToArray(),
+                OutputCreator = outputCreators,
                 Preconditions = new(outputCreator.Preconditions.Select(precondition => new PreconditionModel(precondition, outputCreators)))
             }, 
             device);

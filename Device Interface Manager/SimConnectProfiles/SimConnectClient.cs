@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 using System.Windows.Interop;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using CommunityToolkit.Mvvm.Messaging;
 using MSFS = Microsoft.FlightSimulator.SimConnect;
 using P3D = LockheedMartin.Prepar3D.SimConnect;
-using Device_Interface_Manager.ViewModels;
 using MahApps.Metro.Controls;
 
 namespace Device_Interface_Manager.SimConnectProfiles;
@@ -133,13 +131,13 @@ public sealed class SimConnectClient
 
             SimVars.Clear();
             SimEvents.Clear();
-            SendSimConnectConnectionStatus(false);
+            SetSimConnectConnection(false);
         }
     }
 
     private void SimConnect_OnRecvOpen(MSFS.SimConnect sender, MSFS.SIMCONNECT_RECV_OPEN data)
     {
-        SendSimConnectConnectionStatus(true);
+        SetSimConnectConnection(true);
 
         SimConnectMSFS.MapClientDataNameToID(CLIENT_DATA_NAME_COMMAND, CLIENT_DATA_ID.CLIENT_DATA_ID_COMMAND);
         SimConnectMSFS.AddToClientDataDefinition(DEFINE_ID.DATA_DEFINITION_ID_COMMAND, 0, MESSAGE_SIZE, 0, 0);
@@ -153,7 +151,7 @@ public sealed class SimConnectClient
 
     private void SimConnect_OnRecvOpen(P3D.SimConnect sender, P3D.SIMCONNECT_RECV_OPEN data)
     {
-        SendSimConnectConnectionStatus(true);
+        SetSimConnectConnection(true);
 
         //PMDG.PMDG.RegisterPMDG777DataEvents(SimConnectP3D);
         //PMDG.PMDG.RegisterPMDG747DataEvents(SimConnectP3D);
@@ -165,20 +163,18 @@ public sealed class SimConnectClient
 
     private void SimConnect_OnRecvQuit(MSFS.SimConnect sender, MSFS.SIMCONNECT_RECV data)
     {
-        SimConnectConnectionChanged?.Invoke(this, false);
-        SendSimConnectConnectionStatus(false);
+        SetSimConnectConnection(false);
     }
 
     private void SimConnect_OnRecvQuit(P3D.SimConnect sender, P3D.SIMCONNECT_RECV data)
     {
-        SimConnectConnectionChanged?.Invoke(this, false);
-        SendSimConnectConnectionStatus(false);
+        SetSimConnectConnection(false);
     }
 
-    private void SendSimConnectConnectionStatus(bool isConnected)
+    private void SetSimConnectConnection(bool isConnected)
     {
         IsConnected = isConnected;
-        StrongReferenceMessenger.Default.Send(new SimConnectStausMessage(isConnected));
+        SimConnectConnectionChanged?.Invoke(this, isConnected);
     }
 
     private void SimConnect_OnRecvException(MSFS.SimConnect sender, MSFS.SIMCONNECT_RECV_EXCEPTION data)

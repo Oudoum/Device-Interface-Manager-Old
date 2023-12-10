@@ -15,7 +15,7 @@ public class MCDU_L : SimConnectProfiles.USB
         });
         FBWA32NXMCDU.EditormodeOff += FBWA32NXMCDU_EditormodeOff; ;
         FBWA32NXMCDU.Closing += FBWA32NXMCDU_Closing; ;
-        FBWA32NXMCDU.Dispatcher.BeginInvoke(delegate ()
+        _ = FBWA32NXMCDU.Dispatcher.BeginInvoke(delegate ()
         {
             GetPMDG737CDUSettings();
             FBWA32NXMCDU.Show();

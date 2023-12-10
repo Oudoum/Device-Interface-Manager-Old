@@ -6,7 +6,7 @@
     xmlns:viewmodel="clr-namespace:Device_Interface_Manager.ViewModels"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
-    xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
+    xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop" x:Name="metroWindow"
     x:Class="Device_Interface_Manager.Views.ProfileCreatorView"
     Dialog:DialogParticipation.Register="{Binding}"
     d:DataContext="{d:DesignInstance Type={x:Type viewmodel:ProfileCreatorViewModel}}"
@@ -31,10 +31,9 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="1" Margin="0" Orientation="Horizontal">
+            <StackPanel Margin="0" Orientation="Horizontal">
                 <StackPanel.Resources>
                     <Style x:Key="ButtonIcon" TargetType="Button" BasedOn="{StaticResource MahApps.Styles.Button}">
                         <Setter Property="Margin" Value="10,0,0,0"/>
@@ -222,24 +221,8 @@
                 </Button>
                 <TextBlock d:Text="Test" Text="{Binding ErrorText}" Margin="100,0,0,0" Foreground="White" FontSize="18" VerticalAlignment="Center"/>
             </StackPanel>
-            <StackPanel Grid.Row="2" Margin="0,10,0,0" Orientation="Horizontal" HorizontalAlignment="Left">
+            <StackPanel Grid.Row="1" Margin="0,10,0,0" Orientation="Horizontal" HorizontalAlignment="Left">
                 <StackPanel>
-                    <TextBlock Text="Profile name" Foreground="White"/>
-                    <TextBox Text="{Binding ProfileName}" Width="200" mah:TextBoxHelper.Watermark="Enter profile name...">
-                        <TextBox.Style>
-                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MahApps.Styles.TextBox}">
-                                <Setter Property="IsEnabled" Value="True"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding ProfileNameButtonContent}" Value="Edit">
-                                        <Setter Property="IsEnabled" Value="False"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBox.Style>
-                    </TextBox>
-                </StackPanel>
-                <Button Margin="5,0,0,0" d:Content="Ok" Content="{Binding ProfileNameButtonContent}" Command="{Binding ProfileNameSaveCommand}" Height="26" VerticalAlignment="Bottom" Cursor="Hand"/>
-                <StackPanel Margin="20,0,0,0" VerticalAlignment="Bottom">
                     <TextBlock Text="Driver" Foreground="White"/>
                     <ComboBox mah:TextBoxHelper.Watermark="Select driver..." ItemsSource="{Binding Drivers}" SelectedItem="{Binding Driver}" Width="200">
                         <ComboBox.Style>
@@ -253,7 +236,22 @@
                         </ComboBox.Style>
                     </ComboBox>
                 </StackPanel>
-                <StackPanel Margin="20,0,0,0" VerticalAlignment="Bottom">
+                <Button Margin="20,0,0,0" Content="Search Devices" Command="{Binding GetInterfaceITEthernetBoardInfoCommand}" mah:ControlsHelper.ContentCharacterCasing="Normal" VerticalAlignment="Bottom" Height="26" Width="100">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource MahApps.Styles.Button}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsStarted}" Value="True">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Driver}" Value="FDS E-Series">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <StackPanel Margin="20,0,0,0">
                     <TextBlock Text="Device" Foreground="White"/>
                     <ComboBox mah:TextBoxHelper.Watermark="Select device..." ItemsSource="{Binding DeviceCollection}" SelectedItem="{Binding Device}" DisplayMemberPath="Key" Width="200" ToolTip="{Binding Path=SelectedItem.Value, RelativeSource={RelativeSource Self}}">
                         <ComboBox.ItemContainerStyle>
@@ -275,12 +273,44 @@
                         </ComboBox.Style>
                     </ComboBox>
                 </StackPanel>
-                <StackPanel Margin="20,0,0,0" VerticalAlignment="Bottom">
+                <StackPanel Margin="20,0,0,0">
+                    <TextBlock Text="Profile name" Foreground="White"/>
+                    <TextBox Text="{Binding ProfileName}" Width="200" mah:TextBoxHelper.Watermark="Enter profile name...">
+                        <TextBox.Style>
+                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MahApps.Styles.TextBox}">
+                                <Setter Property="IsEnabled" Value="True"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ProfileNameButtonContent}" Value="Edit">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ProfileCreatorModel}" Value="{x:Null}">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+                </StackPanel>
+                <Button Margin="5,0,0,0" d:Content="Ok" Content="{Binding ProfileNameButtonContent}" Command="{Binding ProfileNameSaveCommand}" Height="26" VerticalAlignment="Bottom" Cursor="Hand">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource MahApps.Styles.Button}">
+                            <Setter Property="IsEnabled" Value="True"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ProfileCreatorModel}" Value="{x:Null}">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <StackPanel Margin="20,0,0,0">
                     <TextBlock Text="Event / Data Preselection" Foreground="White"/>
                     <ComboBox mah:TextBoxHelper.Watermark="Preselection..." ItemsSource="{Binding EventDataTypePreSelections}" SelectedItem="{Binding EventDataTypePreSelection}" Width="200"/>
                 </StackPanel>
             </StackPanel>
         </Grid>
+
+        <FrameworkElement x:Name="FrameWorkElementProxy" Visibility="Collapsed"/>
 
         <mah:MetroTabControl Margin="25,20,50,20" HorizontalContentAlignment="Left" Background="Transparent" Grid.Row="1" d:Visibility="Visible">
 
@@ -334,7 +364,7 @@
                                     <Style TargetType="DataGridCell" BasedOn="{StaticResource MahApps.Styles.DataGridCell}">
                                         <Setter Property="IsTabStop" Value="False"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.IsStarted}" Value="True">
+                                            <DataTrigger Binding="{Binding DataContext.IsStarted, Source={x:Reference Name=FrameWorkElementProxy}}" Value="True">
                                                 <Setter Property="IsHitTestVisible" Value="False"/>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -382,7 +412,7 @@
                                         <Setter Property="Background" Value="Transparent"/>
                                         <Setter Property="BorderThickness" Value="0"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.IsStarted}" Value="True">
+                                            <DataTrigger Binding="{Binding DataContext.IsStarted, Source={x:Reference Name=FrameWorkElementProxy}}" Value="True">
                                                 <Setter Property="IsHitTestVisible" Value="False"/>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -430,7 +460,7 @@
                                         <Setter Property="Background" Value="Transparent"/>
                                         <Setter Property="BorderThickness" Value="0"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.IsStarted}" Value="True">
+                                            <DataTrigger Binding="{Binding DataContext.IsStarted, Source={x:Reference Name=FrameWorkElementProxy}}" Value="True">
                                                 <Setter Property="IsHitTestVisible" Value="False"/>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -590,7 +620,7 @@
                                     <Style TargetType="DataGridCell" BasedOn="{StaticResource MahApps.Styles.DataGridCell}">
                                         <Setter Property="IsTabStop" Value="False"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.IsStarted}" Value="True">
+                                            <DataTrigger Binding="{Binding DataContext.IsStarted, Source={x:Reference Name=FrameWorkElementProxy}}" Value="True">
                                                 <Setter Property="IsHitTestVisible" Value="False"/>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -638,7 +668,7 @@
                                         <Setter Property="Background" Value="Transparent"/>
                                         <Setter Property="BorderThickness" Value="0"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.IsStarted}" Value="True">
+                                            <DataTrigger Binding="{Binding DataContext.IsStarted, Source={x:Reference Name=FrameWorkElementProxy}}" Value="True">
                                                 <Setter Property="IsHitTestVisible" Value="False"/>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -686,7 +716,7 @@
                                         <Setter Property="Background" Value="Transparent"/>
                                         <Setter Property="BorderThickness" Value="0"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.IsStarted}" Value="True">
+                                            <DataTrigger Binding="{Binding DataContext.IsStarted, Source={x:Reference Name=FrameWorkElementProxy}}" Value="True">
                                                 <Setter Property="IsHitTestVisible" Value="False"/>
                                             </DataTrigger>
                                         </Style.Triggers>

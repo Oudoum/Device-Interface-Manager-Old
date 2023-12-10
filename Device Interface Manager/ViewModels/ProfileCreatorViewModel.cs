@@ -2,6 +2,7 @@
 using System.IO;
 using System.Data;
 using System.Linq;
+using System.Threading;
 using System.Text.Json;
 using System.Collections;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ using Device_Interface_Manager.Devices.interfaceIT.USB;
 using MahApps.Metro.Controls.Dialogs;
 using GongSolutions.Wpf.DragDrop;
 using Device_Interface_Manager.Core;
+using Device_Interface_Manager.Devices.interfaceIT.ENET;
 
 namespace Device_Interface_Manager.ViewModels;
 public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, ICloseWindowsCheck
@@ -23,7 +25,7 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
 
     public Action Close { get; set; }
 
-    public MessageDialogResult CanCloseAsync()
+    public MessageDialogResult CanClose()
     {
         MessageDialogResult dialogResult = dialogCoordinator.ShowModalMessageExternal(this, "Close", "Are you sure you want to close the ProfileCreator? All unsaved changes will be lost!",
            MessageDialogStyle.AffirmativeAndNegative, new MetroDialogSettings
@@ -37,18 +39,21 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
         {
             if (IsStarted)
             {
-                _ = StartProfiles();
+                _ = StartProfilesAsync();
             }
-            foreach (var item in Devices)
+            foreach (var item in deviceList)
             {
                 InterfaceITAPI_Data.InterfaceITDisable(item);
             }
+            deviceList.CollectionChanged -= DeviceList_CollectionChanged;
         }
         return dialogResult;
     }
 
-    public ProfileCreatorViewModel(IDialogCoordinator dialogCoordinator)
+    public ProfileCreatorViewModel(IDialogCoordinator dialogCoordinator, ObservableCollection<InterfaceIT_BoardInfo.Device> devices)
     {
+        deviceList = devices;
+        deviceList.CollectionChanged += DeviceList_CollectionChanged;
         this.dialogCoordinator = dialogCoordinator;
     }
 
@@ -105,21 +110,49 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
     [ObservableProperty]
     private string _portName = "COM3";
 
+
     private void SetupDriver(string driver)
     {
         switch (driver)
         {
             case ProfileCreatorModel.FDSUSB:
-                foreach (var iitdevice in Devices)
+                foreach (var iitdevice in deviceList)
                 {
                     CreateDevice(iitdevice.BoardName, iitdevice.SerialNumber);
                 }
                 break;
 
+            case ProfileCreatorModel.FDSENET:
+                //Async RelayCommand
+                break;
+
             case ProfileCreatorModel.CPflightUSB:
-                CreateDevice(Device_Interface_Manager.Devices.CPflight.Device.MCP.DeviceName, PortName);
+                CreateDevice(Devices.CPflight.Device.MCP.DeviceName, PortName);
                 break;
         }
+    }
+
+    [RelayCommand]
+    private async Task<InterfaceITEthernetInfo> GetInterfaceITEthernetBoardInfoAsync()
+    {
+        InterfaceITEthernetDiscovery? discovery = await InterfaceITEthernet.ReceiveControllerDiscoveryDataAsync();
+        InterfaceITEthernetInfo interfaceITEthernetInfo = null;
+        if (discovery is not null)
+        {
+            CreateDevice(discovery.Value.Name, discovery.Value.IPAddress);
+            InterfaceITEthernet interfaceITEthernet = new(discovery.Value.IPAddress);
+            CancellationTokenSource tokenSource = new();
+            InterfaceITEthernet.ConnectionStatus connectionStatus = await interfaceITEthernet.InterfaceITEthernetConnectionAsync(tokenSource.Token);
+            if (connectionStatus == InterfaceITEthernet.ConnectionStatus.Connected)
+            {
+                interfaceITEthernetInfo = await interfaceITEthernet.GetInterfaceITEthernetDataAsync((ledNumber, direction) => { }, tokenSource.Token);
+                fullDevice = interfaceITEthernet;
+                ErrorText = $"{Driver} => {discovery.Value.Name} was found and has been added to the devices!";
+                return interfaceITEthernetInfo;
+            }
+        }
+        ErrorText = $"{Driver} => no devices were found!";
+        return interfaceITEthernetInfo;
     }
 
     private void CreateDevice(string name, string serial)
@@ -199,13 +232,16 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
         switch (Driver)
         {
             case ProfileCreatorModel.FDSUSB:
-                fullDevice = Devices.Where(s => s.SerialNumber == device.Value).FirstOrDefault();
+                fullDevice = deviceList.Where(s => s.SerialNumber == device.Value).FirstOrDefault();
+                break;
+
+            case ProfileCreatorModel.FDSENET:
                 break;
 
             case ProfileCreatorModel.CPflightUSB:
-                if (device.Key == Device_Interface_Manager.Devices.CPflight.Device.MCP.DeviceName)
+                if (device.Key == Devices.CPflight.Device.MCP.DeviceName)
                 {
-                    fullDevice = Device_Interface_Manager.Devices.CPflight.Device.MCP;
+                    fullDevice = Devices.CPflight.Device.MCP;
                 }
                 break;
         }
@@ -214,7 +250,12 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
 
     public ObservableCollection<KeyValuePair<string, string>> DeviceCollection { get; set; } = new();
 
-    public InterfaceIT_BoardInfo.Device[] Devices { get; set; }
+    private readonly ObservableCollection<InterfaceIT_BoardInfo.Device> deviceList;
+
+    private void DeviceList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        Driver = null;
+    }
 
     public object fullDevice;
 
@@ -251,7 +292,7 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
                 using (FileStream stream = File.OpenRead(dialog.FileName))
                 {
                     ProfileCreatorModel profileCreatorModel = await JsonSerializer.DeserializeAsync<ProfileCreatorModel>(stream);
-                    if (Devices.Any(s => s.BoardName == profileCreatorModel.DeviceName))
+                    if (deviceList.Any(s => s.BoardName == profileCreatorModel.DeviceName) || fullDevice is InterfaceITEthernet iitENET && iitENET.InterfaceITEthernetInfo.Name == profileCreatorModel.DeviceName)
                     {
                         Driver = profileCreatorModel.Driver;
                         ProfileCreatorModel = profileCreatorModel;
@@ -270,7 +311,7 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
                         return;
                     }
                 }
-                ErrorText = "could not be loaded, because no controller for this profile was found";
+                ErrorText = ProfileName + "could not be loaded, because no controller for this profile was found";
             }
             catch (Exception ex)
             {
@@ -313,7 +354,7 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
     {
         try
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(NewFilePath));
+            _ = Directory.CreateDirectory(Path.GetDirectoryName(NewFilePath));
             File.WriteAllText(NewFilePath, JsonSerializer.Serialize(ProfileCreatorModel, new JsonSerializerOptions { WriteIndented = true, DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull }));
             ErrorText = ProfileName + " successfully saved";
         }
@@ -324,7 +365,7 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
     }
 
     [RelayCommand]
-    private async Task SaveProfileAs()
+    private async Task SaveProfileAsAsync()
     {
         string inputDialogResult = await dialogCoordinator.ShowInputAsync(this, "Profile name", "Please enter your profile name.",
             new MetroDialogSettings
@@ -369,7 +410,7 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
     }
 
     [RelayCommand]
-    private async Task ClearProfile()
+    private async Task ClearProfileAsync()
     {
         if (ProfileCreatorModel is not null && MessageDialogResult.Affirmative == await dialogCoordinator
             .ShowMessageAsync(this, "Clear", "Are you sure you want to clear all inputs and outputs?",
@@ -398,7 +439,7 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
         ProfileCreatorModel?.OutputCreator.Add(new OutputCreator() { Id = Guid.NewGuid(), IsActive = true });
     }
 
-    private async Task<bool> ShowConfirmationDialog(string rowType)
+    private async Task<bool> ShowConfirmationDialogAsync(string rowType)
     {
         MessageDialogResult result = await dialogCoordinator.ShowMessageAsync(this, "Delete", $"Are you sure you want to delete the selected {rowType}?",
             MessageDialogStyle.AffirmativeAndNegative, new MetroDialogSettings
@@ -412,23 +453,23 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
     }
 
     [RelayCommand]
-    private async Task DeleteInputOutputCreatorRow(object creator)
+    private async Task DeleteInputOutputCreatorRowAsync(object creator)
     {
         if (creator is InputCreator inputCreator)
         {
-            if (!await ShowConfirmationDialog("input row"))
+            if (!await ShowConfirmationDialogAsync("input row"))
             {
                 return;
             }
-            ProfileCreatorModel.InputCreator.Remove(inputCreator);
+            _ = ProfileCreatorModel.InputCreator.Remove(inputCreator);
         }
         else if (creator is OutputCreator outputCreator)
         {
-            if (!await ShowConfirmationDialog("output row"))
+            if (!await ShowConfirmationDialogAsync("output row"))
             {
                 return;
             }
-            ProfileCreatorModel.OutputCreator.Remove(outputCreator);
+            _ = ProfileCreatorModel.OutputCreator.Remove(outputCreator);
         }
         else if (creator is IList selectedItems)
         {
@@ -439,25 +480,25 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
                 {
                     if (!isShown)
                     {
-                        if (!await ShowConfirmationDialog("input rows"))
+                        if (!await ShowConfirmationDialogAsync("input rows"))
                         {
                             return;
                         }
                     }
                     isShown = true;
-                    ProfileCreatorModel.InputCreator.Remove(input);
+                    _ = ProfileCreatorModel.InputCreator.Remove(input);
                 }
                 else if (item is OutputCreator output)
                 {
                     if (!isShown)
                     {
-                        if (!await ShowConfirmationDialog("output rows"))
+                        if (!await ShowConfirmationDialogAsync("output rows"))
                         {
                             return;
                         }
                     }
                     isShown = true;
-                    ProfileCreatorModel.OutputCreator.Remove(output);
+                    _ = ProfileCreatorModel.OutputCreator.Remove(output);
                 }
             }
         }
@@ -524,7 +565,7 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
 
             navigationService.NavigateToInputCreator(
                 inputCreator,
-                ProfileCreatorModel.OutputCreator.ToArray(),
+                ProfileCreatorModel.OutputCreator,
                 fullDevice);
         }
         else if (inputOutputCreator is OutputCreator outputCreator)
@@ -534,7 +575,7 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
 
             navigationService.NavigateToOutputCreator(
                 outputCreator,
-                ProfileCreatorModel.OutputCreator.ToArray(),
+                ProfileCreatorModel.OutputCreator,
                 fullDevice);
         }
     }
@@ -543,20 +584,26 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
     private bool _isStarted;
 
     [RelayCommand]
-    private async Task StartProfiles()
+    private async Task StartProfilesAsync()
     {
-        if (Driver == ProfileCreatorModel.FDSUSB)
+        switch (Driver)
         {
-            IsStarted = !IsStarted;
-            if (IsStarted)
-            {
-                await Profiles.Instance.StartAsync(ProfileCreatorModel, Devices.FirstOrDefault(k => k.SerialNumber == Device.Value));
-                ErrorText = ProfileCreatorModel.ProfileName + " started";
-                return;
-            }
-            Profiles.Instance.Stop();
+            case ProfileCreatorModel.FDSUSB when !IsStarted:
+                await Profiles.Instance.StartAsync(ProfileCreatorModel, deviceList.FirstOrDefault(k => k.SerialNumber == Device.Value));
+                break;
+
+            case ProfileCreatorModel.FDSUSB when IsStarted:
+                Profiles.Instance.Stop();
+                break;
         }
-        ErrorText = ProfileCreatorModel.ProfileName + " stopped";
+
+        IsStarted = !IsStarted;
+        if (!IsStarted)
+        { 
+            ErrorText = ProfileCreatorModel.ProfileName + " stopped";
+            return;
+        }
+        ErrorText = ProfileCreatorModel.ProfileName + " started";
     }
 
     public void DragOver(IDropInfo dropInfo)
@@ -573,7 +620,7 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
         if (dropInfo.Data is InputCreator)
         {
             InputCreator item = (InputCreator)dropInfo.Data;
-            ProfileCreatorModel.InputCreator.Remove(item);
+            _ = ProfileCreatorModel.InputCreator.Remove(item);
             if (dropInfo.InsertIndex >= 0 && dropInfo.InsertIndex <= ProfileCreatorModel.InputCreator.Count)
             {
                 ProfileCreatorModel.InputCreator.Insert(dropInfo.InsertIndex, item);
@@ -583,7 +630,7 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
         }
         else if (dropInfo.Data is OutputCreator item)
         {
-            ProfileCreatorModel.OutputCreator.Remove(item);
+            _ = ProfileCreatorModel.OutputCreator.Remove(item);
             if (dropInfo.InsertIndex >= 0 && dropInfo.InsertIndex <= ProfileCreatorModel.OutputCreator.Count)
             {
                 ProfileCreatorModel.OutputCreator.Insert(dropInfo.InsertIndex, item);

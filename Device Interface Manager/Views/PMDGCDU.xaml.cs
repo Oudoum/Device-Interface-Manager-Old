@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Threading.Tasks;
 using static Device_Interface_Manager.SimConnectProfiles.PMDG.PMDG_CDU_SDK;
 
 namespace Device_Interface_Manager.Views
@@ -21,7 +22,6 @@ namespace Device_Interface_Manager.Views
         private SolidColorBrush Gray { get; set; } = new SolidColorBrush(Colors.Gray);
 
         private SolidColorBrush White { get; set; } = new(Colors.White);
-        private SolidColorBrush Monochrome { get; set; } = new(Colors.Green);
         private SolidColorBrush Cyan { get; set; } = new(Colors.Cyan);
         private SolidColorBrush Green { get; set; } = new(Color.FromRgb(0x10, 0xEF, 0x22));
         private SolidColorBrush Magenta { get; set; } = new(Colors.Magenta);
@@ -217,9 +217,9 @@ namespace Device_Interface_Manager.Views
             }
         }
 
-        public async void ClearPMDGCDUCells()
+        public async Task ClearPMDGCDUCellsAsync()
         {
-            await System.Threading.Tasks.Task.Delay(500);
+            await Task.Delay(500);
             Dispatcher.Invoke(delegate ()
             {
                 foreach (Border br in CDUGrid.Children.OfType<Border>())

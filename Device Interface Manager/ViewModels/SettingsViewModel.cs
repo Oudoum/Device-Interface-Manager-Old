@@ -7,7 +7,6 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Device_Interface_Manager.Models;
 using Microsoft.Extensions.Logging;
-using Device_Interface_Manager.SimConnectProfiles;
 
 namespace Device_Interface_Manager.ViewModels;
 
@@ -135,7 +134,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task InstallUpdateDIMWASModule()
+    private async Task InstallUpdateDIMWASModuleAsync()
     {
         logger.LogInformation("InstallUpdateDIMWASModule started");
         WasmModuleUpdater wasmModuleUpdater = new();
@@ -145,7 +144,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task CheckSimConnectConnection()
+    private async Task CheckSimConnectConnectionAsync()
     {
         if (!await PingHostAsync())
         {

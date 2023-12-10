@@ -4,10 +4,11 @@ using System.Windows.Controls;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
-using Device_Interface_Manager.Devices.interfaceIT.USB;
-using Device_Interface_Manager.Models;
-using Device_Interface_Manager.SimConnectProfiles.PMDG;
 using MahApps.Metro.Controls.Dialogs;
+using Device_Interface_Manager.Models;
+using Device_Interface_Manager.Devices.interfaceIT.USB;
+using Device_Interface_Manager.Devices.interfaceIT.ENET;
+using Device_Interface_Manager.SimConnectProfiles.PMDG;
 using static Device_Interface_Manager.Models.OutputCreatorModel;
 
 namespace Device_Interface_Manager.ViewModels;
@@ -35,6 +36,14 @@ public partial class OutputCreatorViewModel : BaseCreatorViewModel
                     string position = i.ToString();
                     SevenSegments.Add(position, position);
                 }
+            }
+        }
+        else if (device is InterfaceITEthernet iitENETdevice && iitENETdevice.InterfaceITEthernetInfo.Boards.Count == 1)
+        {
+            for (int i = iitENETdevice.InterfaceITEthernetInfo.Boards[0].LedsConfig.StartIndex; i <= iitENETdevice.InterfaceITEthernetInfo.Boards[0].LedsConfig.StopIndex; i++)
+            {
+                string position = i.ToString();
+                LEDs.Add(position, position);
             }
         }
         else if (device is Devices.CPflight.Device cpflightdevice)
@@ -407,7 +416,7 @@ public partial class OutputCreatorViewModel : BaseCreatorViewModel
         set => OutputCreatorModel.SubstringEnd = value;
     }
 
-    public override OutputCreator[] OutputCreator
+    public override ObservableCollection<OutputCreator> OutputCreator
     {
         get => OutputCreatorModel.OutputCreator;
         set => OutputCreatorModel.OutputCreator = value;
@@ -425,10 +434,11 @@ public partial class OutputCreatorViewModel : BaseCreatorViewModel
     {
         if (outputPosition != value)
         {
-            if (outputPosition is not null)
+            if (!string.IsNullOrEmpty(outputPosition))
             {
                 switch (OutputType)
                 {
+                    //FDS USB
                     case ProfileCreatorModel.LED when Device is InterfaceIT_BoardInfo.Device iitdevice:
                         InterfaceITAPI_Data.interfaceIT_LED_Set(iitdevice.Session, Convert.ToInt32(outputPosition), false);
                         break;
@@ -440,12 +450,18 @@ public partial class OutputCreatorViewModel : BaseCreatorViewModel
                     case ProfileCreatorModel.SEVENSEGMENT when Device is InterfaceIT_BoardInfo.Device iitdevice:
                         InterfaceITAPI_Data.interfaceIT_7Segment_Display(iitdevice.Session, " ", Convert.ToInt32(outputPosition));
                         break;
+
+                    //FDS E-Series
+                    case ProfileCreatorModel.LED when Device is InterfaceITEthernet iitENETdevice:
+                        iitENETdevice.SendinterfaceITEthernetLED(Convert.ToInt32(outputPosition), false);
+                        break;
                 }
             }
-            if (value is not null)
+            if (!string.IsNullOrEmpty(value))
             {
                 switch (OutputType)
                 {
+                    //FDS USB
                     case ProfileCreatorModel.LED when Device is InterfaceIT_BoardInfo.Device iitdevice:
                         InterfaceITAPI_Data.interfaceIT_LED_Set(iitdevice.Session, Convert.ToInt32(value), true);
                         break;
@@ -456,6 +472,11 @@ public partial class OutputCreatorViewModel : BaseCreatorViewModel
 
                     case ProfileCreatorModel.SEVENSEGMENT when Device is InterfaceIT_BoardInfo.Device iitdevice:
                         InterfaceITAPI_Data.interfaceIT_7Segment_Display(iitdevice.Session, "8", Convert.ToInt32(value));
+                        break;
+
+                    //FDS E-Series
+                    case ProfileCreatorModel.LED when Device is InterfaceITEthernet iitENETdevice:
+                        iitENETdevice.SendinterfaceITEthernetLED(Convert.ToInt32(value), true);
                         break;
                 }
             }
@@ -468,7 +489,14 @@ public partial class OutputCreatorViewModel : BaseCreatorViewModel
     {
         if (e.OriginalSource is TextBlock textBlock)
         {
-            SetOutputPosition(((KeyValuePair<string, string>)textBlock.DataContext).Key);
+            try
+            {
+                SetOutputPosition(((KeyValuePair<string, string>)textBlock.DataContext).Key);
+            }
+            catch (Exception)
+            {
+
+            }
             return;
         }
         else if (e.OriginalSource is Grid grid)
@@ -491,10 +519,10 @@ public partial class OutputCreatorViewModel : BaseCreatorViewModel
         }
     }
 
-    public override MessageDialogResult CanCloseAsync()
+    public override MessageDialogResult CanClose()
     {
         DigitFormatting.SumDecimalPointCheckedChanged -= DigitFormatting_SumDecimalPointCheckedChanged;
         DigitFormatting.SumDigitCheckedChanged -= DigitFormatting_SumDigitCheckedChanged;
-        return base.CanCloseAsync();
+        return base.CanClose();
     }
 }

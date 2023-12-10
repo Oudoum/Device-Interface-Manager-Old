@@ -18,7 +18,7 @@ public partial class OutputCreatorView : MetroWindow
             vm.Close += Close;
             Closing += (s, e) =>
             {
-                if (vm.CanCloseAsync() == MessageDialogResult.Negative)
+                if (vm.CanClose() == MessageDialogResult.Negative)
                 {
                     e.Cancel = true;
                 }

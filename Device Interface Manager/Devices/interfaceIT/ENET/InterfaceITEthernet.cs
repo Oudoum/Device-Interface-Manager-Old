@@ -1,50 +1,51 @@
-﻿using System;
-using System.Text;
-using System.Windows;
-using System.Threading;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Net.Sockets;
 using System.Net.NetworkInformation;
-using System.Collections.Generic;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
+using System.Windows;
 
 namespace Device_Interface_Manager.Devices.interfaceIT.ENET;
 
-public class InterfaceITEthernet : ObservableObject
+public class InterfaceITEthernet
 {
     private TcpClient client;
     private NetworkStream stream;
 
-    //private const string FDS_737_PRO_MX_MCP_E = "0E04";
-    //private const string FDS_A320_CDU_E = "0E09";
-    //private const string FDS_737_CDU_E = "0E08";
-    //private const string IIT_E_HIO_128_256_6 = "0E07";
-    //private const string IIT_E_HIO_64_128_3 = "0E06";
-    //private const string IIT_OEM_128_128_3_E = "0E0A";
-    //private const string IIT_OEM_128_256_6_E = "0E05";
-    //private const string IIT_OEM_256_256X_6_E = "0E0B";
-
     public string HostIPAddress { get; set; }
     public int TCPPort { get; set; } = 10346;
     public InterfaceITEthernetInfo InterfaceITEthernetInfo { get; set; }
-    public ObservableCollection<string> InterfaceITEthernetInfoText { get; set; }
+    public bool IsPolling { get; set; }
 
     public InterfaceITEthernet(string iPAddress)
     {
         HostIPAddress = iPAddress;
     }
 
-    public static async Task<string[]> ReceiveControllerDiscoveryData()
+    public static async Task<InterfaceITEthernetDiscovery?> ReceiveControllerDiscoveryDataAsync()
     {
         UdpClient client = new() { EnableBroadcast = true };
         client.Send(Encoding.ASCII.GetBytes("D"), new IPEndPoint(IPAddress.Broadcast, 30303));
         try
         {
             UdpReceiveResult result = await client.ReceiveAsync().WaitAsync(TimeSpan.FromSeconds(1));
-            return new string[] { Encoding.ASCII.GetString(result.Buffer).Split("\r\n")[5], result.RemoteEndPoint.Address.ToString() };
+            string[] sResult = Encoding.ASCII.GetString(result.Buffer).Split("\r\n");
+            InterfaceITEthernetDiscovery discovery = new()
+            {
+                IPAddress = result.RemoteEndPoint.Address.ToString(),
+                HostName = sResult[0],
+                MACAddress = sResult[1],
+                Message = sResult[2],
+                Id = sResult[3],
+                Name = sResult[4],
+                Description = sResult[5]
+            };
+            return discovery;
         }
         catch (Exception)
         {
@@ -164,7 +165,7 @@ public class InterfaceITEthernet : ObservableObject
                             }
                             else if (isInitializing && !isSwitchIdentifying)
                             {
-                                GetInterfaceITEthernetInfo(ethernetData);
+                                GetInterfaceITEthernetInfoData(ethernetData);
                             }
                             break;
                     }
@@ -175,7 +176,7 @@ public class InterfaceITEthernet : ObservableObject
         return await tcs.Task;
     }
 
-    private static void ProcessSwitchData(Action<int, uint> interfacITKeyAction, string ethernetData)
+    private void ProcessSwitchData(Action<int, uint> interfacITKeyAction, string ethernetData)
     {
         if (ethernetData.StartsWith("B1="))
         {
@@ -188,12 +189,33 @@ public class InterfaceITEthernet : ObservableObject
                     direction = 1;
                 }
                 interfacITKeyAction(ledNumber, direction);
+
+                if (IsPolling)
+                {
+                    polling.Push(new(ledNumber, direction));
+                }
             }
         }
         File.AppendAllText("Log.txt", ethernetData + Environment.NewLine);
     }
 
-    private void GetInterfaceITEthernetInfo(string ethernetData)
+    private readonly Stack<KeyValuePair<int, uint>> polling = new();
+
+    public bool GetSwitch(out int ledNumber, out uint direction)
+    {
+        ledNumber = 0;
+        direction = 0;
+        if (polling.Count == 0)
+        {
+            return false;
+        }
+        KeyValuePair<int, uint> keyValuePair = polling.Pop();
+        ledNumber = keyValuePair.Key;
+        direction = keyValuePair.Value;
+        return true;
+    }
+
+    private void GetInterfaceITEthernetInfoData(string ethernetData)
     {
         int index = ethernetData.IndexOf('=');
         if (index < 0)
@@ -402,6 +424,17 @@ public class InterfaceITEthernet : ObservableObject
             }
         }
     }
+}
+
+public readonly struct InterfaceITEthernetDiscovery
+{
+    public string HostName { get; init; }
+    public string MACAddress { get; init; }
+    public string IPAddress { get; init; }
+    public string Message { get; init; }
+    public string Id { get; init; }
+    public string Name { get; init; }
+    public string Description { get; init; }
 }
 
 public class InterfaceITEthernetInfo
