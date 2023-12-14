@@ -110,9 +110,9 @@
     <Resource Include="Assets\Fonts\PMDG_NG3_DU_C.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Devices\COM\Arduino\Arduino Mega 2560 Firmware\Mega2560\Mega2560.ino">
+    <Content Include="Devices\COM\Arduino\Arduino Mega 2560 Firmware\Mega2560\Mega2560.ino">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
