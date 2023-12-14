@@ -1,12 +1,13 @@
-﻿using System.Linq;
+﻿using CommunityToolkit.Mvvm.Input;
+using Device_Interface_Manager.Devices.interfaceIT.ENET;
+using Device_Interface_Manager.Devices.interfaceIT.USB;
+using Device_Interface_Manager.Models;
+using Device_Interface_Manager.SimConnectProfiles.PMDG;
+using MahApps.Metro.Controls.Dialogs;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.Input;
-using MahApps.Metro.Controls.Dialogs;
-using Device_Interface_Manager.Models;
-using Device_Interface_Manager.Devices.interfaceIT.USB;
-using Device_Interface_Manager.Devices.interfaceIT.ENET;
-using Device_Interface_Manager.SimConnectProfiles.PMDG;
+using System.Linq;
 
 namespace Device_Interface_Manager.ViewModels;
 public partial class InputCreatorViewModel : BaseCreatorViewModel
@@ -31,6 +32,14 @@ public partial class InputCreatorViewModel : BaseCreatorViewModel
                 Inputs.Add(position, position);
             }
             iitENETdevice.IsPolling = true;
+        }
+        else if (device is Tuple<uint, uint> arduinoDevice)
+        {
+            for (uint i = arduinoDevice.Item1; i <= arduinoDevice.Item2; i++)
+            {
+                string position = i.ToString();
+                Inputs.Add(position, position);
+            }
         }
         else if (device is Devices.CPflight.Device cpflightdevice)
         {

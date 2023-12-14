@@ -1,13 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Dynamic;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
+﻿using Device_Interface_Manager.Devices.interfaceIT.USB;
 using Device_Interface_Manager.Models;
-using Device_Interface_Manager.Devices.interfaceIT.USB;
 using Device_Interface_Manager.SimConnectProfiles.PMDG;
+using DynamicData;
+using System;
+using System.Collections.Generic;
+using System.Dynamic;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace Device_Interface_Manager.SimConnectProfiles;
 public class Profiles
@@ -39,7 +40,9 @@ public class Profiles
     public void Stop()
     {
         fDS_USB_Drivers?.ForEach(d => d.Close());
+        arduino_Drivers?.ForEach(d => d.Close());
         fDS_USB_Drivers?.Clear();
+        arduino_Drivers?.Clear();
         simConnectStarted = false;
         initialized = false;
         WatchedFields.Clear();
@@ -47,15 +50,27 @@ public class Profiles
     }
 
     private List<ProfileCreatorBase<InterfaceIT_BoardInfo.Device>> fDS_USB_Drivers;
+    private List<ProfileCreatorBase<string>> arduino_Drivers;
+
+    public async Task StartAsync(ProfileCreatorModel profileCreatorModel, string port)
+    {
+        if (profileCreatorModel.Driver == ProfileCreatorModel.Arduino && !string.IsNullOrEmpty(port))
+        {
+            arduino_Drivers ??= new();
+            ProfileCreatorArduino profileCreatorArduino = new()
+            {
+                ProfileCreatorModel = profileCreatorModel
+            };
+            await profileCreatorArduino.StartAsync(port);
+            arduino_Drivers.Add(profileCreatorArduino);
+
+            Init(profileCreatorModel);
+        }
+    }
 
     public async Task StartAsync(ProfileCreatorModel profileCreatorModel, InterfaceIT_BoardInfo.Device device)
-   {
-        if (device is null)
-        {
-            return;
-        }
-
-        if (profileCreatorModel.Driver == ProfileCreatorModel.FDSUSB)
+    {
+        if (profileCreatorModel.Driver == ProfileCreatorModel.FDSUSB && device is not null)
         {
             fDS_USB_Drivers ??= new();
             ProfileCreator_FDS_USB fDS_USB_Driver = new()
@@ -65,8 +80,13 @@ public class Profiles
             await fDS_USB_Driver.StartAsync(device);
             fDS_USB_Driver.Start();
             fDS_USB_Drivers.Add(fDS_USB_Driver);
-        }
 
+            Init(profileCreatorModel);
+        }
+    }
+
+    private void Init(ProfileCreatorModel profileCreatorModel)
+    {
         foreach (var output in profileCreatorModel.OutputCreator)
         {
             if (output.DataType == ProfileCreatorModel.PMDG737 && output.IsActive)
@@ -86,13 +106,14 @@ public class Profiles
                 }
             }
         }
-        
+
         if (!simConnectStarted)
         {
             SimConnectClient.Instance.SimConnectMSFS.OnRecvClientData += SimConnect_OnRecvClientData;
             simConnectStarted = true;
         }
     }
+
 
     public static string ConvertDataToPMDGDataFieldName(OutputCreator ouput)
     {

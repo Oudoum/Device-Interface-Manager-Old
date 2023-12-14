@@ -1,5 +1,3 @@
-#include <ArduinoUniqueID.h>
-
 const int numPins = 54;
 int lastButtonState[numPins];
 bool serialInit = false;
@@ -9,7 +7,6 @@ void setup() {
     pinMode(i, INPUT_PULLUP);
   }
   Serial.begin(9600);
-  UniqueIDdump(Serial)
 }
 
 void loop() {

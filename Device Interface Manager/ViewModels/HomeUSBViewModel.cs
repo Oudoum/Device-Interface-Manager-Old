@@ -1,16 +1,16 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using Device_Interface_Manager.Devices.interfaceIT.USB;
+using Device_Interface_Manager.Models;
+using Device_Interface_Manager.SimConnectProfiles;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using Microsoft.Extensions.Logging;
-using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.ComponentModel;
-using Device_Interface_Manager.Devices.interfaceIT.USB;
-using Device_Interface_Manager.SimConnectProfiles;
-using Device_Interface_Manager.Models;
 using static Device_Interface_Manager.Models.HomeUSBModel;
 
 namespace Device_Interface_Manager.ViewModels;
@@ -46,25 +46,25 @@ public partial class HomeUSBViewModel : ObservableObject
         profileActions = new()
         {
             { "-- None --", null },
-            { "Fenix A320 Left MCDU", StartUSBProfile<SimConnectProfiles.FENIX.A320.USB.MCDU_L> },
-            { "Fenix A320 Right MCDU", StartUSBProfile<SimConnectProfiles.FENIX.A320.USB.MCDU_R> },
-            { "FBW A32NX Left MCDU", StartUSBProfile<SimConnectProfiles.FBW.A32NX.USB.MCDU_L> },
-            { "FBW A32NX Right MCDU", StartUSBProfile<SimConnectProfiles.FBW.A32NX.USB.MCDU_R> },
-            { "PMDG 737NG Left CDU", StartUSBProfile<SimConnectProfiles.PMDG.B737.USB.NG_CDU_L> },
-            { "PMDG 737NG Right CDU", StartUSBProfile<SimConnectProfiles.PMDG.B737.USB.NG_CDU_R> },
-            { "PMDG 737NG MCP (330F | 3311)", StartUSBProfile<SimConnectProfiles.PMDG.B737.USB.NG_MCP_3311> },
-            { "PMDG 737NG MCP (3327)", StartUSBProfile<SimConnectProfiles.PMDG.B737.USB.NG_MCP_3327> },
-            { "PMDG 737NG MCP (330A | 332C)", StartUSBProfile<SimConnectProfiles.PMDG.B737.USB.NG_MCP_330A_332C> },
-            { "PMDG 737NG EFIS L (330B | 332D)", StartUSBProfile<SimConnectProfiles.PMDG.B737.USB.NG_EFIS_L_330B_332D> },
-            { "PMDG 737NG EFIS R (330C | 332E)", StartUSBProfile<SimConnectProfiles.PMDG.B737.USB.NG_EFIS_R_330C_332E> },
+            { "Fenix A320 Left MCDU", StartUSBProfileAsync<SimConnectProfiles.FENIX.A320.USB.MCDU_L> },
+            { "Fenix A320 Right MCDU", StartUSBProfileAsync<SimConnectProfiles.FENIX.A320.USB.MCDU_R> },
+            { "FBW A32NX Left MCDU", StartUSBProfileAsync<SimConnectProfiles.FBW.A32NX.USB.MCDU_L> },
+            { "FBW A32NX Right MCDU", StartUSBProfileAsync<SimConnectProfiles.FBW.A32NX.USB.MCDU_R> },
+            { "PMDG 737NG Left CDU", StartUSBProfileAsync<SimConnectProfiles.PMDG.B737.USB.NG_CDU_L> },
+            { "PMDG 737NG Right CDU", StartUSBProfileAsync<SimConnectProfiles.PMDG.B737.USB.NG_CDU_R> },
+            { "PMDG 737NG MCP (330F | 3311)", StartUSBProfileAsync<SimConnectProfiles.PMDG.B737.USB.NG_MCP_3311> },
+            { "PMDG 737NG MCP (3327)", StartUSBProfileAsync<SimConnectProfiles.PMDG.B737.USB.NG_MCP_3327> },
+            { "PMDG 737NG MCP (330A | 332C)", StartUSBProfileAsync<SimConnectProfiles.PMDG.B737.USB.NG_MCP_330A_332C> },
+            { "PMDG 737NG EFIS L (330B | 332D)", StartUSBProfileAsync<SimConnectProfiles.PMDG.B737.USB.NG_EFIS_L_330B_332D> },
+            { "PMDG 737NG EFIS R (330C | 332E)", StartUSBProfileAsync<SimConnectProfiles.PMDG.B737.USB.NG_EFIS_R_330C_332E> },
             //{ "Asobo 747-8I Left CDU", StartUSBProfile<SimConnectProfiles.Asobo.B747.USB.CDU_L>},
             //{ "Asobo 747-8I Right CDU", StartUSBProfile<SimConnectProfiles.Asobo.B747.USB.CDU_R>},
-            { "[P3D] PMDG 747 Left CDU", StartUSBProfile<SimConnectProfiles.PMDG.B747.USB.B747_CDU_L> },
-            { "[P3D] PMDG 747 Right CDU", StartUSBProfile<SimConnectProfiles.PMDG.B747.USB.B747_CDU_R> },
-            { "[P3D] PMDG 747 Center CDU", StartUSBProfile<SimConnectProfiles.PMDG.B747.USB.B747_CDU_C> },
-            { "[P3D] PMDG 747 MCP (330A)", StartUSBProfile<SimConnectProfiles.PMDG.B747.USB.B747_MCP_330A> },
-            { "[P3D] PMDG 747 EFIS L (330B)", StartUSBProfile<SimConnectProfiles.PMDG.B747.USB.B747_EFIS_L_330B> },
-            { "[P3D] PMDG 747 EFIS R (330C)", StartUSBProfile<SimConnectProfiles.PMDG.B747.USB.B747_EFIS_R_330C> },
+            { "[P3D] PMDG 747 Left CDU", StartUSBProfileAsync<SimConnectProfiles.PMDG.B747.USB.B747_CDU_L> },
+            { "[P3D] PMDG 747 Right CDU", StartUSBProfileAsync<SimConnectProfiles.PMDG.B747.USB.B747_CDU_R> },
+            { "[P3D] PMDG 747 Center CDU", StartUSBProfileAsync<SimConnectProfiles.PMDG.B747.USB.B747_CDU_C> },
+            { "[P3D] PMDG 747 MCP (330A)", StartUSBProfileAsync<SimConnectProfiles.PMDG.B747.USB.B747_MCP_330A> },
+            { "[P3D] PMDG 747 EFIS L (330B)", StartUSBProfileAsync<SimConnectProfiles.PMDG.B747.USB.B747_EFIS_L_330B> },
+            { "[P3D] PMDG 747 EFIS R (330C)", StartUSBProfileAsync<SimConnectProfiles.PMDG.B747.USB.B747_EFIS_R_330C> },
             //{ "[P3D] PMDG 777 Left CDU", StartUSBProfile<SimConnectProfiles.PMDG.B777.USB.B777_CDU_L> },
             //{ "[P3D] PMDG 777 Right CDU", StartUSBProfile<SimConnectProfiles.PMDG.B777.USB.B777_CDU_R> },
             //{ "[P3D] PMDG 777 Center CDU", StartUSBProfile<SimConnectProfiles.PMDG.B777.USB.B777_CDU_C> },
@@ -94,7 +94,7 @@ public partial class HomeUSBViewModel : ObservableObject
 
         if (Properties.Settings.Default.AutoHide && Connections.Count > 0)
         {
-            _ = StartUSB();
+            _ = StartUSBAsync();
         }
     }
 
@@ -121,15 +121,18 @@ public partial class HomeUSBViewModel : ObservableObject
 
         foreach (var item in profileCreatorModels)
         {
-            if (item.Driver == ProfileCreatorModel.FDSUSB)
+            string profileKey = '#' + item.ProfileName;
+            profileKeys.Add(profileKey);
+            if (!profileActions.ContainsKey(profileKey))
             {
-                string profileKey = '#' + item.ProfileName;
-                profileKeys.Add(profileKey);
-                if (profileActions.ContainsKey(profileKey))
+                if (item.Driver == ProfileCreatorModel.FDSUSB)
                 {
-                    continue;
+                    profileActions.Add(profileKey, StartUSBCustomProfileAsync);
                 }
-                profileActions.Add(profileKey, StartUSBCustomProfile);
+                if (item.Driver == ProfileCreatorModel.Arduino)
+                {
+                    profileActions.Add(profileKey, StartArduinoCustomProfileAsync);
+                }
                 Profiles.Add(profileKey);
             }
         }
@@ -191,14 +194,14 @@ public partial class HomeUSBViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task StartUSB()
+    private async Task StartUSBAsync()
     {
         if (!(IsUSBEnabled = !IsUSBEnabled))
         {
             SaveUSBConnections();
             foreach (var connection in Connections)
             {
-                await StartUSBProfiles(connection);
+                await StartUSBProfilesAsync(connection);
             }
             return;
         }
@@ -209,23 +212,28 @@ public partial class HomeUSBViewModel : ObservableObject
     {
         USBList.ForEach(o => o.Close());
         USBList.Clear();
-        Device_Interface_Manager.SimConnectProfiles.Profiles.Instance.Stop();
+        SimConnectProfiles.Profiles.Instance.Stop();
         IsUSBEnabled = true;
     }
 
-    private async Task StartUSBProfile<T>(Connection connection) where T : USB, new()
+    private async Task StartUSBProfileAsync<T>(Connection connection) where T : USB, new()
     {
         T profile = new();
         USBList.Add(profile);
         await Task.Run(() => profile.StartAsync(Devices.FirstOrDefault(o => o.SerialNumber == connection.Serial)));
     }
 
-    private async Task StartUSBCustomProfile(Connection connection)
+    private async Task StartUSBCustomProfileAsync(Connection connection)
     {
-        await Task.Run(() => Device_Interface_Manager.SimConnectProfiles.Profiles.Instance.StartAsync(profileCreatorModels.FirstOrDefault(s => '#' + s.ProfileName == connection.SelectedProfile), Devices.FirstOrDefault(o => o.SerialNumber == connection.Serial)));
+        await Task.Run(() => SimConnectProfiles.Profiles.Instance.StartAsync(profileCreatorModels.FirstOrDefault(s => '#' + s.ProfileName == connection.SelectedProfile), Devices.FirstOrDefault(o => o.SerialNumber == connection.Serial)));
     }
 
-    private async Task StartUSBProfiles(Connection connection)
+    private async Task StartArduinoCustomProfileAsync(Connection connection)
+    {
+        await Task.Run(() => SimConnectProfiles.Profiles.Instance.StartAsync(profileCreatorModels.FirstOrDefault(s => '#' + s.ProfileName == connection.SelectedProfile), connection.Serial));
+    }
+
+    private async Task StartUSBProfilesAsync(Connection connection)
     {
         if (connection.SelectedProfile is null)
         {
@@ -234,7 +242,7 @@ public partial class HomeUSBViewModel : ObservableObject
             return;
         }
 
-        else if (connection.Serial.Length != 12 || connection.Serial == "SERIALNUMBER")
+        else if ((connection.Serial.Length != 12 || connection.Serial == "SERIALNUMBER") && !connection.Serial.StartsWith("COM"))
         {
             System.Windows.MessageBox.Show("Please Drag & Drop or enter the serial number for: " + connection.Name);
             StopUSB();

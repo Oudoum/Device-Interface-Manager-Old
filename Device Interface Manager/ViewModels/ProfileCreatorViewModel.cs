@@ -1,22 +1,22 @@
-﻿using System;
-using System.IO;
-using System.Data;
-using System.Linq;
-using System.Threading;
-using System.Text.Json;
-using System.Collections;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.ComponentModel;
-using Device_Interface_Manager.Models;
-using Device_Interface_Manager.SimConnectProfiles;
-using Device_Interface_Manager.Devices.interfaceIT.USB;
-using MahApps.Metro.Controls.Dialogs;
-using GongSolutions.Wpf.DragDrop;
 using Device_Interface_Manager.Core;
 using Device_Interface_Manager.Devices.interfaceIT.ENET;
+using Device_Interface_Manager.Devices.interfaceIT.USB;
+using Device_Interface_Manager.Models;
+using Device_Interface_Manager.SimConnectProfiles;
+using GongSolutions.Wpf.DragDrop;
+using MahApps.Metro.Controls.Dialogs;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Device_Interface_Manager.ViewModels;
 public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, ICloseWindowsCheck
@@ -124,6 +124,10 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
 
             case ProfileCreatorModel.FDSENET:
                 //Async RelayCommand
+                break;
+
+                case ProfileCreatorModel.Arduino:
+                CreateDevice("Arduino Mega 2560", PortName);
                 break;
 
             case ProfileCreatorModel.CPflightUSB:
@@ -238,6 +242,10 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
             case ProfileCreatorModel.FDSENET:
                 break;
 
+            case ProfileCreatorModel.Arduino:
+                fullDevice = ProfileCreatorArduino.IOStartStop;
+                break;
+
             case ProfileCreatorModel.CPflightUSB:
                 if (device.Key == Devices.CPflight.Device.MCP.DeviceName)
                 {
@@ -292,7 +300,11 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
                 using (FileStream stream = File.OpenRead(dialog.FileName))
                 {
                     ProfileCreatorModel profileCreatorModel = await JsonSerializer.DeserializeAsync<ProfileCreatorModel>(stream);
-                    if (deviceList.Any(s => s.BoardName == profileCreatorModel.DeviceName) || fullDevice is InterfaceITEthernet iitENET && iitENET.InterfaceITEthernetInfo.Name == profileCreatorModel.DeviceName)
+                    if (deviceList.Any(s => s.BoardName == profileCreatorModel.DeviceName) ||
+                        fullDevice is InterfaceITEthernet iitENET && iitENET.InterfaceITEthernetInfo.Name == profileCreatorModel.DeviceName ||
+                        profileCreatorModel.Driver == ProfileCreatorModel.Arduino ||
+                        profileCreatorModel.Driver == ProfileCreatorModel.CPflightUSB
+                        )
                     {
                         Driver = profileCreatorModel.Driver;
                         ProfileCreatorModel = profileCreatorModel;
@@ -592,7 +604,11 @@ public partial class ProfileCreatorViewModel : ObservableObject, IDropTarget, IC
                 await Profiles.Instance.StartAsync(ProfileCreatorModel, deviceList.FirstOrDefault(k => k.SerialNumber == Device.Value));
                 break;
 
-            case ProfileCreatorModel.FDSUSB when IsStarted:
+            case ProfileCreatorModel.Arduino when !IsStarted:
+                await Profiles.Instance.StartAsync(ProfileCreatorModel, PortName);
+                break;
+
+            default:
                 Profiles.Instance.Stop();
                 break;
         }

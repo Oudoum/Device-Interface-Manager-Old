@@ -13,6 +13,7 @@ using Device_Interface_Manager.Core;
 using static Device_Interface_Manager.Devices.interfaceIT.USB.InterfaceITAPI_Data;
 using Device_Interface_Manager.SimConnectProfiles;
 using MahApps.Metro.Controls.Dialogs;
+using Device_Interface_Manager.Devices.COM;
 
 namespace Device_Interface_Manager.ViewModels;
 

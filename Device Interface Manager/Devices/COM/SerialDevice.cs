@@ -1,9 +1,12 @@
-﻿using Device_Interface_Manager.Models;
+﻿using DevDecoder.HIDDevices.Converters;
+using Device_Interface_Manager.Models;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
 using System.Text.Json;
+using System.Threading;
+using System.Windows.Input;
 
 namespace Device_Interface_Manager.Devices.COM;
 public class SerialDevice
@@ -35,7 +38,6 @@ public class SerialDevice
         try
         {
             serialPort.Open();
-
         }
         catch (Exception)
         {
@@ -54,7 +56,7 @@ public class SerialDevice
         //Thread.Sleep(TimeSpan.FromSeconds(3));
         //serialPort.WriteLine("LED:13:0");
 
-        //serialPort.WriteLine("START");
+        serialPort.WriteLine("START");
         //Thread.Sleep(TimeSpan.FromSeconds(3));
         //Thread.Sleep(TimeSpan.FromSeconds(3));
         //Thread.Sleep(TimeSpan.FromSeconds(3));
@@ -74,18 +76,21 @@ public class SerialDevice
         if (serialPort.IsOpen)
         {
             string[] data = serialPort.ReadLine().Split(':');
+            string type = data[0];
             if (data.Length == 1)
             {
-                Debug.WriteLine(data[0]);
+                Debug.WriteLine(type);
             }
             else if (data.Length == 3)
-            { 
-                switch (data[0])
+            {
+                string pin = data[1];
+                string value = data[2];
+                switch (type)
                 {
                     case "SW":
                         break;
                 }
-                Debug.WriteLine(data[0] + data[1] + data[2]);
+                Debug.WriteLine(type + pin + value);
             }
         }
     }
