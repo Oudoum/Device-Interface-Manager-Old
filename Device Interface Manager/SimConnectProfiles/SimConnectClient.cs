@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using MSFS = Microsoft.FlightSimulator.SimConnect;
 using P3D = LockheedMartin.Prepar3D.SimConnect;
 using MahApps.Metro.Controls;
+using Device_Interface_Manager.Properties;
 
 namespace Device_Interface_Manager.SimConnectProfiles;
 
@@ -142,7 +143,7 @@ public sealed class SimConnectClient
         SimConnectMSFS.MapClientDataNameToID(CLIENT_DATA_NAME_COMMAND, CLIENT_DATA_ID.CLIENT_DATA_ID_COMMAND);
         SimConnectMSFS.AddToClientDataDefinition(DEFINE_ID.DATA_DEFINITION_ID_COMMAND, 0, MESSAGE_SIZE, 0, 0);
 
-        PMDG.PMDG.RegisterPMDGNG3DataEvents(SimConnectMSFS);
+        RegisterPMDGDataEvents(SimConnectMSFS);
 
         RegisterSimVar("CAMERA STATE", "Enum");
 
@@ -153,12 +154,29 @@ public sealed class SimConnectClient
     {
         SetSimConnectConnection(true);
 
-        //PMDG.PMDG.RegisterPMDG777DataEvents(SimConnectP3D);
-        //PMDG.PMDG.RegisterPMDG747DataEvents(SimConnectP3D);
+        RegisterPMDGDataEvents(SimConnectP3D);
 
         RegisterSimVar("CAMERA STATE", "Enum");
 
         SimConnectP3D.OnRecvSimobjectData += Simconnect_OnRecvSimobjectData;
+    }
+
+    private static void RegisterPMDGDataEvents(dynamic simConnect)
+    {
+        switch (Settings.Default.PmdgAircraft)
+        {
+            case 0:
+                PMDG.PMDG.RegisterPMDGNG3DataEvents(simConnect);
+                break;
+
+            case 1:
+                PMDG.PMDG.RegisterPMDG747DataEvents(simConnect);
+                break;
+
+            case 2:
+                PMDG.PMDG.RegisterPMDG777DataEvents(simConnect);
+                break;
+        }
     }
 
     private void SimConnect_OnRecvQuit(MSFS.SimConnect sender, MSFS.SIMCONNECT_RECV data)

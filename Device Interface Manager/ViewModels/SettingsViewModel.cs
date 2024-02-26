@@ -7,12 +7,22 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Device_Interface_Manager.Models;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace Device_Interface_Manager.ViewModels;
 
 public partial class SettingsViewModel : ObservableObject
 {
     private readonly ILogger<SettingsViewModel> logger;
+
+    public SettingsViewModel(ILogger<SettingsViewModel> logger)
+    {
+        this.logger = logger;
+
+        GetInterfaceITAPIVersion();
+
+        ReadSimConnectCfg();
+    }
 
     [ObservableProperty]
     private string _wasmModuleUpdaterMessage;
@@ -61,6 +71,27 @@ public partial class SettingsViewModel : ObservableObject
             }
         }
     }
+
+    public byte SelectedPmdgAircraftKey
+    {
+        get => Properties.Settings.Default.PmdgAircraft;
+        set
+        {
+            if (SelectedPmdgAircraftKey != value)
+            {
+                Properties.Settings.Default.PmdgAircraft = value;
+                logger.LogInformation("PmdgAircraft: " + PmdgAircrafts[value]);
+                Properties.Settings.Default.Save();
+            }
+        }
+    }
+
+    public Dictionary<byte, string> PmdgAircrafts { get; } = new()
+    {
+        { 0, "B737" },
+        { 1, "B747" },
+        { 2, "B777" }
+    };
 
     public string InterfaceITAPIVersion { get; set; }
 
@@ -118,13 +149,6 @@ public partial class SettingsViewModel : ObservableObject
     {
         string oldValue = key == "Address" ? _iP : _port;
         File.WriteAllText("SimConnect.cfg", File.ReadAllText("SimConnect.cfg").Replace(key + "=" + oldValue, key + "=" + newValue));
-    }
-
-    public SettingsViewModel(ILogger<SettingsViewModel> logger) 
-    {
-        this.logger = logger;
-        GetInterfaceITAPIVersion();
-        ReadSimConnectCfg();
     }
 
     [RelayCommand]

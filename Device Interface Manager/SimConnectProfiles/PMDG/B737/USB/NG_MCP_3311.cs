@@ -723,12 +723,14 @@ public class NG_MCP_3311 : SimConnectProfiles.USB
 
     private uint eFIS_CPT_VOR_ADF_SELECTOR_L;
     private uint eFIS_CPT_VOR_ADF_SELECTOR_R;
+    private uint eFIS_FO_VOR_ADF_SELECTOR_L;
+    private uint eFIS_FO_VOR_ADF_SELECTOR_R;
     private uint nMCPCourse_0;
 
     protected override void KeyPressedProc(uint session, int key, uint direction)
     {
         //1-0
-        if (new int[] { 2, 3, 25, 69, 71, 79, 80 }.Contains(key))
+        if (new int[] { 2, 3, 25, 69, 71, 79, 80, 101, 103, 111, 112 }.Contains(key))
         {
             if (direction == 1)
             {
@@ -742,21 +744,21 @@ public class NG_MCP_3311 : SimConnectProfiles.USB
         }
 
         //1-2
-        else if (new int[] { 70, 72 }.Contains(key))
+        else if (new int[] { 70, 72, 102, 104 }.Contains(key))
         {
             if (direction == 1)
             {
                 direction = 2;
             }
 
-            else if (direction == 0 && (eFIS_CPT_VOR_ADF_SELECTOR_L != 0 || eFIS_CPT_VOR_ADF_SELECTOR_R != 0))
+            else if (direction == 0 && (eFIS_CPT_VOR_ADF_SELECTOR_L != 0 || eFIS_CPT_VOR_ADF_SELECTOR_R != 0 || eFIS_FO_VOR_ADF_SELECTOR_L != 0 || eFIS_FO_VOR_ADF_SELECTOR_R != 0))
             {
                 direction = 1;
             }
         }
 
         //-3 & -14
-        else if (new int[] { 4, 5, 6, 8, 9, 10, 12, 13, 14, 15, 17, 18, 19, 20, 21, 23, 24, 73, 74, 75, 76, 77, 78, 81, 82, 83, 84, 85, 86, 87 }.Contains(key))
+        else if (new int[] { 4, 5, 6, 8, 9, 10, 12, 13, 14, 15, 17, 18, 19, 20, 21, 23, 24, 73, 74, 75, 76, 77, 78, 81, 82, 83, 84, 85, 86, 87, 105, 106, 107, 108, 109, 110, 113, 114, 115, 116, 117, 118, 119 }.Contains(key))
         {
             if (direction == 1)
             {
@@ -812,6 +814,24 @@ public class NG_MCP_3311 : SimConnectProfiles.USB
                 simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_EFIS_CPT_BARO_IN_HPA);
                 break;
 
+            case 101:
+                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_EFIS_FO_VOR_ADF_SELECTOR_L);
+                eFIS_FO_VOR_ADF_SELECTOR_L = direction;
+                break;
+
+            case 103:
+                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_EFIS_FO_VOR_ADF_SELECTOR_R);
+                eFIS_FO_VOR_ADF_SELECTOR_R = direction;
+                break;
+
+            case 111:
+                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_EFIS_FO_MINIMUMS_RADIO_BARO);
+                break;
+
+            case 112:
+                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_EFIS_FO_BARO_IN_HPA);
+                break;
+
             //1-2
             case 70:
                 simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_EFIS_CPT_VOR_ADF_SELECTOR_L);
@@ -819,6 +839,14 @@ public class NG_MCP_3311 : SimConnectProfiles.USB
 
             case 72:
                 simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_EFIS_CPT_VOR_ADF_SELECTOR_R);
+                break;
+
+            case 102:
+                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_EFIS_FO_VOR_ADF_SELECTOR_L);
+                break;
+
+            case 104:
+                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_EFIS_FO_VOR_ADF_SELECTOR_R);
                 break;
 
             //0-...
@@ -888,6 +916,54 @@ public class NG_MCP_3311 : SimConnectProfiles.USB
 
             case 96 when direction == 1:
                 simConnectClient.TransmitEvent(7, PMDGEvents.EVT_EFIS_CPT_RANGE);
+                break;
+
+            case 97 when direction == 1:
+                simConnectClient.TransmitEvent(0, PMDGEvents.EVT_EFIS_FO_MODE);
+                break;
+
+            case 98 when direction == 1:
+                simConnectClient.TransmitEvent(1, PMDGEvents.EVT_EFIS_FO_MODE);
+                break;
+
+            case 99 when direction == 1:
+                simConnectClient.TransmitEvent(2, PMDGEvents.EVT_EFIS_FO_MODE);
+                break;
+
+            case 100 when direction == 1:
+                simConnectClient.TransmitEvent(3, PMDGEvents.EVT_EFIS_FO_MODE);
+                break;
+
+            case 121 when direction == 1:
+                simConnectClient.TransmitEvent(0, PMDGEvents.EVT_EFIS_FO_RANGE);
+                break;
+
+            case 122 when direction == 1:
+                simConnectClient.TransmitEvent(1, PMDGEvents.EVT_EFIS_FO_RANGE);
+                break;
+
+            case 123 when direction == 1:
+                simConnectClient.TransmitEvent(2, PMDGEvents.EVT_EFIS_FO_RANGE);
+                break;
+
+            case 124 when direction == 1:
+                simConnectClient.TransmitEvent(3, PMDGEvents.EVT_EFIS_FO_RANGE);
+                break;
+
+            case 125when direction == 1:
+                simConnectClient.TransmitEvent(4, PMDGEvents.EVT_EFIS_FO_RANGE);
+                break;
+
+            case 126 when direction == 1:
+                simConnectClient.TransmitEvent(5, PMDGEvents.EVT_EFIS_FO_RANGE);
+                break;
+
+            case 127 when direction == 1:
+                simConnectClient.TransmitEvent(6, PMDGEvents.EVT_EFIS_FO_RANGE);
+                break;
+
+            case 128 when direction == 1:
+                simConnectClient.TransmitEvent(7, PMDGEvents.EVT_EFIS_FO_RANGE);
                 break;
 
             //-3 & -14
@@ -1011,6 +1087,58 @@ public class NG_MCP_3311 : SimConnectProfiles.USB
                 simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_EFIS_CPT_TERR);
                 break;
 
+            case 105:
+                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_EFIS_FO_FPV);
+                break;
+
+            case 106:
+                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_EFIS_FO_MTRS);
+                break;
+
+            case 107:
+                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_EFIS_FO_MODE_CTR);
+                break;
+
+            case 108:
+                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_EFIS_FO_RANGE_TFC);
+                break;
+
+            case 109:
+                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_EFIS_FO_MINIMUMS_RST);
+                break;
+
+            case 110:
+                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_EFIS_FO_BARO_STD);
+                break;
+
+            case 113:
+                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_EFIS_FO_WXR);
+                break;
+
+            case 114:
+                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_EFIS_FO_STA);
+                break;
+
+            case 115:
+                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_EFIS_FO_WPT);
+                break;
+
+            case 116:
+                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_EFIS_FO_ARPT);
+                break;
+
+            case 117:
+                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_EFIS_FO_DATA);
+                break;
+
+            case 118:
+                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_EFIS_FO_POS);
+                break;
+
+            case 119:
+                simConnectClient.TransmitEvent(direction, PMDGEvents.EVT_EFIS_FO_TERR);
+                break;
+
             //-18 & -17
             case 33 when direction == 1:
                 simConnectClient.TransmitEvent(MOUSE_FLAG_WHEEL_DOWN, PMDGEvents.EVT_MCP_COURSE_SELECTOR_L);
@@ -1075,6 +1203,22 @@ public class NG_MCP_3311 : SimConnectProfiles.USB
 
             case 60 when direction == 1:
                 TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_CPT_BARO, true, nMCPCourse_0);
+                break;
+
+            case 61 when direction == 1:
+                TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_FO_MINIMUMS, false, nMCPCourse_0);
+                break;
+
+            case 62 when direction == 1:
+                TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_FO_MINIMUMS, true, nMCPCourse_0);
+                break;
+
+            case 63 when direction == 1:
+                TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_FO_BARO, false, nMCPCourse_0);
+                break;
+
+            case 64 when direction == 1:
+                TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_FO_BARO, true, nMCPCourse_0);
                 break;
         }
     }

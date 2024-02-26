@@ -114,10 +114,23 @@
                     Cursor="Hand"
                     IsTabStop="False"/>
 
+                <StackPanel Margin="0,20,0,0">
+                    <TextBlock 
+                        Text="PMDG Aircraft" 
+                        Foreground="White" 
+                        FontSize="14"/>
+                    <ComboBox 
+                        Margin="0,10,0,0" 
+                        SelectedValuePath="Key"
+                        DisplayMemberPath="Value"
+                        ItemsSource="{Binding PmdgAircrafts}"
+                        SelectedValue="{Binding SelectedPmdgAircraftKey}"/>
+                </StackPanel>
+
                 <TextBlock
                     Text="{Binding InterfaceITAPIVersion}"
                     Foreground="White"
-                    Margin="0,75,0,0"/>
+                    Margin="0,20,0,0"/>
                 
             </StackPanel>
 
