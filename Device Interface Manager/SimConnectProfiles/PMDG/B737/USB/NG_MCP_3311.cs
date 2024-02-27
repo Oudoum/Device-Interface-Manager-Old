@@ -1206,11 +1206,11 @@ public class NG_MCP_3311 : SimConnectProfiles.USB
                 break;
 
             case 61 when direction == 1:
-                TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_FO_MINIMUMS, false, nMCPCourse_0);
+                TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_FO_MINIMUMS, true, nMCPCourse_0);
                 break;
 
             case 62 when direction == 1:
-                TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_FO_MINIMUMS, true, nMCPCourse_0);
+                TransmitBAROMINSTenTimes(PMDGEvents.EVT_EFIS_FO_MINIMUMS, false, nMCPCourse_0);
                 break;
 
             case 63 when direction == 1:
