@@ -159,7 +159,7 @@ public class MCDU_R : ENET
     private readonly Dictionary<int, string> keyEventMap = new()
     {
         { 1, "(>H:A320_Neo_CDU_2_BTN_DOT)"},
-        { 2, "(>H:A320_Neo_CDU_2_BTN_O)"},
+        { 2, "(>H:A320_Neo_CDU_2_BTN_0)"},
         { 3, "(>H:A320_Neo_CDU_2_BTN_PLUSMINUS)"},
         { 4, "(>H:A320_Neo_CDU_2_BTN_Z)"},
         { 5, "(>H:A320_Neo_CDU_2_BTN_DIV)"},
