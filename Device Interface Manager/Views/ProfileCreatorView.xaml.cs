@@ -26,4 +26,9 @@ public partial class ProfileCreatorView : MetroWindow
             };
         }
     }
+
+    private void Button_Click(object sender, RoutedEventArgs e)
+    {
+        myDataGrid.CancelEdit();
+    }
 }

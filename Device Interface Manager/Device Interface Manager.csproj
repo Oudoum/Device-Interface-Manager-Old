@@ -9,8 +9,8 @@
     <UseWindowsForms>True</UseWindowsForms>
     <ApplicationIcon>DIM.ico</ApplicationIcon>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <AssemblyVersion>1.1.17.3</AssemblyVersion>
-    <FileVersion>1.1.17.3</FileVersion>
+    <AssemblyVersion>1.1.17.4</AssemblyVersion>
+    <FileVersion>1.1.17.4</FileVersion>
 
   </PropertyGroup>
 
